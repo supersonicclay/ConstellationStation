@@ -5,7 +5,7 @@
 //   starfield data.
 //   a starfield contains stars, constellations, information about time and
 //   location on Earth, as well as certain options. A CDataStarf and 
-//   everything in a CDataStarf can be saved and opened.
+//   most attributes of a CDataStarf can be saved and opened.
 //===========================================================================
 
 
@@ -33,34 +33,44 @@ CDataStarf::~CDataStarf()
 
 void CDataStarf::Clear()
 {
-	modified = FALSE;
-
+	// Stars
 	starCount = 0;
+	stars.clear();
+
+	// Constellations
 	constCount = 0;
 	newConstCount = 0;
 	curConstNum = 0;
-
-	stars.clear();
 	consts.clear();
+
+	// Viewing
+	viewMat.identity();
+	timeMat.identity();
+	latMat.identity();
 
 	rotX = 0.0f;
 	rotY = 0.0f;
+	rotTime = 0.0f;
 	zoom = 0.0f;
+
 	spinning = FALSE;
 
+	tracking = FALSE;
+	trackX = 0.0f;
+	trackY = 0.0f;
+	trackZ = 0.0f;
+
+	// Defaults
 	LoadStarDefaults();
 	LoadConstDefaults();
 	LoadSunDefaults();
 
-	// Time
+	// Location Time
 	time_t seconds = time(NULL);
 	gregorian = *(localtime( &seconds ));
 	gregorian.tm_year += 1900;
-///	julian = 
-	rotTime = 0.0f;
-
-	// Latitude & Longitude
-	rotLatitude = 50.0f;
+	latitude = 34.6f;//34.6N for Portales
+	longitude = 0.0f;
 }
 
 void CDataStarf::New( BOOL actual )
@@ -69,11 +79,13 @@ void CDataStarf::New( BOOL actual )
 
 	if( actual )
 	{
+		seed = -1;
 		InitActualStars();
 		InitActualConsts();
 	}
 	else
 	{
+		seed = clock();
 		InitRandomStars();
 	}
 }
@@ -81,7 +93,10 @@ void CDataStarf::New( BOOL actual )
 // Creates sphere of random stars with radius of 1
 void CDataStarf::InitRandomStars()
 {
-	starCount = 10000;
+	// Seed random numbers for predictable random starfield
+	srand( (unsigned)seed );
+
+	starCount = MAX_STARS;
 	CDataStar newStar;
 
 	/* /// North Star
@@ -97,7 +112,7 @@ void CDataStarf::InitRandomStars()
 
 	// Sun Corona
 	newStar.SetColor( COLOR_WHITE );
-	newStar.SetMag( 60.0f );
+	newStar.SetMag( -10.0f );
 	newStar.SetRA( 12, 0, 0.0f );
 	newStar.SetDec( TRUE, 0, 0, 0.0f );
 	newStar.SetX( 0.0f );
@@ -111,6 +126,13 @@ void CDataStarf::InitRandomStars()
 		newStar.Randomize();
 		stars.push_back( CDataStar(newStar) );
 	}
+
+	CountStars();
+	starfMgr.UpdateStarsAppearance();
+	UpdateViewMat();
+	UpdateTimeMat();
+	UpdateLatMat();
+	UpdateLongMat();
 }
 
 // Load the actual stars from the magnitude-sorted hipparcos catalog
@@ -118,7 +140,13 @@ void CDataStarf::InitActualStars()
 {
 	CDataStar newStar;
 
-	CFile file( "data\\hip_main.txt", CFile::modeRead );
+	CFile file;
+	if( !file.Open( "data\\hip_main.txt", CFile::modeRead ) )
+	{
+		CSDebug( "Unable to open star catalog", "CDataStarf::InitActualStars" );
+		exit(0);
+		return;
+	}
 
 	char buffer[100];
 	ra_s ra = {0};
@@ -173,7 +201,9 @@ void CDataStarf::InitActualStars()
 
 		newStar.SetRA( ra );
 		newStar.SetDec( dec );
+		newStar.SetPhiThetaFromRADec();
 		newStar.SetXYZFromRADec();
+		newStar.SetMatFromPhiTheta();
 		newStar.SetMag( mag );
 
 		stars.push_back( CDataStar(newStar) );
@@ -181,6 +211,9 @@ void CDataStarf::InitActualStars()
 
 	CountStars();
 	starfMgr.UpdateStarsAppearance();
+	UpdateViewMat();
+	UpdateTimeMat();
+	UpdateLatMat();
 
 	file.Close();
 }
@@ -194,28 +227,28 @@ void CDataStarf::InitActualConsts()
 /////////////////////////////////////////////////////////////////////////////
 // Gets
 
-CDataStar*	CDataStarf::GetStar(int i)				{	return &stars[i];				}
-int			CDataStarf::GetStarCount()				{	return starCount;				}
-CDataConst*	CDataStarf::GetConst(int i)				{	return &consts[i];				}
-CDataConst*	CDataStarf::GetCurConst()				{	return &consts[curConstNum];	}
-int			CDataStarf::GetConstCount()				{	return constCount;				}
-int			CDataStarf::GetCurConstNum()			{	return curConstNum;				}
-int			CDataStarf::GetNewConstCount()			{	return newConstCount;			}
-BOOL		CDataStarf::AreStarsVisible()			{	return starsVisible;			}
-BOOL		CDataStarf::AreStarsLabeled()			{	return starsLabeled;			}
-float		CDataStarf::GetLimitingMag()			{	return limitingMagX10 / 10.0f;	}
-int			CDataStarf::GetLimitingMagX10()			{	return limitingMagX10;			}
-BOOL		CDataStarf::AreConstsVisible()			{	return constsVisible;			}
-BOOL		CDataStarf::AreConstsLabeled()			{	return constsLabeled;			}
-BOOL		CDataStarf::IsSunVisible()				{	return sunVisible;				}
-BOOL		CDataStarf::IsSunShining()				{	return sunShine;				}
-BOOL		CDataStarf::IsModified()				{	return modified;				}
-float		CDataStarf::GetRotLatitude()			{	return rotLatitude;				}
-float		CDataStarf::GetRotTime()				{	return rotTime;					}
-BOOL		CDataStarf::IsSpinning()				{	return spinning;				}
-float		CDataStarf::GetRotX()					{	return rotX;					}
-float		CDataStarf::GetRotY()					{	return rotY;					}
-float		CDataStarf::GetZoom()					{	return zoom;					}
+CDataStar*	CDataStarf::GetStar(int i)			{	return &stars[i];				}
+int			CDataStarf::GetStarCount()			{	return starCount;				}
+CDataConst*	CDataStarf::GetConst(int i)			{	return &consts[i];				}
+CDataConst*	CDataStarf::GetCurConst()			{	return &consts[curConstNum];	}
+int			CDataStarf::GetConstCount()			{	return constCount;				}
+int			CDataStarf::GetCurConstNum()		{	return curConstNum;				}
+int			CDataStarf::GetNewConstCount()		{	return newConstCount;			}
+BOOL		CDataStarf::AreStarsVisible()		{	return starsVisible;			}
+BOOL		CDataStarf::AreStarsLabeled()		{	return starsLabeled;			}
+BOOL		CDataStarf::AreConstsVisible()		{	return constsVisible;			}
+BOOL		CDataStarf::AreConstsLabeled()		{	return constsLabeled;			}
+BOOL		CDataStarf::IsSunVisible()			{	return sunVisible;				}
+BOOL		CDataStarf::IsSunShining()			{	return sunShine;				}
+matrix44*	CDataStarf::GetViewMat()			{	return &viewMat;				}
+matrix44*	CDataStarf::GetTimeMat()			{	return &timeMat;				}
+matrix44*	CDataStarf::GetLatMat()				{	return &latMat;					}
+float		CDataStarf::GetRotX()				{	return rotX;					}
+float		CDataStarf::GetRotY()				{	return rotY;					}
+float		CDataStarf::GetRotTime()			{	return rotTime;					}
+float		CDataStarf::GetZoom()				{	return zoom;					}
+BOOL		CDataStarf::IsSpinning()			{	return spinning;				}
+BOOL		CDataStarf::IsTracking()			{	return tracking;				}
 
 // Find the constellation with the given name
 CDataConst*	CDataStarf::GetConst( CString& name )
@@ -232,103 +265,71 @@ CDataConst*	CDataStarf::GetConst( CString& name )
 /////////////////////////////////////////////////////////////////////////////
 // Sets
 
-void CDataStarf::IncNewConstCount()						{	newConstCount++;				}
-void CDataStarf::SwitchStarsVisible()					{	starsVisible = !starsVisible;	}
-void CDataStarf::SetStarsVisible( BOOL x )				{	starsVisible = x;				}
-void CDataStarf::SwitchStarsLabeled()					{	starsLabeled = !starsLabeled;	}
-void CDataStarf::SetStarsLabeled( BOOL x )				{	starsLabeled = x;				}
-void CDataStarf::SetLimitingMagX10( int x )				{	limitingMagX10 = x;				}
-void CDataStarf::SwitchConstsVisible()					{	constsVisible = !constsVisible;	}
-void CDataStarf::SetConstsVisible( BOOL x )				{	constsVisible = x;				}
-void CDataStarf::SwitchConstsLabeled()					{	constsLabeled = !constsLabeled;	}
-void CDataStarf::SetConstsLabeled( BOOL x )				{	constsLabeled = x;				}
-void CDataStarf::SwitchSunVisible()						{	sunVisible = !sunVisible;		}
-void CDataStarf::SetSunVisible( BOOL x )				{	sunVisible = x;					}
-void CDataStarf::SwitchSunShine()						{	sunShine = !sunShine;			}
-void CDataStarf::SetSunShine( BOOL x )					{	sunShine = x;					}
-void CDataStarf::SetRotLatitude( float rotLatitude_ )	{	rotLatitude = rotLatitude_;		}
-void CDataStarf::SetRotTime( float rotTime_ )			{	rotTime = rotTime_;				}
-void CDataStarf::SwitchSpinning()						{	spinning = !spinning;			}
+void CDataStarf::IncNewConstCount()				{	newConstCount++;				}
+void CDataStarf::SwitchStarsVisible()			{	starsVisible = !starsVisible;	}
+void CDataStarf::SetStarsVisible( BOOL x )		{	starsVisible = x;				}
+void CDataStarf::SwitchStarsLabeled()			{	starsLabeled = !starsLabeled;	}
+void CDataStarf::SetStarsLabeled( BOOL x )		{	starsLabeled = x;				}
+void CDataStarf::SwitchConstsVisible()			{	constsVisible = !constsVisible;	}
+void CDataStarf::SetConstsVisible( BOOL x )		{	constsVisible = x;				}
+void CDataStarf::SwitchConstsLabeled()			{	constsLabeled = !constsLabeled;	}
+void CDataStarf::SetConstsLabeled( BOOL x )		{	constsLabeled = x;				}
+void CDataStarf::SwitchSunVisible()				{	sunVisible = !sunVisible;		}
+void CDataStarf::SetSunVisible( BOOL x )		{	sunVisible = x;					}
+void CDataStarf::SwitchSunShine()				{	sunShine = !sunShine;			}
+void CDataStarf::SetSunShine( BOOL x )			{	sunShine = x;					}
+void CDataStarf::SwitchSpinning()				{	spinning = !spinning;			}
 
-void CDataStarf::SetModified( BOOL m )
+void CDataStarf::SetRotTime( float r, BOOL updateMat )
 {
-	modified = m; documentMgr.UpdateTitle();
+	rotTime = r;
+	if( updateMat )
+		UpdateTimeMat();
 }
 
-void CDataStarf::AdjRotX( float deltaRotX )
+void CDataStarf::AdjRotX( float delta, BOOL updateMat )
 {	
 	// Restrict up and down rotation
-	float newRotX = rotX + deltaRotX;
+	float newRotX = rotX + delta;
 
 	if( newRotX > -90 && newRotX < 90 )
 		rotX = newRotX;
+
+	if( updateMat )
+		UpdateViewMat();
 }
 
-void CDataStarf::AdjRotY(float deltaRotY)
+void CDataStarf::AdjRotY( float delta, BOOL updateMat )
 {
-	rotY += deltaRotY;
+	rotY += delta;
 
 	// Keep rotY between -360 and 360
-	if( rotY < 360.0f )
+	if( rotY < -360.0f )
 		rotY += 360.0f;
 	if( rotY > 360.0f )
 		rotY -= 360.0f;
+
+	if( updateMat )
+		UpdateViewMat();
 }
 
-void CDataStarf::AdjRotTime( float deltaTime )
+void CDataStarf::AdjRotTime( float delta, BOOL updateMat )
 {
-	rotTime += deltaTime;
+	rotTime += delta;
+	if( tracking )
+		Track();
+	if( updateMat )
+		UpdateTimeMat();
 }
 
-void CDataStarf::AdjZoom( float deltaZoom )
+void CDataStarf::AdjZoom( float delta )
 {
-	zoom += deltaZoom;
+	zoom += delta;
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
 // Methods
-
-
-/////////////////////////////////////////////////////////////////////////////
-// View Methods
-
-void CDataStarf::RotateUp()		{	AdjRotX(-0.5f);	}
-void CDataStarf::RotateDown()	{	AdjRotX( 0.5f);	}
-void CDataStarf::RotateLeft()	{	AdjRotY(-0.5f);	}
-void CDataStarf::RotateRight()	{	AdjRotY( 0.5f);	}
-
-void CDataStarf::ZoomIn()
-{
-	if( zoom < 0.9f )
-		zoom += 0.04f;
-}
-
-void CDataStarf::ZoomOut()
-{
-	if( zoom > -0.8f )
-		zoom -= 0.04f;
-}
-
-// Reset viewing rotation and zoom
-void CDataStarf::ResetView()
-{
-	ResetRot();
-	ResetZoom();
-}
-
-// Reset rotation
-void CDataStarf::ResetRot()
-{
-	rotX = 0.0f;
-	rotY = 0.0f;
-}
-
-// Reset zoom
-void CDataStarf::ResetZoom()
-{
-	zoom = 0.0f;
-}
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -339,7 +340,6 @@ void CDataStarf::LoadStarDefaults()
 {
 	starsVisible = DEF_STARS_VISIBLE;
 	starsLabeled = DEF_STARS_LABELED;
-	limitingMagX10 = DEF_STARS_LIMMAGX10;
 }
 
 // Count the number of stars brighter than the limiting magnitude
@@ -349,7 +349,7 @@ void CDataStarf::CountStars()
 
 	for( int i=0; i<MAX_STARS; ++i )
 	{
-		if( GetStar(i)->GetMag() <= GetLimitingMag() )
+		if( GetStar(i)->GetMag() <= optionsMgr.GetStarsLimMag() )
 			++starCount;
 		else
 			break;
@@ -460,6 +460,143 @@ void CDataStarf::LoadSunDefaults()
 
 
 /////////////////////////////////////////////////////////////////////////////
+// View Methods
+
+// Update view matrix
+void CDataStarf::UpdateViewMat()
+{
+	viewMat.identity();
+	viewMat = RotateRadMatrix44( 'x', DegToRad( rotX ) );
+	viewMat *= RotateRadMatrix44( 'y', DegToRad( rotY ) );
+}
+
+// Update time matrix
+void CDataStarf::UpdateTimeMat()
+{
+	timeMat.identity();
+	timeMat = RotateRadMatrix44( 'y', DegToRad( rotTime ) );
+}
+
+// Update latitude matrix
+void CDataStarf::UpdateLatMat()
+{
+	latMat.identity();
+	latMat = RotateRadMatrix44( 'x', DegToRad( latitude-90.0f ) );
+}
+
+// Update longitude matrix
+void CDataStarf::UpdateLongMat()
+{
+	longMat.identity();
+	longMat = RotateRadMatrix44( 'y', 0.0f );///
+}
+
+// Rotate methods (for keyboard)
+void CDataStarf::RotateUp()		{	AdjRotX(-0.5f);	}
+void CDataStarf::RotateDown()	{	AdjRotX( 0.5f);	}
+void CDataStarf::RotateLeft()	{	AdjRotY(-0.5f);	}
+void CDataStarf::RotateRight()	{	AdjRotY( 0.5f);	}
+
+// Zoom methods (for keyboard and mousewheel)
+void CDataStarf::ZoomIn()
+{
+	if( zoom < 0.9f )
+		zoom += 0.02f*(1-zoom);
+}
+void CDataStarf::ZoomOut()
+{
+	if( zoom > -0.8f )
+		zoom -= 0.02f*(1-zoom);
+}
+
+// Reset viewing rotation and zoom
+void CDataStarf::ResetView()
+{
+	ResetRot();
+	ResetZoom();
+}
+
+// Reset rotation
+void CDataStarf::ResetRot()
+{
+	rotX = 0.0f;
+	rotY = 0.0f;
+	rotTime = 0.0f;
+	UpdateViewMat();
+}
+
+// Reset zoom
+void CDataStarf::ResetZoom()
+{
+	zoom = 0.0f;
+}
+
+// Stop tracking
+void CDataStarf::StopTracking()
+{
+	tracking = FALSE;
+}
+
+// Start tracking the specified spherical coordinates
+void CDataStarf::StartTracking( float x, float y, float z )
+{
+	tracking = TRUE;
+	trackX = x;
+	trackY = y;
+	trackZ = z;
+	Track();
+}
+
+// Track the spherical coordinates set in StartTracking
+void CDataStarf::Track()
+{
+//  Coordinates specify a point on celectial sphere
+//  (ie. doesn't include latitude or time rotation)
+
+	// Find world coordinates (ie. after latitude and time rotation)
+	vector4 worldVec( trackX, trackY, trackZ, 1.0f );
+	worldVec = latMat * timeMat * worldVec;
+
+	/// Make up a fake star so we can use its methods
+	CDataStar fakeStar;
+	fakeStar.SetX( worldVec.x );
+	fakeStar.SetY( worldVec.y );
+	fakeStar.SetZ( worldVec.z );
+	fakeStar.SetPhiThetaFromXYZ();
+	fakeStar.SetRADecFromXYZ();
+
+	rotX = fakeStar.GetPhi() - 90.0f;
+	rotY = 180.0f - fakeStar.GetTheta();
+
+	UpdateViewMat();
+}
+
+// Find and view the specified spherical coordinates
+void CDataStarf::Find( float x, float y, float z )
+{
+//  Coordinates specify a point on celectial sphere
+//  (ie. doesn't include latitude or time rotation)
+
+	// Find world coordinates (ie. after latitude and time rotation)
+	vector4 worldVec( trackX, trackY, trackZ, 1.0f );
+	worldVec = latMat * timeMat * worldVec;
+
+	/// Make up a fake star so we can use its methods
+	CDataStar fakeStar;
+	fakeStar.SetX( worldVec.x );
+	fakeStar.SetY( worldVec.y );
+	fakeStar.SetZ( worldVec.z );
+	fakeStar.SetPhiThetaFromXYZ();
+	fakeStar.SetRADecFromXYZ();
+
+	rotX = 90.0f - fakeStar.GetPhi();
+	rotY = 180.0f - fakeStar.GetTheta();
+
+	UpdateViewMat();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
 // Serialization
 
 void CDataStarf::Serialize(CArchive& ar)
@@ -467,39 +604,42 @@ void CDataStarf::Serialize(CArchive& ar)
 	CObject::Serialize(ar);
 	int i;
 
-	modified = FALSE;
-
 	// Serialize CDataStarf attributes
 	if( ar.IsLoading() )
 	{
-		ar >> starCount
+		ar >> seed
 		   >> constCount >> newConstCount >> curConstNum
-		   >> rotLatitude >> rotTime
-		   >> rotX >> rotY >> zoom;
+		   >> latitude >> longitude
+		   >> rotX >> rotY >> rotTime
+		   >> zoom;
+
+		if( seed == -1 )
+		{
+			stars.clear();
+			InitActualStars();
+		}
+		else
+		{
+			stars.clear();
+			InitRandomStars();
+		}
 	}
 	else
 	{
-		ar << starCount
+		ar << seed
 		   << constCount << newConstCount << curConstNum
-		   << rotLatitude << rotTime
-		   << rotX << rotY << zoom;
+		   << latitude << longitude
+		   << rotX << rotY << rotTime
+		   << zoom;
 	}
 
-	// If we're loading, get the stars and constellations vectors ready
+	/// If we're loading, get the constellations vector ready
 	if( ar.IsLoading() )
 	{
-		stars.clear();
-		for( i=0; i<starCount; ++i )
-			stars.push_back( CDataStar() );
-
 		consts.clear();
 		for( i=0; i<constCount; ++i )
 			consts.push_back( CDataConst() );
 	}
-
-	// Serialize stars
-	for( i=0; i<starCount; ++i )
-		GetStar(i)->Serialize( ar );
 
 	// Serialize constellations
 	for( i=0; i<constCount; ++i )

@@ -60,6 +60,30 @@ void CMgrStarf::SetStarsBrightColor( float x )	{	starsBrightColor = x;	}
 /////////////////////////////////////////////////////////////////////////////
 // Starfield Methods
 
+// Find the specified star
+void CMgrStarf::Find( CDataStar* star )
+{
+	starfield.Find( star->GetX(), star->GetY(), star->GetZ() );
+}
+
+// Find the specified constellation
+void CMgrStarf::Find( CDataConst* constellation )
+{
+	/// Average all stars
+}
+
+// Track the specified star
+void CMgrStarf::StartTracking( CDataStar* star )
+{
+	starfield.StartTracking( star->GetX(), star->GetY(), star->GetZ() );
+}
+
+// Track the specified constellation
+void CMgrStarf::StartTracking( CDataConst* constellation )
+{
+	/// Average all stars
+}
+
 // Turns starfield spinning on/off
 void CMgrStarf::Rotate()
 {
@@ -109,7 +133,7 @@ void CMgrStarf::StarOptions()
 	else
 	{
 		// Reset options that are changed in realtime
-		starfield.SetLimitingMagX10( dialog.origLimMagX10 );
+		optionsMgr.SetStarsLimMagX10( dialog.origLimMagX10 );
 		optionsMgr.SetStarsSize( dialog.origSize );
 		optionsMgr.SetStarsSContrast( dialog.origSContrast );
 		optionsMgr.SetStarsCContrast( dialog.origCContrast );
@@ -156,7 +180,7 @@ void CMgrStarf::UpdateStarsAppearance()
 
 	// Calculate magnitude information
 	float starsMinMag = MIN_STARS_MAG;
-	float starsMaxMag = starfield.GetLimitingMag();
+	float starsMaxMag = optionsMgr.GetStarsLimMag();
 	float magDiff = starsMaxMag - starsMinMag;
 
 	/// min/max rad/color check

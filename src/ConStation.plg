@@ -3,165 +3,96 @@
 <pre>
 <h1>Build Log</h1>
 <h3>
---------------------Configuration: ConStation - Win32 Debug--------------------
+--------------------Configuration: ConStation - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating command line "rc.exe /l 0x409 /fo"Debug/ConStation.res" /d "_DEBUG" /d "_AFXDLL" "D:\CODE\ConStations[old]\v0.3.1\src\ConStation.rc"" 
-Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPF345.tmp" with contents
+Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPF6B2.tmp" with contents
 [
-/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Debug/" /Fp"Debug/ConStation.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"D:\CODE\ConStations[old]\v0.3.1\src\BarConst.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\BarStarf.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\CSApp.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\CSFrame.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\CSView.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\Global.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\Matrix.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\DlgAbout.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\DlgConstName.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\DlgLocation.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\DlgOptionsConst.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\DlgOptionsGeneral.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\DlgOptionsStar.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\DlgOptionsSun.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\DlgOptionsTerr.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\DlgShowHide.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\DlgTime.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\DataConst.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\DataStar.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\DataStarf.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\DataTerrain.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\MgrConst.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\MgrDocument.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\MgrGraphics.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\MgrInput.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\MgrOptions.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\MgrStarf.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\MgrTeacher.cpp"
-"D:\CODE\ConStations[old]\v0.3.1\src\MgrTerrain.cpp"
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Release/" /Fp"Release/ConStation.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"D:\CODE\ConStation\src\DataStarf.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPF345.tmp" 
-Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPF346.tmp" with contents
+Creating command line "cl.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPF6B2.tmp" 
+Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPF6B3.tmp" with contents
 [
-/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Debug/" /Fp"Debug/ConStation.pch" /Yc"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"D:\CODE\ConStations[old]\v0.3.1\src\StdAfx.cpp"
+opengl32.lib glu32.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/ConStation.pdb" /machine:I386 /out:"../ConStation.exe" 
+.\Release\BarConst.obj
+.\Release\BarStarf.obj
+.\Release\CSApp.obj
+.\Release\CSFrame.obj
+.\Release\CSView.obj
+.\Release\Global.obj
+.\Release\Matrix.obj
+.\Release\StdAfx.obj
+.\Release\DlgAbout.obj
+.\Release\DlgConstName.obj
+.\Release\DlgLocation.obj
+.\Release\DlgOptionsConst.obj
+.\Release\DlgOptionsGeneral.obj
+.\Release\DlgOptionsStar.obj
+.\Release\DlgOptionsSun.obj
+.\Release\DlgOptionsTerr.obj
+.\Release\DlgShowHide.obj
+.\Release\DlgTime.obj
+.\Release\DataConst.obj
+.\Release\DataStar.obj
+.\Release\DataStarf.obj
+.\Release\DataTerrain.obj
+.\Release\MgrConst.obj
+.\Release\MgrDocument.obj
+.\Release\MgrGraphics.obj
+.\Release\MgrInput.obj
+.\Release\MgrOptions.obj
+.\Release\MgrStarf.obj
+.\Release\MgrTeacher.obj
+.\Release\MgrTerrain.obj
+.\Release\ConStation.res
 ]
-Creating command line "cl.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPF346.tmp" 
-Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPF347.tmp" with contents
-[
-opengl32.lib glu32.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/ConStation[debug].pdb" /debug /machine:I386 /out:"../ConStation[debug].exe" /pdbtype:sept 
-".\Debug\BarConst.obj"
-".\Debug\BarStarf.obj"
-".\Debug\CSApp.obj"
-".\Debug\CSFrame.obj"
-".\Debug\CSView.obj"
-".\Debug\Global.obj"
-".\Debug\Matrix.obj"
-".\Debug\StdAfx.obj"
-".\Debug\DlgAbout.obj"
-".\Debug\DlgConstName.obj"
-".\Debug\DlgLocation.obj"
-".\Debug\DlgOptionsConst.obj"
-".\Debug\DlgOptionsGeneral.obj"
-".\Debug\DlgOptionsStar.obj"
-".\Debug\DlgOptionsSun.obj"
-".\Debug\DlgOptionsTerr.obj"
-".\Debug\DlgShowHide.obj"
-".\Debug\DlgTime.obj"
-".\Debug\DataConst.obj"
-".\Debug\DataStar.obj"
-".\Debug\DataStarf.obj"
-".\Debug\DataTerrain.obj"
-".\Debug\MgrConst.obj"
-".\Debug\MgrDocument.obj"
-".\Debug\MgrGraphics.obj"
-".\Debug\MgrInput.obj"
-".\Debug\MgrOptions.obj"
-".\Debug\MgrStarf.obj"
-".\Debug\MgrTeacher.obj"
-".\Debug\MgrTerrain.obj"
-".\Debug\ConStation.res"
-]
-Creating command line "link.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPF347.tmp"
+Creating command line "link.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPF6B3.tmp"
 <h3>Output Window</h3>
-Compiling resources...
 Compiling...
-StdAfx.cpp
-Compiling...
-BarConst.cpp
-BarStarf.cpp
-CSApp.cpp
-CSFrame.cpp
-CSView.cpp
-Global.cpp
-Matrix.cpp
-DlgAbout.cpp
-DlgConstName.cpp
-DlgLocation.cpp
-DlgOptionsConst.cpp
-DlgOptionsGeneral.cpp
-DlgOptionsStar.cpp
-DlgOptionsSun.cpp
-DlgOptionsTerr.cpp
-DlgShowHide.cpp
-DlgTime.cpp
-DataConst.cpp
-DataStar.cpp
 DataStarf.cpp
-Generating Code...
-Compiling...
-DataTerrain.cpp
-MgrConst.cpp
-MgrDocument.cpp
-MgrGraphics.cpp
-MgrInput.cpp
-MgrOptions.cpp
-MgrStarf.cpp
-MgrTeacher.cpp
-MgrTerrain.cpp
-Generating Code...
 Linking...
-Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPF349.tmp" with contents
+Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPF6B5.tmp" with contents
 [
-/nologo /o"Debug/ConStation.bsc" 
-".\Debug\StdAfx.sbr"
-".\Debug\BarConst.sbr"
-".\Debug\BarStarf.sbr"
-".\Debug\CSApp.sbr"
-".\Debug\CSFrame.sbr"
-".\Debug\CSView.sbr"
-".\Debug\Global.sbr"
-".\Debug\Matrix.sbr"
-".\Debug\DlgAbout.sbr"
-".\Debug\DlgConstName.sbr"
-".\Debug\DlgLocation.sbr"
-".\Debug\DlgOptionsConst.sbr"
-".\Debug\DlgOptionsGeneral.sbr"
-".\Debug\DlgOptionsStar.sbr"
-".\Debug\DlgOptionsSun.sbr"
-".\Debug\DlgOptionsTerr.sbr"
-".\Debug\DlgShowHide.sbr"
-".\Debug\DlgTime.sbr"
-".\Debug\DataConst.sbr"
-".\Debug\DataStar.sbr"
-".\Debug\DataStarf.sbr"
-".\Debug\DataTerrain.sbr"
-".\Debug\MgrConst.sbr"
-".\Debug\MgrDocument.sbr"
-".\Debug\MgrGraphics.sbr"
-".\Debug\MgrInput.sbr"
-".\Debug\MgrOptions.sbr"
-".\Debug\MgrStarf.sbr"
-".\Debug\MgrTeacher.sbr"
-".\Debug\MgrTerrain.sbr"]
-Creating command line "bscmake.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPF349.tmp"
+/nologo /o"Release/ConStation.bsc" 
+.\Release\StdAfx.sbr
+.\Release\BarConst.sbr
+.\Release\BarStarf.sbr
+.\Release\CSApp.sbr
+.\Release\CSFrame.sbr
+.\Release\CSView.sbr
+.\Release\Global.sbr
+.\Release\Matrix.sbr
+.\Release\DlgAbout.sbr
+.\Release\DlgConstName.sbr
+.\Release\DlgLocation.sbr
+.\Release\DlgOptionsConst.sbr
+.\Release\DlgOptionsGeneral.sbr
+.\Release\DlgOptionsStar.sbr
+.\Release\DlgOptionsSun.sbr
+.\Release\DlgOptionsTerr.sbr
+.\Release\DlgShowHide.sbr
+.\Release\DlgTime.sbr
+.\Release\DataConst.sbr
+.\Release\DataStar.sbr
+.\Release\DataStarf.sbr
+.\Release\DataTerrain.sbr
+.\Release\MgrConst.sbr
+.\Release\MgrDocument.sbr
+.\Release\MgrGraphics.sbr
+.\Release\MgrInput.sbr
+.\Release\MgrOptions.sbr
+.\Release\MgrStarf.sbr
+.\Release\MgrTeacher.sbr
+.\Release\MgrTerrain.sbr]
+Creating command line "bscmake.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPF6B5.tmp"
 Creating browse info file...
 <h3>Output Window</h3>
 
 
 
 <h3>Results</h3>
-ConStation[debug].exe - 0 error(s), 0 warning(s)
+ConStation.exe - 0 error(s), 0 warning(s)
 </pre>
 </body>
 </html>

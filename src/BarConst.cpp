@@ -110,7 +110,7 @@ void CBarConst::DeleteConst()
 	if( constList.DeleteString( sel ) == CB_ERR)
 	{
 		CSDebug( "Can't Delete Constellation", "CBarConst::DeleteConst" );
-		PostQuitMessage(0);
+		exit(0);
 		return;
 	}
 

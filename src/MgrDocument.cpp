@@ -22,11 +22,24 @@ static char THIS_FILE[] = __FILE__;
 CMgrDocument::CMgrDocument()
 {
 	strncpy( title, "Untitled.str", MAX_DOC_NAME );
+	modified = FALSE;
 }
 
 CMgrDocument::~CMgrDocument()
 {
 }
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Gets
+
+char*	CMgrDocument::GetTitle()	{	return title;		}
+BOOL	CMgrDocument::IsModified()	{	return modified;	}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Sets
+void CMgrDocument::SetModified()	{	modified = TRUE; UpdateTitle();	}
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -69,6 +82,7 @@ void CMgrDocument::NewActual()
 		return;
 
 	strncpy( title, "Untitled.str", MAX_DOC_NAME );
+	modified = FALSE;
 
 	terrain.New();
 	starfield.New( true );
@@ -93,6 +107,7 @@ void CMgrDocument::NewRandom()
 		return;
 
 	strncpy( title, "Untitled.str", MAX_DOC_NAME );
+	modified = FALSE;
 
 	terrain.New();
 	starfield.New( FALSE );
@@ -120,6 +135,9 @@ void CMgrDocument::Open()
 	if( !GetOpenFileName( &ofn ) )
 		return;
 
+	// Set the current directory back
+	SetCurrentDirectory( cwd );
+
 	// Open file for reading
 	CFile file;
 	if( !file.Open( filename, CFile::modeRead ) )
@@ -133,12 +151,13 @@ void CMgrDocument::Open()
 	starfield.Serialize( ar );
 	terrain.Serialize( ar );
 
+	// Document isn't modified
+	modified = FALSE;
+
 	// Close archive and file
 	ar.Close();
 	file.Close();
 
-	// Set the current directory back
-	SetCurrentDirectory( cwd );
 
 	// Reset UI and refresh screen
 	UpdateTitle();
@@ -173,12 +192,15 @@ void CMgrDocument::Save()
 	starfield.Serialize( ar );
 	terrain.Serialize( ar );
 
+	// Document isn't modified
+	modified = FALSE;
+
 	// Close archive and file
 	ar.Close();
 	file.Close();
 
 	// Set the current directory back
-	SetCurrentDirectory( cwd );
+//	SetCurrentDirectory( cwd );
 
 	// Reset UI and refresh screen
 	UpdateTitle();
@@ -198,6 +220,9 @@ void CMgrDocument::SaveAs()
 	if( !GetSaveFileName( &ofn ) )
 		return;
 
+	// Set the current directory back
+	SetCurrentDirectory( cwd );
+
 	// Open file for writing
 	CFile file;
 	if( !file.Open( filename, CFile::modeCreate | CFile::modeWrite ) )
@@ -211,12 +236,12 @@ void CMgrDocument::SaveAs()
 	starfield.Serialize( ar );
 	terrain.Serialize( ar );
 
+	// Document isn't modified
+	modified = FALSE;
+
 	// Close archive and file
 	ar.Close();
 	file.Close();
-
-	// Set the current directory
-	SetCurrentDirectory( cwd );
 
 	// Reset UI and refresh screen
 	UpdateTitle();
@@ -231,8 +256,8 @@ void CMgrDocument::SaveAs()
 int CMgrDocument::CheckModified()
 {
 	return IDNO;/// MAKES MY LIFE EASIER FOR NOW
-	// Check if starfield is modified
-	if( starfield.IsModified() )
+	// Check if document is modified
+	if( modified )
 	{
 		int a = CSYesNoCancel( "The starfield is modified.\nDo you want to save it?" );
 		if( a == IDYES )
@@ -250,7 +275,7 @@ void CMgrDocument::UpdateTitle()
 	strncpy( windowTitle, "Constellation Station - [", 100 );
 	strncat( windowTitle, title, MAX_DOC_NAME );
 
-	if( starfield.IsModified() )
+	if( modified )
 		strncat( windowTitle, " *]", 3 );
 	else
 		strncat( windowTitle, "]", 1 );

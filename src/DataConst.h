@@ -57,7 +57,7 @@ public:
 
 // CDataConstLine vector
 typedef std::vector<CDataConstLine> line_v;
-typedef line_v::iterator        line_vi;
+typedef line_v::iterator            line_vi;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -87,6 +87,8 @@ private:
 	int lineCount;
 	line_v lines;
 
+	int activeLineNum;
+
 	CDataConstLine newLine;	// new (proposed) line
 
 
@@ -96,14 +98,16 @@ public:
 // Gets
 	CString GetName();
 	int GetLineCount();
+	int GetActiveLineNum();
 	CDataConstLine* GetLine( int i );
 	CDataConstLine* GetNewLine();
 	BOOL IsVisible();
 
 // Sets
-	void SetName( CString name_ );
+	void SetName( CString n );
+	void SetActiveLineNum( int n );
 	void SwitchVisible();
-	void SetVisible( BOOL visible_ );
+	void SetVisible( BOOL v );
 
 // Methods
 	void AddLine();
@@ -113,7 +117,7 @@ public:
 
 // CDataConst Vector
 typedef std::vector<CDataConst> const_v;
-typedef const_v::iterator   const_vi;
+typedef const_v::iterator       const_vi;
 
 
 #endif

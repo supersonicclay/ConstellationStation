@@ -57,17 +57,19 @@ public:
 	void DrawSky() const;
 	void DrawSun() const;
 	void DrawStars() const;
-	void DrawStar (int i) const;
-	void DrawConstellations() const;
-	void DrawConstellation (int i) const;
+	void DrawStarQuad( int i ) const;
+	void DrawStarPoint( int i ) const;
+	void DrawConsts() const;
+	void DrawConst( int i ) const;
+	void DrawCurConst( int i ) const;
 	void DrawCompass() const;
 
 	// View manipulation
 	void Projection() const;
 	void Perspective() const;
-	void RotateXY() const;
-	void RotateLatitude() const;
+	void RotateView() const;
 	void RotateTime() const;
+	void RotateLatitude() const;
 
 	// Textures
 	BOOL LoadTGA( UINT &texID, char* filename );

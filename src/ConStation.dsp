@@ -536,7 +536,11 @@ SOURCE=.\res\Toolbar.bmp
 # End Group
 # Begin Source File
 
-SOURCE=".\Bug Report.txt"
+SOURCE=.\BUGS.TXT
+# End Source File
+# Begin Source File
+
+SOURCE=..\data\sample.txt
 # End Source File
 # Begin Source File
 

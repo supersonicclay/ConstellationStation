@@ -28,9 +28,9 @@ protected:
 	CCSView view;
 
 	// Toolbars
-	CStatusBar      statusBar;
-	CBarStarf       starfBar;
-	CBarConst       constBar;
+	CStatusBar statusBar;
+	CBarStarf  starfBar;
+	CBarConst  constBar;
 
 
 // Methods

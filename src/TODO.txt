@@ -11,9 +11,8 @@ PHASES
 
 
 BUGS
--	3	Terrain isn't depth testing
 -	3	cursor doesn't hide after open
--	3	Random starfield is blank
+-	3	Random starfield looks bad
 	5	Program Icon
 		- frame.GetIcon()
 		- frame.SetIcon()
@@ -21,42 +20,37 @@ BUGS
 		- (WM_SETICON)
 
 GENERAL
--	1	PORTALES: 34.6 North
 -	1	Read-through cleaning / Sanity checks
 		- DataTerrain
--	3	Spin sun separately
--	3	Improve zooming (dependent on zoom)
+	5	Spin sun separately
 	5	Don't maximize on startup
 	5	Redraw starfield toolbar buttons
 	5	Splash Screen
 	5	Print
 	5	Undo
 
-OPTIONS
--	3	textured stars
--	3?	Rotate / Zoom speed
+OPTION MGR
+	4	ConstLine width
 	4	Terrain shadows on/off
 	4	constellation labels
 	4	star names
+	5	Latitude		(Portales: 34.60N)
 	5	home location
 
 INPUT MGR
 -	3	Trackball
 -	3	Keep Mouse in place while rotating
+-	3	Rotate / Zoom speed
 
 GRAPHICS MGR
--	3	Find constellation
--	3	Draw mouse-overed line different color
--	3	Improve 3D math.
--	3	Make small stars points, not quads
--	3	Hide dim stars when zoomed out
--	3	Show dim stars when zoomed in
--	3	Lighting is shining through
--	3?	Lower star texture quality
+-	3	Improve 3D math
+-	3	Vertex/color arrays for stars
+	4	Lighting is shining through
 	4	Print Constellation Name near constellation
 		- moveable?
 	4	Heading indicator needs work.
 		- Do it like Starry Night?
+	5	Actual magnification 1X/2X/1024X
 	5	Celestial Grid
 
 CONSTELLATION MGR
@@ -64,7 +58,13 @@ CONSTELLATION MGR
 	5	Constellation details
 
 STARFIELD MGR
--	3?	Prompt for seed with random stars
+-	3	Store rad instead of deg
+-	3	Tracking
+	5	Track/Find
+		- constellation
+		- star
+		- ra dec
+	5	Prompt for seed with random stars
 	5	Choose date
 	5	Choose time
 	5	Choose location (lat & long)
@@ -75,16 +75,13 @@ STARFIELD MGR
 	5?	Precession
 
 TERRAIN MGR
--	3	change spaces to tabs
--	3	viewheight is choppy
 -	3	Generate first few so you're sitting in a valley
 -	3?	More circular
--	3?	vectors
+-	3?	vectors / 2d arrays
 -	3	Iterations / scale
 	4	Textured terrain
 
 DOCUMENT MGR
--	3	Save just seed. Actual = -1
 	5	Import/Export constellations (must check seed if random starf)
 
 TEACHER MGR

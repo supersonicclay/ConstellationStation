@@ -71,8 +71,8 @@ const BOOL		DEF_STARS_TEXTURED		= TRUE;
 const BOOL		DEF_STARS_COLORED		= TRUE;
 const int		DEF_STARS_LIMMAGX10		= 70;
 const int		DEF_STARS_SIZE			= 50;
-const int		DEF_STARS_SCONTRAST		= 50;
-const int		DEF_STARS_CCONTRAST		= 50;
+const int		DEF_STARS_SCONTRAST		= 75;
+const int		DEF_STARS_CCONTRAST		= 75;
 const float		DEF_STARS_BRIGHT_RADIUS	= 0.013f;
 const float		DEF_STARS_BRIGHT_COLOR	= 1.0f;
 const float		DEF_STARS_RADIUS_DIFF	= 0.011f;
@@ -84,7 +84,7 @@ const color_s	DEF_CONST_SELCOLOR		= {0.0f, 1.0f, 1.0f};
 const color_s	DEF_CONST_ACTIVECOLOR	= {1.0f, 1.0f, 0.0f};
 const color_s	DEF_CONST_STARCOLOR		= {0.0f, 0.0f, 1.0f};
 const BOOL		DEF_CONST_STARSCOLORED	= TRUE;
-const BOOL		DEF_SUN_VISIBLE			= TRUE;
+const BOOL		DEF_SUN_VISIBLE			= FALSE;
 const BOOL		DEF_SUN_SHINE			= TRUE;
 const BOOL		DEF_TERR_VISIBLE		= TRUE;
 const BOOL		DEF_TERR_TEXTURED		= FALSE;
@@ -108,6 +108,7 @@ void SetState( state_e s )
 	inputMgr.ClearSelection();
 
 	state = s;
+	Redraw();
 }
 
 void Redraw()

@@ -52,6 +52,16 @@
 	Limiting magnitude option
 	Brightness / Contrast options
 
+0.3.1
+	Non-textured stars
+	Smoother zoom (dependent on zoom)
+	Active constellation lines (moused over)
+	Local star matrix
+	Limiting magnitude stored in options
+	Saves starfield seed instead of all stars
+	Starfield matrices (view, time, latitude, longitude)
+	Tracking methods
+
 
 
 -------------------------------------------------

@@ -32,6 +32,11 @@
 // Miscellaneous vector functions
 //
 
+// Initialize float store
+float vector2::floatStore[2] = {0};
+float vector3::floatStore[3] = {0};
+float vector4::floatStore[4] = {0};
+
 // Return Normal of vector2's
 vector2 Normalized(const vector2 &a)
 {
@@ -132,6 +137,9 @@ bool NearlyEquals( const vector4& a, const vector4& b, float r )
 ////////////////////////////////////////////////////////////
 // matrix33 class
 //
+
+// Initialize float store
+float matrix33::floatStore[9] = {0};
 
 // Multiply the matrix33 by another matrix33
 matrix33 &matrix33::operator *= (const matrix33 &m) 
@@ -314,6 +322,9 @@ matrix33 ScaleMatrix33(float x, float y, float z)
 ////////////////////////////////////////////////////////////
 // matrix44 class
 //
+
+// Initialize float store
+float matrix44::floatStore[16] = {0};
 
 // Multiply the matrix44 by another matrix44
 matrix44 &matrix44::operator *= (const matrix44 &m) 

@@ -51,10 +51,11 @@ class vector2
 public:
   // Members
   float x, y;
+  static float floatStore[2];
 
 public:
   // Constructors
-  vector2() {};
+	vector2() {}
   // Constructor with initializing float values
   vector2(float inX, float inY): x(inX), y(inY) {}
   // Constructor with initializing vector2
@@ -148,11 +149,10 @@ public:
     y = yIn;
   }
   // Get vector as an array of floats
-  float*				getFloats() {
-	  float* a = new float[2];
-	  a[0] = x;
-	  a[1] = y;
-	  return a;
+  float*        getFloats() {
+	  floatStore[0] = x;
+	  floatStore[1] = y;
+	  return floatStore;
   }
   // Get length of a vector2
   float                 length() const {
@@ -198,10 +198,11 @@ class vector3
 public:
   // Members
   float x, y, z;
+  static float floatStore[3];
 
 public:
   // Constructors
-  vector3() {};
+	vector3() {}
   // Constructor with initializing float values
   vector3(float inX, float inY, float inZ): x(inX), y(inY), z(inZ) {}
   // Constructor with initializing vector3
@@ -315,12 +316,11 @@ public:
     z = zIn;
   }
   // Get vector as an array of floats
-  float*				getFloats() {
-	  float* a = new float[3];
-	  a[0] = x;
-	  a[1] = y;
-	  a[2] = z;
-	  return a;
+  float*        getFloats() {
+	  floatStore[0] = x;
+	  floatStore[1] = y;
+	  floatStore[2] = z;
+	  return floatStore;
   }
   // Get length of a vector3
   float                 length() const {
@@ -360,11 +360,12 @@ class vector4
 public:
   // Members
   float x, y, z, w;
+  static float floatStore[4];
 
 public:
   // Constructors
   // vector4(): x(0), y(0), z(0), w(0) {};
-  vector4() {}
+	vector4() {}
   // Constructor with initializing float values
   vector4(float inX, float inY, float inZ, float inW): x(inX), y(inY), z(inZ), w(inW) {}
   // Constructor with initializing vector4
@@ -495,13 +496,12 @@ public:
     w = wIn;
   }
   // Get vector as an array of floats
-  float*				getFloats() {
-	  float* a = new float[4];
-	  a[0] = x;
-	  a[1] = y;
-	  a[2] = z;
-	  a[3] = w;
-	  return a;
+  float*        getFloats() {
+	  floatStore[0] = x;
+	  floatStore[1] = y;
+	  floatStore[2] = z;
+	  floatStore[3] = w;
+	  return floatStore;
   }
   // Get length of a vector4
   float                 length() const {
@@ -570,11 +570,12 @@ class matrix33
 {
 public:
   // Members
-  vector3       col[3];
+  vector3 col[3];
+  static float floatStore[9];
 
 public:
   // Constructors
-  matrix33() {};
+	matrix33() {}
   // Constructor with initializing value
   matrix33(float v) {
     col[0].set(v, v, v);
@@ -703,18 +704,17 @@ public:
 public:
   // Methods
   // Get matrix as an array of floats
-  float*				getFloats() {
-	  float* a = new float[9];
-	  a[0] = col[0].getFloats()[0];
-	  a[1] = col[0].getFloats()[1];
-	  a[2] = col[0].getFloats()[2];
-	  a[3] = col[1].getFloats()[0];
-	  a[4] = col[1].getFloats()[1];
-	  a[5] = col[1].getFloats()[2];
-	  a[6] = col[2].getFloats()[0];
-	  a[7] = col[2].getFloats()[1];
-	  a[8] = col[2].getFloats()[2];
-	  return a;
+  float*        getFloats() {
+	  floatStore[0] = col[0].x;
+	  floatStore[1] = col[0].y;
+	  floatStore[2] = col[0].z;
+	  floatStore[3] = col[1].x;
+	  floatStore[4] = col[1].y;
+	  floatStore[5] = col[1].z;
+	  floatStore[6] = col[2].x;
+	  floatStore[7] = col[2].y;
+	  floatStore[8] = col[2].z;
+	  return floatStore;
   }
   // Set matrix33 to the identity matrix
   matrix33      &identity() {
@@ -747,11 +747,12 @@ class matrix44
 {
 public:
   // Members
-  vector4   col[4];
+  vector4 col[4];
+  static float floatStore[16];
 
 public:
   // Constructors
-  matrix44() {};
+	matrix44() {}
   // Constructor with initializing value
   matrix44(float v) {
     col[0].set(v, v, v, v);
@@ -921,25 +922,24 @@ public:
 public:
   // Methods
   // Get matrix as an array of floats
-  float*				getFloats() {
-	  float* a = new float[16];
-	  a[0] = col[0].getFloats()[0];
-	  a[1] = col[0].getFloats()[1];
-	  a[2] = col[0].getFloats()[2];
-	  a[3] = col[0].getFloats()[3];
-	  a[4] = col[1].getFloats()[0];
-	  a[5] = col[1].getFloats()[1];
-	  a[6] = col[1].getFloats()[2];
-	  a[7] = col[1].getFloats()[3];
-	  a[8] = col[2].getFloats()[0];
-	  a[9] = col[2].getFloats()[1];
-	  a[10] = col[2].getFloats()[2];
-	  a[11] = col[2].getFloats()[3];
-	  a[12] = col[3].getFloats()[0];
-	  a[13] = col[3].getFloats()[1];
-	  a[14] = col[3].getFloats()[2];
-	  a[15] = col[3].getFloats()[3];
-	  return a;
+  float*        getFloats() {
+	  floatStore[0] = col[0].x;
+	  floatStore[1] = col[0].y;
+	  floatStore[2] = col[0].z;
+	  floatStore[3] = col[0].w;
+	  floatStore[4] = col[1].x;
+	  floatStore[5] = col[1].y;
+	  floatStore[6] = col[1].z;
+	  floatStore[7] = col[1].w;
+	  floatStore[8] = col[2].x;
+      floatStore[9] = col[2].y;
+	  floatStore[10] = col[2].z;
+	  floatStore[11] = col[2].w;
+	  floatStore[12] = col[3].x;
+	  floatStore[13] = col[3].y;
+	  floatStore[14] = col[3].z;
+	  floatStore[15] = col[3].w;
+	  return floatStore;
   }
   // Set matrix44 to the identity matrix
   matrix44      &identity() {

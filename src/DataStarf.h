@@ -5,7 +5,7 @@
 //   starfield data.
 //   a starfield contains stars, constellations, information about time and
 //   location on Earth, as well as certain options. A CDataStarf and 
-//   everything in a CDataStarf can be saved and opened.
+//   most attributes of a CDataStarf can be saved and opened.
 //===========================================================================
 
 #ifndef CS_DATASTARF_H
@@ -25,7 +25,9 @@ public:
 	~CDataStarf();
 
 	void Clear();
+
 	void New( BOOL actual );
+
 	void InitRandomStars();
 	void InitActualStars();
 	void InitActualConsts();
@@ -35,31 +37,10 @@ public:
 
 // Attributes
 private:
-	// Stars
-	star_v stars;
-	int starCount;
 
-	// Constellations
-	const_v  consts;
-	int constCount;
-	int newConstCount;
-	int curConstNum;
-
-	// Star options
-	BOOL starsVisible;
-	BOOL starsLabeled;
-	int limitingMagX10;
-
-	// Constellation options
-	BOOL constsVisible;
-	BOOL constsLabeled;
-
-	// Sun options
-	BOOL sunVisible;
-	BOOL sunShine;
-
-	// Document
-	BOOL modified;
+// Starfield
+	// Random seed or -1 for actual
+	int seed;
 
 	// Location & Time
 	struct tm gregorian;	// Gregorian time - people's time
@@ -67,15 +48,45 @@ private:
 	float latitude;
 	float longitude;
 
-	// Rotation
-	float rotLatitude;
-	float rotTime;
+	// Matrices
+	matrix44 viewMat;
+	matrix44 timeMat;
+	matrix44 latMat;
+	matrix44 longMat;
+
+	// Viewing
 	float rotX;
 	float rotY;
-	BOOL  spinning;
-
-	// Zoom
+	float rotTime;
 	float zoom;
+	BOOL  spinning;
+	BOOL  tracking;
+	float trackX;
+	float trackY;
+	float trackZ;
+
+
+// Stars
+	star_v stars;
+	int starCount;
+
+// Constellations
+	const_v  consts;
+	int constCount;
+	int newConstCount;
+	int curConstNum;
+
+// Star options
+	BOOL starsVisible;
+	BOOL starsLabeled;
+
+// Constellation options
+	BOOL constsVisible;
+	BOOL constsLabeled;
+
+// Sun options
+	BOOL sunVisible;
+	BOOL sunShine;
 
 
 // Methods
@@ -94,8 +105,6 @@ public:
 
 	BOOL AreStarsVisible();
 	BOOL AreStarsLabeled();
-	float GetLimitingMag();
-	int GetLimitingMagX10();
 
 	BOOL AreConstsVisible();
 	BOOL AreConstsLabeled();
@@ -103,15 +112,18 @@ public:
 	BOOL IsSunVisible();
 	BOOL IsSunShining();
 
-	BOOL IsModified();
-
-	float GetRotLatitude();
-	float GetRotTime();
-	BOOL  IsSpinning();
+	matrix44* GetViewMat();
+	matrix44* GetTimeMat();
+	matrix44* GetLatMat();
 
 	float GetRotX();
 	float GetRotY();
+	float GetRotTime();
 	float GetZoom();
+
+	BOOL  IsSpinning();
+	BOOL  IsTracking();
+
 
 // Sets
 	void IncNewConstCount();
@@ -120,7 +132,6 @@ public:
 	void SetStarsVisible( BOOL x );
 	void SwitchStarsLabeled();
 	void SetStarsLabeled( BOOL x );
-	void SetLimitingMagX10( int m );
 
 	void SwitchConstsVisible();
 	void SetConstsVisible( BOOL x );
@@ -132,20 +143,20 @@ public:
 	void SwitchSunShine();
 	void SetSunShine( BOOL x );
 
-	void SetModified( BOOL m=TRUE );
+	void SetRotTime( float r, BOOL updateMat=TRUE );
+	void AdjRotX( float delta, BOOL updateMat=TRUE );
+	void AdjRotY( float delta, BOOL updateMat=TRUE );
+	void AdjRotTime( float delta, BOOL updateMat=TRUE );
+	void AdjZoom( float delta );
 
-	void SetRotLatitude( float rotLatitude_ );
-	void SetRotTime( float time_ );
 	void SwitchSpinning();
-	void AdjRotTime( float deltaTime );
-	void AdjRotX( float deltaRotX );
-	void AdjRotY( float deltaRotY );
-	void AdjZoom( float deltaZoom );
+
 
 // Star methods
 	void LoadStarDefaults();
 	void CountStars();
 	BOOL IsStarInHiddenConst( int i );
+
 
 // Constellation methods
 	void LoadConstDefaults();
@@ -156,10 +167,17 @@ public:
 	BOOL SelectConst( CString& name );
 	void SelectConst( int i );
 
+
 // Sun methods
 	void LoadSunDefaults();
 
+
 // View methods
+	void UpdateViewMat();
+	void UpdateTimeMat();
+	void UpdateLatMat();
+	void UpdateLongMat();
+
 	void RotateUp();
 	void RotateDown();
 	void RotateLeft();
@@ -169,6 +187,12 @@ public:
 	void ResetView();
 	void ResetRot();
 	void ResetZoom();
+
+	void StopTracking();
+	void StartTracking( float x, float y, float z );
+	void Track();
+
+	void Find( float x, float y, float z );
 
 };
 

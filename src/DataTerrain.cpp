@@ -48,9 +48,8 @@ void CDataTerrain::New()
 
 	// Generate new seed
 	seed = (unsigned)clock(); 
-	seed = 10; /// 10 looks horid
 
-	size = 1<<optionsMgr.GetTerrIters(); // 2^
+	size = 1<<optionsMgr.GetTerrIters();
 
 	arraySize = size + 1;
 

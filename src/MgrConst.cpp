@@ -101,7 +101,7 @@ void CMgrConst::Add()
 	starfield.IncNewConstCount();
 	starfield.SelectConst(dialog.name);
 
-	starfield.SetModified();
+	documentMgr.SetModified();
 	Redraw();
 }
 
@@ -123,7 +123,7 @@ void CMgrConst::Delete()
 
 	SetState( state_Viewing );
 
-	starfield.SetModified();
+	documentMgr.SetModified();
 	Redraw();
 }
 
@@ -164,7 +164,7 @@ void CMgrConst::Rename()
 
 	starfield.RenameConst(dialog.name);
 
-	starfield.SetModified();
+	documentMgr.SetModified();
 }
 
 // Hide the current constellation
@@ -172,7 +172,7 @@ void CMgrConst::Hide()
 {
 	starfield.GetCurConst()->SwitchVisible();
 
-	starfield.SetModified();
+	documentMgr.SetModified();
 	Redraw();
 }
 
@@ -202,7 +202,7 @@ void CMgrConst::HideAll()
 		starfield.GetConst(i)->SetVisible(FALSE);
 	}
 
-	starfield.SetModified();
+	documentMgr.SetModified();
 	Redraw();
 }
 
@@ -214,7 +214,7 @@ void CMgrConst::ShowAll()
 		starfield.GetConst(i)->SetVisible(TRUE);
 	}
 
-	starfield.SetModified();
+	documentMgr.SetModified();
 	Redraw();
 }
 
@@ -228,7 +228,7 @@ void CMgrConst::ShowHide()
 
 	dialog.DoModal();
 
-	starfield.SetModified();
+	documentMgr.SetModified();
 	SetState( state_Viewing );
 }
 

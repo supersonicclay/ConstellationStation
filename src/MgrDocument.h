@@ -20,6 +20,8 @@ public:
 public:
 	char title[MAX_DOC_NAME];		// Document's title
 
+	BOOL modified;
+
 	// Saving / Opening
 	OPENFILENAME ofn;
 	char filename[MAX_PATH];		// Current open document's filename
@@ -29,6 +31,14 @@ public:
 
 // Methods
 public:
+// Gets
+	char* GetTitle();
+	BOOL IsModified();
+
+// Sets
+	void SetModified();
+
+// Methods
 	void NewActual();
 	void NewRandom();
 	void Open();

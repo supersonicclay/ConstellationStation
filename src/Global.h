@@ -52,16 +52,16 @@ typedef struct
 
 typedef struct
 {
-	unsigned short hour;
-	unsigned short minute;
+	USHORT hour;
+	USHORT minute;
 	float second;
 } ra_s;
 
 typedef struct
 {
 	BOOL positive;
-	unsigned short degree;
-	unsigned short minute;
+	USHORT degree;
+	USHORT minute;
 	float second;
 } dec_s;
 
@@ -82,7 +82,7 @@ extern const color_s COLOR_WHITE,
 					 COLOR_TEAL,
 					 COLOR_DARKTEAL;
 
-#define PI      3.14159265358979323846f
+#define PI	  3.14159265358979323846f
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -126,7 +126,7 @@ extern const color_s	DEF_COMPASS_NEEDLECOLOR;
 /////////////////////////////////////////////////////////////////////////////
 // MAXIMUMS / MINIMUMS
 
-#define	MAX_STARS					100000
+#define	MAX_STARS					80000
 #define	MAX_CONSTS					200
 #define MAX_CONSTLINES				100
 #define	MAX_DOC_NAME				32
@@ -136,11 +136,11 @@ extern const color_s	DEF_COMPASS_NEEDLECOLOR;
 #define MAX_STARS_BRIGHT_COLOR		1.0F
 #define MIN_STARS_BRIGHT_COLOR		0.01F
 // Dim radius is stored as a percent of the brightest radius
-#define MAX_STARS_DIM_RADIUS_PERC	100   // User has full control from 100%
-#define MIN_STARS_DIM_RADIUS_PERC	0     //  to 0%
+#define MAX_STARS_DIM_RADIUS_PERC	80   // User has control from 80%
+#define MIN_STARS_DIM_RADIUS_PERC	0    //  to 0%
 // Dim color is stored as a percent of the brightest color
-#define MAX_STARS_DIM_COLOR_PERC	100   // User has full control from 100%
-#define MIN_STARS_DIM_COLOR_PERC	0     //  to 0%
+#define MAX_STARS_DIM_COLOR_PERC	80   // User has control from 80%
+#define MIN_STARS_DIM_COLOR_PERC	0    //  to 0%
 
 
 /////////////////////////////////////////////////////////////////////////////

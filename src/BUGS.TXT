@@ -1,0 +1,63 @@
+
+STATUS		DATE			DESCRIPTION
+------------------------------------------------------------------------------------------
+
+Fixed		10-23-03		Stars that are part of constellations aren't going active
+							-Stars being copied when serialized from ConstLine?
+
+Fixed		10-23-03		Projection needs called on new document
+	
+Fixed		10-26-03		Position viewer above terrain
+
+Fixed		10-26-03		Arrow Down is rotating too far
+
+Fixed		10-30-03		CStar.PickDirection() isn't computing x,y,z right
+
+Fixed		10-29-03		Stars aren't evenly displaced
+
+Fixed		11-01-03		Saving / Loading isn't working with textures
+
+Fixed		11-01-03		Isn't saving Terrain
+
+Fixed		11-01-03		Select(LINE) is returning the wrong number
+
+Fixed		11-01-03		Show / Hide is letting you hide while editing
+
+Fixed		11-01-03		Constellations can have duplicate lines
+
+Fixed		11-01-03		Shouldn't select stars behind ground
+
+Fixed		11-25-03		Dialogs disappear while starfrotating
+
+Fixed		01-10-04		Restructured; Globals ( terrain, starfield, RedrawView() )
+
+Fixed		01-24-04		Shouldn't hide while editing a constellation
+
+Fixed		7-18-04			RedrawView() isn't finding correct CCSView
+
+Disappeared	7-18-04			Bugs occasionally on exit
+
+Fixed		7-22-04			Memory leaks
+
+Fixed		7-23-04			Bugs when 2 constellations deleted in a row.
+
+Fixed		7-23-04			Message Box's aren't modal
+
+Fixed		7-25-04			New after save or open (save/open dlg was changing working dir)
+
+Fixed		7-30-04			Frustum culling
+
+Fixed		7-31-04			Color components were multiplied by 256 instead of 255
+
+Fixed		08-05-04		Select line isn't checking for terrain hits
+
+Fixed		08-12-04		Show / Hide list is using number index instead of name index
+
+Fixed		08-12-04		Viewheight is choppy
+
+Fixed		08-13-04		Terrain stays lit after toggle sun command
+
+Fixed		08-14-04		Roundoff error with sliders
+
+Fixed		08-17-04		Terrain isn't depth testing
+

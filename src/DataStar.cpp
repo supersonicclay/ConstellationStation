@@ -34,10 +34,13 @@ const CDataStar& CDataStar::operator=( const CDataStar& s )
 {
 	ra = s.ra;
 	dec = s.dec;
-	mag = s.mag;
 	x = s.x; y = s.y; z = s.z;
-	color = s.color;
+	phi = s.phi;
+	theta = s.theta;
+	mat = s.mat;
+	mag = s.mag;
 	radius = s.radius;
+	color = s.color;
 	return *this;
 }
 
@@ -53,6 +56,8 @@ void CDataStar::Init()
 	dec.degree = 0;
 	dec.minute = 0;
 	dec.second = 0.0f;
+	phi = 0.0f;
+	theta = 0.0f;
 	mag = 1.0f;
 	radius = 0.0f;
 	color = COLOR_WHITE;
@@ -62,119 +67,44 @@ void CDataStar::Init()
 /////////////////////////////////////////////////////////////////////////////
 // Gets
 
-float CDataStar::GetMag() const
-{
-	return mag;
-}
-
-color_s CDataStar::GetColor() const
-{
-	return color;
-}
-
-float CDataStar::GetRadius() const
-{
-	return radius;
-}
-
-float CDataStar::GetX() const
-{
-	return x;
-}
-
-float CDataStar::GetY() const
-{
-	return y;
-}
-
-float CDataStar::GetZ() const
-{
-	return z;
-}
-
-// Spherical coordinate theta
-float CDataStar::GetTheta() const
-{
-	float degrees;
-	degrees = 360 * (ra.hour+(ra.minute+ra.second/60)/60)/24;
-	return degrees;
-}
-
-// Spherical coordinate phi
-float CDataStar::GetPhi() const
-{
-	float degrees;
-
-	degrees = dec.degree + (dec.minute+dec.second/60)/60;
-
-	if( dec.positive )
-		return 90.0f-degrees;
-	else
-		return 90.0f+degrees;
-}
+ra_s		CDataStar::GetRA()		{	return ra;		}
+dec_s		CDataStar::GetDec()		{	return dec;		}
+float		CDataStar::GetX()		{	return x;		}
+float		CDataStar::GetY()		{	return y;		}
+float		CDataStar::GetZ()		{	return z;		}
+float		CDataStar::GetMag()		{	return mag;		}
+float		CDataStar::GetRadius()	{	return radius;	}
+color_s		CDataStar::GetColor()	{	return color;	}
+matrix44*	CDataStar::GetMat()		{	return &mat;	}
+float		CDataStar::GetPhi()		{	return phi;		}
+float		CDataStar::GetTheta()	{	return theta;	}
 
 
 /////////////////////////////////////////////////////////////////////////////
 // Sets
 
-void CDataStar::SetMag( float m )
+void CDataStar::SetRA( ra_s r )			{	ra = r;		}
+void CDataStar::SetDec( dec_s d )		{	dec = d;	}
+void CDataStar::SetX( float x_ )		{	x = x_;		}
+void CDataStar::SetY( float y_ )		{	y = y_;		}
+void CDataStar::SetZ( float z_ )		{	z = z_;		}
+void CDataStar::SetMag( float m )		{	mag = m;	}
+void CDataStar::SetRadius( float r )	{	radius = r;	}
+void CDataStar::SetColor( color_s c )	{	color = c;	}
+
+void CDataStar::SetRA( USHORT h, USHORT m, float s )
 {
-	mag = m;
+	ra.hour = h;
+	ra.minute = m;
+	ra.second = s;
 }
 
-void CDataStar::SetColor( color_s c )
+void CDataStar::SetDec( BOOL p, USHORT d, USHORT m, float s )
 {
-	color = c;
-}
-
-void CDataStar::SetRadius( float r )
-{
-	radius = r;
-}
-
-void CDataStar::SetX( float x_ )
-{
-	x = x_;
-}
-
-void CDataStar::SetY( float y_ )
-{
-	y = y_;
-}
-
-void CDataStar::SetZ( float z_ )
-{
-	z = z_;
-}
-
-void CDataStar::SetRA( ra_s ra_ )
-{
-	ra = ra_;
-}
-
-void CDataStar::SetDec( dec_s dec_ )
-{
-	dec = dec_;
-}
-
-void CDataStar::SetRA( unsigned short hour,
-				  unsigned short minute,
-				  float second )
-{
-	ra.hour = hour;
-	ra.minute = minute;
-	ra.second = second;
-}
-
-void CDataStar::SetDec( BOOL positive,
-				   unsigned short degree,
-				   unsigned short minute,
-				   float second )
-{
-	dec.positive = positive;
-	dec.degree = degree;
-	dec.minute = minute;
-	dec.second = second;
+	dec.positive = p;
+	dec.degree = d;
+	dec.minute = m;
+	dec.second = s;
 }
 
 
@@ -220,67 +150,80 @@ void CDataStar::SetRadiusFromMag()
 }
 ///*/
 
-// Set Right Ascension and Declination from the x, y, and z coords.
-//   First calculates spherical coordinates for x, y, z.
-//   Then converts the coordinates to right ascension, declination form.
+// Set right ascension and Declination from the x, y, and z coordinates
+// Phi and theta must already be calculated
 void CDataStar::SetRADecFromXYZ()
 {
-	// Theta is measured from 0 to 360 degrees
-	// Phi is measured from 0 (north) to 180 (south) degrees
-	float theta, phi;
 	float hour, minute;
 
+	// Convert phi to declination form
+	// At this point:    0 <= phi <= 180.
+	// Need it to be:   90 <= deg <= -90. (for declination)
+	float deg = 90.0f - phi;
+	if( deg < 0.0f ) { dec.positive = FALSE; deg = -deg; }
+	minute = (deg - (int)deg)*60;
+	dec.second = (minute - (int)minute)*60;
+	dec.minute = (int)minute;
+	dec.degree = (int)deg;
 
-	// Right Ascension
-	if( z >= 0 )
-		theta = (float) asin( (double) (x / sqrt((double)(z*z) + (x*x))) );
-	else
-		theta = (float) (PI - asin( (double)(x / sqrt((double)(z*z) + (x*x))) ));
-	theta = theta * (float) (180 / PI);	// Convert from radians to degrees
-	if( theta < 0 )	theta += 360.0f;	// Prevent negative theta
-
-	// Convert to right ascension form
+	// Convert theta to right ascension form
 	hour = theta*24/360;
 	minute = (hour - (int)hour)*60;
 	ra.second = (minute - (int)minute)*60;
 	ra.minute = (int)minute;
 	ra.hour = (int)hour;
-
-
-	// Declination
-	phi  = (float) acos( (double) y  );
-	phi  = phi  * (float) (180 / PI);	// Convert from radians to degrees
-
-	// At this point 0 <= phi <= 180.
-	// Needs to be  90 <= phi <= -90. (for declination)
-	phi = 90.0f - phi;
-
-	// Store phi's sign
-	dec.positive = phi >= 0.0f;
-	// Take absolute value
-	if( phi < 0.0f )   phi = -phi;
-	// Convert to declination form
-	minute = (phi - (int)phi)*60;
-	dec.second = (minute - (int)minute)*60;
-	dec.minute = (int)minute;
-	dec.degree = (int)phi;
 }
 
 // Set the x, y, and z coords from the right ascension and declination
-//   First converts right ascension and declination to spherical coordinates
-//   Then calculates x, y, and z from those coordinates
+// Phi and theta must already be calculated
 void CDataStar::SetXYZFromRADec()
 {
-	double theta = (double)GetTheta();
-	double phi = (double)GetPhi();
+	float phiRad = DegToRad(phi);
+	float thetaRad = DegToRad(theta);
 
-	// Convert to radians
-	theta *= PI / 180;
-	phi *= PI / 180;
+	x = (float) ( sin(phiRad) * sin(thetaRad) );
+	y = (float) ( cos(phiRad) );
+	z = (float) ( sin(phiRad) * cos(thetaRad) );
+}
 
-	x = (float) (sin(phi)*sin(theta));
-	y = (float) (cos(phi));
-	z = (float) (sin(phi)*cos(theta));
+// Set spherical coordinate (phi and theta) from the right ascension and declination
+void CDataStar::SetPhiThetaFromRADec()
+{
+	// Calculate phi
+	float degrees = dec.degree + (dec.minute+dec.second/60)/60;
+	if( dec.positive )
+		phi = 90.0f-degrees;
+	else
+		phi = 90.0f+degrees;
+
+	// Calculate theta
+	theta = 360 * (ra.hour+(ra.minute+ra.second/60)/60)/24;
+}
+
+// Set spherical coordinates (phi and theta) from the  x, y, and z coordinates
+void CDataStar::SetPhiThetaFromXYZ()
+{
+	// Phi is measured from 0 (north) to 180 (south) degrees
+	phi  = (float) acos( (double) y  );
+	phi  = RadToDeg(phi);
+
+	// Theta is measured from 0 to 360 degrees
+	if( z >= 0 )
+		theta = (float)       asin( x / sqrt( (double)(z*z) + (x*x) ) );
+	else
+		theta = (float) (PI - asin( x / sqrt( (double)(z*z) + (x*x) ) ));
+	theta = RadToDeg(theta);
+	if( theta < 0 )	theta += 360.0f;	/// Prevent negative theta (necessary?)
+}
+
+// Sets the local-to-world matrix based on right ascension and declination
+void CDataStar::SetMatFromPhiTheta()
+{
+	mat.identity();
+
+	mat = RotateRadMatrix44( 'y', DegToRad(theta) );
+	mat *= RotateRadMatrix44( 'x', DegToRad(phi) );
+	mat *= TranslateMatrix44( 0.0f, 1.0f, 0.0f );
 }
 
 // Pick random x then a random y and z so that x,y,z has length of 1
@@ -295,7 +238,9 @@ void CDataStar::Randomize()
 void CDataStar::PickLocation()
 {
 	PickXYZ();
+	SetPhiThetaFromXYZ();
 	SetRADecFromXYZ();
+	SetMatFromPhiTheta();
 }
 
 // Pick random x, y, and z values such that <x,y,z> is normalized
@@ -393,6 +338,9 @@ void CDataStar::Serialize(CArchive& ar)
 {
 	CObject::Serialize(ar);
 
+	CSDebug( "Shouldn't be serializing a star", "CDataStar::Serialize" );
+	return;
+
 	if( ar.IsLoading() )
 	{
 		ar >> ra.hour >> ra.minute >> ra.second
@@ -410,5 +358,4 @@ void CDataStar::Serialize(CArchive& ar)
 		   << radius;
 	}
 }
-
 

@@ -33,6 +33,7 @@ private:
 	// Star options
 	BOOL starsTextured;
 	BOOL starsColored;
+	int starsLimMagX10;
 	int starsSize;
 	int starsSContrast; // Size contrast
 	int starsCContrast; // Color contrast
@@ -64,11 +65,13 @@ private:
 public:
 
 // Gets
+	BOOL AreStarsTextured();
+	BOOL AreStarsColored();
+	float GetStarsLimMag();
+	int GetStarsLimMagX10();
 	int GetStarsSize();
 	int GetStarsSContrast();
 	int GetStarsCContrast();
-	BOOL AreStarsTextured();
-	BOOL AreStarsColored();
 
 	color_s GetConstNormColor();
 	color_s GetConstSelColor();
@@ -90,11 +93,12 @@ public:
 	color_s GetTerrColor();
 
 // Sets
+	void SetStarsTextured( BOOL t );
+	void SetStarsColored( BOOL c );
+	void SetStarsLimMagX10( int m );
 	void SetStarsSize( int g );
 	void SetStarsSContrast( int c );
 	void SetStarsCContrast( int c );
-	void SetStarsTextured( BOOL t );
-	void SetStarsColored( BOOL c );
 
 	void SetConstNormColor( color_s c );
 	void SetConstSelColor( color_s c );

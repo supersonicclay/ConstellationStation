@@ -8,6 +8,7 @@
 #ifndef CS_DATASTAR_H
 #define CS_DATASTAR_H
 
+#include "Matrix.h"
 
 class CDataStar : public CObject
 {
@@ -27,10 +28,16 @@ public:
 
 // Attributes
 private:
+	// Position
+	matrix44 mat;
 	ra_s ra;
 	dec_s dec;
-	float mag;
+	float phi;
+	float theta;
 	float x, y, z;
+
+	// Appearance
+	float mag;
 	color_s color;
 	float radius;
 
@@ -39,14 +46,17 @@ private:
 public:
 
 // Gets
-	float GetMag() const;
-	color_s GetColor() const;
-	float GetRadius() const;
-	float GetX() const;
-	float GetY() const;
-	float GetZ() const;
-	float GetTheta() const;
-	float GetPhi() const;
+	ra_s GetRA();
+	dec_s GetDec();
+	float GetMag();
+	color_s GetColor();
+	float GetRadius();
+	float GetX();
+	float GetY();
+	float GetZ();
+	float GetPhi();
+	float GetTheta();
+	matrix44* GetMat();
 
 // Sets
 	void SetMag( float m );
@@ -55,21 +65,21 @@ public:
 	void SetX( float x_ );
 	void SetY( float y_ );
 	void SetZ( float z_ );
-	void SetRA( ra_s ra_ );
-	void SetDec( dec_s dec_ );
-	void SetRA( unsigned short hour,
-				unsigned short minute,
-				float second );
-	void SetDec( BOOL positive,
-				 unsigned short degree,
-				 unsigned short minute,
-				 float second );
+	void SetRA( ra_s r );
+	void SetDec( dec_s d );
+	void SetRA( USHORT h, USHORT m, float s );
+	void SetDec( BOOL p, USHORT d, USHORT m, float s );
+
+
+// Methods
 	void SetColorFromMag();
 	void SetRadiusFromMag();
 	void SetRADecFromXYZ();
 	void SetXYZFromRADec();
+	void SetPhiThetaFromRADec();
+	void SetPhiThetaFromXYZ();
+	void SetMatFromPhiTheta();
 
-// Methods
 	void Randomize();
 	void PickXYZ();
 	void PickLocation();

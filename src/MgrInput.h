@@ -52,6 +52,7 @@ public:
 	// Mouse left button
 	void MouseLDbl( CPoint point );
 	void MouseLDown( CPoint point );
+	void MouseLDownTest();///
 	void MouseLDownViewing();
 	void MouseLDownAddingLine();
 	void MouseLDownDeletingLine();

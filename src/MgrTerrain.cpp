@@ -38,7 +38,6 @@ CMgrTerrain::~CMgrTerrain()
 void CMgrTerrain::New()
 {
 	terrain.New();
-	starfield.SetModified();
 	Redraw();
 }
 
@@ -55,7 +54,6 @@ void CMgrTerrain::Options()
 		// Change terrain settings
 		optionsMgr.SetTerrVisible( dialog.visible );
 		optionsMgr.SetTerrTextured( dialog.textured );
-		starfield.SetModified();
 	}
 	else
 	{

@@ -40,6 +40,7 @@ void CMgrGraphics::Destroy()
 	{
 		CSDebug( "Could not make RC non-current", "CMgrGraphics::Destroy" );
 		exit(0);
+		return;
 	}
 	
 	//Delete the RC
@@ -47,6 +48,7 @@ void CMgrGraphics::Destroy()
 	{
 		CSDebug("Could not delete RC", "CMgrGraphics::Destroy" );
 		exit(0);
+		return;
 	}
 }
 
@@ -108,6 +110,7 @@ BOOL CMgrGraphics::InitializeOpenGL()
 	glEnable( GL_LINE_SMOOTH );
 	glShadeModel( GL_SMOOTH );
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE );
+	glCullFace( GL_BACK );
 
 	// Try loading textures
 	if( !LoadTextures() )
@@ -276,7 +279,9 @@ BOOL CMgrGraphics::LoadTGA( UINT &texID, char* filename )
 	glGenTextures( 1, &texture.id );
 
 	glBindTexture( GL_TEXTURE_2D, texture.id );
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );  /// Maybe lower?
+///	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	///PICK ONE
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	
 	if( bitsPerPixel==24 )
@@ -468,22 +473,23 @@ void CMgrGraphics::Draw()
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 	glLoadIdentity();
-	RotateXY();
-	glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
+///	glMultMatrixf( starfield.GetViewMat()->getFloats() );
+	RotateView();
+	glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );/// Sky gradient rotation
 
 	if( starfield.IsSunShining() )
 		DrawSky();
 
 	// Get ready to draw sky objects
 	glLoadIdentity();
-	RotateXY();
+	RotateView();
 	RotateLatitude();
 	RotateTime();
 	CalculateFrustum();
 
 	// Draw starfield objects
 	if( starfield.AreConstsVisible() )
-		DrawConstellations();
+		DrawConsts();
 	if( starfield.AreStarsVisible() )
 		DrawStars();
 	if( starfield.IsSunVisible() )
@@ -493,7 +499,7 @@ void CMgrGraphics::Draw()
 	{
 		// Get ready to draw terrain
 		glLoadIdentity();
-		RotateXY();
+		RotateView();
 		PositionTerrain();
 
 		// Draw terrain
@@ -503,12 +509,19 @@ void CMgrGraphics::Draw()
 	// Draw heading indicator
 	DrawCompass();
 
+#ifdef _DEBUG
+	if( glGetError() != GL_NO_ERROR )
+		CSDebug( "There has been an OpenGL error somewhere.", "CMgrGraphics::Draw" );
+#endif
+
 	SwapBuffers( hDC );
 }
 
 // Draw terrain
 void CMgrGraphics::DrawTerrain() const
 {
+	glEnable( GL_DEPTH_TEST );
+
 	if( starfield.IsSunShining() )
 		glEnable( GL_LIGHTING );
 
@@ -545,6 +558,18 @@ void CMgrGraphics::DrawTerrain() const
 				glVertex3f( x+inc, heights[ ((i+1)*arraySize) + j ], z );
 			glEnd();
 
+			/*/// DRAW UPPER NORMALS
+			glDisable( GL_LIGHTING );
+			glColor3f(0,1,0);
+			glBegin( GL_LINES );
+				glVertex3f( x, heights[ i*arraySize + j ], z );
+				glVertex3f( x+n[0], heights[ i*arraySize + j ]+n[1], z+n[2] );
+		//		glVertex3f( n[0], n[1], n[2] );
+			glEnd();
+			glEnable( GL_LIGHTING );
+			SetColor( optionsMgr.GetTerrColor() );
+//			*/
+
 			n = terrain.GetLowerNormal( i, j );
 			glBegin( GL_TRIANGLES );
 				glNormal3f( n[0], n[1], n[2] );
@@ -552,17 +577,6 @@ void CMgrGraphics::DrawTerrain() const
 				glVertex3f( x+inc, heights[ ((i+1)*arraySize) + j ], z );
 				glVertex3f( x, heights[ (i*arraySize) + (j+1) ], z+inc );
 			glEnd();
-
-			/*/// DRAW NORMALS
-			glDisable( GL_LIGHTING );
-			glColor3f(0,1,0);
-			glBegin( GL_LINES );
-				glVertex3f( x, heights[ i*arraySize + j ], z );
-				glVertex3f( x, heights[ i*arraySize + j ]+0.5f, z );
-				glVertex3f( n[0], n[1], n[2] );
-			glEnd();
-			glEnable( GL_LIGHTING );
-			*/
 
 			z += inc;
 		}
@@ -573,6 +587,7 @@ void CMgrGraphics::DrawTerrain() const
 	glPopName();
 
 	glDisable( GL_LIGHTING );
+	glDisable( GL_DEPTH_TEST );
 }
 
 // Set the viewer on top of the midpoint of the terrain
@@ -599,7 +614,7 @@ void CMgrGraphics::DrawSky() const
 void CMgrGraphics::DrawSun() const
 {
 	glLoadIdentity();
-	RotateXY();
+	RotateView();
 	RotateLatitude();
 	RotateTime();
 
@@ -626,7 +641,7 @@ void CMgrGraphics::DrawSun() const
 }
 
 // Draw all constellations
-void CMgrGraphics::DrawConstellations() const
+void CMgrGraphics::DrawConsts() const
 {
 	glLineWidth(3);
 
@@ -635,51 +650,35 @@ void CMgrGraphics::DrawConstellations() const
 	{
 		if( starfield.GetConst(i)->IsVisible() )
 		{
-			DrawConstellation(i);
+			if( i == starfield.GetCurConstNum() )
+				DrawCurConst(i);
+			else
+				DrawConst(i);
 		}
 	}
 }
 
 // Draw constellation i
-void CMgrGraphics::DrawConstellation( int i ) const
+void CMgrGraphics::DrawConst( int i ) const
 {
-	CDataConst* curConstellation = starfield.GetConst(i);
-	int lineCount = curConstellation->GetLineCount();
+	CDataConst* curConst = starfield.GetConst(i);
+	int lineCount = curConst->GetLineCount();
 
 	float x1, y1, z1, x2, y2, z2;
 
-	// Draw new (proposed) line
-	SetColor( optionsMgr.GetConstActiveColor() );
-	if( curConstellation->GetNewLine()->GetStar2() != -1 )
-	{
-		x1 = curConstellation->GetNewLine()->GetX1();
-		y1 = curConstellation->GetNewLine()->GetY1();
-		z1 = curConstellation->GetNewLine()->GetZ1();
-		x2 = curConstellation->GetNewLine()->GetX2();
-		y2 = curConstellation->GetNewLine()->GetY2();
-		z2 = curConstellation->GetNewLine()->GetZ2();
-		glBegin( GL_LINES );
-			glVertex3f( x1, y1, z1 );
-			glVertex3f( x2, y2, z2 );
-		glEnd();
-	}
-
-	// Set color for the rest of the lines
-	if( i == starfield.GetCurConstNum() )
-		SetColor( optionsMgr.GetConstSelColor() );
-	else
-		SetColor( optionsMgr.GetConstNormColor() );
+	// Set color for lines
+	SetColor( optionsMgr.GetConstNormColor() );
 
 	// Draw constellation lines
 	for( int lineIndex=0; lineIndex<lineCount; lineIndex++ )
 	{
 		glPushName( 1 + MAX_STARS + (i*MAX_CONSTLINES) + lineIndex );
-		x1 = curConstellation->GetLine( lineIndex )->GetX1();
-		y1 = curConstellation->GetLine( lineIndex )->GetY1();
-		z1 = curConstellation->GetLine( lineIndex )->GetZ1();
-		x2 = curConstellation->GetLine( lineIndex )->GetX2();
-		y2 = curConstellation->GetLine( lineIndex )->GetY2();
-		z2 = curConstellation->GetLine( lineIndex )->GetZ2();
+		x1 = curConst->GetLine( lineIndex )->GetX1();
+		y1 = curConst->GetLine( lineIndex )->GetY1();
+		z1 = curConst->GetLine( lineIndex )->GetZ1();
+		x2 = curConst->GetLine( lineIndex )->GetX2();
+		y2 = curConst->GetLine( lineIndex )->GetY2();
+		z2 = curConst->GetLine( lineIndex )->GetZ2();
 		glBegin(GL_LINES);
 			glVertex3f (x1, y1, z1);
 			glVertex3f (x2, y2, z2);
@@ -688,33 +687,104 @@ void CMgrGraphics::DrawConstellation( int i ) const
 	}
 }
 
+// Draw current constellation (i is used for glPushName)
+void CMgrGraphics::DrawCurConst( int i ) const
+{
+	CDataConst* curConst = starfield.GetCurConst();
+	int lineCount = curConst->GetLineCount();
+
+	float x1, y1, z1, x2, y2, z2;
+
+	// Draw new (proposed) line
+	SetColor( optionsMgr.GetConstActiveColor() );
+	if( curConst->GetNewLine()->GetStar2() != -1 )
+	{
+		x1 = curConst->GetNewLine()->GetX1();
+		y1 = curConst->GetNewLine()->GetY1();
+		z1 = curConst->GetNewLine()->GetZ1();
+		x2 = curConst->GetNewLine()->GetX2();
+		y2 = curConst->GetNewLine()->GetY2();
+		z2 = curConst->GetNewLine()->GetZ2();
+		glBegin( GL_LINES );
+			glVertex3f( x1, y1, z1 );
+			glVertex3f( x2, y2, z2 );
+		glEnd();
+	}
+
+	// Set color for the rest of the lines
+	SetColor( optionsMgr.GetConstSelColor() );
+
+	// Draw constellation lines
+	for( int lineIndex=0; lineIndex<lineCount; lineIndex++ )
+	{
+		// Set color if this is an active line
+		if( lineIndex == curConst->GetActiveLineNum() &&
+			state == state_DeletingLine )
+			SetColor( optionsMgr.GetConstActiveColor() );
+		glPushName( 1 + MAX_STARS + (i*MAX_CONSTLINES) + lineIndex );
+		x1 = curConst->GetLine( lineIndex )->GetX1();
+		y1 = curConst->GetLine( lineIndex )->GetY1();
+		z1 = curConst->GetLine( lineIndex )->GetZ1();
+		x2 = curConst->GetLine( lineIndex )->GetX2();
+		y2 = curConst->GetLine( lineIndex )->GetY2();
+		z2 = curConst->GetLine( lineIndex )->GetZ2();
+		glBegin(GL_LINES);
+			glVertex3f (x1, y1, z1);
+			glVertex3f (x2, y2, z2);
+		glEnd();
+		glPopName();
+
+		// Set color back if this is an active line
+		if( lineIndex == curConst->GetActiveLineNum() )
+			SetColor( optionsMgr.GetConstSelColor() );
+	}
+}
+
+
 // Draw all stars
 void CMgrGraphics::DrawStars() const
 {
-	glEnable( GL_TEXTURE_2D );
-	glEnable( GL_BLEND );
-
-	glBindTexture( GL_TEXTURE_2D, starTex );
-
-	// Go in reverse order so north star (star 0) is drawn last
-	for( int i=starfield.GetStarCount()-1; i>=0; --i )
+	if( optionsMgr.AreStarsTextured() )
 	{
-		CDataStar* star = starfield.GetStar(i);
-		// Check if in frustum
-		if( SphereInFrustum( star->GetX(), star->GetY(), star->GetZ(), star->GetRadius() ) )
+		glEnable( GL_TEXTURE_2D );
+		glEnable( GL_BLEND );
+		glBindTexture( GL_TEXTURE_2D, starTex );
+
+		// Go in reverse order so north star (star 0) is drawn last
+		for( int i=starfield.GetStarCount()-1; i>=0; --i )
 		{
-			glPushName( 1 + i );
-			DrawStar( i );
-			glPopName();
+			CDataStar* star = starfield.GetStar(i);
+			// Check if in frustum
+			if( SphereInFrustum( star->GetX(), star->GetY(), star->GetZ(), star->GetRadius() ) )
+			{
+				glPushName( 1 + i );
+				DrawStarQuad( i );
+				glPopName();
+			}
+		}
+
+		glDisable( GL_BLEND );
+		glDisable( GL_TEXTURE_2D );
+	}
+	else
+	{
+		// Go in reverse order so north star (star 0) is drawn last
+		for( int i=starfield.GetStarCount()-1; i>=0; --i )
+		{
+			CDataStar* star = starfield.GetStar(i);
+			// Check if in frustum
+			if( SphereInFrustum( star->GetX(), star->GetY(), star->GetZ(), star->GetRadius() ) )
+			{
+				glPushName( 1 + i );
+				DrawStarPoint( i );
+				glPopName();
+			}
 		}
 	}
-
-	glDisable( GL_BLEND );
-	glDisable( GL_TEXTURE_2D );
 }
 
-// Draw star i
-void CMgrGraphics::DrawStar( int i ) const
+// Draw star i as a textured quad
+void CMgrGraphics::DrawStarQuad( int i ) const
 {
 	CDataStar* curStar = starfield.GetStar(i);
 
@@ -728,9 +798,8 @@ void CMgrGraphics::DrawStar( int i ) const
 	else
 		SetColor( curStar->GetColor() );
 
-	glRotatef( curStar->GetTheta(),  0.0f, 1.0f, 0.0f );
-	glRotatef( curStar->GetPhi(), 1.0f, 0.0f, 0.0f );
-	glTranslatef( 0.0f, 1.0f, 0.0f );
+	// Multiply by curStar's local-to-world matrix
+	glMultMatrixf( curStar->GetMat()->getFloats() );
 
 	// Draw a star quad
 	float quadSize = curStar->GetRadius();
@@ -743,6 +812,27 @@ void CMgrGraphics::DrawStar( int i ) const
 	glEnd();
 
 	glPopMatrix();
+}
+
+// Draw star i as a point
+void CMgrGraphics::DrawStarPoint( int i ) const
+{
+	CDataStar* curStar = starfield.GetStar(i);
+
+	// Find color for this star
+	if( starfield.AreConstsVisible() && optionsMgr.AreConstStarsColored() &&
+		starfield.IsStarInHiddenConst(i) )
+		SetColor( optionsMgr.GetConstStarColor() );
+	else
+		SetColor( curStar->GetColor() );
+
+	// Set point size (dependent on zoom)
+	glPointSize( curStar->GetRadius()*500*(starfield.GetZoom()+2) );
+
+	// Draw point
+	glBegin( GL_POINTS );
+		glVertex3f( curStar->GetX(), curStar->GetY(), curStar->GetZ() );
+	glEnd();
 }
 
 // Draw the compass
@@ -762,11 +852,10 @@ void CMgrGraphics::DrawCompass() const
 	float aspect = (float)width / (float)height;
 	glOrtho( -12*aspect, 12*aspect, -2, 22, -2,2 );
 
-
 	glMatrixMode( GL_MODELVIEW );
 
 	glLoadIdentity();
-	RotateXY();
+	RotateView();
 
 	// Cross
 	glLineWidth(3);
@@ -804,12 +893,12 @@ void CMgrGraphics::DrawCompass() const
 // Set up projection matrix with a perspective matrix
 void CMgrGraphics::Projection() const
 {
-    glMatrixMode( GL_PROJECTION );
-    glLoadIdentity();
+	glMatrixMode( GL_PROJECTION );
+	glLoadIdentity();
 
 	Perspective();
 
-    glMatrixMode( GL_MODELVIEW );
+	glMatrixMode( GL_MODELVIEW );
 }
 
 // Apply perspective matrix
@@ -821,21 +910,22 @@ void CMgrGraphics::Perspective() const
 }
 
 // Rotate viewing location of starfield
-void CMgrGraphics::RotateXY() const
+void CMgrGraphics::RotateView() const
 {
-	glRotatef( starfield.GetRotX(), 1.0f, 0.0f, 0.0f );
-	glRotatef( starfield.GetRotY(), 0.0f, 1.0f, 0.0f );
-}
-
-// Rotate the view due to latitude
-void CMgrGraphics::RotateLatitude() const
-{
-	glRotatef( -starfield.GetRotLatitude(), 1.0f, 0.0f, 0.0f );
+	glMultMatrixf( starfield.GetViewMat()->getFloats() );
 }
 
 // Rotate the view due to time
 void CMgrGraphics::RotateTime() const
 {
-	glRotatef( starfield.GetRotTime(), 0.0f, 1.0f, 0.0f );
+	glMultMatrixf( starfield.GetTimeMat()->getFloats() );
 }
+
+// Rotate the view due to latitude
+void CMgrGraphics::RotateLatitude() const
+{
+	glMultMatrixf( starfield.GetLatMat()->getFloats() );
+}
+
+
 

@@ -45,11 +45,12 @@ void CMgrOptions::LoadDefaults()
 void CMgrOptions::LoadStarDefaults()
 {
 	starfield.LoadStarDefaults();
+	starsTextured = DEF_STARS_TEXTURED;
+	starsColored = DEF_STARS_COLORED;
+	starsLimMagX10 = DEF_STARS_LIMMAGX10;
 	starsSize = DEF_STARS_SIZE;
 	starsSContrast = DEF_STARS_SCONTRAST;
 	starsCContrast = DEF_STARS_CCONTRAST;
-	starsTextured = DEF_STARS_TEXTURED;
-	starsColored = DEF_STARS_COLORED;
 
 	/// STAR DIFFERENCE DEFAULTS
 	starfMgr.SetStarsDimRadius( DEF_STARS_BRIGHT_RADIUS - DEF_STARS_RADIUS_DIFF );
@@ -90,11 +91,13 @@ void CMgrOptions::LoadTerrDefaults()
 
 /////////////////////////////////////////////////////////////////////////////
 // Gets
-int			CMgrOptions::GetStarsSize()			{	return starsSize;				}
-int			CMgrOptions::GetStarsSContrast()		{	return starsSContrast;			}
-int			CMgrOptions::GetStarsCContrast()		{	return starsCContrast;			}
 BOOL		CMgrOptions::AreStarsTextured()			{	return starsTextured;			}
 BOOL		CMgrOptions::AreStarsColored()			{	return starsColored;			}
+float		CMgrOptions::GetStarsLimMag()			{	return starsLimMagX10 / 10.0f;	}
+int			CMgrOptions::GetStarsLimMagX10()		{	return starsLimMagX10;			}
+int			CMgrOptions::GetStarsSize()				{	return starsSize;				}
+int			CMgrOptions::GetStarsSContrast()		{	return starsSContrast;			}
+int			CMgrOptions::GetStarsCContrast()		{	return starsCContrast;			}
 color_s		CMgrOptions::GetConstNormColor()		{	return constNormColor;			}
 color_s		CMgrOptions::GetConstSelColor()			{	return constSelColor;			}
 color_s		CMgrOptions::GetConstActiveColor()		{	return constActiveColor;		}
@@ -129,11 +132,12 @@ color_s CMgrOptions::GetTerrColor()
 /////////////////////////////////////////////////////////////////////////////
 // Sets
 
-void CMgrOptions::SetStarsSize( int g )			{	starsSize = g;				}
-void CMgrOptions::SetStarsSContrast( int c )		{	starsSContrast = c;			}
-void CMgrOptions::SetStarsCContrast( int c )		{	starsCContrast = c;			}
 void CMgrOptions::SetStarsTextured( BOOL t )		{	starsTextured = t;			}
 void CMgrOptions::SetStarsColored( BOOL c )			{	starsColored = c;			}
+void CMgrOptions::SetStarsLimMagX10( int x )		{	starsLimMagX10 = x;			}
+void CMgrOptions::SetStarsSize( int g )				{	starsSize = g;				}
+void CMgrOptions::SetStarsSContrast( int c )		{	starsSContrast = c;			}
+void CMgrOptions::SetStarsCContrast( int c )		{	starsCContrast = c;			}
 void CMgrOptions::SetConstNormColor( color_s c )	{	constNormColor = c;			}
 void CMgrOptions::SetConstSelColor( color_s c )		{	constSelColor = c;			}
 void CMgrOptions::SetConstActiveColor( color_s c )	{	constActiveColor = c;		}
@@ -219,11 +223,12 @@ void CMgrOptions::Serialize( CArchive& ar )
 			ar
 
 			// Star Options
+			>> starsTextured
+			>> starsColored
+			>> starsLimMagX10
 			>> starsSize
 			>> starsSContrast
 			>> starsCContrast
-			>> starsTextured
-			>> starsColored
 
 			// Constellation Options
 			>> constNormColor
@@ -249,7 +254,7 @@ void CMgrOptions::Serialize( CArchive& ar )
 		}
 		catch( CException* e )
 		{
-			CSDebug( "Unable to read options.\nLoading default options.", "CMgrOptions::Serialize" );
+			CSError( "Unable to read options file.\nLoading default options." );
 			LoadDefaults();
 			e->Delete();
 		}
@@ -259,11 +264,12 @@ void CMgrOptions::Serialize( CArchive& ar )
 		ar
 
 		// Star Options
+		<< starsTextured
+		<< starsColored
+		<< starsLimMagX10
 		<< starsSize
 		<< starsSContrast
 		<< starsCContrast
-		<< starsTextured
-		<< starsColored
 
 		// Constellation Options
 		<< constNormColor

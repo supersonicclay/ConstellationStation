@@ -25,7 +25,7 @@ public:
 
 // Attributes
 private:
-	unsigned int seed; // Used for predictable terrain
+	UINT seed; // Used for predictable terrain
 
 	float* heights;
 	int size;

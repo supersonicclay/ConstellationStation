@@ -57,7 +57,7 @@ void CMgrInput::KeyUp( UINT nChar )
 // Called rapidly so animation is smooth
 void CMgrInput::ProcessKeys()
 {
-	// Don't handle view keys if
+	// Don't handle view keys if..
 	if( state != state_Viewing )
 		return;
 
@@ -99,21 +99,23 @@ void CMgrInput::ProcessKeys()
 		update = TRUE;
 	}
 
-	// Resets
+	/// Resets
 	if( keyDown[' '] )
 	{
 		starfield.ResetZoom();
 		graphicsMgr.Projection();
+		keyDown[' '] = FALSE; // Prevent repeat
 		update = TRUE;
 	}
 	if( keyDown[VK_RETURN] )
 	{
 		starfield.ResetView();
 		graphicsMgr.Projection();
+		keyDown[VK_RETURN] = FALSE; // Prevent repeat
 		update = TRUE;
 	}
 
-	/// Terrain Height
+	/// TEST Terrain Height
 	if( keyDown[VK_ADD] )
 	{
 		terrain.IncViewHeight();
@@ -122,6 +124,14 @@ void CMgrInput::ProcessKeys()
 	if( keyDown[VK_SUBTRACT] )
 	{
 		terrain.DecViewHeight();
+		update = TRUE;
+	}
+
+	/// Test tracking
+	if( keyDown['T'] )
+	{
+		starfMgr.StartTracking( starfield.GetStar(8) );
+		keyDown['T'] = FALSE; // Prevent repeat
 		update = TRUE;
 	}
 
@@ -168,7 +178,8 @@ void CMgrInput::MouseLDown( CPoint point )
 		MouseLDownAddingLine();
 		break;
 	case state_DeletingLine:
-		MouseLDownDeletingLine();
+		MouseLDownTest();///
+		///MouseLDownDeletingLine();
 		break;
 	default:
 		break;
@@ -273,6 +284,15 @@ void CMgrInput::MouseMove( CPoint point )
 /////////////////////////////////////////////////////////////////////////////
 // Left mouse button
 
+void CMgrInput::MouseLDownTest()///
+{
+	int selectedStarNum = SelectStar();
+	if( selectedStarNum == -1 )
+		return;
+
+	starfMgr.Find( starfield.GetStar(selectedStarNum) );
+}
+
 void CMgrInput::MouseLDownViewing()
 {
 	// Start rotating XY
@@ -311,9 +331,12 @@ void CMgrInput::MouseLDownDeletingLine()
 	if( selectedLineNum != -1 )
 	{
 		starfield.GetCurConst()->DeleteLine(selectedLineNum);
-		starfield.SetModified();
+		documentMgr.SetModified();
 		Redraw();
 	}
+
+	// Set active line number to -1
+	starfield.GetCurConst()->SetActiveLineNum( -1 );
 }
 
 void CMgrInput::MouseLUpViewing()
@@ -330,7 +353,10 @@ void CMgrInput::MouseLUpViewing()
 void CMgrInput::MouseLUpAddingLine()
 {
 	if( starfield.GetCurConst()->GetNewLine()->GetStar2() != -1 )
+	{
 		starfield.GetCurConst()->AddLine();
+		documentMgr.SetModified();
+	}
 
 	ClearSelection();
 
@@ -444,8 +470,8 @@ void CMgrInput::MouseMoveViewing()
 
 		SetCursorPos( mouseLPoint.x, mouseLPoint.y );
 
-		starfield.AdjRotX( deltaX );
-		starfield.AdjRotY( deltaY );
+		starfield.AdjRotX( deltaX, FALSE ); // Prevent matrix update;
+		starfield.AdjRotY( deltaY );        // it's done here.
 	}
 
 	GetView()->RedrawWindow();  // Force a redraw
@@ -460,7 +486,7 @@ void CMgrInput::MouseMoveViewing2()
 
 	if( mouseRotatingXY && !mouseRotatingZ )
 	{
-		starfield.AdjRotX( (mousePoint.y-mouseLPoint.y) / 20.0f );// * (1-zoom);
+		starfield.AdjRotX( (mousePoint.y-mouseLPoint.y) / 20.0f, FALSE );// * (1-zoom);
 		starfield.AdjRotY( (mousePoint.x-mouseLPoint.x) / 20.0f );// * (1-zoom);
 	}
 	if( mouseRotatingZ )
@@ -494,6 +520,9 @@ void CMgrInput::MouseMoveAddingLine()
 
 void CMgrInput::MouseMoveDeletingLine()
 {
+	// Set active line number to selected line number
+	starfield.GetCurConst()->SetActiveLineNum( SelectConstLine() );
+	Redraw();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -546,8 +575,9 @@ void CMgrInput::SetCur( WORD cur )
 void CMgrInput::ClearSelection()
 {
 	firstStarNum = secondStarNum = -1;
-	starfield.GetCurConst()->GetNewLine()->SetStar1(-1);
-	starfield.GetCurConst()->GetNewLine()->SetStar2(-1);
+	starfield.GetCurConst()->GetNewLine()->SetStar1( -1 );
+	starfield.GetCurConst()->GetNewLine()->SetStar2( -1 );
+	starfield.GetCurConst()->SetActiveLineNum( -1 );
 }
 
 // Try selecting a star or line
@@ -591,51 +621,45 @@ BOOL CMgrInput::Select( select_e selection )
 	if( selection == select_Star )
 	{
 		// Draw stars
-		/// optimize
 		glLoadIdentity();
-		graphicsMgr.RotateXY();
+		graphicsMgr.RotateView();
 		graphicsMgr.RotateLatitude();
 		graphicsMgr.RotateTime();
 		graphicsMgr.DrawStars();
 
 		// Draw terrain
-		/// optimize
 		glLoadIdentity();
-		graphicsMgr.RotateXY();
+		graphicsMgr.RotateView();
 		graphicsMgr.PositionTerrain();
 		graphicsMgr.DrawTerrain();
 	}
 	else if( selection == select_Line )
 	{
 		// Draw current constellation
-		/// optimize
 		glLoadIdentity();
-		graphicsMgr.RotateXY();
+		graphicsMgr.RotateView();
 		graphicsMgr.RotateLatitude();
 		graphicsMgr.RotateTime();
-		graphicsMgr.DrawConstellation( starfield.GetCurConstNum() );
+		graphicsMgr.DrawCurConst( starfield.GetCurConstNum() );
 
 		// Draw terrain
-		/// optimize
 		glLoadIdentity();
-		graphicsMgr.RotateXY();
+		graphicsMgr.RotateView();
 		graphicsMgr.PositionTerrain();
 		graphicsMgr.DrawTerrain();
 	}
 	else if( selection == select_Const )
 	{
 		// Draw all constellations
-		/// optimize
 		glLoadIdentity();
-		graphicsMgr.RotateXY();
+		graphicsMgr.RotateView();
 		graphicsMgr.RotateLatitude();
 		graphicsMgr.RotateTime();
-		graphicsMgr.DrawConstellations();
+		graphicsMgr.DrawConsts();
 
 		// Draw terrain
-		/// optimize
 		glLoadIdentity();
-		graphicsMgr.RotateXY();
+		graphicsMgr.RotateView();
 		graphicsMgr.PositionTerrain();
 		graphicsMgr.DrawTerrain();
 	}

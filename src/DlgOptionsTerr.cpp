@@ -127,7 +127,7 @@ void CDlgOptionsTerr::OnTerrNew()
 {
 	terrain.New();
 
-	starfield.SetModified();
+	documentMgr.SetModified();
 	Redraw();
 }
 

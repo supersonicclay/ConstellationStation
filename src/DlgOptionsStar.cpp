@@ -97,7 +97,7 @@ void CDlgOptionsStar::InitOptions()
 	SetDlgItemInt( IDC_STARS_SIZE, optionsMgr.GetStarsSize() );
 	SetDlgItemInt( IDC_STARS_SCONTRAST, optionsMgr.GetStarsSContrast() );
 	SetDlgItemInt( IDC_STARS_CCONTRAST, optionsMgr.GetStarsCContrast() );
-	SetDlgItemInt( IDC_STARS_LIMMAG, starfield.GetLimitingMagX10() );
+	SetDlgItemInt( IDC_STARS_LIMMAG, optionsMgr.GetStarsLimMagX10() );
 
 	sizeSlider.SetPos( GetDlgItemInt(IDC_STARS_SIZE) );
 	sContrastSlider.SetPos( GetDlgItemInt(IDC_STARS_SCONTRAST) );
@@ -105,7 +105,7 @@ void CDlgOptionsStar::InitOptions()
 	limMagSlider.SetPos( GetDlgItemInt(IDC_STARS_LIMMAG) );
 
 	// Initialize data that are updated realtime (in case of cancel button)
-	origLimMagX10 = limMagX10 = starfield.GetLimitingMagX10();
+	origLimMagX10 = limMagX10 = optionsMgr.GetStarsLimMagX10();
 	origSize = size = optionsMgr.GetStarsSize();
 	origSContrast = sContrast = optionsMgr.GetStarsSContrast();
 	origCContrast = cContrast = optionsMgr.GetStarsCContrast();
@@ -131,7 +131,8 @@ void CDlgOptionsStar::OnStarsDefaults()
 	{
 		optionsMgr.LoadStarDefaults();
 		InitOptions();
-
+		
+		starfield.CountStars();
 		Redraw();
 	}
 	SetFocus();
@@ -157,7 +158,7 @@ void CDlgOptionsStar::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	if( limMagX10 != limMagSlider.GetPos() )
 	{
 		limMagX10 = limMagSlider.GetPos();
-		starfield.SetLimitingMagX10( limMagX10 );
+		optionsMgr.SetStarsLimMagX10( limMagX10 );
 		starfield.CountStars();
 		starfMgr.UpdateStarsAppearance();
 		Redraw();

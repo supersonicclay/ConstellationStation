@@ -105,14 +105,16 @@ void CDataConstLine::Serialize(CArchive& ar)
 CDataConst::CDataConst()
 {
 	lineCount = 0;
+	activeLineNum = -1;
 	visible = TRUE;
 }
 
-CDataConst::CDataConst( CString name_ )
+CDataConst::CDataConst( CString n )
 {
+	name = n;
 	lineCount = 0;
+	activeLineNum = -1;
 	visible = TRUE;
-	name = name_;
 }
 
 CDataConst::CDataConst( const CDataConst& c )
@@ -129,6 +131,7 @@ const CDataConst& CDataConst::operator=( const CDataConst& c )
 	name = c.name;
 	lineCount = c.lineCount;
 	lines = c.lines;
+	activeLineNum = c.activeLineNum;
 	visible = c.visible;
 	return *this;
 }
@@ -137,19 +140,21 @@ const CDataConst& CDataConst::operator=( const CDataConst& c )
 /////////////////////////////////////////////////////////////////////////////
 // Gets
 
-CString			CDataConst::GetName()		{	return name;		}
-int				CDataConst::GetLineCount()	{	return lineCount;	}
-BOOL			CDataConst::IsVisible()		{	return visible;		}
-CDataConstLine*	CDataConst::GetLine(int i)	{	return &lines[i];	}
-CDataConstLine*	CDataConst::GetNewLine()	{	return &newLine;	}
+CString			CDataConst::GetName()			{	return name;			}
+int				CDataConst::GetLineCount()		{	return lineCount;		}
+int				CDataConst::GetActiveLineNum()	{	return activeLineNum;	}
+BOOL			CDataConst::IsVisible()			{	return visible;			}
+CDataConstLine*	CDataConst::GetLine(int i)		{	return &lines[i];		}
+CDataConstLine*	CDataConst::GetNewLine()		{	return &newLine;		}
 
 
 /////////////////////////////////////////////////////////////////////////////
 // Sets
 
-void CDataConst::SetName( CString name_ )		{	name = name_;		}
-void CDataConst::SwitchVisible()				{	visible = !visible;	}
-void CDataConst::SetVisible( BOOL visible_ )	{	visible = visible_;	}
+void CDataConst::SetName( CString n )		{	name = n;			}
+void CDataConst::SetActiveLineNum( int n )	{	activeLineNum = n;	}
+void CDataConst::SwitchVisible()			{	visible = !visible;	}
+void CDataConst::SetVisible( BOOL v )		{	visible = v;		}
 
 
 /////////////////////////////////////////////////////////////////////////////

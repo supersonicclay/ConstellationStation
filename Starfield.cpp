@@ -18,11 +18,11 @@ CStarfield::CStarfield()
 	SetupStars();
 
 	numConstellations = 0;
-	constellations = new CConstellation[numConstellations];
+//	constellations = new CConstellation[numConstellations];
 	numNewConstellations = 0;
 	numCurConstellation = 0;
 
-	latitude = 30.0f;
+	latitude = 60.0f;
 	season = 0.0f;
 	time = 0.0f;
 	spinning = FALSE;
@@ -34,8 +34,8 @@ CStarfield::CStarfield()
 
 CStarfield::~CStarfield()
 {
-	delete [] stars;
-	delete [] constellations;
+	delete stars;
+	delete constellations;
 }
 
 
@@ -202,34 +202,34 @@ void CStarfield::AdjZoom(float deltaZoom)
 ////////////////////
 void CStarfield::RotateUp ()
 {
-	AdjRotX(-0.5f * (-zoom + 1));				// Change is smaller if zoomed out
+	AdjRotX(-0.5f);
 }
 
 void CStarfield::RotateDown ()
 {
-	AdjRotX(0.5f * (-zoom + 1));				// Change is smaller if zoomed out
+	AdjRotX(0.5f);
 }
 
 void CStarfield::RotateLeft ()
 {
-	AdjRotY(-0.5f * (-zoom + 1));				// Change is smaller if zoomed out
+	AdjRotY(-0.5f);
 }
 
 void CStarfield::RotateRight()
 {
-	AdjRotY(0.5f * (-zoom + 1));					// Change is smaller if zoomed out
+	AdjRotY(0.5f);
 }
 
 void CStarfield::ZoomIn()
 {
-	if (zoom < 0.8f)
-		zoom += 0.01f * (1-zoom);
+	if (zoom < 0.9f)
+		zoom += 0.01f;
 }
 
 void CStarfield::ZoomOut()
 {
-	if (zoom > -0.9f)
-		zoom -= 0.01f * (1-zoom);
+	if (zoom > -0.8f)
+		zoom -= 0.01f;
 }
 
 // View resets
@@ -259,10 +259,13 @@ void CStarfield::SetupStars()
 {
 	// North Star
 	stars[0].SetColor(COLOR_NORTHSTAR);
-	stars[0].SetBrightness(6.0f);
-	stars[0].SetX(0);
-	stars[0].SetY(0);
-	stars[0].SetZ(-0.99f);
+	stars[0].SetBrightness(3.0f);
+	stars[0].SetLongitude( 0.0f );
+	stars[0].SetLatitude( 0.0f );
+	stars[0].SetX( 0.0f );
+	stars[0].SetY( 1.0f );
+	stars[0].SetZ( 0.0f );
+
 
 	// Randomize the rest
 	for (int i=1; i<numStars; i++)
@@ -291,10 +294,10 @@ void CStarfield::AddConstellation(CString &name)
 	int i;
 	CConstellation* copy = new CConstellation[numConstellations];
 
-	// Backup constellations
+	// Copy constellations
 	for (i=0; i<numConstellations; i++)
 		copy[i] = constellations[i];
-	
+
 	// Increase array size
 	constellations = new CConstellation[++numConstellations];
 
@@ -304,7 +307,6 @@ void CStarfield::AddConstellation(CString &name)
 
 	// Set the last constellations name
 	constellations[i].SetName(name);
-
 }
 
 void CStarfield::DeleteConstellation()

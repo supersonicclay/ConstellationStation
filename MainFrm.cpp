@@ -194,14 +194,11 @@ void CMainFrame::UpdateList()
 
 void CMainFrame::OnConstListCloseUp()
 {
-	GetActiveDocument()->SetModifiedFlag();
-
 	if (m_wndConstBar.m_List.GetCurSel() != CB_ERR)
 	{
 		GetStarfield()->SetCurConstellation(m_wndConstBar.GetCurConst());
 		GetView()->InvalidateRect(NULL, FALSE);
 	}
-
 
 	SetFocus();
 }
@@ -346,12 +343,12 @@ void CMainFrame::OnStarfRotate()
 
 void CMainFrame::OnShowHide() 
 {
-
 	CShowHideDlg dialog;
 
 	dialog.DoModal();
 
 	GetActiveDocument()->SetModifiedFlag();
+	GetView()->SetState( Viewing );
 }
 
 void CMainFrame::OnViewHideAll() 
@@ -382,56 +379,84 @@ void CMainFrame::OnViewShowAll()
 /////////////
 void CMainFrame::OnUpdateConstList(CCmdUI* pCmdUI) 
 {
-	pCmdUI->Enable(GetState() == Viewing);
+	pCmdUI->Enable( GetState() == Viewing );
 }
 
 void CMainFrame::OnUpdateConstAdd(CCmdUI* pCmdUI) 
 {
-	pCmdUI->Enable(GetState() == Viewing);
+	pCmdUI->Enable( GetState() == Viewing );
 }
 
 void CMainFrame::OnUpdateConstDelete(CCmdUI* pCmdUI) 
 {
-	pCmdUI->Enable(m_wndConstBar.m_List.GetCount() != 0 &&
-					GetState() == Viewing);
+	pCmdUI->Enable( GetState() == Viewing &&
+					GetStarfield()->GetNumConstellations() > 0 );
 }
 
 void CMainFrame::OnUpdateConstRename(CCmdUI* pCmdUI) 
 {
-	pCmdUI->Enable(GetState() == Viewing &&
-		m_wndConstBar.m_List.GetCount() != 0);
+	pCmdUI->Enable( GetState() == Viewing &&
+					GetStarfield()->GetNumConstellations() > 0);
 }
 
 void CMainFrame::OnUpdateConstHide(CCmdUI* pCmdUI) 
 {
-	pCmdUI->Enable(m_wndConstBar.m_List.GetCount() != 0 &&
-					GetState() == Viewing);
-	pCmdUI->SetCheck(!GetStarfield()->GetCurConstellation()->IsVisible());
+	if( GetStarfield()->GetNumConstellations() == 0 )
+	{
+		pCmdUI->Enable( FALSE );
+		pCmdUI->SetCheck( FALSE );
+	}
+	else
+	{
+		pCmdUI->Enable( GetState() == Viewing );
+		pCmdUI->SetCheck(!GetStarfield()->GetCurConstellation()->IsVisible());
+	}
 }
 
 void CMainFrame::OnUpdateConstAddLine(CCmdUI* pCmdUI) 
 {
-	pCmdUI->Enable(m_wndConstBar.m_List.GetCount() != 0 &&
-		 GetStarfield()->GetCurConstellation()->IsVisible());
-	pCmdUI->SetCheck(GetState() == AddingLine);
+	if( GetStarfield()->GetNumConstellations() == 0 )
+	{
+		pCmdUI->Enable( FALSE );
+		pCmdUI->SetCheck( FALSE );
+	}
+	else
+	{
+		pCmdUI->Enable( GetStarfield()->GetCurConstellation()->IsVisible() );
+		pCmdUI->SetCheck( GetState() == AddingLine );
+	}
 }
 
 void CMainFrame::OnUpdateConstAddPoly(CCmdUI* pCmdUI) 
 {
-	pCmdUI->Enable(m_wndConstBar.m_List.GetCount() != 0 &&
-		GetStarfield()->GetCurConstellation()->IsVisible());
-	pCmdUI->SetCheck(GetState() == AddingPoly);
+	if( GetStarfield()->GetNumConstellations() == 0 )
+	{
+		pCmdUI->Enable( FALSE );
+		pCmdUI->SetCheck( FALSE );
+	}
+	else
+	{
+		pCmdUI->Enable( GetStarfield()->GetCurConstellation()->IsVisible() );
+		pCmdUI->SetCheck( GetState() == AddingPoly );
+	}
 }
 
 void CMainFrame::OnUpdateConstDeleteLine(CCmdUI* pCmdUI) 
 {
-	pCmdUI->Enable(m_wndConstBar.m_List.GetCount() != 0 &&
-		GetStarfield()->GetCurConstellation()->IsVisible());
-	pCmdUI->SetCheck(GetState() == DeletingLine);
+	if( GetStarfield()->GetNumConstellations() == 0 )
+	{
+		pCmdUI->Enable( FALSE );
+		pCmdUI->SetCheck( FALSE );
+	}
+	else
+	{
+		pCmdUI->Enable( GetStarfield()->GetCurConstellation()->IsVisible() );
+		pCmdUI->SetCheck( GetState() == DeletingLine );
+	}
 }
 
 void CMainFrame::OnUpdateStarfRotate(CCmdUI* pCmdUI) 
 {
-	pCmdUI->SetCheck(GetStarfield()->IsSpinning());
+	pCmdUI->SetCheck( GetStarfield()->IsSpinning() );
 }
 

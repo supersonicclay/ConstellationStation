@@ -69,6 +69,7 @@ public:
 
 	void AddLine(CStar* star1, CStar* star2);
 	void DeleteLine(int lineNum);
+	void CheckForDuplicateLines();
 };
 
 #endif

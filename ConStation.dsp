@@ -90,6 +90,9 @@ LINK32=link.exe
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+# Begin Group "MFC Source Files"
+
+# PROP Default_Filter ""
 # Begin Source File
 
 SOURCE=.\ConStation.cpp
@@ -112,19 +115,29 @@ SOURCE=.\ConstBar.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ConstNameDlg.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\Costellation.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\MainFrm.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\StdAfx.cpp
+# ADD CPP /Yc"stdafx.h"
+# End Source File
+# End Group
+# Begin Group "Dialog Source Files"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\ConstNameDlg.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ShowHideDlg.cpp
+# End Source File
+# End Group
+# Begin Source File
+
+SOURCE=.\Costellation.cpp
 # End Source File
 # Begin Source File
 
@@ -136,17 +149,15 @@ SOURCE=.\Starfield.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\StdAfx.cpp
-# ADD CPP /Yc"stdafx.h"
-# End Source File
-# Begin Source File
-
 SOURCE=.\Terrain.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Group "MFC Header Files"
+
+# PROP Default_Filter ""
 # Begin Source File
 
 SOURCE=.\ConStation.h
@@ -165,14 +176,6 @@ SOURCE=.\ConstBar.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Constellation.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ConstNameDlg.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\MainFrm.h
 # End Source File
 # Begin Source File
@@ -181,7 +184,24 @@ SOURCE=.\Resource.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\StdAfx.h
+# End Source File
+# End Group
+# Begin Group "Dialog Header Files"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\ConstNameDlg.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\ShowHideDlg.h
+# End Source File
+# End Group
+# Begin Source File
+
+SOURCE=.\Constellation.h
 # End Source File
 # Begin Source File
 
@@ -190,10 +210,6 @@ SOURCE=.\Star.h
 # Begin Source File
 
 SOURCE=.\Starfield.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\StdAfx.h
 # End Source File
 # Begin Source File
 
@@ -355,10 +371,6 @@ SOURCE=".\Bug Report.txt"
 # Begin Source File
 
 SOURCE=.\Parenthesis.txt
-# End Source File
-# Begin Source File
-
-SOURCE=.\ReadMe.txt
 # End Source File
 # Begin Source File
 

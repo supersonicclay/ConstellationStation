@@ -1,34 +1,37 @@
 
 BUGS
-1	Select(Line) is returning wrong number
+1	Dialogs disappear while starfrotating
+2	Memory Leaks
+		-change Document fields from pointers
+2	Open, Save should go to starfields folder
 
+TEXTURES
+2	Dark Terrain, Dark Blue Sky Gradient
+5	Print Constellation Name near constellation
 
 SELECTION
-2	Shouldn't select stars behind ground
-		-add 1 to star nums make ground 0
-		-test if 0 was hit
 
 
 IMPROVING
 2	Select ConstLine to select constellation
-5	Print Constellation Name near constellation
-3	Load pictures instead of GL_POINTS for stars
-		compare effeciency
-5	Dark Terrain, Dark Blue Sky Gradient
-5	Open, Save should go to starfields folder
 5	Keep Mouse in place while rotating
 5	Undo
-
-
+5	Add Stars?
+5	Tools / Options menu
+		-terrain editor (roughness, detail)
+		-number of stars
+		-colors
+		-star texture
 
 CODE
-5	Comments
+1	Format ()'s
+2	Sets use newWhatever instead of whatever_
+4	Comments
 5	const's
-5	Format ()'s
-
-
 
 ACTUAL
 5	Input Actual stars & constellations
 5	Choose location (lattitude)
 5	Choose season
+5	Choose day
+5	Choose time

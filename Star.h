@@ -11,31 +11,40 @@ DECLARE_SERIAL (CStar)
 
 public:
 	CStar ();
-	CStar (float x_, float y_, float z_, float brightness_=1);
 	~CStar();
 
 	void Serialize (CArchive& ar);
 
 private:
 	float x, y, z;
+	float longitude;
+	float latitude;
 	float brightness;
 	CColor color;
 
 public:
 
-	float GetX(), GetY(), GetZ();
-	float GetBrightness();
-	CColor GetColor();
+	float GetX() const;
+	float GetY() const;
+	float GetZ() const;
+	float GetLongitude() const;
+	float GetLatitude() const;
+	float GetBrightness() const;
+	CColor GetColor() const;
 
 	void SetX (float x_);
 	void SetY (float y_);
 	void SetZ (float z_);
+	void SetLongitude( float longitude_ );
+	void SetLatitude( float latitude_ );
 	void SetBrightness (float brightness_);
 	void SetColor (CColor color_);
 
 	void Randomize();
 	void PickXYZ();
+	void PickDirection();
 	void PickBrightness();
+	void PickColor();
 
 };
 

@@ -11,45 +11,49 @@ IMPLEMENT_SERIAL (CStar, CObject, 0)
 CStar::CStar()
 {
 	x = 0.0f;
-	y = 0.0f;
+	y = 1.0f;
 	z = 0.0f;
+	longitude = 0.0f;
+	latitude = 0.0f;
 	brightness = 1.0f;
 	color = COLOR_WHITE;
-}
-
-CStar::CStar(float x_, float y_, float z_, float brightness_)
-{
-	x = x_;
-	y = y_;
-	z = z_;
-	brightness = brightness_;
 }
 
 CStar::~CStar()
 {
 }
 
-float CStar::GetX()
+float CStar::GetX() const
 {
 	return x;
 }
 
-float CStar::GetY()
+float CStar::GetY() const
 {
 	return y;
 }
 
-float CStar::GetZ()
+float CStar::GetZ() const
 {
 	return z;
 }
 
-float CStar::GetBrightness()
+float CStar::GetLongitude() const
+{
+	return longitude;
+}
+
+float CStar::GetLatitude() const
+{
+	return latitude;
+}
+
+float CStar::GetBrightness() const
 {
 	return brightness;
 }
 
-CColor CStar::GetColor()
+CColor CStar::GetColor() const
 {
 	return color;
 }
@@ -69,6 +73,16 @@ void CStar::SetZ(float z_)
 	z = z_;
 }
 
+void CStar::SetLongitude( float longitude_ )
+{
+	longitude = longitude_;
+}
+
+void CStar::SetLatitude( float latitude_ )
+{
+	latitude = latitude_;
+}
+
 void CStar::SetBrightness(float brightness_)
 {
 	brightness = brightness_;
@@ -83,8 +97,28 @@ void CStar::SetColor(CColor color_)
 //   and pick random brightess with higher chance of being dim
 void CStar::Randomize()
 {
-	PickXYZ();
+	PickDirection();
 	PickBrightness();
+}
+
+void CStar::PickDirection()
+{
+	PickXYZ();
+
+
+	if( z >= 0 )
+	{
+		longitude = (float) asin( (double) (x / sqrt((double)(z*z) + (x*x))) );
+	}
+	else
+	{
+		longitude = (float) (PI - asin( (double)(x / sqrt((double)(z*z) + (x*x))) ));
+	}
+//	longitude = (float) atan( (double) (x / z) ) * (float) (180 / PI);
+	latitude  = (float) acos( (double) y  );
+
+	longitude = longitude * (float) (180 / PI);
+	latitude  = latitude  * (float) (180 / PI);
 }
 
 void CStar::PickXYZ()
@@ -135,36 +169,37 @@ void CStar::PickBrightness()
 	// Pick random number from 0.00 to 100.00
 	float random = (float)(rand()%1000)/10;
 
-	// Pick brightness depending on random
-	if (random < 75)
+
+	// 97% are between 0 and 0.5
+	if( random < 97.0f )
 	{
 		brightness = (float)(rand()%1000)/1000;
 	}
-	else if (random < 90)
+	// 2% are between 1 and 2
+	else if( random < 99.0f )
 	{
-		brightness = (float)(rand()%2000)/1000;
+		brightness = (float)(rand()%1000)/1000 + 1.0f;
 	}
-	else if (random < 95)
+	// 1% are between 2 and 3
+	else
 	{
-		brightness = (float)(rand()%3000)/1000;
-	}
-	else //if (random <  99)
-	{
-		brightness = (float)(rand()%5000)/1000;
+		brightness = (float)(rand()%1000)/1000 + 2.0f;
 	}
 
-	// Set Color
-	if (brightness < 1)
+	PickColor();
+}
+
+void CStar::PickColor()
+{
+	if( brightness < 2.0f )
 	{
-		color.r = brightness;
-		color.g = brightness;
-		color.b = brightness;
+		color.r = brightness / 2.0f;
+		color.g = brightness / 2.0f;
+		color.b = brightness / 2.0f;
 	}
-	else if (brightness < 2)
+	else
 	{
-		color.r = brightness-1;
-		color.g = brightness-1;
-		color.b = brightness-1;
+		color = COLOR_WHITE;
 	}
 }
 
@@ -174,14 +209,16 @@ void CStar::Serialize(CArchive& ar)
 
 	if (ar.IsStoring())
 	{
-		ar << x << y << z
+		ar << latitude << longitude
+		   << x << y << z
 		   << brightness
 		   << color.r << color.g << color.b;
 	}
 
 	else
 	{
-		ar >> x >> y >> z
+		ar >> latitude >> longitude
+		   >> x >> y >> z
 		   >> brightness
 		   >> color.r >> color.g >> color.b;
 	}

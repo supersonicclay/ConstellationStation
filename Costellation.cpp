@@ -98,7 +98,7 @@ CConstellation::CConstellation(CString name_)
 
 CConstellation::~CConstellation()
 {
-	delete lines;
+//	delete lines;
 }
 
 CString CConstellation::GetName() const
@@ -155,49 +155,13 @@ void CConstellation::AddLine(CStar* star1, CStar* star2)
 	// Make the newest line
 	lines[i].SetStar1(star1);
 	lines[i].SetStar2(star2);
+
+	CheckForDuplicateLines();
 }
 
 void CConstellation::DeleteLine(int lineNum)
 {
 	int i;
-
-	/*
-	/////////////////////////////
-	// Check for isolated star //
-	/////////////////////////////
-	BOOL star1used = false;
-	BOOL star2used = false;
-
-	for (i=0; i<numLines; i++)
-	{
-		if (lines[lineNum].GetStar1() == lines[i].GetStar1() ||
-			lines[lineNum].GetStar1() == lines[i].GetStar2())
-		{
-			star1used = true;
-			break;
-		}
-	}
-	for (i=0; i<numLines; i++)
-	{
-		if (lines[lineNum].GetStar2() == lines[i].GetStar1() ||
-			lines[lineNum].GetStar2() == lines[i].GetStar2())
-		{
-			star2used = true;
-			break;
-		}
-	}
-
-	// Restore color of isolated stars
-	if (!star1used)
-		lines[lineNum].GetStar1()->RestoreColor();
-	if (!star2used)
-		lines[lineNum].GetStar2()->RestoreColor();
-*/
-
-
-	//////////////////////////////
-	// Delete the selected line //
-	//////////////////////////////
 
 	// new temporary constellation list
 	CConstLine* newList = new CConstLine[numLines-1];
@@ -220,7 +184,31 @@ void CConstellation::DeleteLine(int lineNum)
 	{
 		lines[i] = newList[i];
 	}
+}
 
+void CConstellation::CheckForDuplicateLines()
+{
+	// Since we check for duplicates every time we add a line,
+	//  there should never be more than 1 duplicate
+
+	for( int i=0; i<numLines; i++ )
+	{
+		for( int j=0; j<numLines; j++ )
+		{
+			// we don't check for duplicate against itself
+			if( i != j )
+			{
+				if( (lines[i].GetStar1() == lines[j].GetStar1()  &&
+					 lines[i].GetStar2() == lines[j].GetStar2()) ||
+					(lines[i].GetStar1() == lines[j].GetStar2()  &&
+					 lines[i].GetStar2() == lines[j].GetStar1()) )
+				{
+					DeleteLine( j );
+					return;
+				}
+			}
+		}
+	}
 }
 
 const CConstellation& CConstellation::operator =(const CConstellation& c)

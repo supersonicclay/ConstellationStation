@@ -35,6 +35,14 @@ extern const CColor COLOR_WHITE,
 					COLOR_CONSTLINE,
 					COLOR_TERRAIN;
 
+typedef struct
+{
+	GLubyte* data;
+	GLuint width;
+	GLuint height;
+	GLuint textureID;
+} Texture;
+
 enum StateType {Viewing, AddingLine, AddingPoly, DeletingLine};
 
 #include "MainFrm.h"

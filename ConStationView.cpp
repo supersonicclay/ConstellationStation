@@ -18,9 +18,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-// Timer IDs
-#define TIMER_VIEWKEYS	1
-#define TIMER_ROTATE	2
 
 /////////////////////////////////////////////////////////////////////////////
 // CConStationView
@@ -46,6 +43,7 @@ BEGIN_MESSAGE_MAP(CConStationView, CView)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
+
 /////////////////////////////////////////////////////////////////////////////
 // CConStationView construction/destruction
 
@@ -53,7 +51,8 @@ CConStationView::CConStationView()
 {
 	state = Viewing;
 
-	ZeroMemory (&keyDown, sizeof (keyDown));
+	for( int i=0; i<256; i++ )
+		keyDown[i] = FALSE;
 
 	mouseRotatingXY = false;
 	mouseRotatingZ = false;
@@ -61,6 +60,7 @@ CConStationView::CConStationView()
 
 CConStationView::~CConStationView()
 {
+//	delete starTex.data;
 }
 
 BOOL CConStationView::PreCreateWindow(CREATESTRUCT& cs)
@@ -104,6 +104,7 @@ CTerrain* CConStationView::GetTerrain() const
 	return GetDocument()->GetTerrain();
 }
 
+
 /////////////////////////////////////////////////////////////////////////////
 // CConStationView message handlers
 
@@ -116,18 +117,16 @@ int CConStationView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (!InitializeOpenGL())
 		MessageBox("Error initializing OpneGL", "ERROR");
 
-//	GetGLInfo();
+//	SetTimer(TIMER_VIEWKEYS, 20, 0);
+//	SetTimer(TIMER_ROTATE, 50, 0);
 
-	SetTimer(TIMER_VIEWKEYS, 20, 0);
-	SetTimer(TIMER_ROTATE, 50, 0);
-
+	SetTimer( 1, 20, 0 );
 	return 0;
 }
 
 
 void CConStationView::OnDestroy() 
 {
-//	CView::OnDestroy();
 	
 	//Make the RC non-current
 	if(::wglMakeCurrent (0,0) == FALSE)
@@ -141,14 +140,40 @@ void CConStationView::OnDestroy()
 		MessageBox("Could not delete RC");
 	}
 
-	//Delete the DC
+	// Delete the DC
 	if(m_pDC)
 	{
 		delete m_pDC;
 	}
-	//Set it to NULL
+	// Set it to NULL
 	m_pDC = NULL;
 }
+
+BOOL CConStationView::OnEraseBkgnd(CDC* pDC) 
+{
+	// Don't erase the background
+	return TRUE;
+}
+
+void CConStationView::OnSize(UINT nType, int cx, int cy) 
+{
+	width = cx;
+	height = cy;
+
+	
+	if ( width <= 0 || height <= 0)
+	{
+		return;
+	}
+
+    glViewport(0, 0, width, height);
+
+	Projection ();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Open GL Initialization
 
 BOOL CConStationView::InitializeOpenGL()
 {
@@ -159,13 +184,13 @@ BOOL CConStationView::InitializeOpenGL()
 	if(m_pDC == NULL)
 	{
 		MessageBox("Error Obtaining DC");
-		return false;
+		return FALSE;
 	}
 
 	// Failure to set the pixel format
 	if(!SetupPixelFormat())
 	{
-		return false;
+		return FALSE;
 	}
 
 	// Create Rendering Context
@@ -175,30 +200,33 @@ BOOL CConStationView::InitializeOpenGL()
 	if(m_hRC == 0)
 	{
 		MessageBox("Error Creating RC");
-		return false;
+		return FALSE;
 	}
 	
 	// Make the RC Current
 	if(::wglMakeCurrent (m_pDC->GetSafeHdc (), m_hRC)==FALSE)
 	{
 		MessageBox("Error making RC Current");
-		return false;
+		return FALSE;
 	}
 
-	//Specify Black as the clear color
-	glClearColor(0.0f,0.0f,0.0f,0.0f);
 
-	//Specify the back of the buffer as clear depth
+	glClearColor(0.0f,0.0f,0.0f,1.0f);
 	glClearDepth(1.0f);
-
-	// Set Perspective Calculations To Most Accurate
 	glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+	glEnable( GL_LINE_SMOOTH );
 
-	return true;
+	if (!LoadTextures())
+	{
+		MessageBox("Error loading textures");
+		return FALSE;
+	}
+
+	glBlendFunc( GL_SRC_ALPHA, GL_ONE );
+
+	return TRUE;
 }
 
-/////////////////////////////////////////////////////////////////////////////
-//Setup Pixel Format
 BOOL CConStationView::SetupPixelFormat()
 {
 	static PIXELFORMATDESCRIPTOR pfd = 
@@ -228,60 +256,124 @@ BOOL CConStationView::SetupPixelFormat()
 	if ( m_nPixelFormat == 0 )
 	{
 		MessageBox("Couldn't Choose Pixel Format");
-		return false;
+		return FALSE;
 	}
 
 	if ( SetPixelFormat(m_pDC->GetSafeHdc(), m_nPixelFormat, &pfd) == FALSE)
 	{
 		MessageBox("Couldn't Set Pixel Format");
-		return false;
+		return FALSE;
 	}
 
-	return true;
-}
-
-// Get OpenGL Information
-void CConStationView::GetGLInfo() 
-{
-
-	CString who2;
-	who2 =  "OpenGL Information\n\nWho: ";
-	who2 += glGetString( GL_VENDOR );
-	who2 += "\nWhich: ";
-	who2 += glGetString( GL_RENDERER );
-	who2 += "\nVersion: ";
-	who2 += glGetString( GL_VERSION );
-	who2 += "\nExtensions: ";
-	who2 += glGetString( GL_EXTENSIONS );
-
-	::AfxMessageBox(who2,MB_ICONINFORMATION);
-
-}
-
-BOOL CConStationView::OnEraseBkgnd(CDC* pDC) 
-{
-	//return CView::OnEraseBkgnd(pDC);
-
-	//don't erase the background
 	return TRUE;
 }
 
-void CConStationView::OnSize(UINT nType, int cx, int cy) 
-{
-//	CView::OnSize(nType, cx, cy);
-	
-	width = cx;
-	height = cy;
 
-	
-	if ( width <= 0 || height <= 0)
+/////////////////////////////////////////////////////////////////////////////
+// Textures
+
+BOOL CConStationView::LoadTextures()
+{
+	if (!LoadTGA(starTex, "textures/star.tga"))
+		return FALSE;
+
+	return TRUE;
+}
+
+BOOL CConStationView::LoadTGA(Texture &texture, char* filename)
+{
+	// Every TGA file has this header
+	GLubyte		TGAheader[12]={0,0,2,0,0,0,0,0,0,0,0,0};
+
+	// Used to compare file header with TGAheader
+	GLubyte		fileHeader[12];
+
+	// Width, Height, and bpp information
+	GLubyte		imageInfo[6];
+
+	GLuint		bitsPerPixel;
+	GLuint		bytesPerPixel;
+
+	// Size of image data in bytes
+	GLuint		imageSize;
+
+	// RGBA is 32 bits per pixel; RGB is 24 bits per pixel
+	GLuint		type=GL_RGBA;
+
+	// Open for binary reading
+	FILE *file = fopen(filename, "rb");
+
+	if(	file==NULL ||
+		fread(fileHeader,1,sizeof(fileHeader),file)!=sizeof(fileHeader) ||	// Make sure the header is there
+		memcmp(TGAheader,fileHeader,sizeof(TGAheader))!=0				||	// Make sure the header is a TGA header
+		fread(imageInfo,1,sizeof(imageInfo),file)!=sizeof(imageInfo))		// Make sure the image information is there
 	{
-		return;
+		if (file == NULL)
+			return FALSE;
+		else
+		{
+			fclose(file);
+			return FALSE;
+		}
 	}
 
-    glViewport(0, 0, cx, cy);
+	// Image width = highbyte*256 + lowbyte
+	texture.width  = imageInfo[1] * 256 + imageInfo[0];
+	// Image height = highbyte*256 + lowbyte
+	texture.height = imageInfo[3] * 256 + imageInfo[2];
 
-	Projection ();
+	bitsPerPixel	= imageInfo[4];
+	bytesPerPixel	= bitsPerPixel/8;
+
+	imageSize		= texture.width*texture.height*bytesPerPixel;
+   
+ 	if(	texture.width	<=0	||
+		texture.height	<=0	||
+		(imageInfo[4]!=24 && imageInfo[4]!=32))				// Make sure TGA is 24 or 32 bits per pixel
+	{
+		fclose(file);
+		return FALSE;
+	}
+
+	// Reserve memory to hold the image data
+	texture.data = new GLubyte [imageSize];
+
+	if(	texture.data==NULL ||									// Make sure the memory was reserved
+		fread(texture.data, 1, imageSize, file)!=imageSize )	// Make sure image data size matches imageSize
+	{
+		// If memory was reserved, free it
+		if(texture.data!=NULL)
+			delete texture.data;
+
+		fclose(file);
+		return FALSE;
+	}
+
+	// GL uses RGB, TGA uses BGR so we must swap Red and Blue
+	GLubyte temp;
+	for(GLuint i=0; i<int(imageSize); i+=bytesPerPixel)
+	{
+		temp=texture.data[i];
+		texture.data[i] = texture.data[i + 2];
+		texture.data[i + 2] = temp;
+	}
+
+	fclose (file);											// Close The File
+
+	glGenTextures(1, &texture.textureID);
+
+	glBindTexture(GL_TEXTURE_2D, texture.textureID);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	
+	if (bitsPerPixel==24)
+	{
+		type=GL_RGB;
+	}
+
+	glTexImage2D(GL_TEXTURE_2D, 0, type, texture.width, texture.height, 0, type, GL_UNSIGNED_BYTE, texture.data);
+
+	return TRUE;
 }
 
 
@@ -294,10 +386,9 @@ StateType CConStationView::GetState() const
 
 void CConStationView::SetState(StateType state_)
 {
-	state = state_;
+	firstStarNum = -1;
 
-	if (state == AddingLine || state == AddingPoly)
-		firstStarNum = -1;
+	state = state_;
 }
 
 BOOL CConStationView::IsRotating() const
@@ -327,7 +418,7 @@ void CConStationView::OnDraw(CDC* pDC)
 	DrawTerrain();
 	DrawHeading();
 
-	/// GROGGY ///
+	/// ACTIVE LINE ///
 	// Draw Active Line
 ///	if (state == AddingLine && firstStarNum != -1)
 ///		DrawActiveLine();
@@ -360,6 +451,7 @@ void CConStationView::DrawTerrain() const
 	z = -scale;
 	inc = (float)pow(2, -iterations+1);
 
+	glPushName( 0 );
 	for (i=0; i<size; i++)
 	{
 		for (j=0; j<size; j++)
@@ -377,7 +469,7 @@ void CConStationView::DrawTerrain() const
 		z = -scale;
 		x += inc;
 	}
-
+	glPopName();
 }
 
 // Set the viewer on top of the midpoint of the terrain
@@ -445,52 +537,60 @@ void CConStationView::DrawConstellation(int i) const
 
 	float x1, y1, z1, x2, y2, z2;
 
-	glBegin(GL_LINES);
-		for (int j=0; j<numLines; j++)
-		{
-			glPushName(j);
-			x1 = curConstellation->GetLine(j)->GetX1();
-			y1 = curConstellation->GetLine(j)->GetY1();
-			z1 = curConstellation->GetLine(j)->GetZ1();
-			x2 = curConstellation->GetLine(j)->GetX2();
-			y2 = curConstellation->GetLine(j)->GetY2();
-			z2 = curConstellation->GetLine(j)->GetZ2();
+	for (int j=0; j<numLines; j++)
+	{
+		glPushName(j);
+		x1 = curConstellation->GetLine(j)->GetX1();
+		y1 = curConstellation->GetLine(j)->GetY1();
+		z1 = curConstellation->GetLine(j)->GetZ1();
+		x2 = curConstellation->GetLine(j)->GetX2();
+		y2 = curConstellation->GetLine(j)->GetY2();
+		z2 = curConstellation->GetLine(j)->GetZ2();
+		glBegin(GL_LINES);
 			glVertex3f (x1, y1, z1);
 			glVertex3f (x2, y2, z2);
-			glPopName();
-		}
-	glEnd();
+		glEnd();
+		glPopName();
+	}
 }
 
 void CConStationView::DrawStars() const
 {
 	glLoadIdentity();
-
+	
 	RotateXY();
 	RotateLatitude();
 	RotateSeason();
 	RotateTime();
 
-	for (int i=0; i<GetStarfield()->GetNumStars(); i++)
+	glEnable( GL_TEXTURE_2D );
+	glEnable( GL_BLEND );
+
+	glBindTexture(GL_TEXTURE_2D, starTex.textureID);
+
+	// Go in reverse order so north star (star 0) is drawn last
+	for (int i=GetStarfield()->GetNumStars()-1; i>=0; i--)
 	{
-		glPushName(i);
-		DrawStar(i);
+		glPushName( i+1 );
+		DrawStar( i );
 		glPopName();
 	}
+
+	glDisable( GL_BLEND );
+	glDisable( GL_TEXTURE_2D );
 }
 
 void CConStationView::DrawStar(int i) const
 {
 	CStar* curStar = GetStarfield()->GetStar(i);
-	float x = curStar->GetX();
-	float y = curStar->GetY();
-	float z = curStar->GetZ();
+	float longitude = curStar->GetLongitude();
+	float latitude = curStar->GetLatitude();
 	float brightness = curStar->GetBrightness();
 	CColor color;
 
-	// Determine if this star is active (part of the current constellation)
 	bool active = false;
 
+	// Determine if this star is active (part of the current constellation)
 	if (GetStarfield()->GetNumConstellations() > 0)
 	{
 		for (int lineIndex=0; lineIndex < GetStarfield()->GetCurConstellation()->GetNumLines(); lineIndex++)
@@ -509,31 +609,41 @@ void CConStationView::DrawStar(int i) const
 	else
 		color = curStar->GetColor();
 
+	// Push matrix so quad rotation doesn't affect anything
+	glPushMatrix();
+
+	// Now we're ready to draw the star
 	glColor (color);
+	glPointSize(brightness);
 
-	/// Brightness depending on zoom
-	if (GetStarfield()->GetZoom() > 0)
-		 brightness *= (GetStarfield()->GetZoom() + 1);
-	else brightness *= (GetStarfield()->GetZoom() + 3) * 0.3f;
+	glRotatef(longitude, 0.0f, 1.0f, 0.0f );
+	glRotatef( latitude, 1.0f, 0.0f, 0.0f );
+	glTranslatef( 0.0f, 1.0f, 0.0f );
 
-	//	Don't show if too dim
-	if (brightness > 0.2f)
-	{
-		glPointSize(brightness);
+	/// Draw a
+	float quadSize = brightness / 170.0f;
+	glBegin( GL_QUADS );
+		glNormal3f( 0.0f, -1.0f, 0.0f );
+		glTexCoord2i( 0, 1 ); glVertex3f( -quadSize, 0.0f,  quadSize );
+		glTexCoord2i( 1, 1 ); glVertex3f(  quadSize, 0.0f,  quadSize );
+		glTexCoord2i( 1, 0 ); glVertex3f(  quadSize, 0.0f, -quadSize );
+		glTexCoord2i( 0, 0 ); glVertex3f( -quadSize, 0.0f, -quadSize );
+	glEnd();
 
-		glColor (color);
+//	/*/// POINT
+	glColor( COLOR_CROSS );
+	glBegin(GL_POINTS);
+		glVertex2f( 0, 0 );
+	glEnd();
+//		*/
 
-		glBegin(GL_POINTS);
-			glVertex3f ( x, y, z);
-		glEnd();
-	}
+	glPopMatrix();
 }
 
 void CConStationView::DrawHeading() const
 {
-	// Enable Depth Test
-	glPushAttrib(GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
+	glDisable( GL_LINE_SMOOTH );
 
 	// Set up projection
 	glMatrixMode(GL_PROJECTION);
@@ -569,8 +679,8 @@ void CConStationView::DrawHeading() const
 	RotateSeason();
 	glColor (COLOR_NORTHSTAR);
 	glBegin(GL_LINES);
-		glVertex3f ( 0.0f, 0.0f, 0.0f);
-		glVertex3f ( 0.0f, 0.0f,-1.0f);
+		glVertex3f( 0.0f, 0.0f, 0.0f );
+		glVertex3f( 0.0f, 1.0f, 0.0f );
 	glEnd();
 
 	// Pop Projection Matrix
@@ -580,10 +690,11 @@ void CConStationView::DrawHeading() const
 	// Switch back to Model View
 	glMatrixMode(GL_MODELVIEW);
 
-	glPopAttrib();
+	glEnable( GL_LINE_SMOOTH );
+	glDisable( GL_DEPTH_TEST );
 }
 
-/*
+/* ///ACTIVE LINE
 void CConStationView::DrawActiveLine() const
 {
 	// Set up 2d Projection
@@ -612,7 +723,7 @@ void CConStationView::DrawActiveLine() const
 */
 
 /////////////////////////////////////////////////////////////////////////////
-// View Manipulation (draw)
+// View Manipulation
 
 void CConStationView::Projection() const
 {
@@ -640,7 +751,7 @@ void CConStationView::RotateXY() const
 // Rotate the view depending on the latitude
 void CConStationView::RotateLatitude() const
 {
-	glRotatef( GetStarfield()->GetLatitude(), 1.0f, 0.0f, 0.0f );
+	glRotatef( -GetStarfield()->GetLatitude(), 1.0f, 0.0f, 0.0f );
 }
 
 // Rotate the view depending on the season
@@ -652,7 +763,7 @@ void CConStationView::RotateSeason() const
 // Rotate the view depending on the time
 void CConStationView::RotateTime() const
 {
-	glRotatef (GetStarfield()->GetTime(), 0.0f, 0.0f, 1.0f);
+	glRotatef (GetStarfield()->GetTime(), 0.0f, 1.0f, 0.0f);
 }
 
 
@@ -671,11 +782,11 @@ void CConStationView::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 // Timer for animation
 void CConStationView::OnTimer(UINT nIDEvent) 
 {
-	if (nIDEvent == TIMER_VIEWKEYS)
-		ProcessKeys();
-	if (nIDEvent == TIMER_ROTATE && GetStarfield()->IsSpinning() && state == Viewing)
+	ProcessKeys();
+
+	if (GetStarfield()->IsSpinning() && state == Viewing)
 	{
-		GetStarfield()->AdjTime(0.1f);
+		GetStarfield()->AdjTime(0.05f);
 		InvalidateRect(NULL, FALSE);
 	}
 }
@@ -762,6 +873,7 @@ void CConStationView::OnLButtonDown(UINT nFlags, CPoint point)
 			{
 				prevStarNum = selectedStarNum;
 				firstStarNum = selectedStarNum;
+				/// ACTIVE LINE
 ///				prevStarPoint = point;
 			}
 			// Adding a line so this should complete a line
@@ -776,6 +888,7 @@ void CConStationView::OnLButtonDown(UINT nFlags, CPoint point)
 				GetStarfield()->AddConstLine(prevStarNum, selectedStarNum);
 
 				prevStarNum = selectedStarNum;
+				/// ACTIVE LINE
 ///				prevStarPoint = point;
 
 				GetDocument()->SetModifiedFlag();
@@ -875,25 +988,28 @@ void CConStationView::OnRButtonUp(UINT nFlags, CPoint point)
 
 BOOL CConStationView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) 
 {
-	// Zoom faster than with keys
-	if (zDelta < 0)
+	if( state == Viewing )
 	{
-		GetStarfield()->ZoomOut();
-		GetStarfield()->ZoomOut();
-		GetStarfield()->ZoomOut();
-		GetStarfield()->ZoomOut();
-	}
-	if (zDelta > 0)
-	{
-		GetStarfield()->ZoomIn();
-		GetStarfield()->ZoomIn();
-		GetStarfield()->ZoomIn();
-		GetStarfield()->ZoomIn();
-	}
+		// Zoom faster than with keys
+		if (zDelta < 0)
+		{
+			GetStarfield()->ZoomOut();
+			GetStarfield()->ZoomOut();
+			GetStarfield()->ZoomOut();
+			GetStarfield()->ZoomOut();
+		}
+		if (zDelta > 0)
+		{
+			GetStarfield()->ZoomIn();
+			GetStarfield()->ZoomIn();
+			GetStarfield()->ZoomIn();
+			GetStarfield()->ZoomIn();
+		}
 
-	Projection();
+		Projection();
 
-	InvalidateRect(NULL, FALSE);
+		InvalidateRect(NULL, FALSE);
+	}
 
 	return TRUE;
 }
@@ -929,11 +1045,10 @@ void CConStationView::OnMouseMove(UINT nFlags, CPoint point)
 		// Set the mouse point
 		mouseLDownPoint=point;
 		mouseRDownPoint=point;
-		
-	///	SetCursorPos(mouseLDownPoint.x, mouseLDownPoint.y);
+
 	}
 
-	/// GROGGY ///
+	/// ACTIVE LINE ///
 	// Invalidate so it will show line as mouse moves
 ///	if (state == AddingLine && firstStarNum != -1)
 ///		InvalidateRect(NULL, FALSE);
@@ -1027,7 +1142,10 @@ BOOL CConStationView::Select(SelectType selection)
 	glLoadIdentity();
 
 	if (selection == Star)
+	{
+		DrawTerrain();
 		DrawStars();
+	}
 	else if (selection == Line)
 		DrawConstellation(GetStarfield()->GetNumCurConstellation());
 
@@ -1038,18 +1156,42 @@ BOOL CConStationView::Select(SelectType selection)
 	hits=glRenderMode(GL_RENDER);								// Switch To Render Mode, Find Out How Many
 																// Objects Were Drawn Where The Mouse Was
 
-	if (hits > 0)
+	/// TAKE OUT after we're sure this doesn't happen
+	if( hits < 0 )
 	{
-		return true;
+		MessageBox("Hits is less than 0");
+		return false;
 	}
-	return false;												// Nothing selected
+
+	if( hits == 0 )
+		return false;
+	else
+	{
+		// Test if terrain was hit
+		if( selection == Star )
+		{
+			for( int i=0; i<hits; i++ )
+			{
+				// If terrain was hit (terrain is 0)
+				if( selectBuffer[i*4 + 3] == 0 )
+					return false;
+			}
+
+			// Terrain wasn't hit
+			return true;
+		}
+		else
+		{
+			return true;
+		}
+	}
 }
 
 int CConStationView::SelectStar()
 {
 	if (Select(Star))	// If a hit occured in starfield
 	{
-		int numStar = selectBuffer[3];
+		int numStar = selectBuffer[3] - 1;	// Subtract 1 because terrain is 0
 		CStar* selectedStar = GetStarfield()->GetStar(numStar);
 
 		// If there was more than one hit
@@ -1059,7 +1201,7 @@ int CConStationView::SelectStar()
 			if (GetStarfield()->GetStar(selectBuffer[i*4+3])->GetBrightness() >
 						selectedStar->GetBrightness())
 			{
-				numStar = selectBuffer[i*4+3];
+				numStar = selectBuffer[i*4+3] - 1;	// Subtract 1 because terrain is 0
 				selectedStar = GetStarfield()->GetStar(numStar);
 			}
 		}

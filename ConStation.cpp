@@ -184,6 +184,7 @@ void CConStationApp::OnStarfNewActual()
 
 	GetMainFrame()->UpdateList();
 	GetMainFrame()->GetView()->Projection();
+	GetMainFrame()->GetView()->SetState( Viewing );
 }
 
 void CConStationApp::OnStarfNewRandom() 
@@ -192,6 +193,7 @@ void CConStationApp::OnStarfNewRandom()
 
 	GetMainFrame()->UpdateList();
 	GetMainFrame()->GetView()->Projection();
+	GetMainFrame()->GetView()->SetState( Viewing );
 }
 
 void CConStationApp::OnStarfOpen() 
@@ -200,4 +202,5 @@ void CConStationApp::OnStarfOpen()
 
 	GetMainFrame()->UpdateList();
 	GetMainFrame()->GetView()->Projection();
+	GetMainFrame()->GetView()->SetState( Viewing );
 }

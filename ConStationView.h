@@ -28,6 +28,7 @@ private:
 	int width;
 	int height;
 
+	Texture starTex;
 
 // Input
 	// Keys
@@ -40,6 +41,7 @@ private:
 	CPoint mousePoint;
 	CPoint mouseLDownPoint;
 	CPoint mouseRDownPoint;
+///	ACTIVE LINE
 ///	CPoint prevStarPoint;
 
 // Selecting
@@ -59,7 +61,8 @@ public:
 
 	BOOL InitializeOpenGL();
 	BOOL SetupPixelFormat();
-	void GetGLInfo();
+	BOOL LoadTextures();
+	BOOL LoadTGA(Texture &texture, char* filename);
 
 // States
 	StateType state;
@@ -76,6 +79,7 @@ public:
 	void DrawConstellations() const;
 	void DrawConstellation (int i) const;
 	void DrawHeading() const;
+///	ACTIVE LINE
 ///	void DrawActiveLine() const;
 
 	// View manipulation

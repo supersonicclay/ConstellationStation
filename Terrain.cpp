@@ -182,4 +182,30 @@ float CTerrain::RandomOffset( float range )
 
 void CTerrain::Serialize(CArchive& ar)
 {
+	CObject::Serialize(ar);
+
+	if (ar.IsStoring())
+	{
+		ar << arraySize << size
+		   << scale << iterations
+		   << roughness;
+
+		for( int i=0; i < arraySize*arraySize; i++ )
+		{
+			ar << heights[i];
+		}
+	}
+	else
+	{
+		ar >> arraySize >> size
+		   >> scale >> iterations
+		   >> roughness;
+
+		heights = new float[arraySize * arraySize];
+
+		for( int i=0; i < arraySize*arraySize; i++ )
+		{
+			ar >> heights[i];
+		}
+	}
 }

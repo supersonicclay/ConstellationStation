@@ -1,5 +1,9 @@
-// DlgLocation.cpp : implementation file
+//===========================================================================
+// DlgLocation.cpp
 //
+// CDlgLocation
+//   location dialog
+//===========================================================================
 
 #include "stdafx.h"
 #include "ConStation.h"

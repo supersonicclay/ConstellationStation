@@ -1,22 +1,31 @@
-// Star.h : interface of the CStar class
+//===========================================================================
+// Star.h
 //
-/////////////////////////////////////////////////////////////////////////////
+// CStar
+//   star class
+//===========================================================================
 
-#ifndef STAR_H
-#define STAR_H
+#ifndef CS_STAR_H
+#define CS_STAR_H
+
 
 class CStar : public CObject
 {
+DECLARE_SERIAL( CStar )
 
+// Construction / Destruction
 public:
-	CStar ();
+	CStar();
+	CStar( const CStar& s );
 	~CStar();
 
-	void Randomize();
-	void PickXYZ();
-	void PickLocation();
-	void PickMag();
+	void Init();
 
+	const CStar& operator=( const CStar& s );
+	void Serialize( CArchive& ar );
+
+
+// Attributes
 private:
 	ra_s ra;
 	dec_s dec;
@@ -25,8 +34,8 @@ private:
 	color_s color;
 	float radius;
 
+// Methods
 public:
-
 	float GetMag() const;
 	color_s GetColor() const;
 	float GetRadius() const;
@@ -54,7 +63,16 @@ public:
 				 float second );
 	void SetRADecFromXYZ();
 	void SetXYZFromRADec();
+
+	void Randomize();
+	void PickXYZ();
+	void PickLocation();
+	void PickMag();
 };
+
+// CStar vector
+typedef std::vector<CStar> star_v;
+typedef star_v::iterator star_vi;
 
 #endif
 

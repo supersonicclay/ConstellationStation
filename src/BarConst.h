@@ -1,28 +1,30 @@
-#if !defined(AFX_CONSTBAR_H__0C6892C5_5E81_41DF_B7A8_51E5D3EE4B93__INCLUDED_)
-#define AFX_CONSTBAR_H__0C6892C5_5E81_41DF_B7A8_51E5D3EE4B93__INCLUDED_
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-// ConstBar.h : header file
+//===========================================================================
+// BarConst.h
 //
+// CBarConst
+//   constellation toolbar
+//===========================================================================
+
+#ifndef CS_BARCONST_H
+#define CS_BARCONST_H
+
 
 #include "Starfield.h"
 
 /////////////////////////////////////////////////////////////////////////////
-// CConstBar window
+// CBarConst window
 
-class CConstBar : public CToolBar
+class CBarConst : public CToolBar
 {
 // Construction
 public:
-	CConstBar();
+	CBarConst();
 	BOOL Init( CWnd* pParentWnd );
 	BOOL InitList();
 
 // Attributes
 public:
-	CComboBox m_List;
+	CComboBox constList;
 
 // Operations
 public:
@@ -30,25 +32,24 @@ public:
 	void AddConst( CString &str );
 	void DeleteConst();
 
-	void UpdateList( CString* names, int numConstellations, int numCurrent );
-	void ClearList();
-
+	void UpdateList();
 
 	CString GetCurConst() const;
 
 
 // Overrides
 	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CConstBar)
+	//{{AFX_VIRTUAL(CBarConst)
 	//}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CConstBar();
+	virtual ~CBarConst();
 
 	// Generated message map functions
 protected:
-	//{{AFX_MSG(CConstBar)
+	//{{AFX_MSG(CBarConst)
+	afx_msg void OnConstSelChange();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
@@ -58,4 +59,4 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_CONSTBAR_H__0C6892C5_5E81_41DF_B7A8_51E5D3EE4B93__INCLUDED_)
+#endif

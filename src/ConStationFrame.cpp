@@ -1,14 +1,13 @@
-// ConStationFrame.cpp : implementation of the CConStationFrame class
+//===========================================================================
+// ConStationFrame.cpp
 //
+// CConStationFrame
+///   contains all toolbars and dialogs. Forwards commands.
+//===========================================================================
 
 #include "stdafx.h"
 #include "ConStation.h"
 #include "ConStationFrame.h"
-
-#include "DlgConstName.h"
-#include "DlgShowHide.h"
-#include "DlgTerrain.h"
-#include "DlgLocation.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -23,13 +22,11 @@ BEGIN_MESSAGE_MAP(CConStationFrame, CFrameWnd)
 	//{{AFX_MSG_MAP(CConStationFrame)
 	ON_WM_CREATE()
 	ON_WM_SETFOCUS()
-	ON_CBN_CLOSEUP(ID_CONST_LIST, OnConstListCloseUp)
 	ON_COMMAND(ID_CONST_ADD, OnConstAdd)
 	ON_COMMAND(ID_CONST_DELETE, OnConstDelete)
 	ON_COMMAND(ID_CONST_RENAME, OnConstRename)
 	ON_COMMAND(ID_CONST_HIDE, OnConstHide)
 	ON_COMMAND(ID_CONST_ALINE, OnConstAddLine)
-	ON_COMMAND(ID_CONST_APOLY, OnConstAddPoly)
 	ON_COMMAND(ID_CONST_DLINE, OnConstDeleteLine)
 	ON_COMMAND(ID_CONST_SHOWHIDE, OnConstShowHide)
 	ON_COMMAND(ID_CONST_HIDEALL, OnConstHideAll)
@@ -44,12 +41,12 @@ BEGIN_MESSAGE_MAP(CConStationFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_CONST_RENAME, OnUpdateConstRename)
 	ON_UPDATE_COMMAND_UI(ID_CONST_HIDE, OnUpdateConstHide)
 	ON_UPDATE_COMMAND_UI(ID_CONST_ALINE, OnUpdateConstAddLine)
-	ON_UPDATE_COMMAND_UI(ID_CONST_APOLY, OnUpdateConstAddPoly)
 	ON_UPDATE_COMMAND_UI(ID_CONST_DLINE, OnUpdateConstDeleteLine)
 	ON_UPDATE_COMMAND_UI(ID_STARF_ROTATE, OnUpdateStarfRotate)
 	ON_UPDATE_COMMAND_UI(ID_CONST_HIDEALL, OnUpdateConstHideAll)
 	ON_UPDATE_COMMAND_UI(ID_CONST_SHOWALL, OnUpdateConstShowAll)
 	ON_UPDATE_COMMAND_UI(ID_CONST_SHOWHIDE, OnUpdateConstShowHide)
+	ON_COMMAND(ID_OPTIONS_TIME, OnOptionsTime)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -78,7 +75,7 @@ int CConStationFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 
 	// Child View
-	if (!m_wndView.Create(NULL, NULL, AFX_WS_DEFAULT_VIEW,
+	if (!view.Create(NULL, NULL, AFX_WS_DEFAULT_VIEW,
 		CRect(0, 0, 0, 0), this, AFX_IDW_PANE_FIRST, NULL))
 	{
 		TRACE0("Failed to create view window\n");
@@ -86,22 +83,22 @@ int CConStationFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	}
 
 	// Starfield ToolBar
-	if (!m_wndStarfBar.Init(this))
+	if (!starfBar.Init(this))
 	{
 		TRACE0("Failed to create starfield toolbar\n");
 		return -1;
 	}
 
 	// Constellation ToolBar
-	if (!m_wndConstBar.Init(this))
+	if (!constBar.Init(this))
 	{
 		TRACE0("Failed to create constellation bar\n");
 		return -1;
 	}
 
 	// Status Bar
-	if (!m_wndStatusBar.Create(this) ||
-		!m_wndStatusBar.SetIndicators(indicators,
+	if (!statusBar.Create(this) ||
+		!statusBar.SetIndicators(indicators,
 		  sizeof(indicators)/sizeof(UINT)))
 	{
 		TRACE0("Failed to create status bar\n");
@@ -111,11 +108,11 @@ int CConStationFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// Docking
 	EnableDocking(CBRS_ALIGN_ANY);
 
-	m_wndStarfBar.EnableDocking(CBRS_ALIGN_ANY);
-	m_wndConstBar.EnableDocking(CBRS_ALIGN_ANY);
+	starfBar.EnableDocking(CBRS_ALIGN_ANY);
+	constBar.EnableDocking(CBRS_ALIGN_ANY);
 
-	DockControlBar(&m_wndStarfBar);
-	DockControlBar(&m_wndConstBar);
+	DockControlBar(&starfBar);
+	DockControlBar(&constBar);
 
 	return 0;
 }
@@ -154,13 +151,13 @@ void CConStationFrame::Dump(CDumpContext& dc) const
 void CConStationFrame::OnSetFocus(CWnd* pOldWnd)
 {
 	// forward focus to the view window
-	m_wndView.SetFocus();
+	view.SetFocus();
 }
 
 BOOL CConStationFrame::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo)
 {
 	// let the view have first crack at the command
-	if (m_wndView.OnCmdMsg(nID, nCode, pExtra, pHandlerInfo))
+	if (view.OnCmdMsg(nID, nCode, pExtra, pHandlerInfo))
 		return TRUE;
 
 	// otherwise, do default handling
@@ -169,268 +166,49 @@ BOOL CConStationFrame::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLE
 
 
 /////////////////////////////////////////////////////////////////////////////
+// Gets
 
 CConStationView* CConStationFrame::GetView()
 {
-	return &m_wndView;
+	return &view;
 }
 
-
-// Make sure ConstList is consistent with the constellation names in Starfield
-void CConStationFrame::UpdateList()
+CBarConst* CConStationFrame::GetConstBar()
 {
-	int numConstellations = starfield->GetNumConstellations();
-	int numCurrent = starfield->GetNumCurConstellation();
-	CString* constellationNames = new CString[numConstellations];
+	return &constBar;
+}
 
-	for (int i=0; i<numConstellations; i++)
-	{
-		constellationNames[i] = starfield->GetConstellation(i)->GetName();
-	}
-
-	// Send the names to ConstList
-	m_wndConstBar.UpdateList(constellationNames, numConstellations, numCurrent);
-
+CBarStarf* CConStationFrame::GetStarfBar()
+{
+	return &starfBar;
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CConStationFrame message handlers
 
-void CConStationFrame::OnConstListCloseUp()
-{
-	if (m_wndConstBar.m_List.GetCurSel() != CB_ERR)
-	{
-		starfield->SetCurConstellation(m_wndConstBar.GetCurConst());
-		GetView()->Redraw();
-	}
+// Constellation commands
+void CConStationFrame::OnConstAdd()			{	constMgr.Add();		}
+void CConStationFrame::OnConstDelete()		{	constMgr.Delete();		}
+void CConStationFrame::OnConstRename()		{	constMgr.Rename();		}
+void CConStationFrame::OnConstHide()		{	constMgr.Hide();		}
+void CConStationFrame::OnConstAddLine()		{	constMgr.AddLine();	}
+void CConStationFrame::OnConstDeleteLine()	{	constMgr.DeleteLine();	}
+void CConStationFrame::OnConstShowHide()	{	constMgr.ShowHide();	}
+void CConStationFrame::OnConstHideAll()		{	constMgr.HideAll();	}
+void CConStationFrame::OnConstShowAll()		{	constMgr.ShowAll();	}
 
-	SetFocus();
-}
+// Starfield commands
+void CConStationFrame::OnStarfRotate()		{	starfMgr.Rotate();		}
+void CConStationFrame::OnOptionsLocation()	{	starfMgr.Location();	}
+void CConStationFrame::OnOptionsTime()		{	starfMgr.Time();		}
 
-void CConStationFrame::OnConstAdd() 
-{
-	if( starfield->IsSpinning() )
-		starfield->SwitchSpinning();
-
-	CDlgConstName dialog;
-
-	// Set name initially to "Constellation" prepended to a number
-	//  the 
-	CString constName = "Constellation";
-
-	// The total number of created constellaitons (starting at 1)
-	const int numNewConstellations = starfield->GetNumNewConstellations();
-
-	// Convert the number to a string and append
-	char numString[20];
-	itoa (numNewConstellations+1, numString, 10);
-	constName += numString;
-
-	dialog.SetConstName( constName );
-
-	// If they cancel, return
-	if( dialog.DoModal() != IDOK )
-		return;
-
-	// Check for duplicate name
-	while (starfield->IsDuplicate(dialog.m_Name))
-	{
-		MessageBox("There is already a constellation with this name.",
-			"Error", MB_OK | MB_ICONEXCLAMATION);
-
-		if (dialog.DoModal() != IDOK)
-			return;
-	}
-
-	// Add constellation and make it the current constellation
-	m_wndConstBar.AddConst(dialog.m_Name);
-	starfield->AddConstellation(dialog.m_Name);
-	starfield->IncNumNewConstellations();
-	starfield->SetCurConstellation(dialog.m_Name);
-
-	GetActiveDocument()->SetModifiedFlag();
-	GetView()->Redraw();
-}
-
-void CConStationFrame::OnConstDelete() 
-{
-	if( starfield->IsSpinning() )
-		starfield->SwitchSpinning();
-
-	int m = MessageBox("Are you sure you want to delete this constellation?",
-		"Delete Constellation?", MB_YESNO | MB_ICONEXCLAMATION);
-
-	if (m == IDYES)
-	{
-		starfield->DeleteConstellation();
-		m_wndConstBar.DeleteConst();
-
-		// Set newly selected constellation as the current one
-		if (starfield->GetNumConstellations() > 0)
-			starfield->SetCurConstellation(m_wndConstBar.GetCurConst());
-
-		SetState( state_Viewing );
-
-		GetActiveDocument()->SetModifiedFlag();
-		GetView()->Redraw();
-	}
-}
-
-void CConStationFrame::OnConstRename() 
-{
-	if( starfield->IsSpinning() )
-		starfield->SwitchSpinning();
-
-	CDlgConstName dialog;
-
-	CString origConstName = m_wndConstBar.GetCurConst();
-	dialog.SetConstName(origConstName);
-
-	// If they cancel, return
-	if (dialog.DoModal() != IDOK)
-		return;
-
-	// Check for duplicate name
-	while (starfield->IsDuplicate(dialog.m_Name) &&
-		dialog.m_Name != origConstName)
-	{
-		MessageBox("There is already a constellation with this name.",
-			"Error", MB_OK | MB_ICONEXCLAMATION);
-
-		if (dialog.DoModal() != IDOK)
-			return;
-	}
-
-	// If it wasn't renamed
-	if (dialog.m_Name == origConstName)
-		return;
-
-	// Otherwise Rename constellation
-
-	// Remove old name from the list and add new name
-	m_wndConstBar.DeleteConst();
-	m_wndConstBar.AddConst(dialog.m_Name);
-
-	starfield->RenameConstellation(dialog.m_Name);
-
-	GetActiveDocument()->SetModifiedFlag();
-}
-
-void CConStationFrame::OnConstHide() 
-{
-	starfield->GetCurConstellation()->SwitchVisible();
-
-	GetActiveDocument()->SetModifiedFlag();
-	GetView()->Redraw();
-}
-
-void CConStationFrame::OnConstAddLine() 
-{
-	if (state == state_AddingLine)
-		SetState( state_Viewing );
-	else
-		SetState( state_AddingLine );
-}
-
-void CConStationFrame::OnConstAddPoly() 
-{
-	if( state == state_AddingPoly )
-		SetState( state_Viewing );
-	else
-		SetState( state_AddingPoly );
-}
-
-void CConStationFrame::OnConstDeleteLine() 
-{
-	if (state == state_DeletingLine)
-		SetState( state_Viewing );
-	else
-		SetState( state_DeletingLine );
-}
-
-void CConStationFrame::OnStarfRotate() 
-{
-	starfield->SwitchSpinning();	
-}
-
-void CConStationFrame::OnConstShowHide() 
-{
-	if( starfield->IsSpinning() )
-		starfield->SwitchSpinning();
-
-	CDlgShowHide dialog;
-
-	dialog.DoModal();
-
-	GetActiveDocument()->SetModifiedFlag();
-	SetState( state_Viewing );
-}
-
-void CConStationFrame::OnConstHideAll() 
-{
-	for (int i=0; i<starfield->GetNumConstellations(); i++)
-	{
-		starfield->GetConstellation(i)->SetVisible(FALSE);
-	}
-
-	GetActiveDocument()->SetModifiedFlag();
-	GetView()->Redraw();
-}
-
-void CConStationFrame::OnConstShowAll() 
-{
-	for (int i=0; i<starfield->GetNumConstellations(); i++)
-	{
-		starfield->GetConstellation(i)->SetVisible(TRUE);
-	}
-
-	GetActiveDocument()->SetModifiedFlag();
-	GetView()->Redraw();
-}
-
-void CConStationFrame::OnTerrainNew() 
-{
-	terrain->MakeTerrain();
-	RedrawView();
-}
-
-void CConStationFrame::OnOptionsTerrain() 
-{
-	if( starfield->IsSpinning() )
-		starfield->SwitchSpinning();
-
-	float r = terrain->GetRoughness();
-	color_s c = terrain->GetColor();
-
-	CDlgTerrain* dialog = new CDlgTerrain( r, c );
-
-	dialog->DoModal();
-
-	if( dialog->needsUpdate )
-	{
-		terrain->MakeTerrain();
-		RedrawView();
-	}
-
-	delete dialog;
-}
-
-void CConStationFrame::OnOptionsLocation() 
-{
-	if( starfield->IsSpinning() )
-		starfield->SwitchSpinning();
-
-	/// LOCATION DIALOG
-	CDlgLocation* dialog = new CDlgLocation();
-
-	dialog->DoModal();	
-}
+// Terrain commands
+void CConStationFrame::OnTerrainNew()		{	terrainMgr.New();		}
+void CConStationFrame::OnOptionsTerrain()	{	terrainMgr.Options();	}
 
 
-/////////////
-// Updates //
-/////////////
+// Updates
 void CConStationFrame::OnUpdateConstList(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable( state == state_Viewing );
@@ -444,18 +222,18 @@ void CConStationFrame::OnUpdateConstAdd(CCmdUI* pCmdUI)
 void CConStationFrame::OnUpdateConstDelete(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable( state == state_Viewing &&
-					starfield->GetNumConstellations() > 0 );
+					starfield.GetNumConstellations() > 0 );
 }
 
 void CConStationFrame::OnUpdateConstRename(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable( state == state_Viewing &&
-					starfield->GetNumConstellations() > 0);
+					starfield.GetNumConstellations() > 0);
 }
 
 void CConStationFrame::OnUpdateConstHide(CCmdUI* pCmdUI) 
 {
-	if( starfield->GetNumConstellations() == 0 )
+	if( starfield.GetNumConstellations() == 0 )
 	{
 		pCmdUI->Enable( FALSE );
 		pCmdUI->SetCheck( FALSE );
@@ -463,48 +241,34 @@ void CConStationFrame::OnUpdateConstHide(CCmdUI* pCmdUI)
 	else
 	{
 		pCmdUI->Enable( state == state_Viewing );
-		pCmdUI->SetCheck(!starfield->GetCurConstellation()->IsVisible());
+		pCmdUI->SetCheck(!starfield.GetCurConstellation()->IsVisible());
 	}
 }
 
 void CConStationFrame::OnUpdateConstAddLine(CCmdUI* pCmdUI) 
 {
-	if( starfield->GetNumConstellations() == 0 )
+	if( starfield.GetNumConstellations() == 0 )
 	{
 		pCmdUI->Enable( FALSE );
 		pCmdUI->SetCheck( FALSE );
 	}
 	else
 	{
-		pCmdUI->Enable( starfield->GetCurConstellation()->IsVisible() );
+		pCmdUI->Enable( starfield.GetCurConstellation()->IsVisible() );
 		pCmdUI->SetCheck( state == state_AddingLine );
-	}
-}
-
-void CConStationFrame::OnUpdateConstAddPoly(CCmdUI* pCmdUI) 
-{
-	if( starfield->GetNumConstellations() == 0 )
-	{
-		pCmdUI->Enable( FALSE );
-		pCmdUI->SetCheck( FALSE );
-	}
-	else
-	{
-		pCmdUI->Enable( starfield->GetCurConstellation()->IsVisible() );
-		pCmdUI->SetCheck( state == state_AddingPoly );
 	}
 }
 
 void CConStationFrame::OnUpdateConstDeleteLine(CCmdUI* pCmdUI) 
 {
-	if( starfield->GetNumConstellations() == 0 )
+	if( starfield.GetNumConstellations() == 0 )
 	{
 		pCmdUI->Enable( FALSE );
 		pCmdUI->SetCheck( FALSE );
 	}
 	else
 	{
-		pCmdUI->Enable( starfield->GetCurConstellation()->IsVisible() );
+		pCmdUI->Enable( starfield.GetCurConstellation()->IsVisible() );
 		pCmdUI->SetCheck( state == state_DeletingLine );
 	}
 }
@@ -512,25 +276,26 @@ void CConStationFrame::OnUpdateConstDeleteLine(CCmdUI* pCmdUI)
 void CConStationFrame::OnUpdateConstHideAll(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable( state == state_Viewing &&
-		starfield->GetNumConstellations() > 0 );
+		starfield.GetNumConstellations() > 0 );
 }
 
 void CConStationFrame::OnUpdateConstShowAll(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable( state == state_Viewing &&
-		starfield->GetNumConstellations() > 0 );
+		starfield.GetNumConstellations() > 0 );
 }
 
 void CConStationFrame::OnUpdateConstShowHide(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable( state == state_Viewing &&
-		starfield->GetNumConstellations() > 0 );
+		starfield.GetNumConstellations() > 0 );
 }
 
 void CConStationFrame::OnUpdateStarfRotate(CCmdUI* pCmdUI) 
 {
-	pCmdUI->SetCheck( starfield->IsSpinning() );
+	pCmdUI->SetCheck( starfield.IsSpinning() );
 }
+
 
 
 

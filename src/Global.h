@@ -1,14 +1,31 @@
+//===========================================================================
+// Global.h
+//
+// Various global variables and types
+//===========================================================================
 
-
-#ifndef GLOBAL_H
-#define GLOBAL_H
-
+#ifndef CS_GLOBAL_H
+#define CS_GLOBAL_H
 
 #include "stdafx.h"
 
 
-
+/////////////////////////////////////////////////////////////////////////////
 // TYPES
+
+enum state_e
+{
+	state_Viewing,
+	state_AddingLine,
+	state_DeletingLine
+};
+
+enum select_e
+{
+	select_Star,
+	select_Line
+};
+
 typedef struct
 {
 	float r;
@@ -23,11 +40,6 @@ typedef struct
 	GLuint height;
 	GLubyte* data;
 } texture_s;
-
-enum state_e {	state_Viewing,
-				state_AddingLine,
-				state_AddingPoly,
-				state_DeletingLine};
 
 typedef struct
 {
@@ -44,13 +56,14 @@ typedef struct
 	float second;
 } dec_s;
 
+
+/////////////////////////////////////////////////////////////////////////////
+// VARIABLES
+
 #include "Starfield.h"
 #include "Terrain.h"
 
 
-// VARIABLES
-extern CStarfield* starfield;
-extern CTerrain* terrain;
 extern state_e state;
 extern const color_s COLOR_WHITE,
 					 COLOR_BLACK,
@@ -64,15 +77,48 @@ extern const color_s COLOR_WHITE,
 #define PI      3.14159265358979323846f
 
 
+/////////////////////////////////////////////////////////////////////////////
+// MAIN CLASSES
+
+#include "ConStation.h"
+#include "ConStationFrame.h"
+#include "ConStationView.h"
+#include "MgrInput.h"
+#include "MgrGraphics.h"
+#include "MgrConst.h"
+#include "MgrStarf.h"
+#include "MgrTerrain.h"
+#include "MgrTeacher.h"
+
+extern CMgrInput inputMgr;
+extern CMgrGraphics graphicsMgr;
+extern CMgrConst constMgr;
+extern CMgrStarf starfMgr;
+extern CMgrTerrain terrainMgr;
+extern CMgrTeacher teacherMgr;
+
+extern CStarfield starfield;
+extern CTerrain terrain;
+
+
+/////////////////////////////////////////////////////////////////////////////
+// MFC CLASS ACCESS
+
+CConStationApp* GetApp();
+CConStationFrame* GetFrame();
+CConStationView* GetView();
+
+
+/////////////////////////////////////////////////////////////////////////////
 // FUNCTIONS
-void glColor( color_s c );
 
-BOOL LoadTGA( UINT &texID, char* filename );
-
-void SetState( enum state_e s );
-
-// TIME CONSUMING, SHOULD BE CALLED SPARINGLY
-void RedrawView();
+void SetState( state_e s );
+void Redraw();
+void CSInfo( char* msg, char* title="Information" );
+int  CSQuestion( char* msg, char* title="Question" );
+int  CSYesNoCancel( char* msg, char* title );
+void CSWarn( char* msg, char* title="Error" );
+void CSError( char* msg, char* title );
 
 
 #endif

@@ -1,15 +1,15 @@
-#if !defined(AFX_DLGTERRAIN_H__E9B06D25_EB9A_4544_AE71_FD1BDDA3B920__INCLUDED_)
-#define AFX_DLGTERRAIN_H__E9B06D25_EB9A_4544_AE71_FD1BDDA3B920__INCLUDED_
+//===========================================================================
+// DlgTerrain.h
+//
+// CDlgTerrain
+//   terrain dialog
+//===========================================================================
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#ifndef CS_DLGTERRAIN_H
+#define CS_DLGTERRAIN_H
+
 
 #include "Terrain.h"
-
-// CDlgTerrain.h : header file
-//
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CDlgTerrain dialog
@@ -60,4 +60,4 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_DLGTERRAIN_H__E9B06D25_EB9A_4544_AE71_FD1BDDA3B920__INCLUDED_)
+#endif

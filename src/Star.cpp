@@ -1,12 +1,47 @@
-// Star.cpp : implementation of the CStar class
+//===========================================================================
+// Star.h
 //
+// CStar
+//   star class
+//===========================================================================
+
 
 #include "stdafx.h"
 #include "ConStation.h"
 #include "Star.h"
 
+IMPLEMENT_SERIAL( CStar, CObject, 1 )
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Construction / Destruction
 
 CStar::CStar()
+{
+	Init();
+}
+
+CStar::CStar( const CStar& s )
+{
+	*this = s;
+}
+
+CStar::~CStar()
+{
+}
+
+const CStar& CStar::operator=( const CStar& s )
+{
+	ra = s.ra;
+	dec = s.dec;
+	mag = s.mag;
+	x = s.x; y = s.y; z = s.z;
+	color = s.color;
+	radius = s.radius;
+	return *this;
+}
+
+void CStar::Init()
 {
 	x = 0.0f;
 	y = 1.0f;
@@ -23,9 +58,9 @@ CStar::CStar()
 	color = COLOR_WHITE;
 }
 
-CStar::~CStar()
-{
-}
+
+/////////////////////////////////////////////////////////////////////////////
+// Gets
 
 float CStar::GetMag() const
 {
@@ -77,6 +112,10 @@ float CStar::GetPhi() const
 	else
 		return 90.0f+degrees;
 }
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Sets
 
 void CStar::SetMag( float mag_ )
 {
@@ -152,6 +191,10 @@ void CStar::SetDec( bool positive,
 	dec.second = second;
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
+// Sets
+
 // Set Right Ascension and Declination from the x, y, and z coords.
 //   First calculates spherical coordinates for x, y, z.
 //   Then converts the coordinates to right ascension, declination form.
@@ -162,7 +205,8 @@ void CStar::SetRADecFromXYZ()
 	float theta, phi;
 	float hour, minute;
 
-// RIGHT ASCENSION
+
+	// Right Ascension
 	if( z >= 0 )
 		theta = (float) asin( (double) (x / sqrt((double)(z*z) + (x*x))) );
 	else
@@ -178,7 +222,7 @@ void CStar::SetRADecFromXYZ()
 	ra.hour = (int)hour;
 
 
-// DECLINATION
+	// Declination
 	phi  = (float) acos( (double) y  );
 	phi  = phi  * (float) (180 / PI);	// Convert from radians to degrees
 
@@ -222,13 +266,14 @@ void CStar::Randomize()
 	PickMag();
 }
 
+// Pick a random location in the sky
 void CStar::PickLocation()
 {
 	PickXYZ();
-
 	SetRADecFromXYZ();
 }
 
+// Pick random x, y, and z values such that <x,y,z> is normalized
 void CStar::PickXYZ()
 {
 	x = (float)(rand()%2000)/1000-1;	// +1.0 to -1.0
@@ -272,6 +317,7 @@ void CStar::PickXYZ()
 	}
 }
 
+// Pick a random magnitude
 void CStar::PickMag()
 {
 	// Pick random number from 0.00 to 100.00
@@ -294,6 +340,32 @@ void CStar::PickMag()
 	}
 
 	SetColorFromMag();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Serialization
+
+void CStar::Serialize(CArchive& ar)
+{
+	CObject::Serialize(ar);
+
+	if( ar.IsLoading() )
+	{
+		ar >> ra.hour >> ra.minute >> ra.second
+		   >> dec.positive >> dec.degree >> dec.minute >> dec.second
+		   >> mag >> x >> y >> z
+		   >> color.r >> color.g >> color.b
+		   >> radius;
+	}
+	else
+	{
+		ar << ra.hour << ra.minute << ra.second
+		   << dec.positive << dec.degree << dec.minute << dec.second
+		   << mag << x << y << z
+		   << color.r << color.g << color.b
+		   << radius;
+	}
 }
 
 

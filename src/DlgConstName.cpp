@@ -1,5 +1,9 @@
-// ConstNameDlg.cpp : implementation file
+//===========================================================================
+// DlgConstName.cpp
 //
+// CDlgConstName
+//   constellation name dialog
+//===========================================================================
 
 #include "stdafx.h"
 #include "ConStation.h"
@@ -19,7 +23,7 @@ CDlgConstName::CDlgConstName(CWnd* pParent /*=NULL*/)
 	: CDialog(CDlgConstName::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(CDlgConstName)
-	m_Name = _T("");
+	name = _T("");
 	//}}AFX_DATA_INIT
 }
 
@@ -28,7 +32,7 @@ void CDlgConstName::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CDlgConstName)
-	DDX_Text(pDX, IDC_CONST_NAME, m_Name);
+	DDX_Text(pDX, IDC_CONST_NAME, name);
 	//}}AFX_DATA_MAP
 }
 
@@ -42,9 +46,9 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CDlgConstName operations
 
-void CDlgConstName::SetConstName(CString name)
+void CDlgConstName::SetConstName(CString name_)
 {
-	m_Name = name;
+	name = name_;
 }
 
 

@@ -1,9 +1,15 @@
-// ShowHideDlg.cpp : implementation file
+//===========================================================================
+// DlgShowHide.cpp
 //
+// CDlgShowHide
+//   show / hide list dialog
+//===========================================================================
 
 #include "stdafx.h"
 #include "ConStation.h"
 #include "DlgShowHide.h"
+
+#include "Constellation.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -11,8 +17,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-
-#include "Constellation.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CDlgShowHide dialog
@@ -27,7 +31,7 @@ CDlgShowHide::CDlgShowHide(CWnd* pParent /*=NULL*/)
 
 CDlgShowHide::~CDlgShowHide()
 {
-	delete[] constellations;
+///	delete[] constellations;
 }
 
 
@@ -56,29 +60,24 @@ BOOL CDlgShowHide::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 	
-	VERIFY(m_List.SubclassDlgItem(IDC_CONST_LIST, this));
-
-
-	constellations = starfield->GetConstellations();
-	constellationCount = starfield->GetNumConstellations();
-	curConstellationNum = starfield->GetNumCurConstellation();
+	VERIFY(list.SubclassDlgItem(IDC_CONST_LIST, this));
 
 	CString str;
 
 	// Add strings to list box
-	for (int i=0; i<constellationCount; i++)
+	for (int i=0; i<starfield.GetNumConstellations(); i++)
 	{
 		// Get name
-		str = constellations[i].GetName();
+		str = starfield.GetConstellation(i)->GetName();
 
 		// If this constellation is current
-		if (i == curConstellationNum)
+		if (i == starfield.GetNumCurConstellation())
 			str += " <--";
 
 		// Add name to list
-		m_List.SetSel(
-			m_List.AddString(str),
-			constellations[i].IsVisible());
+		list.SetSel(
+			list.AddString(str),
+			starfield.GetConstellation(i)->IsVisible());
 	}
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -87,20 +86,20 @@ BOOL CDlgShowHide::OnInitDialog()
 
 void CDlgShowHide::OnSelchangeConstList() 
 {
-	for (int i=0; i<constellationCount; i++)
+	for (int i=0; i<starfield.GetNumConstellations(); i++)
 	{
-		constellations[i].SetVisible(m_List.GetSel(i));
+		starfield.GetConstellation(i)->SetVisible(list.GetSel(i));
 	}
 
-	RedrawView();
+	Redraw();
 }
 
 
 void CDlgShowHide::OnShowAll() 
 {
-	for (int i=0; i<m_List.GetCount(); i++)
+	for (int i=0; i<list.GetCount(); i++)
 	{
-		m_List.SetSel(i, TRUE);
+		list.SetSel(i, TRUE);
 	}
 
 	// Update
@@ -109,9 +108,9 @@ void CDlgShowHide::OnShowAll()
 
 void CDlgShowHide::OnHideAll() 
 {
-	for (int i=0; i<m_List.GetCount(); i++)
+	for (int i=0; i<list.GetCount(); i++)
 	{
-		m_List.SetSel(i, FALSE);
+		list.SetSel(i, FALSE);
 	}
 
 	// Update
@@ -120,12 +119,12 @@ void CDlgShowHide::OnHideAll()
 
 void CDlgShowHide::OnInvert() 
 {
-	for (int i=0; i<m_List.GetCount(); i++)
+	for (int i=0; i<list.GetCount(); i++)
 	{
-		if (m_List.GetSel(i) == TRUE)
-			m_List.SetSel(i, FALSE);
+		if (list.GetSel(i) == TRUE)
+			list.SetSel(i, FALSE);
 		else
-			m_List.SetSel(i, TRUE);
+			list.SetSel(i, TRUE);
 	}
 
 	// Update

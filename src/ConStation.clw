@@ -2,34 +2,32 @@
 
 [General Info]
 Version=1
-LastClass=CConStationUI
+LastClass=CConStationApp
 LastTemplate=CCmdTarget
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "ConStation.h"
 LastPage=0
 
-ClassCount=12
+ClassCount=10
 Class1=CConStationApp
-Class2=CConStationDoc
+Class2=CDlgLocation
 Class3=CConStationView
 Class4=CConStationFrame
 Class5=CDlgAbout
 Class6=CConstBar
 Class7=CStarfBar
-Class8=CDlgConstName
+Class8=CConstNameDlg
 Class9=CDlgShowHide
 Class10=CDlgTerrain
-Class11=CDlgLocation
-Class12=CConStationUI
 
 ResourceCount=9
 Resource1="IDR_TOOLBAR1"
-Resource2=IDR_CONSTELLATION
+Resource2=IDR_MAINFRAME
 Resource3=IDR_STARFIELD
-Resource4=IDD_TERRAIN
-Resource5=IDD_CONST_NAME
-Resource6=IDR_MAINFRAME
-Resource7=IDD_ABOUTBOX
+Resource4=IDR_CONSTELLATION
+Resource5=IDD_TERRAIN
+Resource6=IDD_ABOUTBOX
+Resource7=IDD_CONST_NAME
 Resource8=IDD_SHOW_HIDE
 Resource9=IDD_LOCATION
 
@@ -47,7 +45,7 @@ Type=0
 HeaderFile=ConStationFrame.h
 ImplementationFile=ConStationFrame.cpp
 Filter=T
-LastObject=CConStationFrame
+LastObject=ID_STARF_SAVE
 BaseClass=CFrameWnd
 VirtualFilter=fWC
 
@@ -81,11 +79,11 @@ Command7=ID_CONST_ADD
 Command8=ID_CONST_DELETE
 Command9=ID_CONST_HIDE
 Command10=ID_CONST_ALINE
-Command11=ID_CONST_APOLY
-Command12=ID_CONST_DLINE
-Command13=ID_CONST_SHOWHIDE
-Command14=ID_CONST_SHOWALL
-Command15=ID_CONST_HIDEALL
+Command11=ID_CONST_DLINE
+Command12=ID_CONST_SHOWHIDE
+Command13=ID_CONST_SHOWALL
+Command14=ID_CONST_HIDEALL
+Command15=ID_OPTIONS_TIME
 Command16=ID_OPTIONS_LOCATION
 Command17=ID_OPTIONS_TERRAIN
 Command18=ID_APP_ABOUT
@@ -94,28 +92,18 @@ CommandCount=18
 [ACL:IDR_MAINFRAME]
 Type=1
 Class=CConStationFrame
-Command1=ID_CONST_ADD
-Command2=ID_CONST_DLINE
-Command3=ID_CONST_DELETE
-Command4=ID_CONST_ALINE
+Command1=ID_CONST_ALINE
+Command2=ID_CONST_ADD
+Command3=ID_CONST_DLINE
+Command4=ID_CONST_DELETE
 Command5=ID_STARF_NEWRANDOM
 Command6=ID_STARF_NEWACTUAL
 Command7=ID_STARF_OPEN
-Command8=ID_CONST_APOLY
-Command9=ID_APP_EXIT
-Command10=ID_STARF_ROTATE
-Command11=ID_STARF_SAVE
-Command12=ID_EDIT_UNDO
-CommandCount=12
-
-[CLS:CConStationDoc]
-Type=0
-HeaderFile=ConStationDoc.h
-ImplementationFile=ConStationDoc.cpp
-BaseClass=CDocument
-LastObject=CConStationDoc
-Filter=N
-VirtualFilter=DC
+Command8=ID_APP_EXIT
+Command9=ID_STARF_ROTATE
+Command10=ID_STARF_SAVE
+Command11=ID_EDIT_UNDO
+CommandCount=11
 
 [CLS:CConStationView]
 Type=0
@@ -136,9 +124,8 @@ Command4=ID_CONST_RENAME
 Command5=ID_CONST_SHOWHIDE
 Command6=ID_CONST_HIDE
 Command7=ID_CONST_ALINE
-Command8=ID_CONST_APOLY
-Command9=ID_CONST_DLINE
-CommandCount=9
+Command8=ID_CONST_DLINE
+CommandCount=8
 
 [CLS:CConstBar]
 Type=0
@@ -160,20 +147,11 @@ BaseClass=CToolBar
 
 [DLG:IDD_CONST_NAME]
 Type=1
-Class=CDlgConstName
+Class=CConstNameDlg
 ControlCount=3
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
 Control3=IDC_CONST_NAME,edit,1350631552
-
-[CLS:CDlgConstName]
-Type=0
-HeaderFile=DlgConstName.h
-ImplementationFile=DlgConstName.cpp
-BaseClass=CDialog
-Filter=D
-LastObject=IDC_CONST_NAME
-VirtualFilter=dWC
 
 [DLG:IDD_SHOW_HIDE]
 Type=1
@@ -192,7 +170,7 @@ HeaderFile=DlgShowHide.h
 ImplementationFile=DlgShowHide.cpp
 BaseClass=CDialog
 Filter=D
-LastObject=IDC_HIDEALL
+LastObject=CDlgShowHide
 VirtualFilter=dWC
 
 [DLG:IDD_TERRAIN]
@@ -222,25 +200,31 @@ HeaderFile=DlgTerrain.h
 ImplementationFile=DlgTerrain.cpp
 BaseClass=CDialog
 Filter=D
-LastObject=IDC_COLOR
+LastObject=CDlgTerrain
 VirtualFilter=dWC
 
 [TB:IDR_STARFIELD]
 Type=1
 Class=CConStationFrame
-Command1=ID_STARF_NEWRANDOM
-Command2=ID_STARF_OPEN
-Command3=ID_STARF_SAVE
-Command4=ID_OPTIONS_LOCATION
-Command5=ID_OPTIONS_TERRAIN
-Command6=ID_TERR_NEW
-Command7=ID_STARF_ROTATE
-Command8=ID_STARF_DATE
+Command1=ID_STARF_NEWACTUAL
+Command2=ID_STARF_NEWRANDOM
+Command3=ID_STARF_OPEN
+Command4=ID_STARF_SAVE
+Command5=ID_OPTIONS_LOCATION
+Command6=ID_OPTIONS_TERRAIN
+Command7=ID_TERR_NEW
+Command8=ID_STARF_ROTATE
 Command9=ID_STARF_DATE
-Command10=ID_STARF_TIME
+Command10=ID_STARF_DATE
 Command11=ID_STARF_TIME
-Command12=ID_STARF_SPEED
-CommandCount=12
+Command12=ID_STARF_TIME
+Command13=ID_STARF_SPEED
+Command14=ID_BUTTON32857
+Command15=ID_BUTTON32858
+Command16=ID_BUTTON32859
+Command17=ID_BUTTON32860
+Command18=ID_BUTTON32861
+CommandCount=18
 
 [CLS:CDlgLocation]
 Type=0
@@ -248,13 +232,12 @@ HeaderFile=DlgLocation.h
 ImplementationFile=DlgLocation.cpp
 BaseClass=CDialog
 Filter=D
-LastObject=IDC_DATETIMEPICKER2
+LastObject=CDlgLocation
 
-[CLS:CConStationUI]
+[CLS:CConstNameDlg]
 Type=0
-HeaderFile=ConStationUI.h
-ImplementationFile=ConStationUI.cpp
-BaseClass=CCmdTarget
-Filter=N
-LastObject=CConStationUI
+HeaderFile=constnamedlg.h
+ImplementationFile=constnamedlg.cpp
+BaseClass=CDialog
+LastObject=CConstNameDlg
 

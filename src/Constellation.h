@@ -1,74 +1,110 @@
-// Constellation.h : interface of the CConstellation class
+//===========================================================================
+// Constellation.h
 //
-/////////////////////////////////////////////////////////////////////////////
+// CConstLine
+//   constellation line that uses pointers to stars
+//
+// CConstellation
+//   constellation class
+//===========================================================================
 
-
-#ifndef CONSTELLATION_H
-#define CONSTELLATION_H
+#ifndef CS_CONSTELLATION_H
+#define CS_CONSTELLATION_H
 
 #include "Star.h"
 
-class CConstLine
-{
 
+/////////////////////////////////////////////////////////////////////////////
+// CConstLine
+
+class CConstLine : public CObject
+{
+DECLARE_SERIAL( CConstLine )
+
+// Construction / Destruction
 public:
 	CConstLine();
-	CConstLine( CStar* star1_, CStar* star2_ );
+	CConstLine( int star1_, int star2_ );
+	CConstLine( const CConstLine& c );
 	~CConstLine();
 
+	const CConstLine& operator=( const CConstLine& c );
+	void Serialize(CArchive& ar);
+
+
+// Attributes
 private:
-	CStar* star1;
-	CStar* star2;
+	int star1;
+	int star2;
 
+// Methods
 public:
-	void SetStar1( CStar* star1_ );
-	void SetStar2( CStar* star2_ );
+	void SetStar1( int star1_ );
+	void SetStar2( int star2_ );
 
-	CStar* GetStar1() const;
-	CStar* GetStar2() const;
-	float GetX1() const;
-	float GetY1() const;
-	float GetZ1() const;
-	float GetX2() const;
-	float GetY2() const;
-	float GetZ2() const;
+	int   GetStar1();
+	int   GetStar2();
+	float GetX1();
+	float GetY1();
+	float GetZ1();
+	float GetX2();
+	float GetY2();
+	float GetZ2();
 
 };
 
+// CConstLine vector
+typedef std::vector<CConstLine> line_v;
+typedef line_v::iterator        line_vi;
+
+
+/////////////////////////////////////////////////////////////////////////////
+// CConstellation
+
 class CConstellation : public CObject
 {
+DECLARE_SERIAL( CConstellation )
 
+// Construction / Destruction
 public:
 	CConstellation();
 	CConstellation( CString name_ );
+	CConstellation( const CConstellation& c );
 	~CConstellation();
 
 	const CConstellation& operator=( const CConstellation& c );
+	void Serialize( CArchive& ar );
 
+
+// Attributes
 private:
 	CString name;
 
 	BOOL visible;
 
 	int numLines;
-	CConstLine* lines;
+	line_v lines;
 
-	int arraySize;
-
+// Methods
 public:
-	CString GetName() const;
+	CString GetName();
 	void SetName( CString name_ );
 
-	BOOL IsVisible() const;
+	int GetNumLines();
+	CConstLine* GetLine( int i );
+
+	BOOL IsVisible();
 	void SwitchVisible();
 	void SetVisible( BOOL visible_ );
 
-	int GetNumLines() const;
-	CConstLine* GetLine( int i ) const;
-
-	void AddLine( CStar* star1, CStar* star2 );
+	void AddLine( int star1, int star2 );
 	void DeleteLine( int lineNum );
 	void CheckForDuplicateLines();
 };
+
+// CConstellation Vector
+typedef std::vector<CConstellation> constellation_v;
+typedef constellation_v::iterator   constellation_vi;
+
 
 #endif

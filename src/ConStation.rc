@@ -66,7 +66,6 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_FILE                ICON    DISCARDABLE     "res\\file.ico"
 IDR_MAINFRAME           ICON    DISCARDABLE     "res\\ConStation.ico"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -84,6 +83,7 @@ IDR_CONSTELLATION       BITMAP  DISCARDABLE     "res\\Constell.bmp"
 
 IDR_STARFIELD TOOLBAR DISCARDABLE  16, 15
 BEGIN
+    BUTTON      ID_STARF_NEWACTUAL
     BUTTON      ID_STARF_NEWRANDOM
     BUTTON      ID_STARF_OPEN
     BUTTON      ID_STARF_SAVE
@@ -99,7 +99,14 @@ BEGIN
     SEPARATOR
     BUTTON      ID_STARF_TIME
     BUTTON      ID_STARF_TIME
+    SEPARATOR
     BUTTON      ID_STARF_SPEED
+    SEPARATOR
+    BUTTON      ID_BUTTON32857
+    BUTTON      ID_BUTTON32858
+    BUTTON      ID_BUTTON32859
+    BUTTON      ID_BUTTON32860
+    BUTTON      ID_BUTTON32861
 END
 
 IDR_CONSTELLATION TOOLBAR DISCARDABLE  16, 16
@@ -114,7 +121,6 @@ BEGIN
     BUTTON      ID_CONST_HIDE
     SEPARATOR
     BUTTON      ID_CONST_ALINE
-    BUTTON      ID_CONST_APOLY
     BUTTON      ID_CONST_DLINE
 END
 
@@ -126,7 +132,7 @@ END
 
 IDR_MAINFRAME MENU PRELOAD DISCARDABLE 
 BEGIN
-    POPUP "Star Field"
+    POPUP "&Star Field"
     BEGIN
         MENUITEM "New &Random\tCtrl+N",         ID_STARF_NEWRANDOM
         MENUITEM "New Actual\tCtrl+Shift+N",    ID_STARF_NEWACTUAL
@@ -137,14 +143,13 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "E&xit",                       ID_APP_EXIT
     END
-    POPUP "Constellation"
+    POPUP "&Constellation"
     BEGIN
         MENUITEM "&Add\tCtrl+A",                ID_CONST_ADD
         MENUITEM "&Delete\tCtrl+D",             ID_CONST_DELETE
         MENUITEM "&Hide",                       ID_CONST_HIDE
         MENUITEM SEPARATOR
-        MENUITEM "Add &Line\tL",                ID_CONST_ALINE
-        MENUITEM "Add &Polygon\tP",             ID_CONST_APOLY
+        MENUITEM "&Add Line\tA",                ID_CONST_ALINE
         MENUITEM "&Delete Line\tD",             ID_CONST_DLINE
         MENUITEM SEPARATOR
         MENUITEM "Show / Hide &List",           ID_CONST_SHOWHIDE
@@ -153,8 +158,9 @@ BEGIN
     END
     POPUP "&Options"
     BEGIN
-        MENUITEM "Change &Location",            ID_OPTIONS_LOCATION
-        MENUITEM "&Terrain Settings",           ID_OPTIONS_TERRAIN
+        MENUITEM "&Time...",                    ID_OPTIONS_TIME
+        MENUITEM "&Location...",                ID_OPTIONS_LOCATION
+        MENUITEM "Te&rrain...",                 ID_OPTIONS_TERRAIN
     END
     MENUITEM "&View",                       65535
     POPUP "&Help"
@@ -171,15 +177,14 @@ END
 
 IDR_MAINFRAME ACCELERATORS PRELOAD MOVEABLE PURE 
 BEGIN
+    "A",            ID_CONST_ALINE,         VIRTKEY, NOINVERT
     "A",            ID_CONST_ADD,           VIRTKEY, CONTROL, NOINVERT
     "D",            ID_CONST_DLINE,         VIRTKEY, NOINVERT
     "D",            ID_CONST_DELETE,        VIRTKEY, CONTROL, NOINVERT
-    "L",            ID_CONST_ALINE,         VIRTKEY, NOINVERT
     "N",            ID_STARF_NEWRANDOM,     VIRTKEY, CONTROL, NOINVERT
     "N",            ID_STARF_NEWACTUAL,     VIRTKEY, SHIFT, CONTROL, 
                                                     NOINVERT
     "O",            ID_STARF_OPEN,          VIRTKEY, CONTROL, NOINVERT
-    "P",            ID_CONST_APOLY,         VIRTKEY, NOINVERT
     "Q",            ID_APP_EXIT,            VIRTKEY, CONTROL, NOINVERT
     "S",            ID_STARF_ROTATE,        VIRTKEY, NOINVERT
     "S",            ID_STARF_SAVE,          VIRTKEY, CONTROL, NOINVERT
@@ -368,10 +373,8 @@ IDC_EDIT                CURSOR  DISCARDABLE     "res\\edit.cur"
 IDC_ALINE               CURSOR  DISCARDABLE     "res\\aline.cur"
 IDC_DLINE               CURSOR  DISCARDABLE     "res\\dline.cur"
 IDC_ALINEX              CURSOR  DISCARDABLE     "res\\alinex.cur"
-IDC_DLINEX              CURSOR  DISCARDABLE     "res\\dlinex.cur"
 IDC_EDITX               CURSOR  DISCARDABLE     "res\\editx.cur"
-IDC_APOLY               CURSOR  DISCARDABLE     "res\\apoly.cur"
-IDC_APOLYX              CURSOR  DISCARDABLE     "res\\apolyx.cur"
+IDC_DLINEX              CURSOR  DISCARDABLE     "res\\dlinex.cur"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -433,7 +436,6 @@ END
 STRINGTABLE DISCARDABLE 
 BEGIN
     ID_CONST_ALINE          "Add a new line to this constellation\nAdd Line"
-    ID_CONST_APOLY          "Add a new polygon to this constellation\nAdd Polygon"
     ID_CONST_DLINE          "Delete a line from this constellation\nDelete Line"
 END
 
@@ -457,6 +459,7 @@ BEGIN
     ID_TERR_NEW             "Generate a new random terrain\nNewTerrain"
     ID_STARF_TIME           "Adjust the current viewing timee\nAdjust Time"
     ID_STARF_DATE           "Adjust the current viewing date\nAdjust Date"
+    ID_OPTIONS_TIME         "Change the viewing date and time\nChange Time"
 END
 
 STRINGTABLE DISCARDABLE 

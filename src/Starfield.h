@@ -1,34 +1,48 @@
-// Starfield.h : interface of the CStarfield class
+//===========================================================================
+// Starfield.h
 //
-/////////////////////////////////////////////////////////////////////////////
-#ifndef STARFIELD_H
-#define STARFIELD_H
+// CStarfield
+//   a starfield contains stars, constellations, information about time and
+//   location on Earth, as well as certain settings. A CStarfield and 
+//   everything in a CStarfield can be saved and opened.
+//===========================================================================
+
+#ifndef CS_STARFIELD_H
+#define CS_STARFIELD_H
+
 
 #include "Star.h"
 #include "Constellation.h"
 
 class CStarfield : public CObject
 {
+DECLARE_SERIAL( CStarfield )
 
+// Construction / Destruction
 public:
-	CStarfield( bool random=false );
+	CStarfield( BOOL actual=TRUE );
 	~CStarfield();
 
-	void Init();
+	void New( BOOL actual );
 	void InitRandomStars();
 	void InitActualStars();
-	void InitRandomConstellations();
 	void InitActualConstellations();
 
+	void Serialize( CArchive& ar );
+
+
+// Attributes
 private:
-	CStar* stars;
-	CConstellation* constellations;
+	star_v stars;
+	constellation_v  constellations;
+	constellation_vi constellationsItor;
 
 	long numStars;
-
 	int numConstellations;
 	int numNewConstellations;
 	int numCurConstellation;
+
+	BOOL modified;
 
 	// Location & Time
 	struct tm gregorian;	// Gregorian time - people's time
@@ -46,57 +60,58 @@ private:
 	// Zoom
 	float zoom;
 
+
+// Methods
 public:
 
-// Gets
-	CStar* GetStars() const;
-	CConstellation* GetConstellations() const;
-	CStar* GetStar( int i ) const;
-	CConstellation* GetConstellation( int i ) const;
-	CConstellation* GetConstellation( CString &name ) const;
-	CConstellation* GetCurConstellation() const;
+	CStar* GetStar( int i );
+	CConstellation* GetConstellation( int i );
+	CConstellation* GetConstellation( CString &name );
+	CConstellation* GetCurConstellation();
 
-	int GetNumStars() const;
-	int GetNumConstellations() const;
-	int GetNumNewConstellations() const;
-	int GetNumCurConstellation() const;
+	int GetNumStars();
+	int GetNumConstellations();
+	int GetNumNewConstellations();
+	int GetNumCurConstellation();
 
-	float GetRotLatitude() const;
-	float GetRotTime() const;
-	BOOL  IsSpinning() const;
+	BOOL IsModified();
 
-	float GetRotX() const;
-	float GetRotY() const;
-	float GetZoom() const;
+	float GetRotLatitude();
+	float GetRotTime();
+	BOOL  IsSpinning();
 
-// Sets
+	float GetRotX();
+	float GetRotY();
+	float GetZoom();
+
 	void IncNumNewConstellations();
 	void SetNumCurConstellation( int i );
+
+	void SetModified( BOOL m=TRUE );
+
 	void SetRotLatitude( float rotLatitude_ );
 	void SetRotTime( float time_ );
 	void SwitchSpinning();
-	// Adjusts
 	void AdjRotTime( float deltaTime );
 	void AdjRotX( float deltaRotX );
 	void AdjRotY( float deltaRotY );
 	void AdjZoom( float deltaZoom );
 
-// Constellation functions
-	BOOL IsDuplicate( CString &name );
-	void AddConstellation( CString &name );
+	// Constellation methods
+	BOOL IsDuplicate( CString& name );
+	void AddConstellation( CString& name );
 	void DeleteConstellation();
-	void RenameConstellation( CString &name );
-	BOOL SetCurConstellation( CString name );
+	void RenameConstellation( CString& name );
+	BOOL SetCurConstellation( CString& name );
 	void AddConstLine( int starNum1, int starNum2 );
 
-// View Manipulation
+	// View methods
 	void RotateUp   ();
 	void RotateDown ();
 	void RotateLeft ();
 	void RotateRight();
 	void ZoomIn  ();
 	void ZoomOut ();
-	// View resets
 	void ResetView ();
 	void ResetRot  ();
 	void ResetZoom ();

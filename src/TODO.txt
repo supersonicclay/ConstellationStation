@@ -1,73 +1,73 @@
+PHASES
+1	Bugs, Code organization, cleanup, saving
+2	Options, UI
+3	Graphics optimization, selecting
+4	Pretty graphics
+5	Features (tests, actual)
 
-Textures are leaky
-
-UI
-1	CLASS
 
 BUGS
-1	Not saving Terrain color
-1	Memory Leaks
-		-Bugs when you exit after adding a line
-		-Texture files
-		-Adding constellations to starfield
-1	BUGS occasionally on exit
-2	Open, Save should go to starfields folder
+	3	Stars aren't drawn at first
+	5	Program Icon
 
-TEXT
-5	Print Constellation Name near constellation
+GENERAL
+	1	Read-through cleaning
+		1	Sanity checks
+	2	Document name in title bar
+	2	Don't ask for save so much with actual
+	5	Undo
+	5	Print
 
-SELECTION
-1	Cant select seven sisters
-2	Select ConstLine to select constellation
+OPTIONS
+	2	Load on startup
+	2	terrain on/off
+	2	colors
+	2	number of stars
+	2	brighness / gamma
+	4	toggle constellation lables
 
-GRAPHICS
-1	Make small stars points, not quads
+INPUT MGR
+	2	Keep Mouse in place while rotating
+	2	Drag lines (? on/off option ?)
+		- Make temp line in CConstellation
+	3	Cant select seven sisters
+		-	If more than 1 hit, shrink quad size and repeat
+	3	Select ConstLine to select constellation
 
+GRAPHICS MGR
+	3	Improve 3D math.
+	3	Correct Frustum Culling
+	3	Make small stars points, not quads
+	3	Put quad size in star
+	3	Hide dim stars when zoomed out
+	3	Show dim stars when zoomed in
+	3	Bright are too bright. Dim are too dim
+	4	Print Constellation Name near constellation
 
-IMPROVING
-1	ORGANIZATION
-		- Why is everything in ConStationView, dork
-		- Put quad size in star
-		- dialogs should be members of frame
+CONSTELLATION MGR
+	2	Show just current constellation (solo)
+	4	Input actual constellations
+	5	Constellation details
 
-1	TIME
-		- Increase year range
-		- Link with starfield
-		- Inc/Dec by 1/2/3 years/days/hours/mins
-		- Precession?
+STARFIELD MGR
+	2	New actual without constellations?
+	5	Choose date
+	5	Choose time
+	5	Choose location (lat & long)
+	5	Increase year range
+	5	Link time with starfield
+	5	Inc/Dec by 1/2/3 years/days/hours/mins
+	5	Add Stars?
+	5	Precession?
 
-2	STARS
-		- Hide dim stars when zoomed out
-		- Show dim stars when zoomed in
-		- Bright are too bright. Dim are too dim
-		- Sort stars by Mag
-		- Add Stars?
+TERRAIN MGR
+	2?	vectors
+	4	Textured terrain
 
-1	UI
-		- CLASS
-		  - View & Frame catch events and forward
-		  - Otherwise UI would handle clicks on toolbars
-		  - Keep Mouse in place while rotating
-		- Undo
-
-5	Textured terrain
-
-5	Tools / Options menu
-		- colors
-		- number of stars
-		- brighness / gamma
-		- toggle constellation lables
-
-5	CONSTELLATION TESTS
-		- TYPES
-		  - Show constlines. Pick a line
-		  - Don't show constlines. Pick a star 
-		  - Draw constellation
-		- Choose constellations in test
-
-5	ACTUAL
-		- Input actual constellations
-		- Choose location (lat & long)
-		- Choose date
-		- Choose time
-		- Constellation details
+TEACHER MGR
+CONSTELLATION TESTS
+	5	TYPES
+		- Show constlines. Pick a line
+		- Don't show constlines. Pick a star 
+		- Draw constellation
+	5	Choose constellations in test

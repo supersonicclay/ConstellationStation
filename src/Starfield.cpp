@@ -1,5 +1,12 @@
-// Starfield.cpp : implementation of the CStarfield class
+//===========================================================================
+// Starfield.cpp
 //
+// CStarfield
+//   a starfield contains stars, constellations, information about time and
+//   location on Earth, as well as certain settings. A CStarfield and 
+//   everything in a CStarfield can be saved and opened.
+//===========================================================================
+
 
 #include "stdafx.h"
 #include "ConStation.h"
@@ -8,272 +15,221 @@
 #include "Star.h"
 #include "Constellation.h"
 
-#include <fstream.h>
+IMPLEMENT_SERIAL( CStarfield, CObject, 1 )
 
 
-/// Make changeable
-#define MAX_STARS  15000
+const int MAX_STARS = 15000;/// Make changeable
 
 
-//////////
-// Init //
-//////////
-CStarfield::CStarfield( bool random )
+/////////////////////////////////////////////////////////////////////////////
+// Construction / Destruction
+
+CStarfield::CStarfield( BOOL actual )
 {
-	numStars = 0;
-	stars = new CStar[MAX_STARS];
-
-	// Gregorian Time
-	time_t seconds = time(NULL);
-	gregorian = *(localtime( &seconds ));
-	gregorian.tm_year += 1900;
-
-	/// Julian Date
-///	julian = 
-
-	/// Latitude & Longitude
-
-///	random = true;///
-
-	Init();
-
-	if( random )
-	{
-		InitRandomStars();
-		InitRandomConstellations();
-	}
-	else
-	{
-		InitActualStars();
-		InitActualConstellations();
-	}
+	New( actual );
 }
 
 CStarfield::~CStarfield()
 {
-	delete[] stars;
-	delete[] constellations;
 }
 
-void CStarfield::Init()
+void CStarfield::New( BOOL actual )
 {
-	rotLatitude = 70.0f; ///
+	modified = FALSE;
+
+	// Time
+	time_t seconds = time(NULL);
+	gregorian = *(localtime( &seconds ));
+	gregorian.tm_year += 1900;
+///	julian = 
 	rotTime = 0.0f;
+
+	/// Latitude & Longitude
+	rotLatitude = 70.0f;
+
+///	actual = false;///
+
+	// Viewing
 	spinning = FALSE;
 
 	rotX = 0.0f;
 	rotY = 0.0f;
 	zoom = 0.0f;
+
+	stars.clear();
+	constellations.clear();
+
+	numConstellations = 0;
+	numNewConstellations = 0;
+	numCurConstellation = 0;
+
+	if( actual )
+	{
+		InitActualStars();
+		InitActualConstellations();
+	}
+	else
+	{
+		InitRandomStars();
+	}
 }
 
-////////////////
-// Stars Init //
-////////////////
 // Creates sphere of random stars with radius of 1
 void CStarfield::InitRandomStars()
 {
 	numStars = 8000;
+	CStar newStar;
+
 	/* /// North Star
-	stars[0].SetColor( COLOR_NORTHSTAR );
-	stars[0].SetMag( 2.0f );
-	stars[0].SetRA( 0, 0, 0.0f );
-	stars[0].SetDec( 90, 0, 0.0f );
-	stars[0].SetX( 0.0f );
-	stars[0].SetY( 1.0f );
-	stars[0].SetZ( 0.0f );
+	newStar.SetColor( COLOR_NORTHSTAR );
+	newStar.SetMag( 2.0f );
+	newStar.SetRA( 0, 0, 0.0f );
+	newStar.SetDec( 90, 0, 0.0f );
+	newStar.SetX( 0.0f );
+	newStar.SetY( 1.0f );
+	newStar.SetZ( 0.0f );
+	stars.push_back( CStar(newStar) );
 	*/
 
 	// Sun Corona
-	stars[0].SetColor( COLOR_WHITE );
-	stars[0].SetMag( 60.0f );
-	stars[0].SetRA( 12, 0, 0.0f );
-	stars[0].SetDec( TRUE, 0, 0, 0.0f );
-	stars[0].SetX( 0.0f );
-	stars[0].SetY( 0.0f );
-	stars[0].SetZ(-1.0f );
-
+	newStar.SetColor( COLOR_WHITE );
+	newStar.SetMag( 60.0f );
+	newStar.SetRA( 12, 0, 0.0f );
+	newStar.SetDec( TRUE, 0, 0, 0.0f );
+	newStar.SetX( 0.0f );
+	newStar.SetY( 0.0f );
+	newStar.SetZ(-1.0f );
+	stars.push_back( CStar(newStar) );
 
 	// Randomize the rest
 	for (int i=1; i<numStars; i++)
 	{
-		stars[i].Randomize();
+		newStar.Randomize();
+		stars.push_back( CStar(newStar) );
 	}
 }
 
+// Load the actual stars from the magnitude-sorted hipparcos catalog
 void CStarfield::InitActualStars()
 {
-	numStars = MAX_STARS;
+	CStar newStar;
 
-	ifstream file( "data/hip_main.txt" );
+	numStars = MAX_STARS;///
+	stars.reserve( numStars );
+
+	CFile file( "data\\hip_main.txt", CFile::modeRead );
 
 	char buffer[100];
 	ra_s ra = {0};
-	char sign = 0;
 	dec_s dec = {0};
 	float mag = 0;
 
 	for( int i=0; i<MAX_STARS; ++i )
 	{
-		file.ignore( 17 );
+		file.Seek( 17, CFile::current );
+		ZeroMemory(&buffer, sizeof(buffer));
 
 		// Right Ascension
-		file.read( buffer, 2 );
+		file.Read( buffer, 2 );
 		ra.hour = atoi( buffer );
-			file.ignore();
-		file.read( buffer, 2 );
+			file.Seek( 1, CFile::current );
+			ZeroMemory(&buffer, sizeof(buffer));
+		file.Read( buffer, 2 );
 		ra.minute = atoi( buffer );
-			file.ignore();
-		file.read( buffer, 5 );
+			file.Seek( 1, CFile::current );
+			ZeroMemory(&buffer, sizeof(buffer));
+		file.Read( buffer, 5 );
 		ra.second = (float) atof( buffer );
 
-		file.ignore();
+		file.Seek( 1, CFile::current );
+		ZeroMemory(&buffer, sizeof(buffer));
 
 		// Declination
-		sign = file.get();
-		dec.positive = sign == '+';
+		file.Read( buffer, 1 );
+		dec.positive = buffer[0] == '+';
 
-		file.read( buffer, 2 );
+		file.Read( buffer, 2 );
 		dec.degree = atoi( buffer );
-			file.ignore();
-		file.read( buffer, 2 );
+			file.Seek( 1, CFile::current );
+			ZeroMemory(&buffer, sizeof(buffer));
+		file.Read( buffer, 2 );
 		dec.minute = atoi( buffer );
-			file.ignore();
-		file.read( buffer, 4 );
+			file.Seek( 1, CFile::current );
+			ZeroMemory(&buffer, sizeof(buffer));
+		file.Read( buffer, 4 );
 		dec.second = (float) atof( buffer);
 
-		file.ignore();
+		file.Seek( 1, CFile::current );
+		ZeroMemory(&buffer, sizeof(buffer));
 
 		// Magnitude
-		file.read( buffer, 5 );
+		file.Read( buffer, 5 );
 		mag = (float) atof( buffer );
 
 		// Ignore rest of line
-		file.ignore(500, '\n');
+		file.Seek( 406, CFile::current );
 
-		stars[i].SetRA( ra );
-		stars[i].SetDec( dec );
-		stars[i].SetXYZFromRADec();
-		stars[i].SetMag( mag );
-		stars[i].SetColorFromMag();
-		stars[i].SetRadiusFromMag();
+		newStar.SetRA( ra );
+		newStar.SetDec( dec );
+		newStar.SetXYZFromRADec();
+		newStar.SetMag( mag );
+		newStar.SetColorFromMag();
+		newStar.SetRadiusFromMag();
+
+		stars.push_back( CStar(newStar) );
 	}
 
-	file.close();
+	file.Close();
+
 }
 
-
-////////////////////////
-// Constellation Init //
-////////////////////////
-
-void CStarfield::InitRandomConstellations()
-{
-		numConstellations = 0;
-		numNewConstellations = 0;
-		numCurConstellation = 0;
-		constellations = new CConstellation[1];
-}
-
+/// Load actual constellations somehow
 void CStarfield::InitActualConstellations()
 {
-		numConstellations = 0;
-		numNewConstellations = 0;
-		numCurConstellation = 0;
-		constellations = new CConstellation[1];
 }
 
-//////////
-// Gets //
-//////////
-CStar* CStarfield::GetStars() const
-{
-	return stars;
-}
 
-CConstellation* CStarfield::GetConstellations() const
-{
-	return constellations;
-}
+/////////////////////////////////////////////////////////////////////////////
+// Gets
 
-CStar* CStarfield::GetStar(int i) const
-{
-	return &stars[i];
-}
+CStar*	CStarfield::GetStar(int i)			{	return &stars[i];			}
+int		CStarfield::GetNumStars()			{	return numStars;			}
+int		CStarfield::GetNumConstellations()	{	return numConstellations;	}
+int		CStarfield::GetNumCurConstellation(){	return numCurConstellation;	}
+int		CStarfield::GetNumNewConstellations(){	return numNewConstellations;}
+BOOL	CStarfield::IsModified()			{	return modified;			}
+float	CStarfield::GetRotLatitude()		{	return rotLatitude;			}
+float	CStarfield::GetRotTime()			{	return rotTime;				}
+BOOL	CStarfield::IsSpinning()			{	return spinning;			}
+float	CStarfield::GetRotX()				{	return rotX;				}
+float	CStarfield::GetRotY()				{	return rotY;				}
+float	CStarfield::GetZoom()				{	return zoom;				}
 
-CConstellation* CStarfield::GetConstellation(int i) const
+CConstellation*	CStarfield::GetConstellation(int i)
 {
 	return &constellations[i];
 }
 
-CConstellation* CStarfield::GetConstellation(CString &name) const
+CConstellation*	CStarfield::GetCurConstellation()
+{
+	return &constellations[numCurConstellation];
+}
+
+// Find the constellation with the given name
+CConstellation*	CStarfield::GetConstellation( CString& name )
 {
 	for (int i=0; i<numConstellations; i++)
 	{
 		if (constellations[i].GetName() == name)
 			return &constellations[i];
 	}
-	return 0;
-}
-
-CConstellation* CStarfield::GetCurConstellation() const
-{
-	return &constellations[numCurConstellation];
-}
-
-int CStarfield::GetNumStars() const
-{
-	return numStars;
-}
-
-int CStarfield::GetNumConstellations() const
-{
-	return numConstellations;
-}
-
-int CStarfield::GetNumCurConstellation() const
-{
-	return numCurConstellation;
-}
-
-int CStarfield::GetNumNewConstellations() const
-{
-	return numNewConstellations;
-}
-
-float CStarfield::GetRotLatitude() const
-{
-	return rotLatitude;
-}
-
-float CStarfield::GetRotTime() const
-{
-	return rotTime;
-}
-
-BOOL CStarfield::IsSpinning() const
-{
-	return spinning;
-}
-
-float CStarfield::GetRotX() const
-{
-	return rotX;
-}
-
-float CStarfield::GetRotY() const
-{
-	return rotY;
-}
-
-float CStarfield::GetZoom() const
-{
-	return zoom;
+	return NULL;
 }
 
 
-//////////
-// Sets //
-//////////
+/////////////////////////////////////////////////////////////////////////////
+// Sets
+
 void CStarfield::IncNumNewConstellations()
 {
 	numNewConstellations++;
@@ -282,6 +238,11 @@ void CStarfield::IncNumNewConstellations()
 void CStarfield::SetNumCurConstellation( int i )
 {
 	numCurConstellation = i;
+}
+
+void CStarfield::SetModified( BOOL m )
+{
+	modified = m;
 }
 
 void CStarfield::SetRotLatitude( float rotLatitude_ )
@@ -330,28 +291,17 @@ void CStarfield::AdjZoom(float deltaZoom)
 }
 
 
-////////////////////
-// View Functions //
-////////////////////
-void CStarfield::RotateUp ()
-{
-	AdjRotX(-0.5f);
-}
+/////////////////////////////////////////////////////////////////////////////
+// Methods
 
-void CStarfield::RotateDown ()
-{
-	AdjRotX(0.5f);
-}
 
-void CStarfield::RotateLeft ()
-{
-	AdjRotY(-0.5f);
-}
+/////////////////////////////////////////////////////////////////////////////
+// View Methods
 
-void CStarfield::RotateRight()
-{
-	AdjRotY(0.5f);
-}
+void CStarfield::RotateUp()		{	AdjRotX(-0.5f);	}
+void CStarfield::RotateDown()	{	AdjRotX( 0.5f);	}
+void CStarfield::RotateLeft()	{	AdjRotY(-0.5f);	}
+void CStarfield::RotateRight()	{	AdjRotY(0.5f);	}
 
 void CStarfield::ZoomIn()
 {
@@ -365,101 +315,72 @@ void CStarfield::ZoomOut()
 		zoom -= 0.01f;
 }
 
-// View resets
+// Reset viewing rotation and zoom
 void CStarfield::ResetView()
 {
 	ResetRot();
 	ResetZoom();
 }
 
+// Reset rotation
 void CStarfield::ResetRot()
 {
 	rotX = 0.0f;
 	rotY = 0.0f;
 }
 
+// Reset zoom
 void CStarfield::ResetZoom()
 {
 	zoom = 0.0f;
 }
 
 
-/////////////////////////////
-// Constellation functions //
-/////////////////////////////
-BOOL CStarfield::IsDuplicate(CString &name)
+/////////////////////////////////////////////////////////////////////////////
+// Constellation Methods
+
+// Check if the given name is already in use
+BOOL CStarfield::IsDuplicate( CString& name )
 {
 	for (int i=0; i<numConstellations; i++)
 	{
 		if (constellations[i].GetName() == name)
-			return true;
+			return TRUE;
 	}
 
-	return false;
+	return FALSE;
 }
 
-void CStarfield::AddConstellation(CString &name)
+// Add a new constellation with the given name
+void CStarfield::AddConstellation(CString& name)
 {
-	int i;
-	CConstellation* copy = new CConstellation[numConstellations];
-
-	// Copy constellations
-	for (i=0; i<numConstellations; i++)
-		copy[i] = constellations[i];
-
-	// Increase array size
-	delete[] constellations;
-	constellations = new CConstellation[++numConstellations];
-
-	// Restore constellations
-	for (i=0; i<numConstellations-1; i++)
-		constellations[i] = copy[i];
-
-	// Set the last constellations name
-	constellations[i].SetName(name);
+	constellations.push_back( CConstellation(name) );
+	++numConstellations;
 }
 
+// Delete the current constellation
 void CStarfield::DeleteConstellation()
 {
-	int i;
+	// Use an iterator to find the current constellation
+	constellationsItor = constellations.begin();
+	for( int i=0; i<numCurConstellation; ++i )
+		++constellationsItor;
 
-	CConstellation* curConstellation = &constellations[numCurConstellation];
+	// Delete the constellation
+	constellations.erase( constellationsItor );
 
-	// new temporary constellation list
-	CConstellation* newList = new CConstellation[numConstellations-1];
-
-	// copy old list into new list without the constellation being deleted
-	int newListIndex = 0;
-	for (i=0; i<numConstellations; i++)
-	{
-		if (i != numCurConstellation)
-			newList[newListIndex++] = constellations[i];
-	}
-
-	numConstellations--;
-	numCurConstellation = 0;
-
-	// resize array
-	constellations = new CConstellation[numConstellations];
-
-	// copy back into array
-	for (i=0; i<numConstellations; i++)
-	{
-		constellations[i] = newList[i];
-	}
+	--numConstellations;
 }
 
-void CStarfield::RenameConstellation(CString &name)
+// Rename the current constellation
+void CStarfield::RenameConstellation( CString& name )
 {
 	GetCurConstellation()->SetName(name);
 }
 
-BOOL CStarfield::SetCurConstellation(CString name)
+// Set the current constellation to the one with the given name
+BOOL CStarfield::SetCurConstellation( CString& name )
 {
-	// If the constellation is already current
-	if (constellations[numCurConstellation].GetName() == name)
-		return TRUE;
-
 	// Search for constellation name
 	for (int i=0; i<numConstellations; i++)
 	{
@@ -474,16 +395,61 @@ BOOL CStarfield::SetCurConstellation(CString name)
 	return FALSE;
 }
 
-void CStarfield::AddConstLine(int starNum1, int starNum2)
+
+/////////////////////////////////////////////////////////////////////////////
+// Serialization
+
+void CStarfield::Serialize(CArchive& ar)
 {
-	constellations[numCurConstellation].AddLine(&stars[starNum1], &stars[starNum2]);
+	CObject::Serialize(ar);
+	int i;
+
+	modified = FALSE;
+
+	// Serialize CStarfield attributes
+	if( ar.IsLoading() )
+	{
+		ar >> numStars
+		   >> numConstellations >> numNewConstellations >> numCurConstellation
+		   >> rotLatitude >> rotTime
+		   >> rotX >> rotY >> zoom;
+	}
+	else
+	{
+		ar << numStars
+		   << numConstellations << numNewConstellations << numCurConstellation
+		   << rotLatitude << rotTime
+		   << rotX << rotY << zoom;
+	}
+
+	// If we're loading, get the stars and constellations vectors ready
+	if( ar.IsLoading() )
+	{
+		stars.clear();
+		for( i=0; i<numStars; ++i )
+			stars.push_back( CStar() );
+
+		constellations.clear();
+		for( i=0; i<numConstellations; ++i )
+			constellations.push_back( CConstellation() );
+	}
+
+	// Serialize stars
+	for( i=0; i<numStars; ++i )
+		stars[i].Serialize( ar );
+
+	// Serialize constellations
+	for( i=0; i<numConstellations; ++i )
+		constellations[i].Serialize( ar );
 }
+
 
 /*
 void CStarfield::Serialize(CArchive& ar)///
 {
 	CObject::Serialize(ar);
 
+	// Serialize CStarfield attributes
 	if (ar.IsStoring())
 	{
 		ar << numStars
@@ -556,7 +522,7 @@ void CStarfield::SerializeConstLines(CArchive& ar)
 					}
 				}
 				if (!starFound)
-					AfxMessageBox("A star was not found while saving.", MB_ICONEXCLAMATION);
+					CSWarn("A star was not found while saving.");
 
 				// Star 2
 				starFound = FALSE;
@@ -573,7 +539,7 @@ void CStarfield::SerializeConstLines(CArchive& ar)
 					}
 				}
 				if (!starFound)
-					AfxMessageBox("A star was not found while saving.", MB_ICONEXCLAMATION);
+					CSWarn("A star was not found while saving.");
 			}
 		}
 	}

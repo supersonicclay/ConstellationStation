@@ -111,7 +111,40 @@ SOURCE=.\ConStationView.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\Matrix.cpp
+SOURCE=.\Global.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrBlank.cpp
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrConst.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrGraphics.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrInput.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrOptions.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrStarf.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrTeacher.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrTerrain.cpp
 # End Source File
 # Begin Source File
 
@@ -124,7 +157,11 @@ SOURCE=.\StdAfx.cpp
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\ConstBar.cpp
+SOURCE=.\BarConst.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\BarStarf.cpp
 # End Source File
 # Begin Source File
 
@@ -142,18 +179,17 @@ SOURCE=.\DlgShowHide.cpp
 
 SOURCE=.\DlgTerrain.cpp
 # End Source File
-# Begin Source File
-
-SOURCE=.\StarfBar.cpp
-# End Source File
 # End Group
+# Begin Group "Data Source Files"
+
+# PROP Default_Filter ""
 # Begin Source File
 
 SOURCE=.\Constellation.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\Global.cpp
+SOURCE=.\Matrix.cpp
 # End Source File
 # Begin Source File
 
@@ -167,6 +203,7 @@ SOURCE=.\Starfield.cpp
 
 SOURCE=.\Terrain.cpp
 # End Source File
+# End Group
 # End Group
 # Begin Group "Header Files"
 
@@ -188,11 +225,44 @@ SOURCE=.\ConStationView.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Matrix.h
+SOURCE=.\Global.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Resource.h
+SOURCE=.\MgrBlank.h
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrConst.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrGraphics.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrInput.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrOptions.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrStarf.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrTeacher.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrTerrain.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\resource.h
 # End Source File
 # Begin Source File
 
@@ -204,7 +274,11 @@ SOURCE=.\StdAfx.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\ConstBar.h
+SOURCE=.\BarConst.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\BarStarf.h
 # End Source File
 # Begin Source File
 
@@ -222,18 +296,17 @@ SOURCE=.\DlgShowHide.h
 
 SOURCE=.\DlgTerrain.h
 # End Source File
-# Begin Source File
-
-SOURCE=.\StarfBar.h
-# End Source File
 # End Group
+# Begin Group "Data Header Files"
+
+# PROP Default_Filter ""
 # Begin Source File
 
 SOURCE=.\Constellation.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Global.h
+SOURCE=.\Matrix.h
 # End Source File
 # Begin Source File
 
@@ -247,6 +320,7 @@ SOURCE=.\Starfield.h
 
 SOURCE=.\Terrain.h
 # End Source File
+# End Group
 # End Group
 # Begin Group "Resource Files"
 
@@ -402,11 +476,15 @@ SOURCE=".\Bug Report.txt"
 # End Source File
 # Begin Source File
 
-SOURCE=.\Parenthesis.txt
+SOURCE=.\Read.txt
 # End Source File
 # Begin Source File
 
 SOURCE=.\TODO.txt
+# End Source File
+# Begin Source File
+
+SOURCE=.\VERSION.TXT
 # End Source File
 # End Target
 # End Project

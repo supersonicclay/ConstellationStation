@@ -1,20 +1,20 @@
-// ConStationFrame.h : interface of the CConStationFrame class
+//===========================================================================
+// ConStationFrame.h
 //
-/////////////////////////////////////////////////////////////////////////////
+// CConStationFrame
+///   contains all toolbars and dialogs. Forwards commands.
+//===========================================================================
 
-#if !defined(AFX_CONSTATIONFRAME_H__87C7179B_70DA_4CF0_B078_C3215E22A606__INCLUDED_)
-#define AFX_CONSTATIONFRAME_H__87C7179B_70DA_4CF0_B078_C3215E22A606__INCLUDED_
+#ifndef CS_CONSTATIONFRAME_H
+#define CS_CONSTATIONFRAME_H
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
 
 #include "Starfield.h"
 #include "Terrain.h"
 #include "ConStationView.h"
 
-#include "StarfBar.h"
-#include "ConstBar.h"
+#include "BarStarf.h"
+#include "BarConst.h"
 
 class CConStationFrame : public CFrameWnd
 {
@@ -23,15 +23,22 @@ public:
 	CConStationFrame();
 
 // Attributes
-public:
+protected:
 
+	// Child view
+	CConStationView view;
+
+	// Toolbars
+	CStatusBar      statusBar;
+	CBarStarf       starfBar;
+	CBarConst       constBar;
 
 // Operations
 public:
 	CConStationView* GetView();
 
-	void UpdateList();
-
+	CBarConst* GetConstBar();
+	CBarStarf* GetStarfBar();
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -49,24 +56,17 @@ public:
 	virtual void Dump( CDumpContext& dc ) const;
 #endif
 
-protected:
-	CConStationView m_wndView;
-	CStatusBar      m_wndStatusBar;
-	CStarfBar       m_wndStarfBar;
-	CConstBar       m_wndConstBar;
 
 // Generated message map functions
 protected:
 	//{{AFX_MSG(CConStationFrame)
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
-	afx_msg void OnConstListCloseUp();
 	afx_msg void OnConstAdd();
 	afx_msg void OnConstDelete();
 	afx_msg void OnConstRename();
 	afx_msg void OnConstHide();
 	afx_msg void OnConstAddLine();
-	afx_msg void OnConstAddPoly();
 	afx_msg void OnConstDeleteLine();
 	afx_msg void OnConstShowHide();
 	afx_msg void OnConstHideAll();
@@ -81,12 +81,12 @@ protected:
 	afx_msg void OnUpdateConstRename(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateConstHide(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateConstAddLine(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateConstAddPoly(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateConstDeleteLine(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateStarfRotate(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateConstHideAll(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateConstShowAll(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateConstShowHide(CCmdUI* pCmdUI);
+	afx_msg void OnOptionsTime();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
@@ -96,4 +96,4 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_MAINFRM_H__87C7179B_70DA_4CF0_B078_C3215E22A606__INCLUDED_)
+#endif

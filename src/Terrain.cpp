@@ -1,17 +1,40 @@
-// CTerrain.cpp : implementation of the CTerrain class
+//===========================================================================
+// Terrain.cpp
 //
+// CTerrain
+//   contains height information, roughness settings, and surface texture.
+//===========================================================================
+
 
 #include "stdafx.h"
 #include "ConStation.h"
 #include "Terrain.h"
 
+IMPLEMENT_SERIAL( CTerrain, CObject, 1 )
+
+
 const float DEF_ROUGHNESS = 0.2f;
 const color_s DEF_COLOR = {0.1f, 0.2f, 0.1f};
 
-IMPLEMENT_SERIAL (CTerrain, CObject, 0)
 
+/////////////////////////////////////////////////////////////////////////////
+// Construction / Destruction
 
 CTerrain::CTerrain( float r, color_s c )
+{
+	heights = upperNormals = lowerNormals = NULL;	/// UGLY!
+
+	New( r, c );
+}
+
+CTerrain::~CTerrain()
+{
+	delete[] heights;
+	delete[] upperNormals;
+	delete[] lowerNormals;
+}
+
+void CTerrain::New( float r, color_s c )
 {
 	scale = 1;
 	iterations = 2;
@@ -23,6 +46,11 @@ CTerrain::CTerrain( float r, color_s c )
 
 	arraySize = size + 1;
 
+	/// UGLY!
+	delete[] heights;
+	delete[] upperNormals;
+	delete[] lowerNormals;
+
 	heights = new float[arraySize * arraySize];
 
 	upperNormals = new float[ size*size*3 ];
@@ -31,19 +59,19 @@ CTerrain::CTerrain( float r, color_s c )
 	MakeTerrain();
 }
 
-CTerrain::~CTerrain()
-{
-	delete[] heights;
-	delete[] upperNormals;
-	delete[] lowerNormals;
-}
+/////////////////////////////////////////////////////////////////////////////
+// Gets
 
-float* CTerrain::GetHeights() const
-{
-	return heights;
-}
+float*	CTerrain::GetHeights()		{	return heights;		}
+int		CTerrain::GetArraySize()	{	return arraySize;	}
+float	CTerrain::GetScale()		{	return scale;		}
+int		CTerrain::GetIterations()	{	return iterations;	}
+float	CTerrain::GetRoughness()	{	return roughness;	}
+int		CTerrain::GetSize()			{	return size;		}
+color_s	CTerrain::GetColor()		{	return color;		}
+float	CTerrain::GetViewHeight()	{	return viewHeight;	}
 
-float CTerrain::GetHeight( int i, int j ) const
+float CTerrain::GetHeight( int i, int j )
 {
 	return heights[ i*arraySize + j ];
 }
@@ -58,46 +86,20 @@ float* CTerrain::GetLowerNormal( int i, int j )
 	return &lowerNormals [ (size*j*3 + i*3) ];
 }
 
-int CTerrain::GetArraySize() const
-{
-	return arraySize;
-}
 
-float CTerrain::GetScale() const
-{
-	return scale;
-}
-
-int CTerrain::GetIterations() const
-{
-	return iterations;
-}
-
-float CTerrain::GetRoughness() const
-{
-	return roughness;
-}
-
-int CTerrain::GetSize() const
-{
-	return size;
-}
-
-color_s CTerrain::GetColor() const
-{
-	return color;
-}
-
-float CTerrain::GetViewHeight() const
-{
-	return viewHeight;
-}
+/////////////////////////////////////////////////////////////////////////////
+// Sets
 
 void CTerrain::SetRoughness( float r )
 {
 	roughness = r;
 
 	MakeTerrain();
+}
+
+void CTerrain::SetColor( color_s color_ )
+{
+	color = color_;
 }
 
 void CTerrain::SetUpperNormal( int i, int j, float* n )
@@ -114,11 +116,9 @@ void CTerrain::SetLowerNormal( int i, int j, float* n )
 	lowerNormals[ (size*j*3 + i*3 + 2) ] = n[2];
 }
 
-void CTerrain::SetColor( color_s color_ )
-{
-	color = color_;
-}
 
+/////////////////////////////////////////////////////////////////////////////
+// Methods
 
 void CTerrain::MakeTerrain()
 {
@@ -327,32 +327,11 @@ void CTerrain::CalculateViewHeight()
 }
 
 
-void CTerrain::Serialize(CArchive& ar)
+/////////////////////////////////////////////////////////////////////////////
+// Serialization
+
+void CTerrain::Serialize(CArchive& ar)///
 {
 	CObject::Serialize(ar);
-
-	if (ar.IsStoring())
-	{
-		ar << arraySize << size
-		   << scale << iterations
-		   << roughness;
-
-		for( int i=0; i < arraySize*arraySize; i++ )
-		{
-			ar << heights[i];
-		}
-	}
-	else
-	{
-		ar >> arraySize >> size
-		   >> scale >> iterations
-		   >> roughness;
-
-		heights = new float[arraySize * arraySize];
-
-		for( int i=0; i < arraySize*arraySize; i++ )
-		{
-			ar >> heights[i];
-		}
-	}
 }
+

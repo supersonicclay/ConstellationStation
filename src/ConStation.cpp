@@ -1,5 +1,10 @@
-// ConStation.cpp : Defines the class behaviors for the application.
+//===========================================================================
+// ConStation.cpp
 //
+// CConStationApp
+//   main source file for Constellation Station
+//===========================================================================
+
 
 #include "stdafx.h"
 #include "ConStation.h"
@@ -21,6 +26,7 @@ BEGIN_MESSAGE_MAP( CConStationApp, CWinApp )
 	ON_COMMAND(ID_STARF_NEWACTUAL, OnStarfNewActual)
 	ON_COMMAND(ID_STARF_NEWRANDOM, OnStarfNewRandom)
 	ON_COMMAND(ID_STARF_OPEN, OnStarfOpen)
+	ON_COMMAND(ID_STARF_SAVE, OnStarfSave)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -119,9 +125,8 @@ BEGIN_MESSAGE_MAP( CDlgAbout, CDialog )
 END_MESSAGE_MAP()
 
 
-
 /////////////////////////////////////////////////////////////////////////////
-// CConStationApp message handlers
+// Methods
 
 // Open the about dialog
 void CConStationApp::OnAppAbout()
@@ -130,43 +135,179 @@ void CConStationApp::OnAppAbout()
 	aboutDlg.DoModal();
 }
 
+// Initialize an OPENFILENAME struct for saving or opening
+void CConStationApp::InitOFN( BOOL saving )
+{
+	strncpy( starfieldDir, cwd, MAX_PATH );
+	strncat( starfieldDir, "\\starfields", MAX_PATH );
 
+	// Zero the structure
+	ZeroMemory( &ofn, sizeof(ofn) );
+
+	// Fill the structure
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = GetFrame()->GetSafeHwnd();
+	ofn.lpstrFile = filename;
+	ofn.lpstrInitialDir = starfieldDir;
+	ofn.lpstrFilter = "Starfields (*.str)\0*.str\0";
+	ofn.lpstrDefExt = "str";
+	ofn.nMaxFile = MAX_PATH;
+
+	if( saving )
+		ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
+	else
+		ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+}
+
+// Check for modification and create a new actual starfield
 void CConStationApp::OnStarfNewActual() 
 {
-//	CWinApp::OnFileNew();
+	// Check if starfield is modified
+	if( starfield.IsModified() )
+	{
+		int a = CSYesNoCancel( "The starfield is modified.\nDo you want to save it?" );
+		if( a == ID_CANCEL )
+			return
+		if( a == ID_OK )
+			OnStarfSave();
+	}
 
-	delete starfield;
-	delete terrain;
+	terrain.New();
+	starfield.New( TRUE );
 
-	starfield = new CStarfield;
-	terrain = new CTerrain;
-
-	GetFrame()->UpdateList();
-	GetFrame()->GetView()->Projection();
+	// Reset UI and refresh screen
 	SetState( state_Viewing );
+	GetFrame()->GetConstBar()->UpdateList();
+	graphicsMgr.Projection();
+	Redraw();
 }
 
+// Check for modification and create a new random starfield
 void CConStationApp::OnStarfNewRandom() 
 {
-//	CWinApp::OnFileNew();
+	// Check if starfield is modified
+	if( starfield.IsModified() )
+	{
+		int a = CSYesNoCancel( "The starfield is modified.\nDo you want to save it?" );
+		if( a == ID_CANCEL )
+			return
+		if( a == ID_OK )
+			OnStarfSave();
+	}
 
-	delete starfield;
-	delete terrain;
+	terrain.New();
+	starfield.New( FALSE );
 
-	starfield = new CStarfield(true);
-	terrain = new CTerrain;
-
-	GetFrame()->UpdateList();
-	GetFrame()->GetView()->Projection();
+	// Reset UI and refresh screen
 	SetState( state_Viewing );
+	GetFrame()->GetConstBar()->UpdateList();
+	graphicsMgr.Projection();
+	Redraw();
 }
 
+// Check for modification and open a starfield
 void CConStationApp::OnStarfOpen() 
 {
-//	CWinApp::OnFileOpen();
+	/// Check if starfield is modified (do I want it to open after this)
+	if( starfield.IsModified() )
+	{
+		int a = CSYesNoCancel( "The starfield is modified.\nDo you want to save it?" );
+		if( a == ID_CANCEL )
+			return
+		if( a == ID_OK )
+			OnStarfSave();
+	}
 
-	GetFrame()->UpdateList();
-	GetFrame()->GetView()->Projection();
+	// Get the current directory
+	GetCurrentDirectory( MAX_PATH, cwd );
+
+	// Initialize OPENFILENAME for opening
+	InitOFN( FALSE );
+
+	// Get filename from user
+	if( !GetOpenFileName( &ofn ) )
+		return;
+
+	// Open file for reading
+	CFile file;
+	if( !file.Open( filename, CFile::modeRead ) )
+		CSError( "Unable to open file", "CConStationApp::OnStarfOpen" );
+
+	// Create an archive for loading
+	CArchive ar( &file, CArchive::load );
+	starfield.Serialize( ar );
+	terrain.Serialize( ar );
+
+	// Close archive and file
+	ar.Close();
+	file.Close();
+
+	// Set the current directory
+	SetCurrentDirectory( cwd );
+
+	// Reset UI and refresh screen
 	SetState( state_Viewing );
+	GetFrame()->GetConstBar()->UpdateList();
+	graphicsMgr.Projection();
+	Redraw();
 }
 
+// Save the starfield
+void CConStationApp::OnStarfSave() 
+{
+	// Get the current directory
+	GetCurrentDirectory( MAX_PATH, cwd );
+
+	// Initialize OPENFILENAME for saving
+	InitOFN( TRUE );
+
+	// Get filename from user
+	if( !GetSaveFileName( &ofn ) )
+		return;
+
+	// Open file for writing
+	CFile file;
+	if( !file.Open( filename, CFile::modeCreate | CFile::modeWrite ) )
+		CSError( "Unable to open file", "CConStationApp::OnStarfSave" );
+
+	// Create an archive for storing
+	CArchive ar( &file, CArchive::store );
+	starfield.Serialize( ar );
+	terrain.Serialize( ar );
+
+	// Close archive and file
+	ar.Close();
+	file.Close();
+
+	// Set the current directory
+	SetCurrentDirectory( cwd );
+
+	// Reset UI and refresh screen
+	SetState( state_Viewing );
+	GetFrame()->GetConstBar()->UpdateList();
+	graphicsMgr.Projection();
+	Redraw();
+}
+
+
+/*
+CFile myFile("myfile.dat", CFile::modeCreate | CFile::modeReadWrite);
+CAge  age(21), *pAge;
+
+// Create a storing archive.
+CArchive arStore(&myFile, CArchive::store);
+
+// Write the object to the archive
+arStore.WriteObject( &age );
+
+// Close the storing archive
+arStore.Close();
+
+// Create a loading archive.
+myFile.SeekToBegin();
+CArchive arLoad(&myFile, CArchive::load);
+
+// Verify the object is in the archive.
+pAge = (CAge*) arLoad.ReadObject( RUNTIME_CLASS(CAge) );
+ASSERT( age == *pAge );
+*/

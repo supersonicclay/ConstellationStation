@@ -1,13 +1,16 @@
+//===========================================================================
+// Matrix.h
+//
+// Vector and matrix library
+//===========================================================================
 
+#ifndef CS_MATRIX_H
+#define CS_MATRIX_H
 
-#ifndef MATRIX_H
-#define MATRIX_H
 
 #include <math.h>
 #include <stdio.h>
 #include <assert.h>
-
-#include "Global.h"
 
 //=============================================================================
 

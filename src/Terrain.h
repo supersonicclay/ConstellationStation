@@ -1,8 +1,13 @@
-// Terrain.h : interface of the CTerrain class
+//===========================================================================
+// Terrain.h
 //
-/////////////////////////////////////////////////////////////////////////////
-#ifndef TERRAIN_H
-#define TERRAIN_H
+// CTerrain
+//   contains height information, roughness settings, and surface texture.
+//===========================================================================
+
+#ifndef CS_TERRAIN_H
+#define CS_TERRAIN_H
+
 
 extern const float		DEF_ROUGHNESS;
 extern const color_s	DEF_COLOR;
@@ -11,13 +16,18 @@ class CTerrain : public CObject
 {
 DECLARE_SERIAL( CTerrain )
 
+// Construction / Destruction
 public:
 
 	CTerrain( float r=DEF_ROUGHNESS, color_s c=DEF_COLOR );
 	~CTerrain();
 
+	void New( float r=DEF_ROUGHNESS, color_s c=DEF_COLOR );
+
 	void Serialize( CArchive& ar );
 
+
+// Attributes
 private:
 	float* heights;
 	int arraySize;
@@ -36,21 +46,22 @@ private:
 	float viewHeight;
 
 
+// Methods
 public:
 	void MakeTerrain();
 	void SetRoughness( float r );
 	void SetColor( color_s color_ );
 
-	float* GetHeights() const;
-	float GetHeight( int i, int j ) const;
+	float* GetHeights();
+	float GetHeight( int i, int j );
 
-	int GetArraySize() const;
-	int GetSize() const;
-	float GetScale() const;
-	int GetIterations() const;
-	float GetRoughness() const;
-	color_s GetColor() const;
-	float GetViewHeight() const;
+	int GetArraySize();
+	int GetSize();
+	float GetScale();
+	int GetIterations();
+	float GetRoughness();
+	color_s GetColor();
+	float GetViewHeight();
 
 	float* GetUpperNormal( int i, int j );
 	float* GetLowerNormal( int i, int j );

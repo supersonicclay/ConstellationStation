@@ -1,15 +1,16 @@
-#if !defined(AFX_DLGSHOWHIDE_H__F1F9C38A_0D99_4413_8314_818EF5B90CE7__INCLUDED_)
-#define AFX_DLGSHOWHIDE_H__F1F9C38A_0D99_4413_8314_818EF5B90CE7__INCLUDED_
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-// DlgShowHide.h : header file
+//===========================================================================
+// DlgShowHide.h
 //
+// CDlgShowHide
+//   show / hide list dialog
+//===========================================================================
+
+#ifndef CS_DLGSHOWHIDE_H
+#define CS_DLGSHOWHIDE_H
+
 
 #include "Starfield.h"
 #include "Constellation.h"
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CDlgShowHide dialog
@@ -23,10 +24,7 @@ public:
 
 private:
 // Members
-	CListBox m_List;
-	CConstellation* constellations;
-	int constellationCount;
-	int curConstellationNum;
+	CListBox list;
 
 // Dialog Data
 	//{{AFX_DATA(CDlgShowHide)
@@ -60,4 +58,4 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_DLGSHOWHIDE_H__F1F9C38A_0D99_4413_8314_818EF5B90CE7__INCLUDED_)
+#endif

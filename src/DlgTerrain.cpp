@@ -1,5 +1,9 @@
-// CDlgTerrain.cpp : implementation file
+//===========================================================================
+// DlgTerrain.cpp
 //
+// CDlgTerrain
+//   terrain dialog
+//===========================================================================
 
 #include "stdafx.h"
 #include "ConStation.h"
@@ -66,7 +70,7 @@ void CDlgTerrain::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	roughness = roughnessSlider.GetPos();
 	if( roughness != lastRoughness )
 	{
-		terrain->SetRoughness( (float)roughness/10 );
+		terrain.SetRoughness( (float)roughness/10 );
 		needsUpdate = true;
 		lastRoughness = roughness;
 	}
@@ -76,9 +80,9 @@ void CDlgTerrain::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 
 void CDlgTerrain::OnNewTerrain() 
 {
-	terrain->MakeTerrain();
+	terrain.MakeTerrain();
 
-	RedrawView();
+	Redraw();
 	
 	needsUpdate = false;
 }
@@ -98,9 +102,9 @@ void CDlgTerrain::OnColor()
 		color.g = (float) GetGValue(c) / 256;
 		color.b = (float) GetBValue(c) / 256;
 	
-		terrain->SetColor( color );
+		terrain.SetColor( color );
 
-		RedrawView();
+		Redraw();
 	}
 }
 

@@ -1,11 +1,13 @@
-#if !defined(AFX_DLGLOCATION_H__0BC7A832_E07C_4582_818B_918B61B622D7__INCLUDED_)
-#define AFX_DLGLOCATION_H__0BC7A832_E07C_4582_818B_918B61B622D7__INCLUDED_
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-// DlgLocation.h : header file
+//===========================================================================
+// DlgLocation.h
 //
+// CDlgLocation
+//   location dialog
+//===========================================================================
+
+#ifndef CS_DLGLOCATION_H
+#define CS_DLGLOCATION_H
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CDlgLocation dialog
@@ -43,4 +45,4 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_DLGLOCATION_H__0BC7A832_E07C_4582_818B_918B61B622D7__INCLUDED_)
+#endif

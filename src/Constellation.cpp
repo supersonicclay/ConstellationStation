@@ -1,5 +1,13 @@
-// Constellation.cpp : implementation of the CConstellation class
+//===========================================================================
+// Constellation.cpp
 //
+// CConstLine
+//   constellation line that uses pointers to stars
+//
+// CConstellation
+//   constellation class
+//===========================================================================
+
 
 #include "stdafx.h"
 #include "ConStation.h"
@@ -7,207 +15,177 @@
 
 #include "Starfield.h"
 
+IMPLEMENT_SERIAL( CConstLine, CObject, 1 )
+IMPLEMENT_SERIAL( CConstellation, CObject, 1 )
 
 
-////////////////
-// CConstLine //
-////////////////
+//===========================================================================
+// CConstLine
+//===========================================================================
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Construction / Destruction
+
 CConstLine::CConstLine()
 {
-	star1 = new CStar;
-	star2 = new CStar;
 }
 
-CConstLine::CConstLine( CStar* star1_, CStar* star2_ )
+CConstLine::CConstLine( int star1_, int star2_ )
 {
 	star1 = star1_;
 	star2 = star2_;
+}
+
+CConstLine::CConstLine( const CConstLine& c )
+{
+	*this = c;
 }
 
 CConstLine::~CConstLine()
 {
-///	delete star1;
-///	delete star2;
 }
 
-void CConstLine::SetStar1( CStar* star1_ )
+const CConstLine& CConstLine::operator=( const CConstLine& c )
 {
-	star1 = star1_;
+	star1 = c.star1;
+	star2 = c.star2;
+	return *this;
 }
 
-void CConstLine::SetStar2( CStar* star2_ )
+
+/////////////////////////////////////////////////////////////////////////////
+// Gets
+
+int		CConstLine::GetStar1()	{	return star1;			}
+int		CConstLine::GetStar2()	{	return star2;			}
+float	CConstLine::GetX1()	{	return starfield.GetStar(star1)->GetX();	}
+float	CConstLine::GetY1()	{	return starfield.GetStar(star1)->GetY();	}
+float	CConstLine::GetZ1()	{	return starfield.GetStar(star1)->GetZ();	}
+float	CConstLine::GetX2()	{	return starfield.GetStar(star2)->GetX();	}
+float	CConstLine::GetY2()	{	return starfield.GetStar(star2)->GetY();	}
+float	CConstLine::GetZ2()	{	return starfield.GetStar(star2)->GetZ();	}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Sets
+
+void CConstLine::SetStar1( int star1_ )	{	star1 = star1_;	}
+void CConstLine::SetStar2( int star2_ )	{	star2 = star2_;	}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Serialization
+
+void CConstLine::Serialize(CArchive& ar)
 {
-	star2 = star2_;
-}
+	CObject::Serialize(ar);
 
-CStar* CConstLine::GetStar1() const
-{
-	return star1;
-}
-
-CStar* CConstLine::GetStar2() const
-{
-	return star2;
-}
-
-float CConstLine::GetX1() const
-{
-	return star1->GetX();
-}
-
-float CConstLine::GetY1() const
-{
-	return star1->GetY();
-}
-
-float CConstLine::GetZ1() const
-{
-	return star1->GetZ();
-}
-
-float CConstLine::GetX2() const
-{
-	return star2->GetX();
-}
-
-float CConstLine::GetY2() const
-{
-	return star2->GetY();
-}
-
-float CConstLine::GetZ2() const
-{
-	return star2->GetZ();
+	// Serialize CConstLine attributes
+	if( ar.IsLoading() )
+	{
+		ar >> star1 >> star2;
+	}
+	else
+	{
+		ar << star1 << star2;
+	}
 }
 
 
 
-////////////////////
-// CConstellation //
-////////////////////
+//===========================================================================
+// CConstellation
+//===========================================================================
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Construction / Destruction
+
 CConstellation::CConstellation()
 {
 	numLines = 0;
 	visible = true;
-
-	// Reserve space for 5 lines
-	arraySize = 5;
-	lines = new CConstLine[arraySize];
 }
 
-CConstellation::CConstellation(CString name_)
+CConstellation::CConstellation( CString name_ )
 {
 	numLines = 0;
 	visible = true;
 	name = name_;
 }
 
+CConstellation::CConstellation( const CConstellation& c )
+{
+	*this = c;
+}
+
 CConstellation::~CConstellation()
 {
-	delete[] lines;
 }
 
-CString CConstellation::GetName() const
+const CConstellation& CConstellation::operator=( const CConstellation& c )
 {
-	return name;
+	name = c.name;
+	numLines = c.numLines;
+	lines = c.lines;
+	visible = c.visible;
+	return *this;
 }
 
-void CConstellation::SetName(CString name_)
-{
-	name = name_;
-}
 
-BOOL CConstellation::IsVisible() const
-{
-	return visible;
-}
+/////////////////////////////////////////////////////////////////////////////
+// Gets
 
-void CConstellation::SwitchVisible()
-{
-	visible = !visible;
-}
+CString		CConstellation::GetName()		{	return name;		}
+int			CConstellation::GetNumLines()	{	return numLines;	}
+BOOL		CConstellation::IsVisible()		{	return visible;		}
+CConstLine*	CConstellation::GetLine(int i)	{	return &lines[i];	}
 
-void CConstellation::SetVisible(BOOL visible_)
-{
-	visible = visible_;
-}
 
-int CConstellation::GetNumLines() const
-{
-	return numLines;
-}
+/////////////////////////////////////////////////////////////////////////////
+// Sets
 
-CConstLine* CConstellation::GetLine(int i) const
-{
-	return &lines[i];
-}
+void CConstellation::SetName( CString name_ )		{	name = name_;		}
+void CConstellation::SwitchVisible()				{	visible = !visible;	}
+void CConstellation::SetVisible( BOOL visible_ )	{	visible = visible_;	}
 
-void CConstellation::AddLine(CStar* star1, CStar* star2)
+
+/////////////////////////////////////////////////////////////////////////////
+// Methods
+
+// Add a line to this constellation between star1 and star2
+void CConstellation::AddLine( int star1, int star2 )
 {
+	// Sanity check
+	if( star1 > starfield.GetNumStars() || star2 > starfield.GetNumStars() )
+		CSError( "star index(s) out of range", "CConstellation::AddLine" );
+
+	lines.push_back( CConstLine(star1, star2) );
 	numLines++;
-
-	// If we have enough space
-	if ( numLines <= arraySize )
-	{
-		lines[numLines-1].SetStar1(star1);
-		lines[numLines-1].SetStar2(star2);
-	}
-	else	// We need to allocate more space
-	{
-		int i;
-		CConstLine* copy = new CConstLine[arraySize];
-
-		// Copy lines
-		for (i=0; i<numLines-1; i++)
-			copy[i] = lines[i];
-
-		// Increase array size
-		arraySize += 5;
-		lines = new CConstLine[arraySize];
-
-		// Restore lines
-		for (i=0; i<numLines-1; i++)
-			lines[i] = copy[i];
-
-		// Make the newest line
-		lines[i].SetStar1(star1);
-		lines[i].SetStar2(star2);
-	}
 
 	CheckForDuplicateLines();
 }
 
-void CConstellation::DeleteLine(int lineNum)
+// Delete a line from this constellation indexed by lineNum
+void CConstellation::DeleteLine( int lineNum )
 {
-	int i;
+	// Sanity check
+	if( lineNum > numLines )
+		CSError( "lineNum out of range", "CConstellation::DeleteLine" );
 
-	// new temporary constellation list
-	CConstLine* newList = new CConstLine[numLines-1];
-
-	// copy old list into new list without the constellation being deleted
-	int newListIndex = 0;
-	for (i=0; i<numLines; i++)
-	{
-		if (i != lineNum)
-			newList[newListIndex++] = lines[i];
-	}
-
-	numLines--;
-
-	// erase array
-	lines = new CConstLine[arraySize];
-
-	// copy back into array
-	for (i=0; i<numLines; i++)
-	{
-		lines[i] = newList[i];
-	}
+	line_vi li = lines.begin();
+	for( int i=0; i<lineNum; ++i )
+		++li;
+	lines.erase( li );
+	--numLines;
 }
 
+// Check this constellation for lines with the same endpoints
 void CConstellation::CheckForDuplicateLines()
 {
-	// Since we check for duplicates every time we add a line,
-	//  there should never be more than 1 duplicate
+	/// Since we check for duplicates every time we add a line,
+	///  there should never be more than 1 duplicate
 
 	for( int i=0; i<numLines; i++ )
 	{
@@ -229,45 +207,38 @@ void CConstellation::CheckForDuplicateLines()
 	}
 }
 
-const CConstellation& CConstellation::operator =(const CConstellation& c)
-{
-	name = c.name;
-	visible = c.visible;
-	numLines = c.numLines;
 
-	lines = new CConstLine[numLines];
-	for (int i=0; i<numLines; i++)
-	{
-		lines[i] = c.lines[i];
-	}
+/////////////////////////////////////////////////////////////////////////////
+// Serialization
 
-	return *this;
-}
-
-/*
-void CConstellation::Serialize(CArchive& ar)///
+void CConstellation::Serialize(CArchive& ar)
 {
 	CObject::Serialize(ar);
+	int i;
 
-	if (ar.IsStoring())
-	{
-		ar << name
-		   << visible
-		   << numLines;
-	}
-	else
+	// Serialize CConstellation attributes
+	if( ar.IsLoading() )
 	{
 		ar >> name
 		   >> visible
 		   >> numLines;
 	}
-
-	// If were loading we need to allocate space for lines
-	if (ar.IsLoading())
+	else
 	{
-		lines = new CConstLine[numLines];
+		ar << name
+		   << visible
+		   << numLines;
 	}
 
-	// NOTE: Serialization for ConstLines is done in CStarfield
+	// If we're loading, get the lines vector ready
+	if( ar.IsLoading() )
+	{
+		lines.clear();
+		for( int i=0; i<numLines; ++i )
+			lines.push_back( CConstLine() );
+	}
+
+	// Serialize lines
+	for( i=0; i<numLines; ++i )
+		lines[i].Serialize(ar);
 }
-*/

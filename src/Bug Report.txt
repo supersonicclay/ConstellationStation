@@ -33,3 +33,17 @@ Fixed		01-10-04		Restructured; Globals ( terrain, starfield, RedrawView() )
 
 Fixed		01-24-04		Shouldn't hide while editing a constellation
 
+Fixed		7-18-04			RedrawView() isn't finding correct CConStationView
+
+Disappeared	7-18-04			Bugs occasionally on exit
+
+Fixed		7-22-04			Memory leaks
+
+Fixed		7-23-04			Bugs when 2 constellations deleted in a row.
+
+Fixed		7-23-04			Message Box's aren't modal
+
+Fixed		7-25-04			New after save or open (save/open dlg was changing working dir)
+
+
+

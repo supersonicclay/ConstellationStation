@@ -9,6 +9,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "Starfield.h"
+#include "ConStationView.h"
+
+#include "ConstBar.h"
+
 class CMainFrame : public CFrameWnd
 {
 	
@@ -19,8 +24,16 @@ protected: // create from serialization only
 // Attributes
 public:
 
+
+
 // Operations
 public:
+	CStarfield* GetStarfield() const;
+	CConStationView* GetView() const;
+
+	StateType GetState() const;
+	void SetState(StateType state) const;
+
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -39,12 +52,33 @@ public:
 protected:  // control bar embedded members
 	CStatusBar  m_wndStatusBar;
 	CToolBar    m_wndToolBar;
-	CDialogBar  m_wndDlgBar;
+	CConstBar	m_wndConstBar;
+
+///	CDialogBar  m_wndDlgBar;
 
 // Generated message map functions
 protected:
 	//{{AFX_MSG(CMainFrame)
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg void OnConstListCloseUp();
+	afx_msg void OnConstAdd();
+	afx_msg void OnConstDelete();
+	afx_msg void OnConstRename();
+	afx_msg void OnConstHide();
+	afx_msg void OnConstAddLine();
+	afx_msg void OnConstAddPoly();
+	afx_msg void OnConstDeleteLine();
+	afx_msg void OnStarfRotate();
+	afx_msg void OnUpdateConstList(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateConstAdd(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateConstDelete(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateConstRename(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateConstHide(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateConstAddLine(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateConstAddPoly(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateConstDeleteLine(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateStarfRotate(CCmdUI* pCmdUI);
+	afx_msg void OnShowHide();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

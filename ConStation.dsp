@@ -108,11 +108,23 @@ SOURCE=.\ConStationView.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ConstBar.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ConstNameDlg.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\Costellation.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\MainFrm.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ShowHideDlg.cpp
 # End Source File
 # Begin Source File
 
@@ -145,7 +157,15 @@ SOURCE=.\ConStationView.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ConstBar.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\Constellation.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ConstNameDlg.h
 # End Source File
 # Begin Source File
 
@@ -154,6 +174,10 @@ SOURCE=.\MainFrm.h
 # Begin Source File
 
 SOURCE=.\Resource.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ShowHideDlg.h
 # End Source File
 # Begin Source File
 
@@ -173,6 +197,22 @@ SOURCE=.\StdAfx.h
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 # Begin Source File
 
+SOURCE=.\res\aline.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\alinex.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\apoly.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\apolyx.cur
+# End Source File
+# Begin Source File
+
 SOURCE=.\arrow.cur
 # End Source File
 # Begin Source File
@@ -182,6 +222,10 @@ SOURCE=.\res\arrow.cur
 # Begin Source File
 
 SOURCE=.\arrowcop.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\bmp00001.bmp
 # End Source File
 # Begin Source File
 
@@ -213,6 +257,10 @@ SOURCE=.\res\dlineg.cur
 # End Source File
 # Begin Source File
 
+SOURCE=.\res\dlinex.cur
+# End Source File
+# Begin Source File
+
 SOURCE=.\res\edit.cur
 # End Source File
 # Begin Source File
@@ -221,11 +269,23 @@ SOURCE=.\res\edit1.cur
 # End Source File
 # Begin Source File
 
+SOURCE=.\res\editg.cur
+# End Source File
+# Begin Source File
+
 SOURCE=.\res\editline.cur
 # End Source File
 # Begin Source File
 
+SOURCE=.\res\editx.cur
+# End Source File
+# Begin Source File
+
 SOURCE=.\res\file.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\mainfram.bmp
 # End Source File
 # Begin Source File
 
@@ -234,10 +294,6 @@ SOURCE=.\res\newline.cur
 # Begin Source File
 
 SOURCE=.\res\nline.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\res\nline1.cur
 # End Source File
 # Begin Source File
 
@@ -261,6 +317,14 @@ SOURCE=.\res\pointer1.cur
 # End Source File
 # Begin Source File
 
+SOURCE=.\res\poly.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\polyx.cur
+# End Source File
+# Begin Source File
+
 SOURCE=.\res\rotxy.cur
 # End Source File
 # Begin Source File
@@ -279,6 +343,10 @@ SOURCE=.\res\Toolbar.bmp
 # Begin Source File
 
 SOURCE=.\ReadMe.txt
+# End Source File
+# Begin Source File
+
+SOURCE=.\TODO.txt
 # End Source File
 # End Target
 # End Project

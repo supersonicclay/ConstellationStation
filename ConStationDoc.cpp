@@ -3,8 +3,9 @@
 
 #include "stdafx.h"
 #include "ConStation.h"
-
 #include "ConStationDoc.h"
+
+#include "ConStationView.h"
 
 #include "Starfield.h"
 
@@ -22,8 +23,8 @@ IMPLEMENT_DYNCREATE(CConStationDoc, CDocument)
 BEGIN_MESSAGE_MAP(CConStationDoc, CDocument)
 	//{{AFX_MSG_MAP(CConStationDoc)
 	//}}AFX_MSG_MAP
-	ON_COMMAND(ID_STARFIELD_SAVE, CDocument::OnFileSave)
-	ON_COMMAND(ID_STARFIELD_SAVEAS, CDocument::OnFileSaveAs)
+	ON_COMMAND(ID_STARF_SAVE, CDocument::OnFileSave)
+	ON_COMMAND(ID_STARF_SAVEAS, CDocument::OnFileSaveAs)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -36,6 +37,7 @@ CConStationDoc::CConStationDoc()
 
 CConStationDoc::~CConStationDoc()
 {
+	delete starfield;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -55,27 +57,28 @@ void CConStationDoc::Serialize(CArchive& ar)
 		// TODO: add loading code here
 		//ar.ReadObject(this);
 	}
-/* ////
-CFile myFile("myfile.dat", CFile::modeCreate | CFile::modeReadWrite);
-CAge  age(21), *pAge;
 
-// Create a storing archive.
-CArchive arStore(&myFile, CArchive::store);
+	/* ///
+	CFile myFile("myfile.dat", CFile::modeCreate | CFile::modeReadWrite);
+	CAge  age(21), *pAge;
 
-// Write the object to the archive
-arStore.WriteObject( &age );
+	// Create a storing archive.
+	CArchive arStore(&myFile, CArchive::store);
 
-// Close the storing archive
-arStore.Close();
+	// Write the object to the archive
+	arStore.WriteObject( &age );
 
-// Create a loading archive.
-myFile.SeekToBegin();
-CArchive arLoad(&myFile, CArchive::load);
+	// Close the storing archive
+	arStore.Close();
 
-// Verify the object is in the archive.
-pAge = (CAge*) arLoad.ReadObject( RUNTIME_CLASS(CAge) );
-ASSERT( age == *pAge );
-*/
+	// Create a loading archive.
+	myFile.SeekToBegin();
+	CArchive arLoad(&myFile, CArchive::load);
+
+	// Verify the object is in the archive.
+	pAge = (CAge*) arLoad.ReadObject( RUNTIME_CLASS(CAge) );
+	ASSERT( age == *pAge );
+	*/
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -99,9 +102,12 @@ void CConStationDoc::Dump(CDumpContext& dc) const
 
 BOOL CConStationDoc::OnNewDocument() 
 {
-////MessageBox("New Document!");
+///	MessageBox(NULL, "New Document", "", MB_OK);
+
+	delete starfield;
 
 	starfield = new CStarfield;
+	
 //	return TRUE;
 	
 	return CDocument::OnNewDocument();
@@ -111,4 +117,3 @@ CStarfield* CConStationDoc::GetStarfield()
 {
 	return starfield;
 }
-

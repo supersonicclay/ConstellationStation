@@ -3,10 +3,13 @@
 
 #include "stdafx.h"
 #include "ConStation.h"
-
 #include "Starfield.h"
+
 #include "Star.h"
 #include "Constellation.h"
+
+// For randomization
+#include <time.h>
 
 CStarfield::CStarfield()
 {
@@ -18,13 +21,34 @@ CStarfield::CStarfield()
 	constellations = new CConstellation[numConstellations];
 	numCurConstellation = 0;
 
-////starMouseOver = NULL;
+	latitude = 30;
+	season = 0;///
+	time = 0;
+	spinning = false;
+
+	rotX = 0;
+	rotY = 0;
+	zoom = 0;
 }
 
 CStarfield::~CStarfield()
 {
 	delete [] stars;
 	delete [] constellations;
+}
+
+
+//////////
+// Gets //
+//////////
+CStar* CStarfield::GetStars() const
+{
+	return stars;
+}
+
+CConstellation* CStarfield::GetConstellations() const
+{
+	return constellations;
 }
 
 CStar* CStarfield::GetStar(int i) const
@@ -37,6 +61,11 @@ CConstellation* CStarfield::GetConstellation(int i) const
 	return &constellations[i];
 }
 
+CConstellation* CStarfield::GetCurConstellation() const
+{
+	return &constellations[numCurConstellation];
+}
+
 int CStarfield::GetNumStars() const
 {
 	return numStars;
@@ -47,27 +76,138 @@ int CStarfield::GetNumConstellations() const
 	return numConstellations;
 }
 
+int CStarfield::GetNumCurConstellation() const
+{
+	return numCurConstellation;
+}
+
+float CStarfield::GetLatitude() const
+{
+	return latitude;
+}
+
+int CStarfield::GetSeason() const
+{
+	return season;
+}
+
+float CStarfield::GetTime() const
+{
+	return time;
+}
+
+BOOL CStarfield::IsSpinning() const
+{
+	return spinning;
+}
+
+float CStarfield::GetRotX() const
+{
+	return rotX;
+}
+
+float CStarfield::GetRotY() const
+{
+	return rotY;
+}
+
+float CStarfield::GetZoom() const
+{
+	return zoom;
+}
+
+//////////
+// Sets //
+//////////
 void CStarfield::SetNumCurConstellation(int i)
 {
 	numCurConstellation = i;
 }
 
+void CStarfield::SetLatitude(float latitude_)
+{
+	latitude = latitude_;
+}
+
+void CStarfield::SetSeason(int season_)
+{
+	season = season_;
+}
+
+void CStarfield::SetTime(float time_)
+{
+	time = time_;
+}
+
+void CStarfield::SwitchSpinning()
+{
+	spinning = !spinning;
+}
+
+void CStarfield::AdjTime(float deltaTime)
+{
+	time += deltaTime;
+}
+
+void CStarfield::AdjRotX(float deltaRotX)
+{
+	// Restrict up and down rotation
+	float newRotX = rotX + deltaRotX;
+
+	if ( newRotX > -90 && newRotX < 10)
+		rotX = newRotX;
+}
+
+void CStarfield::AdjRotY(float deltaRotY)
+{
+	rotY += deltaRotY;
+}
+
+void CStarfield::AdjZoom(float deltaZoom)
+{
+	zoom += deltaZoom;
+}
+
+
+////////////////////
+// Star functions //
+////////////////////
 // Creates sphere of random stars with radius of 1
 void CStarfield::SetupStars()
 {
-	srand( (unsigned)time(NULL) );
+	srand( (unsigned)::time(NULL) );
 
-	// Loop for each star
-	for (int i=0; i<numStars; i++)
+	// North Star
+	stars[0].SetColor(GREEN);
+	stars[0].SetOrigColor(GREEN);
+	stars[0].SetBrightness(6.0f);
+	stars[0].SetX(0);
+	stars[0].SetY(0);
+	stars[0].SetZ(-0.99f);
+
+	// Randomize the rest
+	for (int i=1; i<numStars; i++)
 	{
 		stars[i].Randomize();
 	}
 }
 
+
 /////////////////////////////
 // Constellation functions //
 /////////////////////////////
-void CStarfield::AddConstellation()
+BOOL CStarfield::IsDuplicate(CString &name)
+{
+	for (int i=0; i<numConstellations; i++)
+	{
+		if (constellations[i].GetName() == name)
+			return true;
+	}
+
+	return false;
+}
+
+void CStarfield::AddConstellation(CString &name)
 {
 	int i;
 	CConstellation* copy = new CConstellation[numConstellations];
@@ -83,6 +223,75 @@ void CStarfield::AddConstellation()
 	for (i=0; i<numConstellations-1; i++)
 		constellations[i] = copy[i];
 
+	// Set the last constellations name
+	constellations[i].SetName(name);
+
+}
+
+void CStarfield::DeleteConstellation()
+{
+	int i;
+
+	CConstellation* curConstellation = &constellations[numCurConstellation];
+
+	///////////////////////////////
+	// Restore the stars' colors //
+	///////////////////////////////
+	for (i=0; i<curConstellation->GetNumLines(); i++)
+	{
+		curConstellation->GetLine(i)->GetStar1()->RestoreColor();
+		curConstellation->GetLine(i)->GetStar2()->RestoreColor();
+	}
+
+	// new temporary constellation list
+	CConstellation* newList = new CConstellation[numConstellations-1];
+
+	// copy old list into new list without the constellation being deleted
+	int newListIndex = 0;
+	for (i=0; i<numConstellations; i++)
+	{
+		if (i != numCurConstellation)
+			newList[newListIndex++] = constellations[i];
+	}
+
+	numConstellations--;
+	numCurConstellation = 0;
+
+	// resize array
+	constellations = new CConstellation[numConstellations];
+
+	// copy back into array
+	for (i=0; i<numConstellations; i++)
+	{
+		constellations[i] = newList[i];
+	}
+}
+
+void CStarfield::RenameConstellation(CString &name)
+{
+	GetCurConstellation()->SetName(name);
+}
+
+BOOL CStarfield::SetCurConstellation(CString name)
+{
+	// If current constellation is already set
+	if (constellations[numCurConstellation].GetName() == name)
+		return true;
+
+	constellations[numCurConstellation].SetActive(false);
+
+	// Search for constellation name
+	for (int i=0; i<numConstellations; i++)
+	{
+		if (constellations[i].GetName() == name)
+		{
+			numCurConstellation = i;
+			constellations[numCurConstellation].SetActive();
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void CStarfield::AddConstLine(int starNum1, int starNum2)
@@ -90,6 +299,70 @@ void CStarfield::AddConstLine(int starNum1, int starNum2)
 	constellations[numCurConstellation].AddLine(&stars[starNum1], &stars[starNum2]);
 }
 
+
+////////////////////
+// View Functions //
+////////////////////
+void CStarfield::RotateUp ()
+{
+	if (rotX > -90.0f)								// Keep rotX between +- 90
+		rotX -= 0.5f * (-zoom + 1);				// Change is smaller if zoomed out
+}
+
+void CStarfield::RotateDown ()
+{
+	if (rotX < 90.0f)								// Keep rotX between +- 90
+		rotX += 0.5f * (-zoom + 1);				// Change is smaller if zoomed out
+}
+
+void CStarfield::RotateLeft ()
+{
+	rotY -= 0.5f * (-zoom + 1);					// Change is smaller if zoomed out
+	if (rotY < -360.0f)							// Keep rotY between +- 360
+		rotY += 360.0f;
+}
+
+void CStarfield::RotateRight()
+{
+	rotY += 0.5f * (-zoom + 1);					// Change is smaller if zoomed out
+	if (rotY > 360.0f)							// Keep rotY between +- 360
+		rotY -= 360.0f;
+}
+
+void CStarfield::ZoomIn()
+{
+	if (zoom < 0.8f)
+		zoom += 0.01f * (1-zoom);
+}
+
+void CStarfield::ZoomOut()
+{
+	if (zoom > -0.9f)
+		zoom -= 0.01f * (1-zoom);
+}
+
+// View resets
+void CStarfield::ResetView()
+{
+	ResetRot();
+	ResetZoom();
+}
+
+void CStarfield::ResetRot()
+{
+	rotX = 0.0f;
+	rotY = 0.0f;
+}
+
+void CStarfield::ResetZoom()
+{
+	zoom = 0.0f;
+}
+
+
+/////////////////
+// Save / Load //
+/////////////////
 /*
 void CStarfield::Save()
 {
@@ -97,11 +370,9 @@ void CStarfield::Save()
 	char oneline[255];
 	file = fopen("data/starfield.txt", "wt");
 
-	////
-	NUMSTARS = 10000;
-	star = new CStar[NUMSTARS];
-	SetupStars();
-	////
+///	NUMSTARS = 10000;
+///	star = new CStar[NUMSTARS];
+///	SetupStars();
 
 	fputs ("----------------------------------------\n", file);
 	fputs ("WARNING: Modify at your own risk!\n", file);

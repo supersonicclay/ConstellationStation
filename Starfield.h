@@ -7,37 +7,89 @@
 #include "Star.h"
 #include "Constellation.h"
 
-class CStarfield
+class CStarfield : public CObject
 {
-private:
-	CStar *stars;
-	CConstellation *constellations;
-
-	int numStars;
-	int numConstellations;
-
-	int numCurConstellation;
-
-////CStar* starMouseOver;
 
 public:
 	CStarfield();
 	~CStarfield();
 
+// Attributes
+private:
+	CStar* stars;
+	CConstellation* constellations;
+
+	int numStars;
+
+	int numConstellations;
+	int numCurConstellation;
+
+	// Settings
+	float latitude;
+	int   season;
+	float time;
+	BOOL  spinning;
+
+	float rotX;
+	float rotY;
+	float zoom;
+
+public:
+
+// Gets
+	CStar* GetStars() const;
+	CConstellation* GetConstellations() const;
 	CStar* GetStar(int i) const;
 	CConstellation* GetConstellation(int i) const;
+	CConstellation* GetCurConstellation() const;
+
 	int GetNumStars() const;
 	int GetNumConstellations() const;
 	int GetNumCurConstellation() const;
-	void SetNumCurConstellation(int i);
 
-	// Stars
+	float GetLatitude() const;
+	int   GetSeason() const;
+	float GetTime() const;
+	BOOL  IsSpinning() const;
+
+	float GetRotX() const;
+	float GetRotY() const;
+	float GetZoom() const;
+
+// Sets
+	void SetNumCurConstellation(int i);
+	void SetLatitude(float latitude_);
+	void SetSeason(int season_);
+	void SetTime(float time_);
+	void SwitchSpinning();
+	// Adjusts
+	void AdjTime(float deltaTime);
+	void AdjRotX(float deltaRotX);
+	void AdjRotY(float deltaRotY);
+	void AdjZoom(float deltaZoom);
+
+// Star functions
 	void SetupStars();
 
-	// Constellation functions
-	void AddConstellation();
+// Constellation functions
+	BOOL IsDuplicate(CString &name);
+	void AddConstellation(CString &name);
+	void DeleteConstellation();
+	void RenameConstellation(CString &name);
+	BOOL SetCurConstellation(CString name);
 	void AddConstLine(int starNum1, int starNum2);
 
+// View Manipulation
+	void RotateUp   ();
+	void RotateDown ();
+	void RotateLeft ();
+	void RotateRight();
+	void ZoomIn  ();
+	void ZoomOut ();
+	// View resets
+	void ResetView ();
+	void ResetRot  ();
+	void ResetZoom ();
 
 };
 

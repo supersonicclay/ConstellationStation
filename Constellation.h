@@ -11,16 +11,18 @@
 class CConstLine
 {
 private:
-	CStar* srcStar1;
-	CStar* srcStar2;
+	CStar* star1;
+	CStar* star2;
 
 public:
 	CConstLine();
-	CConstLine(CStar* star1, CStar* star2);
+	CConstLine(CStar* star1_, CStar* star2_);
 	~CConstLine();
 
-	void SetStars(CStar* star1, CStar* star2);
+	void SetStars(CStar* star1_, CStar* star2_);
 
+	CStar* GetStar1() const;
+	CStar* GetStar2() const;
 	float GetX1() const;
 	float GetY1() const;
 	float GetZ1() const;
@@ -35,26 +37,32 @@ class CConstellation
 private:
 	CString name;
 
-	bool visible;
+	BOOL visible;
+	BOOL active;
 
 	int numLines;
 	CConstLine* lines;
 
 public:
 	CConstellation();
+	CConstellation(CString name_);
 	~CConstellation();
 
 	CString GetName() const;
 	void SetName(CString name_);
 
-	bool IsVisible() const;
-	void SetVisible(bool visible_);
+	BOOL IsVisible() const;
+	void SwitchVisible();
+	void SetVisible(BOOL visible_);
+
+	BOOL GetActive() const;
+	void SetActive(BOOL active_=true);
 
 	int GetNumLines() const;
 	CConstLine* GetLine(int i) const;
 
 	void AddLine(CStar* star1, CStar* star2);
-	void DelLine(int lineNum);
+	void DeleteLine(int lineNum);
 };
 
 #endif

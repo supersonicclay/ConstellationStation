@@ -20,9 +20,9 @@ static char THIS_FILE[] = __FILE__;
 BEGIN_MESSAGE_MAP(CConStationApp, CWinApp)
 	//{{AFX_MSG_MAP(CConStationApp)
 	ON_COMMAND(ID_APP_ABOUT, OnAppAbout)
+	ON_COMMAND(ID_STARF_NEWRANDOM, OnStarfNewRandom)
 	//}}AFX_MSG_MAP
-	ON_COMMAND(ID_STARFIELD_NEWRANDOM, CWinApp::OnFileNew)
-	ON_COMMAND(ID_STARFIELD_OPEN, CWinApp::OnFileOpen)
+	ON_COMMAND(ID_STARF_OPEN, CWinApp::OnFileOpen)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -148,7 +148,7 @@ const CColor WHITE = {1.0f,1.0f,1.0f},
 			 GREEN = {0.0f,1.0f,0.0f},
 			 BLUE  = {0.0f,0.0f,1.0f},
 			 CONSTGREEN = {0.0f,0.5f,0.5f},
-			 DARKGREEN = {0.1f,0.15f,0.1f};
+			 GROUNDGREEN = {0.1f,0.2f,0.1f};
 
 
 // Convinience function for glColor3f
@@ -168,35 +168,13 @@ void CConStationApp::OnAppAbout()
 	aboutDlg.DoModal();
 }
 
-/*
-MSG msg;
-
-int CConStationApp::Run() 
+void CConStationApp::OnStarfNewRandom()
 {
-	// Main application loop //// SLOW!
-	while (1)
-	{
+	CWinApp::OnFileNew();
 
-		// Process All Messages
-		while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE) == TRUE)
-		{
-			if (GetMessage(&msg, NULL, 0, 0))
-			{
-				if (!PreTranslateMessage(&msg))
-				{
-					TranslateMessage(&msg);
-					DispatchMessage(&msg);
-				}
-			}
-			else
-				return TRUE;
-		}
+	/*
+	(CConStationView*) (((CFrameWnd *)m_pMainWnd)->GetActiveView());
+	GetActiveWindow
+	*/
 
-		// free to do what ever we want
-
-		//// GROGGY
-		//CConStationView* curView = (CConStationView *) ((CFrameWnd *)m_pMainWnd)->GetActiveView();
-		//curView->ProcessKeys();
-	}
 }
-*/

@@ -13,16 +13,18 @@ When Viewing:
   Right click to rotate the stars according to time
   Q / E or mouse wheel to zoom
   
-When Editing (click Edit Constellation or F9):
-  Left click to rotate view
-  Right click to go back to viewing
-  Q / E or mouse wheel to zoom
-  
-When Adding Lines (click Add Line while Editing):
-  Left click on star to start adding a line
-   then right click to start a new line
-   then right click again to stop adding lines
-  
+When Adding Lines:
+  Left click on stars to make a line
+  Right click to start a new line
+  Right click twice to stop adding lines
+
+When Adding Polygon:
+  Left click on stars to make lines of polygon
+  Right click to close polygon
+
+When Deleting Lines:
+  Left click on line to delete
+
 
 
 NOTE:

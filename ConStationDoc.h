@@ -46,11 +46,6 @@ protected:
 // Generated message map functions
 protected:
 	//{{AFX_MSG(CConStationDoc)
-	afx_msg void OnCConstellationCreate();
-	afx_msg void OnCConstellationDelete();
-	afx_msg void OnCConstellationLoad();
-	afx_msg void OnCStarfieldSave();
-	afx_msg void OnCStarfieldSaveas();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

@@ -9,6 +9,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "ConStationDoc.h"
+
 #include "Starfield.h"
 
 class CConStationView : public CView
@@ -28,89 +30,71 @@ private:
 
 	CStarfield* pStarfield;
 
+// Input
 	// Keys
-	bool keyDown[256];
+	BOOL keyDown[256];
 
 	// Mouse controls
-	bool mouseRotatingXY;
-	bool mouseRotatingZ;
-	float rotX;
-	float rotY;
-	float rotZ;
-	float zoom;
+	BOOL mouseRotatingXY;
+	BOOL mouseRotatingZ;
 
 	CPoint mousePoint;
 	CPoint mouseLDownPoint;
 	CPoint mouseRDownPoint;
+///	CPoint prevStarPoint;
 
-	// Selecting
+// Selecting
+	enum SelectType {Star, Line};
 	GLuint selectBuffer[100];
 	GLint hits;
 
-	// Constellation editor
-	bool editing;
-	bool makingLine;
-	bool deletingLine;
+// Constellation editor
 	int prevStarNum;
+	int firstStarNum;
 
+// Operations
 public:
-	CConStationDoc* GetDocument();
+	CConStationDoc* GetDocument() const;
 
-////int InitGL();
-	bool InitializeOpenGL();
-////bool SetPixelformat(HDC hdc);
-	bool SetupPixelFormat();
+	BOOL InitializeOpenGL();
+	BOOL SetupPixelFormat();
 	void GetGLInfo();
 
-	// Drawing functions
+// States
+	StateType state;
+	StateType  GetState() const;
+	void SetState(StateType state_);
+	BOOL IsRotating() const;
+
+// Drawing functions
 	void DrawGround() const;
 	void DrawStarfield() const;
-	void DrawConstellations() const;
 	void DrawStars() const;
-
 	void DrawStar (int i) const;
+	void DrawConstellations() const;
 	void DrawConstellation (int i) const;
 	void DrawHeading() const;
+///	void DrawActiveLine() const;
 
-	// View manipulation (draw)
+	// View manipulation
 	void Projection  () const;
 	void Perspective () const;
 
-	void Rotate() const;
+	void RotateXY() const;
 	void RotateSeason() const;
 	void RotateLatitude() const;
 	void RotateTime() const;
 
-	// View manipulation (data)
-	void RotateUp   ();
-	void RotateDown ();
-	void RotateLeft ();
-	void RotateRight();
-	void ZoomIn  ();
-	void ZoomOut ();
-////void PerspIn ();
-////void PerspOut();
-	// View resets
-	void ResetView ();
-	void ResetZoom ();
-	void ResetPersp();
-	void ResetRot  ();
-
+// Input
 	void ProcessKeys();
 
-	// Set Cursor
-	void SetCur(WORD cur);
-
-	// Selecting
+// Selecting
 	int SelectStar();
-	bool Select();
+	int SelectConstLine();
+	BOOL Select(SelectType selection);
 
-	// Constellation editor
-	void SwitchEditing();
-
-
-// Operations
-public:
+// Set Cursor
+	void SetCur(WORD cur);
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -119,6 +103,7 @@ public:
 	virtual void OnDraw(CDC* pDC);  // overridden to draw this view
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 	protected:
+	virtual void OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint);
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -138,33 +123,22 @@ protected:
 	afx_msg void OnDestroy();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnEdit();
-	afx_msg void OnUpdateEdit(CCmdUI* pCmdUI);
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
-	afx_msg void OnUpdateConstellationCreate(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateConstellationDelete(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateConstellationLoad(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateConstellationStore(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateConstellationStoreas(CCmdUI* pCmdUI);
-	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
-	afx_msg void OnNewLine();
-	afx_msg void OnUpdateNewLine(CCmdUI* pCmdUI);
-	afx_msg void OnDelLine();
-	afx_msg void OnUpdateDelLine(CCmdUI* pCmdUI);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
 
 #ifndef _DEBUG  // debug version in ConStationView.cpp
-inline CConStationDoc* CConStationView::GetDocument()
+inline CConStationDoc* CConStationView::GetDocument() const
    { return (CConStationDoc*)m_pDocument; }
 #endif
 

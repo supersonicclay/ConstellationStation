@@ -11,11 +11,17 @@
 #include "Star.h"
 #include "Constellation.h"
 
+
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
+
+// Timer
+#define TIMER_VIEWKEYS	1
+#define TIMER_ROTATE	2
 
 /////////////////////////////////////////////////////////////////////////////
 // CConStationView
@@ -28,27 +34,16 @@ BEGIN_MESSAGE_MAP(CConStationView, CView)
 	ON_WM_DESTROY()
 	ON_WM_ERASEBKGND()
 	ON_WM_SIZE()
+	ON_WM_TIMER()
 	ON_WM_KEYDOWN()
+	ON_WM_KEYUP()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
-	ON_WM_MOUSEMOVE()
 	ON_WM_RBUTTONDOWN()
 	ON_WM_RBUTTONUP()
-	ON_COMMAND(ID_EDIT, OnEdit)
-	ON_UPDATE_COMMAND_UI(ID_EDIT, OnUpdateEdit)
 	ON_WM_MOUSEWHEEL()
-	ON_UPDATE_COMMAND_UI(ID_CONSTELLATION_CREATE, OnUpdateConstellationCreate)
-	ON_UPDATE_COMMAND_UI(ID_CONSTELLATION_DELETE, OnUpdateConstellationDelete)
-	ON_UPDATE_COMMAND_UI(ID_CONSTELLATION_LOAD, OnUpdateConstellationLoad)
-	ON_UPDATE_COMMAND_UI(ID_CONSTELLATION_STORE, OnUpdateConstellationStore)
-	ON_UPDATE_COMMAND_UI(ID_CONSTELLATION_STOREAS, OnUpdateConstellationStoreas)
-	ON_WM_KEYUP()
-	ON_WM_TIMER()
+	ON_WM_MOUSEMOVE()
 	ON_WM_SETCURSOR()
-	ON_COMMAND(ID_NLINE, OnNewLine)
-	ON_UPDATE_COMMAND_UI(ID_NLINE, OnUpdateNewLine)
-	ON_COMMAND(ID_DLINE, OnDelLine)
-	ON_UPDATE_COMMAND_UI(ID_DLINE, OnUpdateDelLine)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -57,19 +52,12 @@ END_MESSAGE_MAP()
 
 CConStationView::CConStationView()
 {
-	editing = false;
-	makingLine = false;
-	deletingLine = false;
+	state = Viewing;
 
 	ZeroMemory (&keyDown, sizeof (keyDown));
 
 	mouseRotatingXY = false;
 	mouseRotatingZ = false;
-	rotX = 0.0f;
-	rotY = 0.0f;
-	rotZ = 0.0f;
-	zoom = 0.0f;
-//	persp = 45.0f;
 }
 
 CConStationView::~CConStationView()
@@ -85,6 +73,7 @@ BOOL CConStationView::PreCreateWindow(CREATESTRUCT& cs)
 	return CView::PreCreateWindow(cs);
 }
 
+
 /////////////////////////////////////////////////////////////////////////////
 // CConStationView diagnostics
 
@@ -99,13 +88,12 @@ void CConStationView::Dump(CDumpContext& dc) const
 	CView::Dump(dc);
 }
 
-CConStationDoc* CConStationView::GetDocument() // non-debug version is inline
+CConStationDoc* CConStationView::GetDocument() const // non-debug version is inline
 {
 	ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CConStationDoc)));
 	return (CConStationDoc*)m_pDocument;
 }
 #endif //_DEBUG
-
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -124,8 +112,8 @@ int CConStationView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	pStarfield = GetDocument()->GetStarfield();
 
-	// For view keys
-	SetTimer(1, 20, 0);
+	SetTimer(TIMER_VIEWKEYS, 20, 0);
+	SetTimer(TIMER_ROTATE, 50, 0);
 
 	return 0;
 }
@@ -156,7 +144,7 @@ void CConStationView::OnDestroy()
 	m_pDC = NULL;
 }
 
-bool CConStationView::InitializeOpenGL()
+BOOL CConStationView::InitializeOpenGL()
 {
 	// Get a DC for the Client Area
 	m_pDC = new CClientDC(this);
@@ -200,15 +188,12 @@ bool CConStationView::InitializeOpenGL()
 	// Set Perspective Calculations To Most Accurate
 	glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-	////Enable Depth Testing (only for heading)
-	//glEnable(GL_DEPTH_TEST);
-
 	return true;
 }
 
 /////////////////////////////////////////////////////////////////////////////
 //Setup Pixel Format
-bool CConStationView::SetupPixelFormat()
+BOOL CConStationView::SetupPixelFormat()
 {
 	static PIXELFORMATDESCRIPTOR pfd = 
 	{
@@ -232,7 +217,7 @@ bool CConStationView::SetupPixelFormat()
 		0, 0, 0                         // layer masks ignored
 	};
 
-    int m_nPixelFormat = ::ChoosePixelFormat(m_pDC->GetSafeHdc(), &pfd);
+    int m_nPixelFormat = ChoosePixelFormat(m_pDC->GetSafeHdc(), &pfd);
 
 	if ( m_nPixelFormat == 0 )
 	{
@@ -240,7 +225,7 @@ bool CConStationView::SetupPixelFormat()
 		return false;
 	}
 
-	if ( ::SetPixelFormat(m_pDC->GetSafeHdc(), m_nPixelFormat, &pfd) == FALSE)
+	if ( SetPixelFormat(m_pDC->GetSafeHdc(), m_nPixelFormat, &pfd) == FALSE)
 	{
 		MessageBox("Couldn't Set Pixel Format");
 		return false;
@@ -293,6 +278,32 @@ void CConStationView::OnSize(UINT nType, int cx, int cy)
 	Projection ();
 }
 
+void CConStationView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint) 
+{
+	pStarfield = GetDocument()->GetStarfield();
+
+	InvalidateRect(NULL, FALSE);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// States
+StateType CConStationView::GetState() const
+{
+	return state;
+}
+
+void CConStationView::SetState(StateType state_)
+{
+	state = state_;
+
+	if (state == AddingLine || state == AddingPoly)
+		firstStarNum = -1;
+}
+
+BOOL CConStationView::IsRotating() const
+{
+	return mouseRotatingXY || mouseRotatingZ;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // CConStationView drawing
@@ -305,7 +316,7 @@ void CConStationView::OnDraw(CDC* pDC)
     CPaintDC dc(this); // Needed 
 
 	// Useful in multidoc templates
-	//// WELL THANK GOODNESS WE DON'T USE MDI!
+	/// WELL THANK GOODNESS WE DON'T USE MDI!
 //	HWND hWnd = GetSafeHwnd();
 //	HDC hDC = ::GetDC(hWnd);
 //	wglMakeCurrent(hDC,m_hglrc);
@@ -316,6 +327,11 @@ void CConStationView::OnDraw(CDC* pDC)
 	DrawGround();
 	DrawHeading();
 
+	/// GROGGY ///
+	// Draw Active Line
+///	if (state == AddingLine && firstStarNum != -1)
+///		DrawActiveLine();
+
 	SwapBuffers(m_pDC->GetSafeHdc());
 
 }
@@ -324,10 +340,9 @@ void CConStationView::DrawGround() const
 {
 	glLoadIdentity();
 
-	// Rotate
-	Rotate();
+	RotateXY();
 
-	glColor(DARKGREEN);
+	glColor(GROUNDGREEN);
 
 	// Rotate to horizontal
 	glRotatef (90.0f, 1.0f,0.0f,0.0f);
@@ -351,28 +366,26 @@ void CConStationView::DrawStarfield() const
 
 void CConStationView::DrawConstellations() const
 {
-	glLoadIdentity();
-
-	// Rotate ////and zoom
-	Rotate();
-	RotateLatitude();
-	RotateSeason();
-	RotateTime();
-////	glTranslatef (0.0f,0.0f,zoom);
-////	glRotatef (rotX, 1.0f, 0.0f, 0.0f);
-////	glRotatef (rotY, 0.0f, 1.0f, 0.0f);
-
 	glLineWidth(3);
 	glColor(CONSTGREEN);
-	//glColor(DARKGREEN);
 
 	// Draw each constellation
 	for (int i=0; i<pStarfield->GetNumConstellations(); i++)
-		DrawConstellation(i);
+	{
+		if (pStarfield->GetConstellation(i)->IsVisible())
+			DrawConstellation(i);
+	}
 }
 
 void CConStationView::DrawConstellation(int i) const
 {
+	glLoadIdentity();
+
+	RotateXY();
+	RotateLatitude();
+	RotateSeason();
+	RotateTime();
+
 	CConstellation* curConstellation = pStarfield->GetConstellation(i);
 	int numLines = curConstellation->GetNumLines();
 
@@ -381,6 +394,7 @@ void CConStationView::DrawConstellation(int i) const
 	glBegin(GL_LINES);
 		for (int j=0; j<numLines; j++)
 		{
+			glPushName(j);
 			x1 = curConstellation->GetLine(j)->GetX1();
 			y1 = curConstellation->GetLine(j)->GetY1();
 			z1 = curConstellation->GetLine(j)->GetZ1();
@@ -389,6 +403,7 @@ void CConStationView::DrawConstellation(int i) const
 			z2 = curConstellation->GetLine(j)->GetZ2();
 			glVertex3f (x1, y1, z1);
 			glVertex3f (x2, y2, z2);
+			glPopName();
 		}
 	glEnd();
 }
@@ -397,23 +412,14 @@ void CConStationView::DrawStars() const
 {
 	glLoadIdentity();
 
-	// Rotate
-	Rotate();
+	RotateXY();
 	RotateLatitude();
 	RotateSeason();
 	RotateTime();
 
-	// North Star
-	glColor(RED);
-	glPointSize(5);
-	glBegin(GL_POINTS);
-		glVertex3f ( 0.0f, 0.0f,-0.95f);
-	glEnd();
-
-	// The rest of the stars
 	for (int i=0; i<pStarfield->GetNumStars(); i++)
 	{
-		glPushName(i);										// Assign Object A Name (ID)
+		glPushName(i);
 		DrawStar(i);
 		glPopName();
 	}
@@ -425,25 +431,18 @@ void CConStationView::DrawStar(int i) const
 	float x = curStar->GetX();
 	float y = curStar->GetY();
 	float z = curStar->GetZ();
-	int brightness = curStar->GetBrightness();
+	float brightness = curStar->GetBrightness();
 	CColor color = curStar->GetColor();
-
-	glPointSize((float)brightness);
 
 	glColor (color);
 
-	glBegin(GL_POINTS);
-		glVertex3f ( x, y, z);
-	glEnd();
-
-	/*
-	// Set Brightness depending on zoom
-	if (zoom > 0)
-		 brightness *= (zoom + 1);
-	else brightness *= (zoom + 3) * 0.3f;
+	/// Brightness depending on zoom
+	if (pStarfield->GetZoom() > 0)
+		 brightness *= (pStarfield->GetZoom() + 1);
+	else brightness *= (pStarfield->GetZoom() + 3) * 0.3f;
 
 	//	Don't show if too dim
-	if (brightness > 1.0f)
+	if (brightness > 0.2f)
 	{
 		glPointSize(brightness);
 
@@ -453,7 +452,6 @@ void CConStationView::DrawStar(int i) const
 			glVertex3f ( x, y, z);
 		glEnd();
 	}
-	*/
 }
 
 void CConStationView::DrawHeading() const
@@ -477,10 +475,10 @@ void CConStationView::DrawHeading() const
 	glMatrixMode(GL_MODELVIEW);
 
 	glLoadIdentity();
-	Rotate();
+	RotateXY();
 
 	// Cross
-	glLineWidth(2);
+	glLineWidth(3);
 	glColor (GREEN);
 	glBegin(GL_LINES);
 		glVertex3f ( 1.0f, 0.0f, 0.0f);
@@ -500,7 +498,7 @@ void CConStationView::DrawHeading() const
 		glVertex3f ( 0.0f, 0.0f,-1.0f);
 	glEnd();
 
-	// Pop the Projection Matrix
+	// Pop Projection Matrix
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 
@@ -509,6 +507,34 @@ void CConStationView::DrawHeading() const
 
 	glPopAttrib();
 }
+
+/*
+void CConStationView::DrawActiveLine() const
+{
+	// Set up 2d Projection
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	glOrtho(0, width, height, 0, -1, 1);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	// Draw Line
+	glColor(CONSTGREEN);
+	glLineWidth(3);
+	glBegin(GL_LINES);
+		glVertex2i(prevStarPoint.x, prevStarPoint.y);
+		glVertex2i(mousePoint.x, mousePoint.y);
+	glEnd();
+
+	// Pop Projection Matrix
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+
+	glMatrixMode(GL_MODELVIEW);
+}
+*/
 
 /////////////////////////////////////////////////////////////////////////////
 // View Manipulation (draw)
@@ -525,19 +551,19 @@ void CConStationView::Projection() const
 
 void CConStationView::Perspective() const
 {
-	float persp = (1-zoom) * 60 + 5;
+	float persp = (1 - pStarfield->GetZoom()) * 60 + 5;
 
 	gluPerspective(persp,(float)width/(float)height,0.01f,10.0f);
 }
 
-void CConStationView::Rotate () const
+void CConStationView::RotateXY() const
 {
-	glRotatef (rotX, 1.0f, 0.0f, 0.0f);
-	glRotatef (rotY, 0.0f, 1.0f, 0.0f);
+	glRotatef (pStarfield->GetRotX(), 1.0f, 0.0f, 0.0f);
+	glRotatef (pStarfield->GetRotY(), 0.0f, 1.0f, 0.0f);
 }
 
 // Rotate the view depending on the latitude
-void CConStationView::RotateLatitude () const
+void CConStationView::RotateLatitude() const
 {
 	/// Should be stored in CStarfield
 	glRotatef (30.0f, 1.0f, 0.0f, 0.0f);
@@ -552,74 +578,7 @@ void CConStationView::RotateSeason() const
 // Rotate the view depending on the time
 void CConStationView::RotateTime() const
 {
-	glRotatef (rotZ, 0.0f, 0.0f, 1.0f);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// View Manipulation (data)
-
-void CConStationView::RotateUp ()
-{
-	if (rotX > -90.0f)								// Keep rotX between +- 90
-		rotX -= 0.5f * (-zoom + 1);				// Change is smaller if zoomed out
-}
-
-void CConStationView::RotateDown ()
-{
-	if (rotX < 90.0f)								// Keep rotX between +- 90
-		rotX += 0.5f * (-zoom + 1);				// Change is smaller if zoomed out
-}
-
-void CConStationView::RotateLeft ()
-{
-	rotY -= 0.5f * (-zoom + 1);					// Change is smaller if zoomed out
-	if (rotY < -360.0f)							// Keep rotY between +- 360
-		rotY += 360.0f;
-}
-
-void CConStationView::RotateRight()
-{
-	rotY += 0.5f * (-zoom + 1);					// Change is smaller if zoomed out
-	if (rotY > 360.0f)							// Keep rotY between +- 360
-		rotY -= 360.0f;
-}
-
-void CConStationView::ZoomIn()
-{
-	if (zoom < 0.8f)
-	{
-		zoom += 0.01f;// * (1-zoom);
-		Projection();
-	}
-}
-
-void CConStationView::ZoomOut()
-{
-	if (zoom > -0.9f)
-	{
-		zoom -= 0.01f;// * (1-zoom);
-		Projection();
-	}
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// View resets
-void CConStationView::ResetView()
-{
-	ResetRot();
-	ResetZoom();
-}
-
-void CConStationView::ResetRot()
-{
-	rotX = 0.0f;
-	rotY = 0.0f;
-}
-
-void CConStationView::ResetZoom()
-{
-	zoom = 0.0f;
-	Projection();
+	glRotatef (pStarfield->GetTime(), 0.0f, 0.0f, 1.0f);
 }
 
 
@@ -635,63 +594,73 @@ void CConStationView::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 	keyDown[nChar] = false;
 }
 
-// Timer for processing keys for smooth animation
+// Timer for animation
 void CConStationView::OnTimer(UINT nIDEvent) 
 {
-	ProcessKeys();
+	if (nIDEvent == TIMER_VIEWKEYS)
+		ProcessKeys();
+	if (nIDEvent == TIMER_ROTATE && pStarfield->IsSpinning() && state == Viewing)
+	{
+		pStarfield->AdjTime(0.1f);
+		InvalidateRect(NULL, FALSE);
+	}
 }
 
 void CConStationView::ProcessKeys()
 {
-	// Don't handle view keys if making a line or rotating
-	if (makingLine || mouseRotatingXY || mouseRotatingZ)
+	// Don't handle view keys if
+	if (state != Viewing)
 		return;
 
-	bool update = false;
+	BOOL update = false;
 
 	// Rotating
 	if ( keyDown[VK_UP] )
 	{
-		RotateUp();
+		pStarfield->RotateUp();
 		update = true;
 	}
 	if ( keyDown[VK_DOWN] )
 	{
-		RotateDown();
+		pStarfield->RotateDown();
 		update = true;
 	}
 	if ( keyDown[VK_RIGHT] )
 	{
-		RotateRight();
+		pStarfield->RotateRight();
 		update = true;
 	}
 	if ( keyDown[VK_LEFT] )
 	{
-		RotateLeft();
+		pStarfield->RotateLeft();
 		update = true;
 	}
 
 	// Zooming
-	if ( keyDown['E'] )
+	if ( keyDown['X'] )
 	{
-		ZoomIn();
+		pStarfield->ZoomIn();
+		Projection();
 		update = true;
 	}
-	if ( keyDown['Q'] )
+	if ( keyDown['Z'] )
 	{
-		ZoomOut();
+		pStarfield->ZoomOut();
+		Projection();
 		update = true;
 	}
 
 	// Resets
 	if ( keyDown[' '] )
 	{
-		ResetZoom();
+		pStarfield->ResetZoom();
+		Projection();
 		update = true;
 	}
 	if ( keyDown[VK_RETURN] )
 	{
-		ResetView();
+		pStarfield->ResetView();
+		Projection();
 		update = true;
 	}
 
@@ -707,8 +676,7 @@ void CConStationView::OnLButtonDown(UINT nFlags, CPoint point)
 	mousePoint = point;
 	mouseLDownPoint = point;
 
-	// Editing
-	if (makingLine)
+	if (state == AddingLine || state == AddingPoly)
 	{
 		// Try to select star
 		int selectedStarNum = SelectStar();
@@ -717,12 +685,13 @@ void CConStationView::OnLButtonDown(UINT nFlags, CPoint point)
 		if (selectedStarNum != -1)
 		{
 			// If this is the first star of the line
-			if (prevStarNum == -1)
+			if (firstStarNum == -1)
 			{
 				prevStarNum = selectedStarNum;
-				makingLine = true;
+				firstStarNum = selectedStarNum;
+///				prevStarPoint = point;
 			}
-			// Making a line so this should complete a line
+			// Adding a line so this should complete a line
 			//   and set the previous star number
 			else
 			{
@@ -734,9 +703,21 @@ void CConStationView::OnLButtonDown(UINT nFlags, CPoint point)
 				pStarfield->AddConstLine(prevStarNum, selectedStarNum);
 
 				prevStarNum = selectedStarNum;
+///				prevStarPoint = point;
 
 				InvalidateRect(NULL, FALSE);
 			}
+		}
+	}
+	else if (state == DeletingLine)
+	{
+		int selectedLineNum = SelectConstLine();
+
+		// If a line was selected
+		if (selectedLineNum != -1)
+		{
+			pStarfield->GetCurConstellation()->DeleteLine(selectedLineNum);
+			InvalidateRect(NULL, FALSE);
 		}
 	}
 	else
@@ -768,22 +749,30 @@ void CConStationView::OnRButtonDown(UINT nFlags, CPoint point)
 {
 	mousePoint = point;
 	mouseRDownPoint = point;
-	
-	if (editing)
+
+	if (state == AddingLine)
 	{
-		if (makingLine)
+		// If drawing lines
+		if (firstStarNum != -1)
+			firstStarNum = -1;
+		else
+			SetState(Viewing);
+	}
+	else if (state == AddingPoly)
+	{
+		// Complete Line
+		if (firstStarNum != -1)
 		{
-			// If drawing lines
-			if (prevStarNum != -1)
-				prevStarNum = -1;
-			else
-				makingLine = false;
+			pStarfield->AddConstLine(firstStarNum, prevStarNum);
+			firstStarNum = -1;
+			InvalidateRect(NULL, FALSE);
 		}
 		else
-			editing = false;
+			SetState(Viewing);
 	}
-
-	else
+	else if (state == DeletingLine)
+		SetState(Viewing);
+	else if (state == Viewing)
 	{
 		mouseRotatingZ = true;
 
@@ -811,18 +800,20 @@ BOOL CConStationView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 	// Zoom faster than with keys
 	if (zDelta < 0)
 	{
-		ZoomOut();
-		ZoomOut();
-		ZoomOut();
-		ZoomOut();
+		pStarfield->ZoomOut();
+		pStarfield->ZoomOut();
+		pStarfield->ZoomOut();
+		pStarfield->ZoomOut();
 	}
 	if (zDelta > 0)
 	{
-		ZoomIn();
-		ZoomIn();
-		ZoomIn();
-		ZoomIn();
+		pStarfield->ZoomIn();
+		pStarfield->ZoomIn();
+		pStarfield->ZoomIn();
+		pStarfield->ZoomIn();
 	}
+
+	Projection();
 
 	InvalidateRect(NULL, FALSE);
 
@@ -837,30 +828,23 @@ void CConStationView::OnMouseMove(UINT nFlags, CPoint point)
 
 	if (mouseRotatingXY || mouseRotatingZ)
 	{
-		if (makingLine)
+		if (state != Viewing)
 		{
-			MessageBox("Shouldn't be makingLine and mouseRotating");
+			MessageBox("Shouldn't be able to Mouse Rotate");
 			mouseRotatingXY = false;
 			mouseRotatingZ = false;
 			return;
 		}
 
-//		if (mouseRotatingZ)
-//			SetCur(IDC_ROTZ);
-//		else
-//			SetCur(IDC_ROTXY);
+		float rotX = pStarfield->GetRotX();
 
 		if (mouseRotatingXY && !mouseRotatingZ)
 		{
-			float newRotX = rotX + (point.y-mouseLDownPoint.y) / 20.0f;// * (1-zoom);
-			rotY += (point.x-mouseLDownPoint.x) / 20.0f;// * (1-zoom);
-
-			// Restrict X Rotation
-			if ( newRotX > -90 && newRotX < 10)
-				rotX = newRotX;
+			pStarfield->AdjRotX((point.y-mouseLDownPoint.y) / 20.0f);// * (1-zoom);
+			pStarfield->AdjRotY((point.x-mouseLDownPoint.x) / 20.0f);// * (1-zoom);
 		}
 		if (mouseRotatingZ)
-			rotZ += (point.y-mouseRDownPoint.y) / 10.0f;// * (1-zoom);
+			pStarfield->AdjTime((point.y-mouseRDownPoint.y) / 10.0f);// * (1-zoom);
 
 		InvalidateRect(NULL,FALSE);
 
@@ -870,6 +854,10 @@ void CConStationView::OnMouseMove(UINT nFlags, CPoint point)
 		
 		///SetCursorPos(mouseLDownPoint.x, mouseLDownPoint.y);
 	}
+	/// GROGGY ///
+	// Invalidate so it will show line as mouse moves
+///	if (state == AddingLine && firstStarNum != -1)
+///		InvalidateRect(NULL, FALSE);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -883,17 +871,46 @@ BOOL CConStationView::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 {
 	WORD cursor = IDC_POINT;
 
-	if (editing)
+	if (state == AddingLine)
 	{
-		if (makingLine)
+		if (firstStarNum == -1)
 		{
-///			if (prevStarNum != -1 || Select())
-///				cursor = IDC_NLINE;
-			if (Select())
-				cursor = IDC_NLINE;
+			if (Select(Star))
+				cursor = IDC_EDITX;
 			else
-				cursor = IDC_NLINEG;
+				cursor = IDC_EDIT;
 		}
+		else
+		{
+			if (Select(Star))
+				cursor = IDC_ALINEX;
+			else
+				cursor = IDC_ALINE;
+		}
+	}
+	else if (state == AddingPoly)
+	{
+		if (firstStarNum == -1)
+		{
+			if (Select(Star))
+				cursor = IDC_EDITX;
+			else
+				cursor = IDC_EDIT;
+		}
+		else
+		{
+			if (Select(Star))
+				cursor = IDC_APOLYX;
+			else
+				cursor = IDC_APOLY;
+		}
+	}
+	else if (state == DeletingLine)
+	{
+		if (Select(Line))
+			cursor = IDC_DLINEX;
+		else
+			cursor = IDC_DLINE;
 	}
 
 	SetCur (cursor);
@@ -904,7 +921,7 @@ BOOL CConStationView::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 /////////////////////////////////////////////////////////////////////////////
 // Selecting
 
-bool CConStationView::Select()
+BOOL CConStationView::Select(SelectType selection)
 {
 	// The Size Of The Viewport. [0] Is <x>, [1] Is <y>, [2] Is <width>, [3] Is <height>
 	GLint	viewport[4];
@@ -930,7 +947,10 @@ bool CConStationView::Select()
 	glMatrixMode(GL_MODELVIEW);									// Select The Modelview Matrix
 	glLoadIdentity();
 
-	DrawStars();
+	if (selection == Star)
+		DrawStars();
+	else if (selection == Line)
+		DrawConstellation(pStarfield->GetNumCurConstellation());
 
 	glMatrixMode(GL_PROJECTION);								// Select The Projection Matrix
 	glPopMatrix();												// Pop The Projection Matrix
@@ -948,7 +968,7 @@ bool CConStationView::Select()
 
 int CConStationView::SelectStar()
 {
-	if (Select())	// If a hit occured in starfield
+	if (Select(Star))	// If a hit occured in starfield
 	{
 		int numStar = selectBuffer[3];
 		CStar* selectedStar = pStarfield->GetStar(numStar);
@@ -974,96 +994,9 @@ int CConStationView::SelectStar()
 	else return -1;
 }
 
-
-/////////////////////////////////////////////////////////////////////////////
-// Constellation editor
-
-void CConStationView::OnEdit() 
+int CConStationView::SelectConstLine()
 {
-	if (!mouseRotatingXY && !mouseRotatingZ)
-	{
-		if (editing)
-		{
-			makingLine = false;
-			deletingLine = false;
-		}
-		else
-		{
-			/// SHOULDN'T BE HERE
-			pStarfield->AddConstellation();
-			pStarfield->SetNumCurConstellation(pStarfield->GetNumConstellations()-1);
-		}
-
-		editing = !editing;
-	}
+	if (Select(Line))	// If a hit occured
+		return selectBuffer[3];
+	else return -1;
 }
-
-void CConStationView::OnUpdateEdit(CCmdUI* pCmdUI) 
-{
-	pCmdUI->SetCheck(editing);
-}
-
-void CConStationView::OnNewLine() 
-{
-	if (mouseRotatingZ)
-	{
-		MessageBox("You shouldn't be able to call New Line while Mouse Rotating Z");
-		mouseRotatingZ = false;
-		return;
-	}
-
-	if (!mouseRotatingXY)
-	{
-		if (!makingLine)
-			prevStarNum = -1;
-
-		makingLine = !makingLine;
-	}
-}
-
-void CConStationView::OnUpdateNewLine(CCmdUI* pCmdUI) 
-{
-	pCmdUI->Enable(editing);
-	pCmdUI->SetCheck(makingLine);
-}
-
-void CConStationView::OnDelLine() 
-{
-	deletingLine = !deletingLine;
-}
-
-void CConStationView::OnUpdateDelLine(CCmdUI* pCmdUI) 
-{
-	pCmdUI->Enable(editing);
-	pCmdUI->SetCheck(deletingLine);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// PLACEHOLDERS FOR NOW
-
-void CConStationView::OnUpdateConstellationCreate(CCmdUI* pCmdUI) 
-{
-	pCmdUI->Enable(editing);
-}
-
-void CConStationView::OnUpdateConstellationDelete(CCmdUI* pCmdUI) 
-{
-	pCmdUI->Enable(editing);
-}
-
-void CConStationView::OnUpdateConstellationLoad(CCmdUI* pCmdUI) 
-{
-	pCmdUI->Enable(editing);
-}
-
-void CConStationView::OnUpdateConstellationStore(CCmdUI* pCmdUI) 
-{
-	pCmdUI->Enable(editing);
-}
-
-void CConStationView::OnUpdateConstellationStoreas(CCmdUI* pCmdUI) 
-{
-	pCmdUI->Enable(editing);
-}
-
-

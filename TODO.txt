@@ -1,0 +1,22 @@
+
+BUGS
+1	Rename to the same
+1	Shouldn't edit if hidden
+2	Untitled past 9
+
+
+SELECTION
+1	Select(Line) is returning wrong number
+2	Shouldn't select stars behind ground
+5	Take out star 11 message
+
+
+IMPROVING
+2	Select ConstLine to select constellation
+3	Input Actual stars & constellations
+3	Load pictures instead of GL_POINTS for stars
+		compare effeciency
+5	Choose location (lattitude)
+5	Choose season
+5	Terrain
+5	Black Terrain, Dark Blue Sky Gradient

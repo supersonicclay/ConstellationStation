@@ -17,7 +17,6 @@
 // OpenGL Headers
 #include <gl/gl.h>
 #include <gl/glu.h>
-////#include <math.h> 
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -31,7 +30,9 @@ typedef struct
 
 void glColor(CColor c);
 
-extern const CColor WHITE, BLACK, RED, GREEN, BLUE, CONSTGREEN, DARKGREEN;
+extern const CColor WHITE, BLACK, RED, GREEN, BLUE, CONSTGREEN, GROUNDGREEN;
+
+enum StateType {Viewing, AddingLine, AddingPoly, DeletingLine};
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -58,13 +59,9 @@ public:
 // Implementation
 	//{{AFX_MSG(CConStationApp)
 	afx_msg void OnAppAbout();
-	afx_msg void OnConstellationOpen();
-	afx_msg void OnConstellationNew();
-	afx_msg void OnConstellationSave();
-	afx_msg void OnConstellationSaveas();
-	afx_msg void OnStarfieldNewactual();
-	afx_msg void OnStarfieldNewrandom();
-	afx_msg void OnStarfieldOpen();
+	afx_msg void OnStarfNewActual();
+	afx_msg void OnStarfNewRandom();
+	afx_msg void OnStarfOpen();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

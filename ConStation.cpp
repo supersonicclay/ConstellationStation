@@ -58,7 +58,7 @@ BOOL CConStationApp::InitInstance()
 #endif
 
 	// Change the registry key under which our settings are stored.
-	// TODO: You should modify this string to be something appropriate
+	/// TODO: You should modify this string to be something appropriate
 	// such as the name of your company or organization.
 	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
 
@@ -67,11 +67,10 @@ BOOL CConStationApp::InitInstance()
 	// Register the application's document templates.  Document templates
 	//  serve as the connection between documents, frame windows and views.
 
-//	CSingleDocTemplate* pDocTemplate;
 	pDocTemplate = new CSingleDocTemplate(
 		IDR_MAINFRAME,
 		RUNTIME_CLASS( CConStationDoc ),
-		RUNTIME_CLASS( CMainFrame ),       // main SDI frame window
+		RUNTIME_CLASS( CConStationFrame ),       // main SDI frame window
 		RUNTIME_CLASS( CConStationView ) );
 
 	AddDocTemplate(pDocTemplate);
@@ -91,80 +90,61 @@ BOOL CConStationApp::InitInstance()
 	return TRUE;
 }
 
-CMainFrame* CConStationApp::GetMainFrame() const
+CConStationFrame* CConStationApp::GetFrame() const
 {
 #ifdef _DEBUG
-	ASSERT( m_pMainWnd->IsKindOf( RUNTIME_CLASS( CMainFrame ) ) );
+	ASSERT( m_pMainWnd->IsKindOf( RUNTIME_CLASS( CConStationFrame ) ) );
 #endif
-	return (CMainFrame *)m_pMainWnd;
+	return (CConStationFrame *)m_pMainWnd;
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CAboutDlg dialog used for App About
+// CDlgAbout dialog used for App About
 
-class CAboutDlg : public CDialog
+class CDlgAbout : public CDialog
 {
 public:
-	CAboutDlg();
+	CDlgAbout();
 
 // Dialog Data
-	//{{AFX_DATA(CAboutDlg)
+	//{{AFX_DATA(CDlgAbout)
 	enum { IDD = IDD_ABOUTBOX };
 	//}}AFX_DATA
 
 	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CAboutDlg)
+	//{{AFX_VIRTUAL(CDlgAbout)
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
 
 // Implementation
 protected:
-	//{{AFX_MSG(CAboutDlg)
+	//{{AFX_MSG(CDlgAbout)
 		// No message handlers
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
 
-CAboutDlg::CAboutDlg() : CDialog( CAboutDlg::IDD )
+CDlgAbout::CDlgAbout() : CDialog( CDlgAbout::IDD )
 {
-	//{{AFX_DATA_INIT(CAboutDlg)
+	//{{AFX_DATA_INIT(CDlgAbout)
 	//}}AFX_DATA_INIT
 }
 
-void CAboutDlg::DoDataExchange( CDataExchange* pDX )
+void CDlgAbout::DoDataExchange( CDataExchange* pDX )
 {
 	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CAboutDlg)
+	//{{AFX_DATA_MAP(CDlgAbout)
 	//}}AFX_DATA_MAP
 }
 
-BEGIN_MESSAGE_MAP( CAboutDlg, CDialog )
-	//{{AFX_MSG_MAP(CAboutDlg)
+BEGIN_MESSAGE_MAP( CDlgAbout, CDialog )
+	//{{AFX_MSG_MAP(CDlgAbout)
 		// No message handlers
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
-
-
-/////////////////////////////////////////////////////////////////////////////
-// Globals
-
-const CColor COLOR_WHITE =		{1.0f, 1.0f, 1.0f},
-			 COLOR_BLACK =		{0.0f, 0.0f, 0.0f},
-			 COLOR_SKY =		{0.0f, 0.0f, 1.0f},
-			 COLOR_CROSS =		{0.3f, 0.3f, 0.8f},
-			 COLOR_ACTIVESTAR =	{1.0f, 0.0f, 0.0f},
-			 COLOR_NORTHSTAR =	{0.7f, 1.0f, 0.7f},
-			 COLOR_CONSTLINE =	{0.0f, 0.5f, 0.5f};
-
-
-// Convinience function for glColor3f
-void glColor( CColor c )
-{
-	glColor3f( c.r, c.g, c.b );
-}
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -173,7 +153,7 @@ void glColor( CColor c )
 // Open the about dialog
 void CConStationApp::OnAppAbout()
 {
-	CAboutDlg aboutDlg;
+	CDlgAbout aboutDlg;
 	aboutDlg.DoModal();
 }
 
@@ -182,25 +162,25 @@ void CConStationApp::OnStarfNewActual()
 {
 	CWinApp::OnFileNew();
 
-	GetMainFrame()->UpdateList();
-	GetMainFrame()->GetView()->Projection();
-	GetMainFrame()->GetView()->SetState( Viewing );
+	GetFrame()->UpdateList();
+	GetFrame()->GetView()->Projection();
+	SetState( state_Viewing );
 }
 
 void CConStationApp::OnStarfNewRandom() 
 {
 	CWinApp::OnFileNew();
 
-	GetMainFrame()->UpdateList();
-	GetMainFrame()->GetView()->Projection();
-	GetMainFrame()->GetView()->SetState( Viewing );
+	GetFrame()->UpdateList();
+	GetFrame()->GetView()->Projection();
+	SetState( state_Viewing );
 }
 
 void CConStationApp::OnStarfOpen() 
 {
 	CWinApp::OnFileOpen();
 
-	GetMainFrame()->UpdateList();
-	GetMainFrame()->GetView()->Projection();
-	GetMainFrame()->GetView()->SetState( Viewing );
+	GetFrame()->UpdateList();
+	GetFrame()->GetView()->Projection();
+	SetState( state_Viewing );
 }

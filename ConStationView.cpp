@@ -49,16 +49,11 @@ END_MESSAGE_MAP()
 
 CConStationView::CConStationView()
 {
-	state = Viewing;
-
 	for( int i=0; i<256; i++ )
 		keyDown[i] = FALSE;
 
 	mouseRotatingXY = false;
 	mouseRotatingZ = false;
-
-	///
-	terrainOffset = 0.5f;
 }
 
 CConStationView::~CConStationView()
@@ -90,43 +85,22 @@ void CConStationView::Dump(CDumpContext& dc) const
 	CView::Dump(dc);
 }
 
-CConStationDoc* CConStationView::GetDocument() const // non-debug version is inline
-{
-	ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CConStationDoc)));
-	return (CConStationDoc*)m_pDocument;
-}
 #endif //_DEBUG
 
-CStarfield* CConStationView::GetStarfield() const
-{
-	return GetDocument()->GetStarfield();
-}
-
-CTerrain* CConStationView::GetTerrain() const
-{
-	return GetDocument()->GetTerrain();
-}
-
-void CConStationView::NewTerrain( float roughness )
-{
-	GetDocument()->NewTerrain( roughness );
-	PositionTerrain();
-	InvalidateRect( NULL, FALSE );
-}
-
+/*
 // Calculate the offset of the terrain, so the viewer is placed above it.
 void CConStationView::SetTerrainOffset()
 {
 	// Get the index of the midpoint
-	int middleIndex = GetTerrain()->GetSize() / 2;
+	int middleIndex = terrain->GetSize() / 2;
 
 	// Average the heights around the midpoint,
 	//  so the viewer isn't placed in a deep pit.
 
 	// Average of square points directly around middle
-	float avg1 = GetTerrain()->AvgSquare(middleIndex, middleIndex, 1);
+	float avg1 = terrain->AvgSquare(middleIndex, middleIndex, 1);
 	// Average of diamond points directly around middle
-	float avg2 = GetTerrain()->AvgDiamond(middleIndex, middleIndex, 1);
+	float avg2 = terrain->AvgDiamond(middleIndex, middleIndex, 1);
 
 	// Average the two averages
 	float height = ((avg1 + avg2) / 2);
@@ -134,12 +108,13 @@ void CConStationView::SetTerrainOffset()
 	// Make sure the new height is not less than the height at the midpoint
 	//  (this would put the viewer under the terrain)
 	// If it is, then switch to the height of the midpoint
-	if (height < GetTerrain()->GetHeight(middleIndex, middleIndex))
-		height = GetTerrain()->GetHeight(middleIndex, middleIndex) + 0.2f;
+	if (height < terrain->GetHeight(middleIndex, middleIndex))
+		height = terrain->GetHeight(middleIndex, middleIndex) + 0.2f;
 
 	// Move it down a little more than that so the viewer isn't exactly on the surface
 	terrainOffset = -height - 0.05f;
 }
+*/
 
 
 
@@ -186,6 +161,9 @@ void CConStationView::OnDestroy()
 	}
 	// Set it to NULL
 	m_pDC = NULL;
+
+	delete terrain;
+	delete starfield;
 }
 
 BOOL CConStationView::OnEraseBkgnd(CDC* pDC) 
@@ -220,48 +198,47 @@ BOOL CConStationView::InitializeOpenGL()
 	m_pDC = new CClientDC(this);
 
 	// Failure to Get DC
-	if(m_pDC == NULL)
+	if( m_pDC == NULL )
 	{
 		MessageBox("Error Obtaining DC");
 		return FALSE;
 	}
 
 	// Failure to set the pixel format
-	if(!SetupPixelFormat())
+	if( !SetupPixelFormat() )
 	{
 		return FALSE;
 	}
 
 	// Create Rendering Context
-	m_hRC = ::wglCreateContext (m_pDC->GetSafeHdc ());
+	m_hRC = wglCreateContext( m_pDC->GetSafeHdc () );
 
 	// Failure to Create Rendering Context
-	if(m_hRC == 0)
+	if( m_hRC == 0 )
 	{
 		MessageBox("Error Creating RC");
 		return FALSE;
 	}
 	
 	// Make the RC Current
-	if(::wglMakeCurrent (m_pDC->GetSafeHdc (), m_hRC)==FALSE)
+	if( wglMakeCurrent( m_pDC->GetSafeHdc(), m_hRC ) == FALSE )
 	{
-		MessageBox("Error making RC Current");
+		MessageBox( "Error making RC Current" );
 		return FALSE;
 	}
 
 
 	// Settings
-	glClearColor(0.0f,0.0f,0.0f,1.0f);
-	glClearDepth(1.0f);
-	glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+	glClearColor( 0.0f,0.0f,0.0f,1.0f );
+	glClearDepth( 1.0f );
+	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
 	glEnable( GL_LINE_SMOOTH );
-	glShadeModel(GL_SMOOTH);
-//	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glShadeModel( GL_SMOOTH );
 
 	// Textures
-	if (!LoadTextures())
+	if( !LoadTextures() )
 	{
-		MessageBox("Error loading textures");
+		MessageBox( "Error loading textures" );
 		return FALSE;
 	}
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE );
@@ -272,36 +249,12 @@ BOOL CConStationView::InitializeOpenGL()
 	gluQuadricTexture( skySphere, GL_TRUE );
 
 	// Sun
-	sunLight = new GLfloat[4];
-	sunPosition = new GLfloat[4];
-	sunLight[0] = 1.0f;
-	sunLight[1] = 1.0f;
-	sunLight[2] = 1.0f;
-	sunLight[3] = 1.0f;
-	sunPosition[0] = 1.0f;
-	sunPosition[1] = 1.0f;
-	sunPosition[2] = 1.0f;
-	sunPosition[3] = 1.0f;
-
-
-	// Lighting
-///	float ambient[] = {0.2f, 0.2f, 0.2f, 1.0f};
-//	glLightModelfv( GL_LIGHT_MODEL_AMBIENT, ambient );
-//	glLightfv( GL_LIGHT0, GL_AMBIENT, ambient );
-//	glLightfv( GL_LIGHT0, GL_SPECULAR, sunLight );
-//	glLightfv( GL_LIGHT0, GL_DIFFUSE, sunLight );
-	glLightfv( GL_LIGHT0, GL_POSITION, sunPosition );
+	sunSphere = gluNewQuadric();
 	glEnable( GL_LIGHT0 );
 
 	// Material
-//	GLfloat specular [] = { 0.5f, 0.5f, 0.5f, 1.0f };
-//	GLfloat shininess [] = { 100.0f };
-//	GLfloat emission [] = {0.0f, 0.0f, 0.0f, 1.0f};
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 	glEnable(GL_COLOR_MATERIAL);
-//	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
-//	glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION,  emission);
-//	glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
 
 	return TRUE;
 }
@@ -365,130 +318,17 @@ BOOL CConStationView::LoadTextures()
 	return TRUE;
 }
 
-BOOL CConStationView::LoadTGA(Texture &texture, char* filename)
-{
-	// Every TGA file has this header
-	GLubyte		TGAheader[12]={0,0,2,0,0,0,0,0,0,0,0,0};
-
-	// Used to compare file header with TGAheader
-	GLubyte		fileHeader[12];
-
-	// Width, Height, and bpp information
-	GLubyte		imageInfo[6];
-
-	GLuint		bitsPerPixel;
-	GLuint		bytesPerPixel;
-
-	// Size of image data in bytes
-	GLuint		imageSize;
-
-	// RGBA is 32 bits per pixel; RGB is 24 bits per pixel
-	GLuint		type=GL_RGBA;
-
-	// Open for binary reading
-	FILE *file = fopen(filename, "rb");
-
-	if(	file==NULL ||
-		fread(fileHeader,1,sizeof(fileHeader),file)!=sizeof(fileHeader) ||	// Make sure the header is there
-		memcmp(TGAheader,fileHeader,sizeof(TGAheader))!=0				||	// Make sure the header is a TGA header
-		fread(imageInfo,1,sizeof(imageInfo),file)!=sizeof(imageInfo))		// Make sure the image information is there
-	{
-		if (file == NULL)
-			return FALSE;
-		else
-		{
-			fclose(file);
-			return FALSE;
-		}
-	}
-
-	// Image width = highbyte*256 + lowbyte
-	texture.width  = imageInfo[1] * 256 + imageInfo[0];
-	// Image height = highbyte*256 + lowbyte
-	texture.height = imageInfo[3] * 256 + imageInfo[2];
-
-	bitsPerPixel	= imageInfo[4];
-	bytesPerPixel	= bitsPerPixel/8;
-
-	imageSize		= texture.width*texture.height*bytesPerPixel;
-   
- 	if(	texture.width	<=0	||
-		texture.height	<=0	||
-		(imageInfo[4]!=24 && imageInfo[4]!=32))				// Make sure TGA is 24 or 32 bits per pixel
-	{
-		fclose(file);
-		return FALSE;
-	}
-
-	// Reserve memory to hold the image data
-	texture.data = new GLubyte [imageSize];
-
-	if(	texture.data==NULL ||									// Make sure the memory was reserved
-		fread(texture.data, 1, imageSize, file)!=imageSize )	// Make sure image data size matches imageSize
-	{
-		// If memory was reserved, free it
-		if(texture.data!=NULL)
-			delete texture.data;
-
-		fclose(file);
-		return FALSE;
-	}
-
-	// GL uses RGB, TGA uses BGR so we must swap Red and Blue
-	GLubyte temp;
-	for(GLuint i=0; i<int(imageSize); i+=bytesPerPixel)
-	{
-		temp=texture.data[i];
-		texture.data[i] = texture.data[i + 2];
-		texture.data[i + 2] = temp;
-	}
-
-	fclose (file);											// Close The File
-
-	glGenTextures(1, &texture.textureID);
-
-	glBindTexture(GL_TEXTURE_2D, texture.textureID);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	
-	if (bitsPerPixel==24)
-	{
-		type=GL_RGB;
-	}
-
-	glTexImage2D(GL_TEXTURE_2D, 0, type, texture.width, texture.height, 0, type, GL_UNSIGNED_BYTE, texture.data);
-
-	return TRUE;
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-// States
-StateType CConStationView::GetState() const
-{
-	return state;
-}
-
-void CConStationView::SetState( StateType newState )
-{
-	firstStarNum = -1;
-
-	state = newState;
-}
-
-BOOL CConStationView::IsRotating() const
-{
-	return mouseRotatingXY || mouseRotatingZ;
-}
 
 /////////////////////////////////////////////////////////////////////////////
 // CConStationView drawing
 
+void CConStationView::Redraw()
+{
+	InvalidateRect( NULL, FALSE );
+}
+
 void CConStationView::OnDraw(CDC* pDC)
 {
-	CConStationDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
-
     CPaintDC dc(this); // Needed 
 
 	// Useful in multidoc templates
@@ -514,6 +354,20 @@ void CConStationView::OnDraw(CDC* pDC)
 
 }
 
+/// Used for speedy adding of lines
+void CConStationView::DrawCurConstellation( CDC* pDC )
+{
+	CPaintDC dc(this);
+
+	glLineWidth(3);
+	glColor(COLOR_CONSTLINE);
+
+///	DrawStars();
+	DrawConstellation( starfield->GetNumCurConstellation() );
+
+	SwapBuffers( m_pDC->GetSafeHdc() );
+}
+
 void CConStationView::DrawTerrain() const
 {
 	glEnable( GL_LIGHTING );
@@ -522,20 +376,22 @@ void CConStationView::DrawTerrain() const
 	RotateXY();
 	PositionTerrain();
 
-	glColor( GetTerrain()->GetColor() );
+	glColor( terrain->GetColor() );
 
 	int i, j;
 	float x, z;
 	float inc;
 
-	float* heights = GetTerrain()->GetHeights();
-	int arraySize = GetTerrain()->GetArraySize();
-	int size = GetTerrain()->GetSize();
+	float* heights = terrain->GetHeights();
+	int arraySize = terrain->GetArraySize();
+	int size = terrain->GetSize();
+
+///	float* n;
+
+	float scale = terrain->GetScale();
+	int iterations = terrain->GetIterations();
 
 	float* n;
-
-	float scale = GetTerrain()->GetScale();
-	int iterations = GetTerrain()->GetIterations();
 
 	x = -scale;
 	z = -scale;
@@ -543,33 +399,22 @@ void CConStationView::DrawTerrain() const
 
 	glPushName( 0 );
 
-	/*
-	glBegin( GL_QUADS );
-		glNormal3f( 0.0f, 1.0f, 0.0f );
-		glVertex3f( -1.0f, -0.15f, -1.0f );
-		glVertex3f( -1.0f, -0.15f,  1.0f );
-		glVertex3f(  1.0f, -0.15f,  1.0f );
-		glVertex3f(  1.0f, -0.15f, -1.0f );
-	glEnd();
-//	*/
-//	/*
 	for (i=0; i<size; i++)
 	{
 		for (j=0; j<size; j++)
 		{
-			n = GetTerrain()->GetUpperNormal( i, j );
+			/* ///
+			glDisable( GL_LIGHTING );
+			glColor3f( 1, 0, 0 );
+			glBegin(GL_LINES);
+				glVertex3f( x, heights[ i*arraySize + j ], z );
+				glVertex3f( x, heights[ i*arraySize + j ]+0.5f, z );
+				glVertex3f( n[0], n[1], n[2] );
+			glEnd();
+			glEnable( GL_LIGHTING );
+//			*/
 
-			///
-//			glDisable( GL_LIGHTING );
-//			glColor3f( 1, 0, 0 );
-//			glBegin(GL_LINES);
-//				glVertex3f( x, heights[ i*arraySize + j ], z );
-//				glVertex3f( x, heights[ i*arraySize + j ]+0.5f, z );
-//				glVertex3f( n[0], n[1], n[2] );
-//			glEnd();
-//			glEnable( GL_LIGHTING );
-			///
-
+			n = terrain->GetUpperNormal( i, j );
 			glBegin(GL_TRIANGLES);
 				glNormal3f( n[0], n[1], n[2] );
 				glVertex3f( x, heights[ (i*arraySize) + j ], z );
@@ -577,7 +422,7 @@ void CConStationView::DrawTerrain() const
 				glVertex3f( x+inc, heights[ ((i+1)*arraySize) + j ], z );
 			glEnd();
 
-			n = GetTerrain()->GetLowerNormal( i, j );
+			n = terrain->GetLowerNormal( i, j );
 			glBegin(GL_TRIANGLES);
 				glNormal3f( n[0], n[1], n[2] );
 				glVertex3f( x+inc, heights[ ((i+1)*arraySize) + (j+1) ], z+inc );
@@ -590,7 +435,7 @@ void CConStationView::DrawTerrain() const
 		z = -scale;
 		x += inc;
 	}
-//	*/
+
 	glPopName();
 
 	glDisable( GL_LIGHTING );
@@ -599,7 +444,7 @@ void CConStationView::DrawTerrain() const
 // Set the viewer on top of the midpoint of the terrain
 void CConStationView::PositionTerrain() const
 {
-	glTranslatef (0.0f, terrainOffset, 0.0f);
+	glTranslatef( 0.0f, -terrain->GetViewHeight(), 0.0f );
 }
 
 void CConStationView::DrawSky() const
@@ -624,8 +469,6 @@ void CConStationView::DrawSky() const
 
 void CConStationView::DrawSun() const
 {
-//	glEnable( GL_LIGHTING );
-
 	glLoadIdentity();
 //	glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
 	RotateXY();
@@ -633,20 +476,27 @@ void CConStationView::DrawSun() const
 	RotateSeason();
 	RotateTime();
 
-//	GLfloat emission[] = {1.0f, 1.0f, 1.0f, 1.0f};
-//	glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, emission );
-
 	glTranslatef( 0.0f, 0.0f,-1.0f );
 
+	// Sun Sphere
 	glColor( COLOR_WHITE );
-	gluSphere( gluNewQuadric(), 0.02f, 8, 2 );
+	gluSphere( sunSphere, 0.02f, 15, 2 );
 
-//	GLfloat dark[] = {0.0f, 0.0f, 0.0f, 0.0f};
-//	glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, dark );
+	/// LIGHTING NEEDS WORK
+	float light[4];
+	light[0] = 1.0f;
+	light[1] = 1.0f;
+	light[2] = 1.0f;
+	light[3] = 1.0f;
+	glLightfv( GL_LIGHT0, GL_SPECULAR, light );
 
-//	glDisable( GL_LIGHTING );
+	float pos[3];
+	pos[0] = 0.0f;
+	pos[1] = 1.0f;
+	pos[2] = 0.0f;
+	glLightfv( GL_LIGHT0, GL_POSITION, pos );
+
 }
-
 
 void CConStationView::DrawStarfield() const
 {
@@ -663,9 +513,9 @@ void CConStationView::DrawConstellations() const
 	glColor(COLOR_CONSTLINE);
 
 	// Draw each constellation
-	for (int i=0; i<GetStarfield()->GetNumConstellations(); i++)
+	for (int i=0; i<starfield->GetNumConstellations(); i++)
 	{
-		if (GetStarfield()->GetConstellation(i)->IsVisible())
+		if (starfield->GetConstellation(i)->IsVisible())
 			DrawConstellation(i);
 	}
 }
@@ -679,7 +529,7 @@ void CConStationView::DrawConstellation(int i) const
 	RotateSeason();
 	RotateTime();
 
-	CConstellation* curConstellation = GetStarfield()->GetConstellation(i);
+	CConstellation* curConstellation = starfield->GetConstellation(i);
 	int numLines = curConstellation->GetNumLines();
 
 	float x1, y1, z1, x2, y2, z2;
@@ -716,7 +566,7 @@ void CConStationView::DrawStars() const
 	glBindTexture(GL_TEXTURE_2D, starTex.textureID);
 
 	// Go in reverse order so north star (star 0) is drawn last
-	for (int i=GetStarfield()->GetNumStars()-1; i>=0; i--)
+	for (int i=starfield->GetNumStars()-1; i>=0; i--)
 	{
 		glPushName( i+1 );
 		DrawStar( i );
@@ -729,21 +579,21 @@ void CConStationView::DrawStars() const
 
 void CConStationView::DrawStar(int i) const
 {
-	CStar* curStar = GetStarfield()->GetStar(i);
+	CStar* curStar = starfield->GetStar(i);
 	float longitude = curStar->GetLongitude();
 	float latitude = curStar->GetLatitude();
 	float brightness = curStar->GetBrightness();
-	CColor color;
+	color_t color;
 
 	bool active = false;
 
 	// Determine if this star is active (part of the current constellation)
-	if (GetStarfield()->GetNumConstellations() > 0)
+	if (starfield->GetNumConstellations() > 0)
 	{
-		for (int lineIndex=0; lineIndex < GetStarfield()->GetCurConstellation()->GetNumLines(); lineIndex++)
+		for (int lineIndex=0; lineIndex < starfield->GetCurConstellation()->GetNumLines(); lineIndex++)
 		{
-			if (curStar == GetStarfield()->GetCurConstellation()->GetLine(lineIndex)->GetStar1() ||
-				curStar == GetStarfield()->GetCurConstellation()->GetLine(lineIndex)->GetStar2())
+			if (curStar == starfield->GetCurConstellation()->GetLine(lineIndex)->GetStar1() ||
+				curStar == starfield->GetCurConstellation()->GetLine(lineIndex)->GetStar2())
 			{
 				active = true;
 				break;
@@ -876,6 +726,7 @@ void CConStationView::DrawActiveLine() const
 }
 */
 
+
 /////////////////////////////////////////////////////////////////////////////
 // View Manipulation
 
@@ -891,33 +742,38 @@ void CConStationView::Projection() const
 
 void CConStationView::Perspective() const
 {
-	float persp = (1 - GetStarfield()->GetZoom()) * 60 + 5;
+	float persp = (1 - starfield->GetZoom()) * 45;
 
 	gluPerspective(persp,(float)width/(float)height,0.001f,10.0f);
 }
 
 void CConStationView::RotateXY() const
 {
-	glRotatef (GetStarfield()->GetRotX(), 1.0f, 0.0f, 0.0f);
-	glRotatef (GetStarfield()->GetRotY(), 0.0f, 1.0f, 0.0f);
+	glRotatef (starfield->GetRotX(), 1.0f, 0.0f, 0.0f);
+	glRotatef (starfield->GetRotY(), 0.0f, 1.0f, 0.0f);
 }
 
 // Rotate the view depending on the latitude
 void CConStationView::RotateLatitude() const
 {
-	glRotatef( -GetStarfield()->GetLatitude(), 1.0f, 0.0f, 0.0f );
+	glRotatef( -starfield->GetLatitude(), 1.0f, 0.0f, 0.0f );
 }
 
 // Rotate the view depending on the season
 void CConStationView::RotateSeason() const
 {
-	glRotatef( GetStarfield()->GetSeason(), 1.0f, 0.0f, 0.0f );
+	glRotatef( starfield->GetSeason(), 1.0f, 0.0f, 0.0f );
 }
 
 // Rotate the view depending on the time
 void CConStationView::RotateTime() const
 {
-	glRotatef (GetStarfield()->GetTime(), 0.0f, 1.0f, 0.0f);
+	glRotatef (starfield->GetTime(), 0.0f, 1.0f, 0.0f);
+}
+
+BOOL CConStationView::IsRotating() const
+{
+	return mouseRotatingXY || mouseRotatingZ;
 }
 
 
@@ -938,18 +794,19 @@ void CConStationView::OnTimer(UINT nIDEvent)
 {
 	ProcessKeys();
 
-	if (GetStarfield()->IsSpinning() && state == Viewing)
+	if (starfield->IsSpinning() &&
+		state == state_Viewing)
 	{
-//		GetStarfield()->AdjTime(0.05f);
-		GetStarfield()->AdjTime(0.5f);
-		InvalidateRect(NULL, FALSE);
+//		starfield->AdjTime(0.05f);
+		starfield->AdjTime(0.5f);
+		Redraw();
 	}
 }
 
 void CConStationView::ProcessKeys()
 {
 	// Don't handle view keys if
-	if (state != Viewing)
+	if (state != state_Viewing)
 		return;
 
 	BOOL update = false;
@@ -957,35 +814,35 @@ void CConStationView::ProcessKeys()
 	// Rotating
 	if ( keyDown[VK_UP] )
 	{
-		GetStarfield()->RotateUp();
+		starfield->RotateUp();
 		update = true;
 	}
 	if ( keyDown[VK_DOWN] )
 	{
-		GetStarfield()->RotateDown();
+		starfield->RotateDown();
 		update = true;
 	}
 	if ( keyDown[VK_RIGHT] )
 	{
-		GetStarfield()->RotateRight();
+		starfield->RotateRight();
 		update = true;
 	}
 	if ( keyDown[VK_LEFT] )
 	{
-		GetStarfield()->RotateLeft();
+		starfield->RotateLeft();
 		update = true;
 	}
 
 	// Zooming
 	if ( keyDown['X'] )
 	{
-		GetStarfield()->ZoomIn();
+		starfield->ZoomIn();
 		Projection();
 		update = true;
 	}
 	if ( keyDown['Z'] )
 	{
-		GetStarfield()->ZoomOut();
+		starfield->ZoomOut();
 		Projection();
 		update = true;
 	}
@@ -993,19 +850,19 @@ void CConStationView::ProcessKeys()
 	// Resets
 	if ( keyDown[' '] )
 	{
-		GetStarfield()->ResetZoom();
+		starfield->ResetZoom();
 		Projection();
 		update = true;
 	}
 	if ( keyDown[VK_RETURN] )
 	{
-		GetStarfield()->ResetView();
+		starfield->ResetView();
 		Projection();
 		update = true;
 	}
 
 	if ( update )
-		InvalidateRect(NULL,FALSE);
+		Redraw();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1015,7 +872,7 @@ void CConStationView::OnLButtonDown(UINT nFlags, CPoint point)
 	mousePoint = point;
 	mouseLDownPoint = point;
 
-	if (state == AddingLine || state == AddingPoly)
+	if (state == state_AddingLine || state == state_AddingPoly)
 	{
 		// Try to select star
 		int selectedStarNum = SelectStar();
@@ -1040,27 +897,28 @@ void CConStationView::OnLButtonDown(UINT nFlags, CPoint point)
 					return;
 
 				// Make a new line
-				GetStarfield()->AddConstLine(prevStarNum, selectedStarNum);
+				starfield->AddConstLine( prevStarNum, selectedStarNum );
 
 				prevStarNum = selectedStarNum;
 				/// ACTIVE LINE
 ///				prevStarPoint = point;
 
-				GetDocument()->SetModifiedFlag();
-				InvalidateRect(NULL, FALSE);
+				/// GetDocument()->SetModifiedFlag();
+				/// DrawCurConstellation( GetDC() );
+				OnDraw( GetDC() );
 			}
 		}
 	}
-	else if (state == DeletingLine)
+	else if (state == state_DeletingLine)
 	{
 		int selectedLineNum = SelectConstLine();
 
 		// If a line was selected
 		if (selectedLineNum != -1)
 		{
-			GetStarfield()->GetCurConstellation()->DeleteLine(selectedLineNum);
+			starfield->GetCurConstellation()->DeleteLine(selectedLineNum);
 			GetDocument()->SetModifiedFlag();
-			InvalidateRect(NULL, FALSE);
+			Redraw();
 		}
 	}
 	else
@@ -1093,31 +951,31 @@ void CConStationView::OnRButtonDown(UINT nFlags, CPoint point)
 	mousePoint = point;
 	mouseRDownPoint = point;
 
-	if (state == AddingLine)
+	if (state == state_AddingLine)
 	{
 		// If drawing lines
 		if (firstStarNum != -1)
 			firstStarNum = -1;
 		else
-			SetState(Viewing);
+			SetState( state_Viewing );
 	}
-	else if (state == AddingPoly)
+	else if (state == state_AddingPoly)
 	{
 		// Complete Line
 		if (firstStarNum != -1)
 		{
-			GetStarfield()->AddConstLine(firstStarNum, prevStarNum);
+			starfield->AddConstLine(firstStarNum, prevStarNum);
 			firstStarNum = -1;
 
 			GetDocument()->SetModifiedFlag();
-			InvalidateRect(NULL, FALSE);
+			Redraw();
 		}
 		else
-			SetState(Viewing);
+			SetState( state_Viewing );
 	}
-	else if (state == DeletingLine)
-		SetState(Viewing);
-	else if (state == Viewing)
+	else if (state == state_DeletingLine)
+		SetState( state_Viewing );
+	else if (state == state_Viewing)
 	{
 		mouseRotatingZ = true;
 
@@ -1143,27 +1001,27 @@ void CConStationView::OnRButtonUp(UINT nFlags, CPoint point)
 
 BOOL CConStationView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) 
 {
-	if( state == Viewing )
+	if( state == state_Viewing )
 	{
 		// Zoom faster than with keys
 		if (zDelta < 0)
 		{
-			GetStarfield()->ZoomOut();
-			GetStarfield()->ZoomOut();
-			GetStarfield()->ZoomOut();
-			GetStarfield()->ZoomOut();
+			starfield->ZoomOut();
+			starfield->ZoomOut();
+			starfield->ZoomOut();
+			starfield->ZoomOut();
 		}
 		if (zDelta > 0)
 		{
-			GetStarfield()->ZoomIn();
-			GetStarfield()->ZoomIn();
-			GetStarfield()->ZoomIn();
-			GetStarfield()->ZoomIn();
+			starfield->ZoomIn();
+			starfield->ZoomIn();
+			starfield->ZoomIn();
+			starfield->ZoomIn();
 		}
 
 		Projection();
 
-		InvalidateRect(NULL, FALSE);
+		Redraw();
 	}
 
 	return TRUE;
@@ -1177,7 +1035,7 @@ void CConStationView::OnMouseMove(UINT nFlags, CPoint point)
 
 	if (mouseRotatingXY || mouseRotatingZ)
 	{
-		if (state != Viewing)
+		if (state != state_Viewing)
 		{
 			MessageBox("Shouldn't be able to Mouse Rotate");
 			mouseRotatingXY = false;
@@ -1185,17 +1043,17 @@ void CConStationView::OnMouseMove(UINT nFlags, CPoint point)
 			return;
 		}
 
-		float rotX = GetStarfield()->GetRotX();
+		float rotX = starfield->GetRotX();
 
 		if (mouseRotatingXY && !mouseRotatingZ)
 		{
-			GetStarfield()->AdjRotX((point.y-mouseLDownPoint.y) / 20.0f);// * (1-zoom);
-			GetStarfield()->AdjRotY((point.x-mouseLDownPoint.x) / 20.0f);// * (1-zoom);
+			starfield->AdjRotX((point.y-mouseLDownPoint.y) / 20.0f);// * (1-zoom);
+			starfield->AdjRotY((point.x-mouseLDownPoint.x) / 20.0f);// * (1-zoom);
 		}
 		if (mouseRotatingZ)
-			GetStarfield()->AdjTime((point.y-mouseRDownPoint.y) / 10.0f);// * (1-zoom);
+			starfield->AdjTime((point.y-mouseRDownPoint.y) / 10.0f);// * (1-zoom);
 
-		InvalidateRect(NULL,FALSE);
+		Redraw();
 
 		// Set the mouse point
 		mouseLDownPoint=point;
@@ -1206,7 +1064,7 @@ void CConStationView::OnMouseMove(UINT nFlags, CPoint point)
 	/// ACTIVE LINE ///
 	// Invalidate so it will show line as mouse moves
 ///	if (state == AddingLine && firstStarNum != -1)
-///		InvalidateRect(NULL, FALSE);
+///		Redraw();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1220,7 +1078,7 @@ BOOL CConStationView::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 {
 	WORD cursor = IDC_POINT;
 
-	if (state == AddingLine)
+	if (state == state_AddingLine)
 	{
 		if (firstStarNum == -1)
 		{
@@ -1237,7 +1095,7 @@ BOOL CConStationView::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 				cursor = IDC_ALINE;
 		}
 	}
-	else if (state == AddingPoly)
+	else if (state == state_AddingPoly)
 	{
 		if (firstStarNum == -1)
 		{
@@ -1254,7 +1112,7 @@ BOOL CConStationView::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 				cursor = IDC_APOLY;
 		}
 	}
-	else if (state == DeletingLine)
+	else if (state == state_DeletingLine)
 	{
 		if (Select(Line))
 			cursor = IDC_DLINEX;
@@ -1269,6 +1127,11 @@ BOOL CConStationView::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 
 /////////////////////////////////////////////////////////////////////////////
 // Selecting
+
+void CConStationView::ClearFirstStar()
+{
+	firstStarNum = -1;
+}
 
 BOOL CConStationView::Select(SelectType selection)
 {
@@ -1302,7 +1165,7 @@ BOOL CConStationView::Select(SelectType selection)
 		DrawStars();
 	}
 	else if (selection == Line)
-		DrawConstellation(GetStarfield()->GetNumCurConstellation());
+		DrawConstellation(starfield->GetNumCurConstellation());
 
 	glMatrixMode(GL_PROJECTION);								// Select The Projection Matrix
 	glPopMatrix();												// Pop The Projection Matrix
@@ -1347,17 +1210,17 @@ int CConStationView::SelectStar()
 	if (Select(Star))	// If a hit occured in starfield
 	{
 		int numStar = selectBuffer[3] - 1;	// Subtract 1 because terrain is 0
-		CStar* selectedStar = GetStarfield()->GetStar(numStar);
+		CStar* selectedStar = starfield->GetStar(numStar);
 
 		// If there was more than one hit
 		for (int i=1; i<hits; i++)
 		{
 			// Get the brightest
-			if (GetStarfield()->GetStar(selectBuffer[i*4+3]-1)->GetBrightness() >
+			if (starfield->GetStar(selectBuffer[i*4+3]-1)->GetBrightness() >
 						selectedStar->GetBrightness())
 			{
 				numStar = selectBuffer[i*4+3] - 1;	// Subtract 1 because terrain is 0
-				selectedStar = GetStarfield()->GetStar(numStar);
+				selectedStar = starfield->GetStar(numStar);
 			}
 		}
 		return numStar;

@@ -18,9 +18,9 @@ CStarfield::CStarfield()
 	SetupStars();
 
 	numConstellations = 0;
-//	constellations = new CConstellation[numConstellations];
 	numNewConstellations = 0;
 	numCurConstellation = 0;
+	constellations = new CConstellation[1];
 
 	latitude = 60.0f;
 	season = 0.0f;
@@ -34,8 +34,8 @@ CStarfield::CStarfield()
 
 CStarfield::~CStarfield()
 {
-	delete stars;
-	delete constellations;
+	delete[] stars;
+	delete[] constellations;
 }
 
 

@@ -1,10 +1,10 @@
-#if !defined(AFX_SHOWHIDEDLG_H__F1F9C38A_0D99_4413_8314_818EF5B90CE7__INCLUDED_)
-#define AFX_SHOWHIDEDLG_H__F1F9C38A_0D99_4413_8314_818EF5B90CE7__INCLUDED_
+#if !defined(AFX_DLGSHOWHIDE_H__F1F9C38A_0D99_4413_8314_818EF5B90CE7__INCLUDED_)
+#define AFX_DLGSHOWHIDE_H__F1F9C38A_0D99_4413_8314_818EF5B90CE7__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
-// ShowHideDlg.h : header file
+// DlgShowHide.h : header file
 //
 
 #include "Starfield.h"
@@ -12,32 +12,31 @@
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CShowHideDlg dialog
+// CDlgShowHide dialog
 
-class CShowHideDlg : public CDialog
+class CDlgShowHide : public CDialog
 {
 // Construction
 public:
-	CShowHideDlg( CWnd* pParent = NULL );
-
-	CStarfield* GetStarfield() const;
+	CDlgShowHide( CWnd* pParent = NULL );
+	~CDlgShowHide();
 
 private:
 // Members
 	CListBox m_List;
 	CConstellation* constellations;
-	int numConstellations;
-	int numCurConstellation;
+	int constellationCount;
+	int curConstellationNum;
 
 // Dialog Data
-	//{{AFX_DATA(CShowHideDlg)
+	//{{AFX_DATA(CDlgShowHide)
 	enum { IDD = IDD_SHOW_HIDE };
 	//}}AFX_DATA
 
 
 // Overrides
 	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CShowHideDlg)
+	//{{AFX_VIRTUAL(CDlgShowHide)
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
@@ -48,7 +47,7 @@ private:
 protected:
 
 	// Generated message map functions
-	//{{AFX_MSG(CShowHideDlg)
+	//{{AFX_MSG(CDlgShowHide)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSelchangeConstList();
 	afx_msg void OnShowAll();
@@ -61,4 +60,4 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_SHOWHIDEDLG_H__F1F9C38A_0D99_4413_8314_818EF5B90CE7__INCLUDED_)
+#endif // !defined(AFX_DLGSHOWHIDE_H__F1F9C38A_0D99_4413_8314_818EF5B90CE7__INCLUDED_)

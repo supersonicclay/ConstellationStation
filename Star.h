@@ -20,7 +20,7 @@ private:
 	float longitude;
 	float latitude;
 	float brightness;
-	CColor color;
+	color_t color;
 
 public:
 
@@ -30,7 +30,7 @@ public:
 	float GetLongitude() const;
 	float GetLatitude() const;
 	float GetBrightness() const;
-	CColor GetColor() const;
+	color_t GetColor() const;
 
 	void SetX( float x_ );
 	void SetY( float y_ );
@@ -38,7 +38,7 @@ public:
 	void SetLongitude( float longitude_ );
 	void SetLatitude( float latitude_ );
 	void SetBrightness( float brightness_ );
-	void SetColor( CColor color_ );
+	void SetColor( color_t color_ );
 
 	void Randomize();
 	void PickXYZ();

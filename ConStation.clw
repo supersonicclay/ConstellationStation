@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CMainFrame
+LastClass=CConStationFrame
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "ConStation.h"
@@ -12,21 +12,21 @@ ClassCount=9
 Class1=CConStationApp
 Class2=CConStationDoc
 Class3=CConStationView
-Class4=CMainFrame
+Class4=CConStationFrame
+Class5=CDlgAbout
+Class6=CConstBar
+Class7=CDlgConstName
+Class8=CDlgShowHide
+Class9=CDlgTerrain
 
 ResourceCount=8
 Resource1="IDR_TOOLBAR1"
-Class5=CAboutDlg
-Resource2=IDD_ABOUTBOX
+Resource2=IDR_MAINFRAME
 Resource3=IDR_CONSTELLATION
-Class6=CConstBar
-Resource4=IDR_MAINFRAME
-Resource5=IDD_TERRAIN
-Class7=CConstNameDlg
-Class8=CShowHideDlg
-Resource6=IDD_CONST_NAME
-Resource7=IDD_SHOW_HIDE
-Class9=CTerrainDlg
+Resource4=IDD_TERRAIN
+Resource5=IDD_SHOW_HIDE
+Resource6=IDD_ABOUTBOX
+Resource7=IDD_CONST_NAME
 Resource8=IDD_LOCATION
 
 [CLS:CConStationApp]
@@ -38,28 +38,28 @@ LastObject=CConStationApp
 BaseClass=CWinApp
 VirtualFilter=AC
 
-[CLS:CMainFrame]
+[CLS:CConStationFrame]
 Type=0
-HeaderFile=MainFrm.h
-ImplementationFile=MainFrm.cpp
+HeaderFile=ConStationFrame.h
+ImplementationFile=ConStationFrame.cpp
 Filter=T
-LastObject=ID_CONST_ALINE
+LastObject=ID_CONST_ADD
 BaseClass=CFrameWnd
 VirtualFilter=fWC
 
 
 
 
-[CLS:CAboutDlg]
+[CLS:CDlgAbout]
 Type=0
 HeaderFile=ConStation.cpp
 ImplementationFile=ConStation.cpp
 Filter=D
-LastObject=CAboutDlg
+LastObject=CDlgAbout
 
 [DLG:IDD_ABOUTBOX]
 Type=1
-Class=CAboutDlg
+Class=CDlgAbout
 ControlCount=5
 Control1=IDC_STATIC,static,1342177283
 Control2=IDC_STATIC,static,1342308480
@@ -69,7 +69,7 @@ Control5=IDC_STATIC,static,1342308352
 
 [MNU:IDR_MAINFRAME]
 Type=1
-Class=CMainFrame
+Class=CConStationFrame
 Command1=ID_STARF_NEWRANDOM
 Command2=ID_STARF_NEWACTUAL
 Command3=ID_STARF_OPEN
@@ -78,21 +78,21 @@ Command5=ID_STARF_SAVEAS
 Command6=ID_APP_EXIT
 Command7=ID_CONST_ADD
 Command8=ID_CONST_DELETE
-Command9=ID_CONST_ALINE
-Command10=ID_CONST_APOLY
-Command11=ID_CONST_DLINE
-Command12=ID_CONST_HIDE
-Command13=ID_OPTIONS_LOCATION
-Command14=ID_OPTIONS_TERRAIN
-Command15=ID_VIEW_SHOWALL
-Command16=ID_VIEW_HIDEALL
-Command17=ID_SHOW_HIDE
+Command9=ID_CONST_HIDE
+Command10=ID_CONST_ALINE
+Command11=ID_CONST_APOLY
+Command12=ID_CONST_DLINE
+Command13=ID_CONST_SHOWHIDE
+Command14=ID_CONST_SHOWALL
+Command15=ID_CONST_HIDEALL
+Command16=ID_OPTIONS_LOCATION
+Command17=ID_OPTIONS_TERRAIN
 Command18=ID_APP_ABOUT
 CommandCount=18
 
 [ACL:IDR_MAINFRAME]
 Type=1
-Class=CMainFrame
+Class=CConStationFrame
 Command1=ID_CONST_ADD
 Command2=ID_CONST_DLINE
 Command3=ID_CONST_DELETE
@@ -109,14 +109,15 @@ CommandCount=12
 
 [TB:IDR_MAINFRAME]
 Type=1
-Class=CMainFrame
+Class=CConStationFrame
 Command1=ID_STARF_NEWRANDOM
 Command2=ID_STARF_OPEN
 Command3=ID_STARF_SAVE
 Command4=ID_OPTIONS_LOCATION
 Command5=ID_OPTIONS_TERRAIN
-Command6=ID_STARF_ROTATE
-CommandCount=6
+Command6=ID_TERR_NEW
+Command7=ID_STARF_ROTATE
+CommandCount=7
 
 [CLS:CConStationDoc]
 Type=0
@@ -143,7 +144,7 @@ Command1=ID_CONST_LIST
 Command2=ID_CONST_ADD
 Command3=ID_CONST_DELETE
 Command4=ID_CONST_RENAME
-Command5=ID_SHOW_HIDE
+Command5=ID_CONST_SHOWHIDE
 Command6=ID_CONST_HIDE
 Command7=ID_CONST_ALINE
 Command8=ID_CONST_APOLY
@@ -161,16 +162,16 @@ BaseClass=CToolBar
 
 [DLG:IDD_CONST_NAME]
 Type=1
-Class=CConstNameDlg
+Class=CDlgConstName
 ControlCount=3
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
 Control3=IDC_CONST_NAME,edit,1350631552
 
-[CLS:CConstNameDlg]
+[CLS:CDlgConstName]
 Type=0
-HeaderFile=ConstNameDlg.h
-ImplementationFile=ConstNameDlg.cpp
+HeaderFile=DlgConstName.h
+ImplementationFile=DlgConstName.cpp
 BaseClass=CDialog
 Filter=D
 LastObject=IDC_CONST_NAME
@@ -178,7 +179,7 @@ VirtualFilter=dWC
 
 [DLG:IDD_SHOW_HIDE]
 Type=1
-Class=CShowHideDlg
+Class=CDlgShowHide
 ControlCount=6
 Control1=IDOK,button,1342242817
 Control2=IDC_CONST_LIST,listbox,1352728843
@@ -187,10 +188,10 @@ Control4=IDC_HIDEALL,button,1342242816
 Control5=IDC_INVERT,button,1342242816
 Control6=IDC_STATIC,static,1342308352
 
-[CLS:CShowHideDlg]
+[CLS:CDlgShowHide]
 Type=0
-HeaderFile=ShowHideDlg.h
-ImplementationFile=ShowHideDlg.cpp
+HeaderFile=DlgShowHide.h
+ImplementationFile=DlgShowHide.cpp
 BaseClass=CDialog
 Filter=D
 LastObject=IDC_HIDEALL
@@ -198,7 +199,7 @@ VirtualFilter=dWC
 
 [DLG:IDD_TERRAIN]
 Type=1
-Class=CTerrainDlg
+Class=CDlgTerrain
 ControlCount=8
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
@@ -216,10 +217,10 @@ ControlCount=2
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
 
-[CLS:CTerrainDlg]
+[CLS:CDlgTerrain]
 Type=0
-HeaderFile=TerrainDlg.h
-ImplementationFile=TerrainDlg.cpp
+HeaderFile=DlgTerrain.h
+ImplementationFile=DlgTerrain.cpp
 BaseClass=CDialog
 Filter=D
 LastObject=IDC_COLOR

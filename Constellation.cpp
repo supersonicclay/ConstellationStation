@@ -16,6 +16,8 @@ IMPLEMENT_SERIAL (CConstellation, CObject, 0)
 ////////////////
 CConstLine::CConstLine()
 {
+	star1 = new CStar;
+	star2 = new CStar;
 }
 
 CConstLine::CConstLine( CStar* star1_, CStar* star2_ )
@@ -26,6 +28,8 @@ CConstLine::CConstLine( CStar* star1_, CStar* star2_ )
 
 CConstLine::~CConstLine()
 {
+	delete star1;
+	delete star2;
 }
 
 void CConstLine::SetStar1( CStar* star1_ )
@@ -102,7 +106,7 @@ CConstellation::CConstellation(CString name_)
 
 CConstellation::~CConstellation()
 {
-//	delete lines;
+	delete[] lines;
 }
 
 CString CConstellation::GetName() const

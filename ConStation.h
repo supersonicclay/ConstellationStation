@@ -15,37 +15,7 @@
 #include "resource.h"       // main symbols
 
 
-
-/////////////////////////////////////////////////////////////////////////////
-// Globals
-typedef struct
-{
-	float r;
-	float g;
-	float b;
-} CColor;
-
-void glColor( CColor c );
-
-extern const CColor COLOR_WHITE,
-					COLOR_BLACK,
-					COLOR_SKY,
-					COLOR_CROSS,
-					COLOR_ACTIVESTAR,
-					COLOR_NORTHSTAR,
-					COLOR_CONSTLINE;
-
-typedef struct
-{
-	GLubyte* data;
-	GLuint width;
-	GLuint height;
-	GLuint textureID;
-} Texture;
-
-enum StateType {Viewing, AddingLine, AddingPoly, DeletingLine};
-
-#include "MainFrm.h"
+#include "ConStationFrame.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CConStationApp:
@@ -57,7 +27,7 @@ class CConStationApp : public CWinApp
 public:
 	CConStationApp();
 
-	CMainFrame* GetMainFrame() const;
+	CConStationFrame* GetFrame() const;
 
 // Attributes
 	CSingleDocTemplate* pDocTemplate;

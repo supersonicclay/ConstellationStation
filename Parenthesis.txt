@@ -4,7 +4,7 @@ Constation				-			-
 ConStationDoc			-			-
 ConStationView			-			
 ConstBar				-			-
-MainFrm					-			
+ConStationFrame					-			
 Resource				-			
 StdAfx					-			
 Constellation			-			

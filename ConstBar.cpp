@@ -5,7 +5,7 @@
 #include "ConStation.h"
 #include "ConstBar.h"
 
-#include "MainFrm.h"
+#include "ConStationFrame.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

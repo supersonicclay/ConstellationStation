@@ -48,11 +48,12 @@
 #define ID_CONST_APOLY                  32821
 #define ID_CONST_DLINE                  32822
 #define ID_CONST_LIST                   32823
-#define ID_SHOW_HIDE                    32841
-#define ID_VIEW_SHOWALL                 32842
-#define ID_VIEW_HIDEALL                 32843
-#define ID_OPTIONS_LOCATION             32849
-#define ID_OPTIONS_TERRAIN              32850
+#define ID_CONST_SHOWHIDE               32841
+#define ID_CONST_SHOWALL                32842
+#define ID_CONST_HIDEALL                32843
+#define ID_TERR_NEW                     32850
+#define ID_OPTIONS_LOCATION             32870
+#define ID_OPTIONS_TERRAIN              32871
 
 // Next default values for new objects
 // 

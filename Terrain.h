@@ -4,15 +4,16 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
-#define DEF_ROUGHNESS	0.2f
+extern const float		DEF_ROUGHNESS;
+extern const color_t	DEF_COLOR;
 
 class CTerrain : public CObject
 {
 DECLARE_SERIAL( CTerrain )
 
 public:
-	CTerrain();
-	CTerrain( float r, CColor c );
+
+	CTerrain( float r=DEF_ROUGHNESS, color_t c=DEF_COLOR );
 	~CTerrain();
 
 	void Serialize( CArchive& ar );
@@ -30,31 +31,31 @@ private:
 	int iterations;
 	float roughness;
 
-	CColor color;
+	color_t color;
+
+	float viewHeight;
 
 
 public:
+	void MakeTerrain();
+	void SetRoughness( float r );
+	void SetColor( color_t color_ );
+
 	float* GetHeights() const;
 	float GetHeight( int i, int j ) const;
 
-	float* GetUpperNormal( int i, int j );
-	float* GetLowerNormal( int i, int j );
-
 	int GetArraySize() const;
 	int GetSize() const;
-	
 	float GetScale() const;
 	int GetIterations() const;
 	float GetRoughness() const;
+	color_t GetColor() const;
+	float GetViewHeight() const;
 
-	CColor GetColor() const;
-
+	float* GetUpperNormal( int i, int j );
+	float* GetLowerNormal( int i, int j );
 	void SetUpperNormal( int i, int j, float* n );
 	void SetLowerNormal( int i, int j, float* n );
-	void SetRoughness( float r );
-	void SetColor( CColor color_ );
-
-	void MakeTerrain();
 
 	float AvgSquare( int i, int j, int midSize );
 	float AvgDiamond( int i, int j, int midSize );
@@ -62,6 +63,8 @@ public:
 
 	void CalculateNormals();
 	void CalculateNormal( float* vec1, float* vec2, float* normal );
+
+	void CalculateViewHeight();
 
 };
 

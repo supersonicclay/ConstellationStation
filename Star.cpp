@@ -53,7 +53,7 @@ float CStar::GetBrightness() const
 	return brightness;
 }
 
-CColor CStar::GetColor() const
+color_t CStar::GetColor() const
 {
 	return color;
 }
@@ -88,7 +88,7 @@ void CStar::SetBrightness(float brightness_)
 	brightness = brightness_;
 }
 
-void CStar::SetColor(CColor color_)
+void CStar::SetColor(color_t color_)
 {
 	color = color_;
 }

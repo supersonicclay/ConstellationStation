@@ -1,5 +1,5 @@
-#if !defined(AFX_TERRAINDLG_H__E9B06D25_EB9A_4544_AE71_FD1BDDA3B920__INCLUDED_)
-#define AFX_TERRAINDLG_H__E9B06D25_EB9A_4544_AE71_FD1BDDA3B920__INCLUDED_
+#if !defined(AFX_DLGTERRAIN_H__E9B06D25_EB9A_4544_AE71_FD1BDDA3B920__INCLUDED_)
+#define AFX_DLGTERRAIN_H__E9B06D25_EB9A_4544_AE71_FD1BDDA3B920__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -7,27 +7,28 @@
 
 #include "Terrain.h"
 
-// TerrainDlg.h : header file
+// CDlgTerrain.h : header file
 //
 
+
 /////////////////////////////////////////////////////////////////////////////
-// CTerrainDlg dialog
+// CDlgTerrain dialog
 
-class CTerrainDlg : public CDialog
+class CDlgTerrain : public CDialog
 {
-// Construction
 public:
-	CTerrainDlg( int roughness, CWnd* pParent = NULL );
-
-	CTerrain* GetTerrain() const;
+	CDlgTerrain( float roughness_, color_t color_, CWnd* pParent = NULL );
 
 // Dialog Data
-	//{{AFX_DATA(CTerrainDlg)
+	//{{AFX_DATA(CDlgTerrain)
 	enum { IDD = IDD_TERRAIN };
-	CSliderCtrl	m_RoughnessSlider;
-	int		m_Roughness;
-	CString	m_RoughnessTxt;
 	//}}AFX_DATA
+
+	int		roughness;
+	color_t color;
+
+	CSliderCtrl	roughnessSlider;
+	CString	roughnessTxt;
 
 	BOOL needsUpdate;
 	int lastRoughness;
@@ -35,7 +36,7 @@ public:
 
 // Overrides
 	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CTerrainDlg)
+	//{{AFX_VIRTUAL(CDlgTerrain)
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
@@ -44,7 +45,7 @@ public:
 protected:
 
 	// Generated message map functions
-	//{{AFX_MSG(CTerrainDlg)
+	//{{AFX_MSG(CDlgTerrain)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnNewTerrain();
@@ -53,7 +54,10 @@ protected:
 	DECLARE_MESSAGE_MAP()
 };
 
+
+
+/////////////////////////////////////////////////////////////////////////////
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_TERRAINDLG_H__E9B06D25_EB9A_4544_AE71_FD1BDDA3B920__INCLUDED_)
+#endif // !defined(AFX_DLGTERRAIN_H__E9B06D25_EB9A_4544_AE71_FD1BDDA3B920__INCLUDED_)

@@ -28,15 +28,15 @@ private:
 	int width;
 	int height;
 
-	Texture starTex;
-	Texture skyTex;
+// Textures
+	texture_t starTex;
+	texture_t skyTex;
 
 	GLUquadricObj* skySphere;
 
-	GLfloat* sunLight;
-	GLfloat* sunPosition;
-
-	float terrainOffset;
+// Sun
+	GLUquadricObj* sunSphere;
+	float sunPos[3];
 
 // Input
 	// Keys
@@ -63,26 +63,18 @@ private:
 
 // Operations
 public:
-	CConStationDoc* GetDocument() const;
-	CStarfield* GetStarfield() const;
-	CTerrain* GetTerrain() const;
 
-
+// Initialization
 	BOOL InitializeOpenGL();
 	BOOL SetupPixelFormat();
 	BOOL LoadTextures();
-	BOOL LoadTGA( Texture &texture, char* filename );
+///	BOOL LoadTGA( texture_t &texture, char* filename );
 
-	void NewTerrain( float roughness );
 	void SetTerrainOffset();
 
-// States
-	StateType state;
-	StateType  GetState() const;
-	void SetState( StateType newState );
-	BOOL IsRotating() const;
-
 // Drawing functions
+	void Redraw();
+	void DrawCurConstellation( CDC* pDC );
 	void DrawTerrain() const;
 	void PositionTerrain() const;
 	void DrawSky() const;
@@ -105,10 +97,13 @@ public:
 	void RotateLatitude() const;
 	void RotateTime() const;
 
+	BOOL IsRotating() const;
+
 // Input
 	void ProcessKeys();
 
 // Selecting
+	void ClearFirstStar();
 	int SelectStar();
 	int SelectConstLine();
 	BOOL Select( SelectType selection );
@@ -155,10 +150,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
 };
 
-#ifndef _DEBUG  // debug version in ConStationView.cpp
-inline CConStationDoc* CConStationView::GetDocument() const
-   { return (CConStationDoc*)m_pDocument; }
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 

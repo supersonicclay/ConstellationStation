@@ -51,13 +51,13 @@ res\ConStation.rc2
 
 For the main frame window:
 
-MainFrm.h, MainFrm.cpp
-    These files contain the frame class CMainFrame, which is derived from
+ConStationFrame.h, ConStationFrame.cpp
+    These files contain the frame class CConStationFrame, which is derived from
     CFrameWnd and controls all SDI frame features.
 
 res\Toolbar.bmp
     This bitmap file is used to create tiled images for the toolbar.
-    The initial toolbar and status bar are constructed in the CMainFrame
+    The initial toolbar and status bar are constructed in the CConStationFrame
     class. Edit this toolbar bitmap using the resource editor, and
     update the IDR_MAINFRAME TOOLBAR array in ConStation.rc to add
     toolbar buttons.

@@ -25,12 +25,12 @@
 #include <gl/gl.h>
 #include <gl/glu.h>
 
-
-#define	PI		3.14159265358979323846
-
 // For star randomization
 #include <time.h>
 #include <math.h>
+
+
+#include "Global.h"
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.

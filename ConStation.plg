@@ -3,88 +3,57 @@
 <pre>
 <h1>Build Log</h1>
 <h3>
---------------------Configuration: ConStation - Win32 Debug--------------------
+--------------------Configuration: ConStation - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating command line "rc.exe /l 0x409 /fo"Debug/ConStation.res" /d "_DEBUG" /d "_AFXDLL" "D:\DOCS\Code\old ConStations\v5.0\ConStation.rc"" 
-Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP6EF.tmp" with contents
+Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP3C8.tmp" with contents
 [
-/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Debug/" /Fp"Debug/ConStation.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"D:\DOCS\Code\old ConStations\v5.0\ConStation.cpp"
-"D:\DOCS\Code\old ConStations\v5.0\ConStationDoc.cpp"
-"D:\DOCS\Code\old ConStations\v5.0\ConStationView.cpp"
-"D:\DOCS\Code\old ConStations\v5.0\ConstBar.cpp"
-"D:\DOCS\Code\old ConStations\v5.0\MainFrm.cpp"
-"D:\DOCS\Code\old ConStations\v5.0\ConstNameDlg.cpp"
-"D:\DOCS\Code\old ConStations\v5.0\ShowHideDlg.cpp"
-"D:\DOCS\Code\old ConStations\v5.0\TerrainDlg.cpp"
-"D:\DOCS\Code\old ConStations\v5.0\Constellation.cpp"
-"D:\DOCS\Code\old ConStations\v5.0\Star.cpp"
-"D:\DOCS\Code\old ConStations\v5.0\Starfield.cpp"
-"D:\DOCS\Code\old ConStations\v5.0\Terrain.cpp"
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Release/" /Fp"Release/ConStation.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"D:\DOCS\Code\old ConStations\v5.1\ConStation\Terrain.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP6EF.tmp" 
-Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP6F0.tmp" with contents
+Creating command line "cl.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP3C8.tmp" 
+Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP3C9.tmp" with contents
 [
-/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Debug/" /Fp"Debug/ConStation.pch" /Yc"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"D:\DOCS\Code\old ConStations\v5.0\StdAfx.cpp"
+opengl32.lib glu32.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/ConStation.pdb" /machine:I386 /out:"Release/ConStation.exe" 
+".\Release\ConStation.obj"
+".\Release\ConStationDoc.obj"
+".\Release\ConStationFrame.obj"
+".\Release\ConStationView.obj"
+".\Release\ConstBar.obj"
+".\Release\Global.obj"
+".\Release\StdAfx.obj"
+".\Release\DlgConstName.obj"
+".\Release\DlgShowHide.obj"
+".\Release\DlgTerrain.obj"
+".\Release\Constellation.obj"
+".\Release\Star.obj"
+".\Release\Starfield.obj"
+".\Release\Terrain.obj"
+".\Release\ConStation.res"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP6F0.tmp" 
-Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP6F1.tmp" with contents
-[
-opengl32.lib glu32.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/ConStation.pdb" /debug /machine:I386 /out:"Debug/ConStation.exe" /pdbtype:sept 
-".\Debug\ConStation.obj"
-".\Debug\ConStationDoc.obj"
-".\Debug\ConStationView.obj"
-".\Debug\ConstBar.obj"
-".\Debug\MainFrm.obj"
-".\Debug\StdAfx.obj"
-".\Debug\ConstNameDlg.obj"
-".\Debug\ShowHideDlg.obj"
-".\Debug\TerrainDlg.obj"
-".\Debug\Constellation.obj"
-".\Debug\Star.obj"
-".\Debug\Starfield.obj"
-".\Debug\Terrain.obj"
-".\Debug\ConStation.res"
-]
-Creating command line "link.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP6F1.tmp"
+Creating command line "link.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP3C9.tmp"
 <h3>Output Window</h3>
-Compiling resources...
 Compiling...
-StdAfx.cpp
-Compiling...
-ConStation.cpp
-ConStationDoc.cpp
-ConStationView.cpp
-ConstBar.cpp
-MainFrm.cpp
-ConstNameDlg.cpp
-ShowHideDlg.cpp
-TerrainDlg.cpp
-Constellation.cpp
-Star.cpp
-Starfield.cpp
 Terrain.cpp
-Generating Code...
 Linking...
-Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP6F3.tmp" with contents
+Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP3CB.tmp" with contents
 [
-/nologo /o"Debug/ConStation.bsc" 
-".\Debug\StdAfx.sbr"
-".\Debug\ConStation.sbr"
-".\Debug\ConStationDoc.sbr"
-".\Debug\ConStationView.sbr"
-".\Debug\ConstBar.sbr"
-".\Debug\MainFrm.sbr"
-".\Debug\ConstNameDlg.sbr"
-".\Debug\ShowHideDlg.sbr"
-".\Debug\TerrainDlg.sbr"
-".\Debug\Constellation.sbr"
-".\Debug\Star.sbr"
-".\Debug\Starfield.sbr"
-".\Debug\Terrain.sbr"]
-Creating command line "bscmake.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP6F3.tmp"
+/nologo /o"Release/ConStation.bsc" 
+".\Release\StdAfx.sbr"
+".\Release\ConStation.sbr"
+".\Release\ConStationDoc.sbr"
+".\Release\ConStationFrame.sbr"
+".\Release\ConStationView.sbr"
+".\Release\ConstBar.sbr"
+".\Release\Global.sbr"
+".\Release\DlgConstName.sbr"
+".\Release\DlgShowHide.sbr"
+".\Release\DlgTerrain.sbr"
+".\Release\Constellation.sbr"
+".\Release\Star.sbr"
+".\Release\Starfield.sbr"
+".\Release\Terrain.sbr"]
+Creating command line "bscmake.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP3CB.tmp"
 Creating browse info file...
 <h3>Output Window</h3>
 

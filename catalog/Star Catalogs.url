@@ -1,0 +1,5 @@
+[DEFAULT]
+BASEURL=http://ad.usno.navy.mil/star/
+[InternetShortcut]
+URL=http://ad.usno.navy.mil/star/
+Modified=809F55B61CE3C301ED

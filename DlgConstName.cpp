@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "ConStation.h"
-#include "ConstNameDlg.h"
+#include "DlgConstName.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -12,46 +12,46 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
-// CConstNameDlg dialog
+// CDlgConstName dialog
 
 
-CConstNameDlg::CConstNameDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CConstNameDlg::IDD, pParent)
+CDlgConstName::CDlgConstName(CWnd* pParent /*=NULL*/)
+	: CDialog(CDlgConstName::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CConstNameDlg)
+	//{{AFX_DATA_INIT(CDlgConstName)
 	m_Name = _T("");
 	//}}AFX_DATA_INIT
 }
 
 
-void CConstNameDlg::DoDataExchange(CDataExchange* pDX)
+void CDlgConstName::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CConstNameDlg)
+	//{{AFX_DATA_MAP(CDlgConstName)
 	DDX_Text(pDX, IDC_CONST_NAME, m_Name);
 	//}}AFX_DATA_MAP
 }
 
 
-BEGIN_MESSAGE_MAP(CConstNameDlg, CDialog)
-	//{{AFX_MSG_MAP(CConstNameDlg)
+BEGIN_MESSAGE_MAP(CDlgConstName, CDialog)
+	//{{AFX_MSG_MAP(CDlgConstName)
 	ON_WM_SHOWWINDOW()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// CConstNameDlg operations
+// CDlgConstName operations
 
-void CConstNameDlg::SetConstName(CString name)
+void CDlgConstName::SetConstName(CString name)
 {
 	m_Name = name;
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CConstNameDlg message handlers
+// CDlgConstName message handlers
 
-void CConstNameDlg::OnShowWindow(BOOL bShow, UINT nStatus) 
+void CDlgConstName::OnShowWindow(BOOL bShow, UINT nStatus) 
 {
 	CDialog::OnShowWindow(bShow, nStatus);
 

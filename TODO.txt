@@ -1,12 +1,8 @@
 
 BUGS
-1	New Document needs to call SetTerrainOffset in ConStationView
-2	Terrain Color Dialog
-2	Memory Leaks -change Document fields from pointers
-		- lines
-		- constellations
-		- terrain
-		- starfield
+1	Memory Leaks
+		-Bugs when you exit after adding a line
+		-Texture files
 2	Open, Save should go to starfields folder
 
 TEXTURES
@@ -16,9 +12,9 @@ SELECTION
 2	Select ConstLine to select constellation
 
 IMPROVING
-1	Improve performance of adding lines
 3	Keep Mouse in place while rotating
 5	Undo
+5	Textured terrain
 5	Add Stars?
 5	Tools / Options menu
 		-terrain editor (roughness, detail)

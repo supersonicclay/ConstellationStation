@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "ConStation.h"
-#include "ShowHideDlg.h"
+#include "DlgShowHide.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -12,31 +12,35 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 
-#include "MainFrm.h"
 #include "Constellation.h"
 
 /////////////////////////////////////////////////////////////////////////////
-// CShowHideDlg dialog
+// CDlgShowHide dialog
 
 
-CShowHideDlg::CShowHideDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CShowHideDlg::IDD, pParent)
+CDlgShowHide::CDlgShowHide(CWnd* pParent /*=NULL*/)
+	: CDialog(CDlgShowHide::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CShowHideDlg)
+	//{{AFX_DATA_INIT(CDlgShowHide)
 	//}}AFX_DATA_INIT
 }
 
+CDlgShowHide::~CDlgShowHide()
+{
+	delete[] constellations;
+}
 
-void CShowHideDlg::DoDataExchange(CDataExchange* pDX)
+
+void CDlgShowHide::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CShowHideDlg)
+	//{{AFX_DATA_MAP(CDlgShowHide)
 	//}}AFX_DATA_MAP
 }
 
 
-BEGIN_MESSAGE_MAP(CShowHideDlg, CDialog)
-	//{{AFX_MSG_MAP(CShowHideDlg)
+BEGIN_MESSAGE_MAP(CDlgShowHide, CDialog)
+	//{{AFX_MSG_MAP(CDlgShowHide)
 	ON_LBN_SELCHANGE(IDC_CONST_LIST, OnSelchangeConstList)
 	ON_BN_CLICKED(IDC_SHOWALL, OnShowAll)
 	ON_BN_CLICKED(IDC_HIDEALL, OnHideAll)
@@ -46,32 +50,29 @@ END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CShowHideDlg message handlers
+// CDlgShowHide message handlers
 
-BOOL CShowHideDlg::OnInitDialog() 
+BOOL CDlgShowHide::OnInitDialog() 
 {
 	CDialog::OnInitDialog();
 	
 	VERIFY(m_List.SubclassDlgItem(IDC_CONST_LIST, this));
 
 
-	constellations = ((CMainFrame*)GetParent())->
-										GetStarfield()->GetConstellations();
-	numConstellations = ((CMainFrame*)GetParent())->
-										GetStarfield()->GetNumConstellations();
-	numCurConstellation = ((CMainFrame*)GetParent())->
-										GetStarfield()->GetNumCurConstellation();
+	constellations = starfield->GetConstellations();
+	constellationCount = starfield->GetNumConstellations();
+	curConstellationNum = starfield->GetNumCurConstellation();
 
 	CString str;
 
 	// Add strings to list box
-	for (int i=0; i<numConstellations; i++)
+	for (int i=0; i<constellationCount; i++)
 	{
 		// Get name
 		str = constellations[i].GetName();
 
 		// If this constellation is current
-		if (i == numCurConstellation)
+		if (i == curConstellationNum)
 			str += " <--";
 
 		// Add name to list
@@ -84,19 +85,18 @@ BOOL CShowHideDlg::OnInitDialog()
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void CShowHideDlg::OnSelchangeConstList() 
+void CDlgShowHide::OnSelchangeConstList() 
 {
-	for (int i=0; i<numConstellations; i++)
+	for (int i=0; i<constellationCount; i++)
 	{
 		constellations[i].SetVisible(m_List.GetSel(i));
 	}
 
-	// Redraw view
-	((CMainFrame*)GetParent())->GetView()->InvalidateRect(NULL, FALSE);
+	RedrawView();
 }
 
 
-void CShowHideDlg::OnShowAll() 
+void CDlgShowHide::OnShowAll() 
 {
 	for (int i=0; i<m_List.GetCount(); i++)
 	{
@@ -107,7 +107,7 @@ void CShowHideDlg::OnShowAll()
 	OnSelchangeConstList();
 }
 
-void CShowHideDlg::OnHideAll() 
+void CDlgShowHide::OnHideAll() 
 {
 	for (int i=0; i<m_List.GetCount(); i++)
 	{
@@ -118,7 +118,7 @@ void CShowHideDlg::OnHideAll()
 	OnSelchangeConstList();
 }
 
-void CShowHideDlg::OnInvert() 
+void CDlgShowHide::OnInvert() 
 {
 	for (int i=0; i<m_List.GetCount(); i++)
 	{

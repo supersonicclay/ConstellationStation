@@ -1,9 +1,9 @@
-// MainFrm.h : interface of the CMainFrame class
+// ConStationFrame.h : interface of the CConStationFrame class
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_MAINFRM_H__87C7179B_70DA_4CF0_B078_C3215E22A606__INCLUDED_)
-#define AFX_MAINFRM_H__87C7179B_70DA_4CF0_B078_C3215E22A606__INCLUDED_
+#if !defined(AFX_CONSTATIONFRAME_H__87C7179B_70DA_4CF0_B078_C3215E22A606__INCLUDED_)
+#define AFX_CONSTATIONFRAME_H__87C7179B_70DA_4CF0_B078_C3215E22A606__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -15,39 +15,33 @@
 
 #include "ConstBar.h"
 
-class CMainFrame : public CFrameWnd
+class CConStationFrame : public CFrameWnd
 {
 	
 protected: // create from serialization only
-	CMainFrame();
-	DECLARE_DYNCREATE( CMainFrame )
+	CConStationFrame();
+	DECLARE_DYNCREATE( CConStationFrame )
 
 // Attributes
 public:
 
 
-
 // Operations
 public:
 	CConStationView* GetView() const;
-	CStarfield* GetStarfield() const;
-	CTerrain* GetTerrain() const;
-
-	StateType GetState() const;
-	void SetState( StateType state ) const;
 
 	void UpdateList();
 
 
 // Overrides
 	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CMainFrame)
+	//{{AFX_VIRTUAL(CConStationFrame)
 	virtual BOOL PreCreateWindow( CREATESTRUCT& cs );
 	//}}AFX_VIRTUAL
 
 // Implementation
 public:
-	virtual ~CMainFrame();
+	virtual ~CConStationFrame();
 #ifdef _DEBUG
 	virtual void AssertValid() const;
 	virtual void Dump( CDumpContext& dc ) const;
@@ -60,7 +54,7 @@ protected:  // control bar embedded members
 
 // Generated message map functions
 protected:
-	//{{AFX_MSG(CMainFrame)
+	//{{AFX_MSG(CConStationFrame)
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnConstListCloseUp();
 	afx_msg void OnConstAdd();
@@ -70,7 +64,13 @@ protected:
 	afx_msg void OnConstAddLine();
 	afx_msg void OnConstAddPoly();
 	afx_msg void OnConstDeleteLine();
+	afx_msg void OnConstShowHide();
+	afx_msg void OnConstHideAll();
+	afx_msg void OnConstShowAll();
 	afx_msg void OnStarfRotate();
+	afx_msg void OnTerrainNew();
+	afx_msg void OnOptionsTerrain();
+	afx_msg void OnOptionsLocation();
 	afx_msg void OnUpdateConstList(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateConstAdd(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateConstDelete(CCmdUI* pCmdUI);
@@ -80,13 +80,9 @@ protected:
 	afx_msg void OnUpdateConstAddPoly(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateConstDeleteLine(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateStarfRotate(CCmdUI* pCmdUI);
-	afx_msg void OnShowHide();
-	afx_msg void OnViewHideAll();
-	afx_msg void OnViewShowAll();
-	afx_msg void OnOptionsTerrain();
-	afx_msg void OnOptionsLocation();
-	afx_msg void OnUpdateOptionsTerrain(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateOptionsLocation(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateConstHideAll(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateConstShowAll(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateConstShowHide(CCmdUI* pCmdUI);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

@@ -90,6 +90,7 @@ BEGIN
     SEPARATOR
     BUTTON      ID_OPTIONS_LOCATION
     BUTTON      ID_OPTIONS_TERRAIN
+    BUTTON      ID_TERR_NEW
     SEPARATOR
     BUTTON      ID_STARF_ROTATE
 END
@@ -102,7 +103,7 @@ BEGIN
     BUTTON      ID_CONST_DELETE
     BUTTON      ID_CONST_RENAME
     SEPARATOR
-    BUTTON      ID_SHOW_HIDE
+    BUTTON      ID_CONST_SHOWHIDE
     BUTTON      ID_CONST_HIDE
     SEPARATOR
     BUTTON      ID_CONST_ALINE
@@ -133,24 +134,22 @@ BEGIN
     BEGIN
         MENUITEM "&Add\tCtrl+A",                ID_CONST_ADD
         MENUITEM "&Delete\tCtrl+D",             ID_CONST_DELETE
+        MENUITEM "&Hide",                       ID_CONST_HIDE
         MENUITEM SEPARATOR
         MENUITEM "Add &Line\tL",                ID_CONST_ALINE
         MENUITEM "Add &Polygon\tP",             ID_CONST_APOLY
         MENUITEM "&Delete Line\tD",             ID_CONST_DLINE
         MENUITEM SEPARATOR
-        MENUITEM "&Hide",                       ID_CONST_HIDE
+        MENUITEM "Show / Hide &List",           ID_CONST_SHOWHIDE
+        MENUITEM "&Show All",                   ID_CONST_SHOWALL
+        MENUITEM "&Hide All",                   ID_CONST_HIDEALL
     END
     POPUP "&Options"
     BEGIN
         MENUITEM "Change &Location",            ID_OPTIONS_LOCATION
         MENUITEM "&Terrain Settings",           ID_OPTIONS_TERRAIN
     END
-    POPUP "&View"
-    BEGIN
-        MENUITEM "&Show All",                   ID_VIEW_SHOWALL
-        MENUITEM "&Hide All",                   ID_VIEW_HIDEALL
-        MENUITEM "Show / Hide &List",           ID_SHOW_HIDE
-    END
+    MENUITEM "&View",                       65535
     POPUP "&Help"
     BEGIN
         MENUITEM "&About ConStation...",        ID_APP_ABOUT
@@ -439,13 +438,14 @@ END
 
 STRINGTABLE DISCARDABLE 
 BEGIN
-    ID_SHOW_HIDE            "Display a list of constellations to show and hide\nShow / Hide List"
-    ID_VIEW_SHOWALL         "Show all the constellations\nShow All"
-    ID_VIEW_HIDEALL         "Hide all the constellations\nHide All"
+    ID_CONST_SHOWHIDE       "Display a list of constellations to show and hide\nShow / Hide List"
+    ID_CONST_SHOWALL        "Show all the constellations\nShow All"
+    ID_CONST_HIDEALL        "Hide all the constellations\nHide All"
 END
 
 STRINGTABLE DISCARDABLE 
 BEGIN
+    ID_TERR_NEW             "Generate a new random terrain\nNewTerrain"
     ID_OPTIONS_LOCATION     "Change the current viewing location on Earth\nChange Location"
     ID_OPTIONS_TERRAIN      "Change terrain settings\nTerrain Settings"
 END

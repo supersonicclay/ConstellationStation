@@ -1,0 +1,63 @@
+ The first two lines are headers describing the columns.  The actual data
+begin with the third record with the following format:
+
+columns        description
+
+ 1-5          line count   
+ 6-7          blanks
+ 8-9          hours of R.A.    --\
+ 10           blank               \  listed positions are at the mean epoch
+ 11-12        minutes of R.A.      > of the observations and on the equator
+ 13           blank               /  and equinox of DE200.
+ 14-19        seconds of R.A.  --/
+ 20           blank
+ 21-24        standard dev. (unit weight) of R.A. position [units = seconds of time * cos(decl)]
+ 25           blank
+ 26-28        number of R.A. observations
+ 29           blank
+ 30-35        mean epoch of R.A. observations
+ 36-39        blanks
+ 40           sign of Decl.    
+ 41-42        degrees of Decl. -\
+ 43           blank              \  listed positons are at the mean epoch
+ 44-45        minutes of Decl.    > of the observations and on the equator
+ 46           blank              /  and equinox of DE200.
+ 47-51        seconds of Decl. -/
+ 52           blank
+ 53-55        standard dev. (unit weight) of Decl. position [units = arcseconds]
+ 56           blank
+ 57-59        number of Decl. observations
+ 60           blanks
+ 61-66        mean epoch of Decl. observations
+ 67-69        blanks
+ 70-79        Washington Double Star catalog identifier
+ 80-83        blanks
+ 84-89        Washington Comprehensive catalog identifier
+ 90           blank
+ 91-96        Smithsonian Astrophyiscal catalog identifier
+ 97           blank
+ 98-104       Hipparcos Input catalog identifier
+ 105-106      blanks
+ 107          sign of Durchmusterung identifier
+ 108-114      Durchmusterung identifier
+ 115          blank
+ 116-119      FK5 catalog identifier
+ 120          blank
+ 121-126      visual magnitude (a minus sign can appear in columns 21 or 22)
+ 127          blank
+ 128-138      spectral type [An ellipsis (...) or a simicolon followed by a blank [: ] indecates that the string has been truncated.]     
+ 139          blank
+ 140          sign of B-V magnitude
+ 141-145      B-V magnitude
+ 146          blank
+ 147-149      variability designation  
+ 150          blank
+ 151-154      multiple star designation
+ 154-155      blanks
+ 157-160      magnitude of primary
+ 161-162      blanks
+ 163-166      magnitude of secondary
+ 167-168      blanks
+ 169-171      position angle of secondary relative to primary (degrees)
+ 172-173      blanks
+ 174-177      separation (arcseconds)

@@ -33,16 +33,10 @@ END_MESSAGE_MAP()
 
 CConStationDoc::CConStationDoc()
 {
-	starfield = new CStarfield;
-	terrain = new CTerrain;
-
-	NewTerrain( DEF_ROUGHNESS );
 }
 
 CConStationDoc::~CConStationDoc()
 {
-//	delete starfield;
-//	delete terrain;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -52,8 +46,8 @@ void CConStationDoc::Serialize( CArchive& ar )
 {
 	CDocument::Serialize(ar);    // Always call base class Serialize.
 
-	GetStarfield()->Serialize( ar );
-	GetTerrain()->Serialize( ar );
+	starfield->Serialize( ar );
+	terrain->Serialize( ar );
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -74,29 +68,3 @@ void CConStationDoc::Dump( CDumpContext& dc ) const
 
 /////////////////////////////////////////////////////////////////////////////
 // CConStationDoc commands
-
-BOOL CConStationDoc::OnNewDocument() 
-{
-	starfield = new CStarfield;
-	NewTerrain( DEF_ROUGHNESS );
-
-	return CDocument::OnNewDocument();
-}
-
-CStarfield* CConStationDoc::GetStarfield() const
-{
-	return starfield;
-}
-
-CTerrain* CConStationDoc::GetTerrain() const
-{
-	return terrain;
-}
-
-void CConStationDoc::NewTerrain( float roughness )
-{
-	CColor c = GetTerrain()->GetColor();
-	terrain = new CTerrain( roughness, c );
-
-
-}

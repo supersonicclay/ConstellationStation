@@ -21,22 +21,15 @@ protected: // create from serialization only
 
 // Attributes
 private:
-	CStarfield* starfield;
-	CTerrain* terrain;
 
 // Operations
 public:
-	CStarfield* GetStarfield() const;
-	CTerrain* GetTerrain() const;
-
-	void NewTerrain( float roughness );
 
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CConStationDoc)
 	public:
 	virtual void Serialize( CArchive& ar );
-	virtual BOOL OnNewDocument();
 	//}}AFX_VIRTUAL
 
 // Implementation

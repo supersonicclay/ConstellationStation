@@ -90,9 +90,9 @@ LINK32=link.exe
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
-# Begin Group "MFC Source Files"
+# Begin Group "Main Source Files"
 
-# PROP Default_Filter ""
+# PROP Default_Filter "cpp"
 # Begin Source File
 
 SOURCE=.\ConStation.cpp
@@ -107,6 +107,10 @@ SOURCE=.\ConStationDoc.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ConStationFrame.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ConStationView.cpp
 # End Source File
 # Begin Source File
@@ -115,7 +119,7 @@ SOURCE=.\ConstBar.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\MainFrm.cpp
+SOURCE=.\Global.cpp
 # End Source File
 # Begin Source File
 
@@ -125,18 +129,18 @@ SOURCE=.\StdAfx.cpp
 # End Group
 # Begin Group "Dialog Source Files"
 
-# PROP Default_Filter ""
+# PROP Default_Filter "cpp"
 # Begin Source File
 
-SOURCE=.\ConstNameDlg.cpp
+SOURCE=.\DlgConstName.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ShowHideDlg.cpp
+SOURCE=.\DlgShowHide.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\TerrainDlg.cpp
+SOURCE=.\DlgTerrain.cpp
 # End Source File
 # End Group
 # Begin Source File
@@ -159,9 +163,9 @@ SOURCE=.\Terrain.cpp
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
-# Begin Group "MFC Header Files"
+# Begin Group "Main Header Files"
 
-# PROP Default_Filter ""
+# PROP Default_Filter "h"
 # Begin Source File
 
 SOURCE=.\ConStation.h
@@ -169,6 +173,10 @@ SOURCE=.\ConStation.h
 # Begin Source File
 
 SOURCE=.\ConStationDoc.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ConStationFrame.h
 # End Source File
 # Begin Source File
 
@@ -180,7 +188,7 @@ SOURCE=.\ConstBar.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\MainFrm.h
+SOURCE=.\Global.h
 # End Source File
 # Begin Source File
 
@@ -193,18 +201,18 @@ SOURCE=.\StdAfx.h
 # End Group
 # Begin Group "Dialog Header Files"
 
-# PROP Default_Filter ""
+# PROP Default_Filter "h"
 # Begin Source File
 
-SOURCE=.\ConstNameDlg.h
+SOURCE=.\DlgConstName.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\ShowHideDlg.h
+SOURCE=.\DlgShowHide.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\TerrainDlg.h
+SOURCE=.\DlgTerrain.h
 # End Source File
 # End Group
 # Begin Source File

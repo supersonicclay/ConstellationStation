@@ -3,9 +3,10 @@
 
 #include "stdafx.h"
 #include "ConStation.h"
-#include "Starfield.h"
 
 #include "MainFrm.h"
+#include "ConStationDoc.h"
+#include "ConStationView.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -13,33 +14,15 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-
-
-/////////////////////////////////////////////////////////////////////////////
-// Globals
-
-const CColor WHITE = {1.0f,1.0f,1.0f},
-			 BLACK = {0.0f,0.0f,0.0f},
-			 RED   = {1.0f,0.0f,0.0f},
-			 GREEN = {0.0f,1.0f,0.0f},
-			 BLUE  = {0.0f,0.0f,1.0f};
-
-// Convinience function for glColor3f
-void glColor(CColor c)
-{
-	glColor3f(c.r, c.g, c.b);
-}
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CConStationApp
 
 BEGIN_MESSAGE_MAP(CConStationApp, CWinApp)
 	//{{AFX_MSG_MAP(CConStationApp)
 	ON_COMMAND(ID_APP_ABOUT, OnAppAbout)
-		// NOTE - the ClassWizard will add and remove mapping macros here.
-		//    DO NOT EDIT what you see in these blocks of generated code!
 	//}}AFX_MSG_MAP
+	ON_COMMAND(ID_STARFIELD_NEWRANDOM, CWinApp::OnFileNew)
+	ON_COMMAND(ID_STARFIELD_OPEN, CWinApp::OnFileOpen)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -47,10 +30,7 @@ END_MESSAGE_MAP()
 
 CConStationApp::CConStationApp()
 {
-	// TODO: add construction code here,
-	// Place all significant initialization in InitInstance
 
-	starfield = new CStarfield;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -81,39 +61,34 @@ BOOL CConStationApp::InitInstance()
 	// such as the name of your company or organization.
 	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
 
+	LoadStdProfileSettings(0);  // Load standard INI file options (including MRU)
 
-	// To create the main window, this code creates a new frame window
-	// object and then sets it as the application's main window object.
+	// Register the application's document templates.  Document templates
+	//  serve as the connection between documents, frame windows and views.
 
-	CMainFrame* pFrame = new CMainFrame;
-	m_pMainWnd = pFrame;
+//	CSingleDocTemplate* pDocTemplate;
+	pDocTemplate = new CSingleDocTemplate(
+		IDR_MAINFRAME,
+		RUNTIME_CLASS(CConStationDoc),
+		RUNTIME_CLASS(CMainFrame),       // main SDI frame window
+		RUNTIME_CLASS(CConStationView));
 
-	// create and load the frame with its resources
+	AddDocTemplate(pDocTemplate);
 
-	pFrame->LoadFrame(IDR_MAINFRAME,
-		WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, NULL,
-		NULL);
+	// Parse command line for standard shell commands, DDE, file open
+	CCommandLineInfo cmdInfo;
+	ParseCommandLine(cmdInfo);
 
-	// Set the frame's icon
-	pFrame->SetIcon(LoadIcon(IDR_MAINFRAME), TRUE);
+	// Dispatch commands specified on the command line
+	if (!ProcessShellCommand(cmdInfo))
+		return FALSE;
 
 	// The one and only window has been initialized, so show and update it.
-	pFrame->ShowWindow(SW_SHOWMAXIMIZED);
-	pFrame->UpdateWindow();
+	m_pMainWnd->ShowWindow(SW_MAXIMIZE);
+	m_pMainWnd->UpdateWindow();
 
 	return TRUE;
 }
-
-CStarfield* CConStationApp::GetStarfield()
-{
-	return starfield;
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// CConStationApp message handlers
-
-
-
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -162,13 +137,66 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
-// App command to run the dialog
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Globals
+
+const CColor WHITE = {1.0f,1.0f,1.0f},
+			 BLACK = {0.0f,0.0f,0.0f},
+			 RED   = {1.0f,0.0f,0.0f},
+			 GREEN = {0.0f,1.0f,0.0f},
+			 BLUE  = {0.0f,0.0f,1.0f},
+			 CONSTGREEN = {0.0f,0.5f,0.5f},
+			 DARKGREEN = {0.1f,0.15f,0.1f};
+
+
+// Convinience function for glColor3f
+void glColor(CColor c)
+{
+	glColor3f(c.r, c.g, c.b);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// CConStationApp message handlers
+
+// Open the about dialog
 void CConStationApp::OnAppAbout()
 {
 	CAboutDlg aboutDlg;
 	aboutDlg.DoModal();
 }
 
-/////////////////////////////////////////////////////////////////////////////
-// CConStationApp message handlers
+/*
+MSG msg;
 
+int CConStationApp::Run() 
+{
+	// Main application loop //// SLOW!
+	while (1)
+	{
+
+		// Process All Messages
+		while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE) == TRUE)
+		{
+			if (GetMessage(&msg, NULL, 0, 0))
+			{
+				if (!PreTranslateMessage(&msg))
+				{
+					TranslateMessage(&msg);
+					DispatchMessage(&msg);
+				}
+			}
+			else
+				return TRUE;
+		}
+
+		// free to do what ever we want
+
+		//// GROGGY
+		//CConStationView* curView = (CConStationView *) ((CFrameWnd *)m_pMainWnd)->GetActiveView();
+		//curView->ProcessKeys();
+	}
+}
+*/

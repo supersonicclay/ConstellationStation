@@ -2,22 +2,19 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_MAINFRM_H__EF73967D_9D13_458C_96D6_CBBF66AF483A__INCLUDED_)
-#define AFX_MAINFRM_H__EF73967D_9D13_458C_96D6_CBBF66AF483A__INCLUDED_
+#if !defined(AFX_MAINFRM_H__87C7179B_70DA_4CF0_B078_C3215E22A606__INCLUDED_)
+#define AFX_MAINFRM_H__87C7179B_70DA_4CF0_B078_C3215E22A606__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "ChildView.h"
-
 class CMainFrame : public CFrameWnd
 {
 	
-public:
+protected: // create from serialization only
 	CMainFrame();
-protected: 
-	DECLARE_DYNAMIC(CMainFrame)
+	DECLARE_DYNCREATE(CMainFrame)
 
 // Attributes
 public:
@@ -28,9 +25,7 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CMainFrame)
-	public:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-	virtual BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo);
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -44,17 +39,12 @@ public:
 protected:  // control bar embedded members
 	CStatusBar  m_wndStatusBar;
 	CToolBar    m_wndToolBar;
-	CReBar      m_wndReBar;
-	CDialogBar      m_wndDlgBar;
-	CChildView    m_wndView;
+	CDialogBar  m_wndDlgBar;
 
 // Generated message map functions
 protected:
 	//{{AFX_MSG(CMainFrame)
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	afx_msg void OnSetFocus(CWnd *pOldWnd);
-		// NOTE - the ClassWizard will add and remove member functions here.
-		//    DO NOT EDIT what you see in these blocks of generated code!
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
@@ -64,4 +54,4 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_MAINFRM_H__EF73967D_9D13_458C_96D6_CBBF66AF483A__INCLUDED_)
+#endif // !defined(AFX_MAINFRM_H__87C7179B_70DA_4CF0_B078_C3215E22A606__INCLUDED_)

@@ -67,6 +67,7 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON    DISCARDABLE     "res\\ConStation.ico"
+IDI_FILE                ICON    DISCARDABLE     "res\\file.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -74,21 +75,28 @@ IDR_MAINFRAME           ICON    DISCARDABLE     "res\\ConStation.ico"
 //
 
 IDR_MAINFRAME           BITMAP  MOVEABLE PURE   "res\\Toolbar.bmp"
+IDR_CONSTELLATION       BITMAP  DISCARDABLE     "res\\Constell.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Toolbar
 //
 
-IDR_MAINFRAME TOOLBAR DISCARDABLE  16, 15
+IDR_MAINFRAME TOOLBAR DISCARDABLE  24, 24
 BEGIN
-    BUTTON      ID_EDIT_CUT
-    BUTTON      ID_EDIT_COPY
-    BUTTON      ID_EDIT_PASTE
-    SEPARATOR
-    BUTTON      ID_FILE_PRINT
+    BUTTON      ID_STARFIELD_NEWRANDOM
+    BUTTON      ID_STARFIELD_OPEN
+    BUTTON      ID_STARFIELD_SAVE
     SEPARATOR
     BUTTON      ID_APP_ABOUT
+END
+
+IDR_CONSTELLATION TOOLBAR DISCARDABLE  24, 24
+BEGIN
+    BUTTON      ID_EDIT
+    SEPARATOR
+    BUTTON      ID_NLINE
+    BUTTON      ID_DLINE
 END
 
 
@@ -101,15 +109,30 @@ IDR_MAINFRAME MENU PRELOAD DISCARDABLE
 BEGIN
     POPUP "&File"
     BEGIN
-        MENUITEM "E&xit",                       ID_APP_EXIT
+        MENUITEM "E&xit\tCtrl+Q",               ID_APP_EXIT
+    END
+    POPUP "Star Field"
+    BEGIN
+        MENUITEM "New &Random\tCtrl+N",         ID_STARFIELD_NEWRANDOM
+        MENUITEM "New Actual\tCtrl+Shift+N",    ID_STARFIELD_NEWACTUAL
+        MENUITEM "&Open...\tCtrl+O",            ID_STARFIELD_OPEN
+        MENUITEM "&Save\tCtrl+S",               ID_STARFIELD_SAVE
+        MENUITEM "Save &As...\tCtrl+A",         ID_STARFIELD_SAVEAS
+    END
+    POPUP "Constellation"
+    BEGIN
+        MENUITEM "&Editor\tF9",                 ID_EDIT
+        MENUITEM SEPARATOR
+        MENUITEM "&Create\tCtrl+C",             ID_CONSTELLATION_CREATE
+        MENUITEM "&Delete\tCtrl+D",             ID_CONSTELLATION_DELETE
+        MENUITEM SEPARATOR
+        MENUITEM "&Load...\tCtrl+L",            ID_CONSTELLATION_LOAD
+        MENUITEM "&Store\tCtrl+R",              ID_CONSTELLATION_STORE
+        MENUITEM "Store &As...",                ID_CONSTELLATION_STOREAS
     END
     POPUP "&Edit"
     BEGIN
         MENUITEM "&Undo\tCtrl+Z",               ID_EDIT_UNDO
-        MENUITEM SEPARATOR
-        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
-        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
-        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
     END
     POPUP "&View"
     BEGIN
@@ -130,15 +153,18 @@ END
 
 IDR_MAINFRAME ACCELERATORS PRELOAD MOVEABLE PURE 
 BEGIN
-    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
-    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
-    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
-    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT, NOINVERT
-    VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
-    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
-    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
-    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT, NOINVERT
-    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL, NOINVERT
+    "C",            ID_CONSTELLATION_CREATE, VIRTKEY, CONTROL, NOINVERT
+    "D",            ID_CONSTELLATION_DELETE, VIRTKEY, CONTROL, NOINVERT
+    "L",            ID_NLINE,               VIRTKEY, NOINVERT
+    "L",            ID_CONSTELLATION_LOAD,  VIRTKEY, CONTROL, NOINVERT
+    "N",            ID_STARFIELD_NEWRANDOM, VIRTKEY, CONTROL, NOINVERT
+    "N",            ID_STARFIELD_NEWACTUAL, VIRTKEY, SHIFT, CONTROL, 
+                                                    NOINVERT
+    "O",            ID_STARFIELD_OPEN,      VIRTKEY, CONTROL, NOINVERT
+    "Q",            ID_APP_EXIT,            VIRTKEY, CONTROL, NOINVERT
+    "R",            ID_CONSTELLATION_STORE, VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_STARFIELD_SAVE,      VIRTKEY, CONTROL, NOINVERT
+    VK_F9,          ID_EDIT,                VIRTKEY, NOINVERT
     "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
 END
 
@@ -148,23 +174,17 @@ END
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 65
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "About ConStation"
+CAPTION "About Constellation Station"
 FONT 8, "MS Sans Serif"
 BEGIN
-    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
-    LTEXT           "ConStation Version 1.0",IDC_STATIC,40,10,119,8,
-                    SS_NOPREFIX
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,21,20
+    LTEXT           "Constellation Station Version 1.0",IDC_STATIC,40,10,119,
+                    8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2003",IDC_STATIC,40,25,119,8
     DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
-END
-
-IDR_MAINFRAME DIALOG DISCARDABLE  0, 0, 330, 16
-STYLE WS_CHILD
-FONT 8, "MS Sans Serif"
-BEGIN
-    LTEXT           "TODO: layout dialog bar ",IDC_STATIC,12,4,300,8
+    LTEXT           "CLaY Anderson Rules!",IDC_STATIC,40,40,72,8
 END
 
 
@@ -224,11 +244,26 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 228
         TOPMARGIN, 7
-        BOTTOMMARGIN, 48
+        BOTTOMMARGIN, 58
     END
 END
 #endif    // APSTUDIO_INVOKED
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_POINT               CURSOR  DISCARDABLE     "res\\point.cur"
+IDC_ROTXY               CURSOR  DISCARDABLE     "res\\rotxy.cur"
+IDC_ROTZ                CURSOR  DISCARDABLE     "res\\rotz.cur"
+IDC_EDIT                CURSOR  DISCARDABLE     "res\\edit.cur"
+IDC_NLINE               CURSOR  DISCARDABLE     "res\\nline.cur"
+IDC_DLINE               CURSOR  DISCARDABLE     "res\\dline.cur"
+IDC_POINT_NLINE         CURSOR  DISCARDABLE     "res\\point_nline.cur"
+IDC_NLINEG              CURSOR  DISCARDABLE     "res\\nlineg.cur"
+IDC_DLINEG              CURSOR  DISCARDABLE     "res\\dlineg.cur"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -237,7 +272,7 @@ END
 
 STRINGTABLE PRELOAD DISCARDABLE 
 BEGIN
-    IDR_MAINFRAME           "ConStation"
+    IDR_MAINFRAME           "Constellation Station\n\nStar Field\nStar Fields (*.str)\n.str\nConStationStarField\nConstellation Station Star Field"
 END
 
 STRINGTABLE PRELOAD DISCARDABLE 
@@ -248,38 +283,13 @@ END
 
 STRINGTABLE DISCARDABLE 
 BEGIN
-    ID_INDICATOR_EXT        "EXT"
-    ID_INDICATOR_CAPS       "CAP"
-    ID_INDICATOR_NUM        "NUM"
-    ID_INDICATOR_SCRL       "SCRL"
-    ID_INDICATOR_OVR        "OVR"
-    ID_INDICATOR_REC        "REC"
-END
-
-STRINGTABLE DISCARDABLE 
-BEGIN
     ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
-    ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
+    ID_APP_EXIT             "Quit Constellation Station\nExit"
 END
 
 STRINGTABLE DISCARDABLE 
 BEGIN
-    ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
-END
-
-STRINGTABLE DISCARDABLE 
-BEGIN
-    ID_EDIT_CLEAR           "Erase the selection\nErase"
-    ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
-    ID_EDIT_COPY            "Copy the selection and put it on the Clipboard\nCopy"
-    ID_EDIT_CUT             "Cut the selection and put it on the Clipboard\nCut"
-    ID_EDIT_FIND            "Find the specified text\nFind"
-    ID_EDIT_PASTE           "Insert Clipboard contents\nPaste"
-    ID_EDIT_REPEAT          "Repeat the last action\nRepeat"
-    ID_EDIT_REPLACE         "Replace specific text with different text\nReplace"
-    ID_EDIT_SELECT_ALL      "Select the entire document\nSelect All"
     ID_EDIT_UNDO            "Undo the last action\nUndo"
-    ID_EDIT_REDO            "Redo the previously undone action\nRedo"
 END
 
 STRINGTABLE DISCARDABLE 
@@ -294,8 +304,6 @@ BEGIN
     AFX_IDS_SCMOVE          "Change the window position"
     AFX_IDS_SCMINIMIZE      "Reduce the window to an icon"
     AFX_IDS_SCMAXIMIZE      "Enlarge the window to full size"
-    AFX_IDS_SCNEXTWINDOW    "Switch to the next document window"
-    AFX_IDS_SCPREVWINDOW    "Switch to the previous document window"
     AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
 END
 
@@ -303,6 +311,36 @@ STRINGTABLE DISCARDABLE
 BEGIN
     AFX_IDS_SCRESTORE       "Restore the window to normal size"
     AFX_IDS_SCTASKLIST      "Activate Task List"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_STARFIELD_NEWRANDOM  "Create a new star field with random stars\nNew Random Star Field"
+    ID_STARFIELD_NEWACTUAL  "Create a new star field with the actual stars as viewed from Earth\nNew Actual Star Field"
+    ID_STARFIELD_OPEN       "Open a previously saved star field\nOpen Star Field"
+    ID_STARFIELD_SAVE       "Save this star field\nSave Star Field"
+    ID_STARFIELD_SAVEAS     "Save this star field with a new name\nSave Star Field As"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_CONSTELLATION_CREATE "Create a new constellation\nCreate Constellation"
+    ID_CONSTELLATION_LOAD   "Load a previously saved constellation\nLoad Constellation"
+    ID_CONSTELLATION_STORE  "Store this constellation\nStore Constellation"
+    ID_CONSTELLATION_DELETE "Delete this constellation\nDelete Constellation"
+    ID_CONSTELLATION_STOREAS 
+                            "Store this constellation with a new name\nStore Constellation As"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_EDIT                 "Edit the selected constellation\nEdit Constellation"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_NLINE                "Create a new line in this constellation\nNew Line"
+    ID_DLINE                "Delete a line in this constellation\nDelete Line"
 END
 
 #endif    // English (U.S.) resources

@@ -1,181 +1,22 @@
+// Starfield.cpp : implementation of the CStarfield class
+//
+
 #include "stdafx.h"
 #include "ConStation.h"
+
 #include "Starfield.h"
+#include "Star.h"
+#include "Constellation.h"
 
-#include <math.h>
-
-
-/************
-*			*
-*	CStar	*
-*			*
-************/
-CStar::CStar()
-{
-	x = 0.0f;
-	y = 0.0f;
-	z = 0.0f;
-	brightness = 1.0f;
-////color = WHITE;
-}
-
-CStar::CStar(float x_, float y_, float z_, float brightness_)
-{
-	x = x_;
-	y = y_;
-	z = z_;
-	brightness = brightness_;
-}
-
-CStar::~CStar()
-{
-}
-
-float CStar::GetX()
-{
-	return x;
-}
-
-float CStar::GetY()
-{
-	return y;
-}
-
-float CStar::GetZ()
-{
-	return z;
-}
-
-float CStar::GetBrightness()
-{
-	return brightness;
-}
-
-/*////
-COLOR CStar::GetColor()
-{
-	return color;
-}
-*/
-
-void CStar::SetX(float x_)
-{
-	x = x_;
-}
-
-void CStar::SetY(float y_)
-{
-	y = y_;
-}
-
-void CStar::SetZ(float z_)
-{
-	z = z_;
-}
-
-void CStar::SetBrightness(float brightness_)
-{
-	brightness = brightness_;
-}
-
-/*
-void CStar::SetColor(COLOR color_)
-{
-	color = color_;
-
-//	color.r = color_.r;
-//	color.g = color_.g;
-//	color.b = color_.b;
-}
-
-void CStar::SetColor(float r, float g, float b)
-{
-	color.r = r;
-	color.g = g;
-	color.b = b;
-}
-*/
-
-// Pick random x then a random y and z so that x,y,z has length of 1
-void CStar::Randomize()
-{
-	x = (float)(rand()%2000)/1000-1;		// +1.0 to -1.0
-
-	int chooseYbeforeZ;						// Helps randomize stars
-	float absYMax;							// The maximum absolute value of Y based on X
-	float absZMax;							// The maximum absolute value of Z based on X
-	int plus_minus;							// +1 or -1 (for easier reading)
-
-	chooseYbeforeZ = rand()%2;				// 0 or 1 (T or F)
-
-	if(chooseYbeforeZ)
-	{
-		absYMax = (float)pow(1.0-(x*x), 0.5);
-		if ((int)(absYMax*1000) != 0)
-		{
-			plus_minus = (rand()%2)*2-1;
-			y = plus_minus * (float)(rand()%(int)(absYMax*1000))/1000;
-		}
-		else
-		{
-			y = 0.0;
-		}
-		plus_minus = (rand()%2)*2-1;
-		z = plus_minus * (float)pow((1.0-(x * x)-(y * y)), 0.5);
-	}
-	else //chooseZbeforeY
-	{
-		absZMax = (float)pow(1.0-(x*x), 0.5);
-		if ((int)(absZMax*1000) != 0)
-		{
-			plus_minus = (rand()%2)*2-1;
-			z = plus_minus * (float)(rand()%(int)(absZMax*1000))/1000;
-		}
-		else
-		{
-			z = 0.0;
-		}
-		plus_minus = (rand()%2)*2-1;
-		y = plus_minus * (float)pow((1.0-(x * x)-(z * z)), 0.5);
-	}
-//	brightness = (float)((rand()%600) * (rand()%600) * (rand()%600))/21600000 + 0;
-	brightness = (float)((rand()%60) * (rand()%60) * (rand()%60) * (rand()%60))/2000000 + 1;
-}
-
-
-/********************
-*					*
-*	CConstellation	*
-*					*
-********************/
-CConstellation::CConstellation()
-{
-
-}
-
-CConstellation::~CConstellation()
-{
-}
-
-/*
-void CConstellation::Draw() const
-{
-}
-*/
-
-/****************
-*				*
-*	CStarfield	*
-*				*
-****************/
 CStarfield::CStarfield()
 {
-	numStars = 10000;
+	numStars = 5000;
 	stars = new CStar[numStars];
 	SetupStars();
 
-	constellations = new CConstellation[1];
-////ResetView();
+	numConstellations = 0;
+	constellations = new CConstellation[numConstellations];
+	numCurConstellation = 0;
 
 ////starMouseOver = NULL;
 }
@@ -183,6 +24,7 @@ CStarfield::CStarfield()
 CStarfield::~CStarfield()
 {
 	delete [] stars;
+	delete [] constellations;
 }
 
 CStar* CStarfield::GetStar(int i) const
@@ -190,9 +32,24 @@ CStar* CStarfield::GetStar(int i) const
 	return &stars[i];
 }
 
+CConstellation* CStarfield::GetConstellation(int i) const
+{
+	return &constellations[i];
+}
+
 int CStarfield::GetNumStars() const
 {
 	return numStars;
+}
+
+int CStarfield::GetNumConstellations() const
+{
+	return numConstellations;
+}
+
+void CStarfield::SetNumCurConstellation(int i)
+{
+	numCurConstellation = i;
 }
 
 // Creates sphere of random stars with radius of 1
@@ -205,6 +62,32 @@ void CStarfield::SetupStars()
 	{
 		stars[i].Randomize();
 	}
+}
+
+/////////////////////////////
+// Constellation functions //
+/////////////////////////////
+void CStarfield::AddConstellation()
+{
+	int i;
+	CConstellation* copy = new CConstellation[numConstellations];
+
+	// Backup constellations
+	for (i=0; i<numConstellations; i++)
+		copy[i] = constellations[i];
+	
+	// Increase array size
+	constellations = new CConstellation[++numConstellations];
+
+	// Restore constellations
+	for (i=0; i<numConstellations-1; i++)
+		constellations[i] = copy[i];
+
+}
+
+void CStarfield::AddConstLine(int starNum1, int starNum2)
+{
+	constellations[numCurConstellation].AddLine(&stars[starNum1], &stars[starNum2]);
 }
 
 /*
@@ -269,6 +152,3 @@ void CStarfield::ReadLine(FILE *file,char *string) const
 	return;
 }
 */
-
-
-

@@ -1,8 +1,8 @@
 // ConStation.h : main header file for the CONSTATION application
 //
 
-#if !defined(AFX_CONSTATION_H__8D8892BA_D9F3_4336_81AE_33C7A477F388__INCLUDED_)
-#define AFX_CONSTATION_H__8D8892BA_D9F3_4336_81AE_33C7A477F388__INCLUDED_
+#if !defined(AFX_CONSTATION_H__7FAE70C2_81A3_4453_8F8B_E07257316D56__INCLUDED_)
+#define AFX_CONSTATION_H__7FAE70C2_81A3_4453_8F8B_E07257316D56__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -14,12 +14,14 @@
 
 #include "resource.h"       // main symbols
 
-#include "Starfield.h"
+// OpenGL Headers
+#include <gl/gl.h>
+#include <gl/glu.h>
+////#include <math.h> 
 
 
 /////////////////////////////////////////////////////////////////////////////
-// GLOBALS
-
+// Globals
 typedef struct
 {
 	float r;
@@ -29,8 +31,7 @@ typedef struct
 
 void glColor(CColor c);
 
-extern const CColor WHITE, BLACK, RED, GREEN, BLUE;
-
+extern const CColor WHITE, BLACK, RED, GREEN, BLUE, CONSTGREEN, DARKGREEN;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -43,13 +44,10 @@ class CConStationApp : public CWinApp
 public:
 	CConStationApp();
 
-// Attributes
-private:
-	CStarfield* starfield;
 
-// Operations
-public:
-	CStarfield* GetStarfield();
+// Attributes
+	CSingleDocTemplate* pDocTemplate;
+
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CConStationApp)
@@ -58,15 +56,19 @@ public:
 	//}}AFX_VIRTUAL
 
 // Implementation
-
-public:
 	//{{AFX_MSG(CConStationApp)
 	afx_msg void OnAppAbout();
-		// NOTE - the ClassWizard will add and remove member functions here.
-		//    DO NOT EDIT what you see in these blocks of generated code !
+	afx_msg void OnConstellationOpen();
+	afx_msg void OnConstellationNew();
+	afx_msg void OnConstellationSave();
+	afx_msg void OnConstellationSaveas();
+	afx_msg void OnStarfieldNewactual();
+	afx_msg void OnStarfieldNewrandom();
+	afx_msg void OnStarfieldOpen();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
+
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -74,4 +76,4 @@ public:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_CONSTATION_H__8D8892BA_D9F3_4336_81AE_33C7A477F388__INCLUDED_)
+#endif // !defined(AFX_CONSTATION_H__7FAE70C2_81A3_4453_8F8B_E07257316D56__INCLUDED_)

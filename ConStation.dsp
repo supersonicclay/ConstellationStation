@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Yu"stdafx.h" /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR /Yu"stdafx.h" /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG" /d "_AFXDLL"
@@ -92,10 +92,6 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=.\ChildView.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\ConStation.cpp
 # End Source File
 # Begin Source File
@@ -104,7 +100,23 @@ SOURCE=.\ConStation.rc
 # End Source File
 # Begin Source File
 
+SOURCE=.\ConStationDoc.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ConStationView.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\Costellation.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\MainFrm.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\Star.cpp
 # End Source File
 # Begin Source File
 
@@ -121,11 +133,19 @@ SOURCE=.\StdAfx.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=.\ChildView.h
+SOURCE=.\ConStation.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\ConStation.h
+SOURCE=.\ConStationDoc.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ConStationView.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Constellation.h
 # End Source File
 # Begin Source File
 
@@ -134,6 +154,10 @@ SOURCE=.\MainFrm.h
 # Begin Source File
 
 SOURCE=.\Resource.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Star.h
 # End Source File
 # Begin Source File
 
@@ -153,11 +177,99 @@ SOURCE=.\arrow.cur
 # End Source File
 # Begin Source File
 
+SOURCE=.\res\arrow.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\arrowcop.cur
+# End Source File
+# Begin Source File
+
 SOURCE=.\res\ConStation.ico
 # End Source File
 # Begin Source File
 
 SOURCE=.\res\ConStation.rc2
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\Constell.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\cursor1.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\delline.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\dline.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\dlineg.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\edit.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\edit1.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\editline.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\file.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\newline.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\nline.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\nline1.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\nlineg.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\point.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\point_line.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\point_nline.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\pointer1.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\rotxy.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\rotxy1.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\rotz.cur
 # End Source File
 # Begin Source File
 

@@ -63,7 +63,12 @@ BOOL CDlgOptionsConst::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	/// Set lineWidthControl height taller here
+	// Make lineWidthControl listbox taller
+	CRect r;
+	lineWidthControl.GetDroppedControlRect( &r );
+	lineWidthControl.GetParent()->ScreenToClient( &r );
+	r.bottom = r.top + 150;
+	lineWidthControl.MoveWindow( &r );
 
 	InitOptions();
 

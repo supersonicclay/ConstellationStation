@@ -56,6 +56,9 @@ CConStationView::CConStationView()
 
 	mouseRotatingXY = false;
 	mouseRotatingZ = false;
+
+	///
+	terrainOffset = 0.5f;
 }
 
 CConStationView::~CConStationView()
@@ -104,11 +107,47 @@ CTerrain* CConStationView::GetTerrain() const
 	return GetDocument()->GetTerrain();
 }
 
+void CConStationView::NewTerrain( float roughness )
+{
+	GetDocument()->NewTerrain( roughness );
+	PositionTerrain();
+	InvalidateRect( NULL, FALSE );
+}
+
+// Calculate the offset of the terrain, so the viewer is placed above it.
+void CConStationView::SetTerrainOffset()
+{
+	// Get the index of the midpoint
+	int middleIndex = GetTerrain()->GetSize() / 2;
+
+	// Average the heights around the midpoint,
+	//  so the viewer isn't placed in a deep pit.
+
+	// Average of square points directly around middle
+	float avg1 = GetTerrain()->AvgSquare(middleIndex, middleIndex, 1);
+	// Average of diamond points directly around middle
+	float avg2 = GetTerrain()->AvgDiamond(middleIndex, middleIndex, 1);
+
+	// Average the two averages
+	float height = ((avg1 + avg2) / 2);
+
+	// Make sure the new height is not less than the height at the midpoint
+	//  (this would put the viewer under the terrain)
+	// If it is, then switch to the height of the midpoint
+	if (height < GetTerrain()->GetHeight(middleIndex, middleIndex))
+		height = GetTerrain()->GetHeight(middleIndex, middleIndex) + 0.2f;
+
+	// Move it down a little more than that so the viewer isn't exactly on the surface
+	terrainOffset = -height - 0.05f;
+}
+
+
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CConStationView message handlers
 
-int CConStationView::OnCreate(LPCREATESTRUCT lpCreateStruct) 
+int CConStationView::OnCreate( LPCREATESTRUCT lpCreateStruct ) 
 {
 	if (CView::OnCreate(lpCreateStruct) == -1)
 		return -1;
@@ -211,18 +250,58 @@ BOOL CConStationView::InitializeOpenGL()
 	}
 
 
+	// Settings
 	glClearColor(0.0f,0.0f,0.0f,1.0f);
 	glClearDepth(1.0f);
 	glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	glEnable( GL_LINE_SMOOTH );
+	glShadeModel(GL_SMOOTH);
+//	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+	// Textures
 	if (!LoadTextures())
 	{
 		MessageBox("Error loading textures");
 		return FALSE;
 	}
-
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE );
+
+	// Sky
+	skySphere = gluNewQuadric();
+	gluQuadricNormals( skySphere, GLU_SMOOTH );
+	gluQuadricTexture( skySphere, GL_TRUE );
+
+	// Sun
+	sunLight = new GLfloat[4];
+	sunPosition = new GLfloat[4];
+	sunLight[0] = 1.0f;
+	sunLight[1] = 1.0f;
+	sunLight[2] = 1.0f;
+	sunLight[3] = 1.0f;
+	sunPosition[0] = 1.0f;
+	sunPosition[1] = 1.0f;
+	sunPosition[2] = 1.0f;
+	sunPosition[3] = 1.0f;
+
+
+	// Lighting
+///	float ambient[] = {0.2f, 0.2f, 0.2f, 1.0f};
+//	glLightModelfv( GL_LIGHT_MODEL_AMBIENT, ambient );
+//	glLightfv( GL_LIGHT0, GL_AMBIENT, ambient );
+//	glLightfv( GL_LIGHT0, GL_SPECULAR, sunLight );
+//	glLightfv( GL_LIGHT0, GL_DIFFUSE, sunLight );
+	glLightfv( GL_LIGHT0, GL_POSITION, sunPosition );
+	glEnable( GL_LIGHT0 );
+
+	// Material
+//	GLfloat specular [] = { 0.5f, 0.5f, 0.5f, 1.0f };
+//	GLfloat shininess [] = { 100.0f };
+//	GLfloat emission [] = {0.0f, 0.0f, 0.0f, 1.0f};
+	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+	glEnable(GL_COLOR_MATERIAL);
+//	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
+//	glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION,  emission);
+//	glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
 
 	return TRUE;
 }
@@ -276,6 +355,12 @@ BOOL CConStationView::LoadTextures()
 {
 	if (!LoadTGA(starTex, "textures/star.tga"))
 		return FALSE;
+
+	if (!LoadTGA(skyTex, "textures/sky.tga"))
+		return FALSE;
+
+	glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+	glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
 
 	return TRUE;
 }
@@ -384,11 +469,11 @@ StateType CConStationView::GetState() const
 	return state;
 }
 
-void CConStationView::SetState(StateType state_)
+void CConStationView::SetState( StateType newState )
 {
 	firstStarNum = -1;
 
-	state = state_;
+	state = newState;
 }
 
 BOOL CConStationView::IsRotating() const
@@ -414,6 +499,8 @@ void CConStationView::OnDraw(CDC* pDC)
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	DrawSky();
+	DrawSun();
 	DrawStarfield();
 	DrawTerrain();
 	DrawHeading();
@@ -429,11 +516,13 @@ void CConStationView::OnDraw(CDC* pDC)
 
 void CConStationView::DrawTerrain() const
 {
+	glEnable( GL_LIGHTING );
+
 	glLoadIdentity();
 	RotateXY();
 	PositionTerrain();
 
-	glColor(COLOR_TERRAIN);
+	glColor( GetTerrain()->GetColor() );
 
 	int i, j;
 	float x, z;
@@ -443,25 +532,57 @@ void CConStationView::DrawTerrain() const
 	int arraySize = GetTerrain()->GetArraySize();
 	int size = GetTerrain()->GetSize();
 
+	float* n;
+
 	float scale = GetTerrain()->GetScale();
 	int iterations = GetTerrain()->GetIterations();
-	float roughness = GetTerrain()->GetRoughness();
 
 	x = -scale;
 	z = -scale;
 	inc = (float)pow(2, -iterations+1);
 
 	glPushName( 0 );
+
+	/*
+	glBegin( GL_QUADS );
+		glNormal3f( 0.0f, 1.0f, 0.0f );
+		glVertex3f( -1.0f, -0.15f, -1.0f );
+		glVertex3f( -1.0f, -0.15f,  1.0f );
+		glVertex3f(  1.0f, -0.15f,  1.0f );
+		glVertex3f(  1.0f, -0.15f, -1.0f );
+	glEnd();
+//	*/
+//	/*
 	for (i=0; i<size; i++)
 	{
 		for (j=0; j<size; j++)
 		{
+			n = GetTerrain()->GetUpperNormal( i, j );
 
-			glBegin(GL_QUADS);
+			///
+//			glDisable( GL_LIGHTING );
+//			glColor3f( 1, 0, 0 );
+//			glBegin(GL_LINES);
+//				glVertex3f( x, heights[ i*arraySize + j ], z );
+//				glVertex3f( x, heights[ i*arraySize + j ]+0.5f, z );
+//				glVertex3f( n[0], n[1], n[2] );
+//			glEnd();
+//			glEnable( GL_LIGHTING );
+			///
+
+			glBegin(GL_TRIANGLES);
+				glNormal3f( n[0], n[1], n[2] );
 				glVertex3f( x, heights[ (i*arraySize) + j ], z );
 				glVertex3f( x, heights[ (i*arraySize) + (j+1) ], z+inc );
+				glVertex3f( x+inc, heights[ ((i+1)*arraySize) + j ], z );
+			glEnd();
+
+			n = GetTerrain()->GetLowerNormal( i, j );
+			glBegin(GL_TRIANGLES);
+				glNormal3f( n[0], n[1], n[2] );
 				glVertex3f( x+inc, heights[ ((i+1)*arraySize) + (j+1) ], z+inc );
 				glVertex3f( x+inc, heights[ ((i+1)*arraySize) + j ], z );
+				glVertex3f( x, heights[ (i*arraySize) + (j+1) ], z+inc );
 			glEnd();
 
 			z += inc;
@@ -469,37 +590,63 @@ void CConStationView::DrawTerrain() const
 		z = -scale;
 		x += inc;
 	}
+//	*/
 	glPopName();
+
+	glDisable( GL_LIGHTING );
 }
 
 // Set the viewer on top of the midpoint of the terrain
 void CConStationView::PositionTerrain() const
 {
-	// Get the index of the midpoint
-	int middleIndex = GetTerrain()->GetSize() / 2;
-
-	// Average the heights around the midpoint,
-	//  so the viewer isn't placed in a deep pit.
-
-	// Average of square points directly around middle
-	float avg1 = GetTerrain()->AvgSquare(middleIndex, middleIndex, 1);
-	// Average of diamond points directly around middle
-	float avg2 = GetTerrain()->AvgDiamond(middleIndex, middleIndex, 1);
-
-	// Average the two averages
-	float height = ((avg1 + avg2) / 2);
-
-	// Make sure the new height is not less than the height at the midpoint
-	//  (this would put the viewer under the terrain)
-	// If it is, then switch to the height of the midpoint
-	if (height < GetTerrain()->GetHeight(middleIndex, middleIndex))
-		height = GetTerrain()->GetHeight(middleIndex, middleIndex) + 0.2f;
-
-
-	// Finally move the terrain down the amount that we got for the height
-	//  Move it down a little more than that so the viewer isn't exactly on the surface
-	glTranslatef (0.0f, -height - 0.05f, 0.0f);
+	glTranslatef (0.0f, terrainOffset, 0.0f);
 }
+
+void CConStationView::DrawSky() const
+{
+	glLoadIdentity();
+//	glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
+	RotateXY();
+	RotateLatitude();
+	RotateSeason();
+	RotateTime();
+
+	// Enable texture
+	glEnable( GL_TEXTURE_2D );
+	glBindTexture( GL_TEXTURE_2D, skyTex.textureID );
+
+	// Draw sky background
+	glColor( COLOR_SKY );
+	gluSphere( skySphere, 1.0f, 20, 5 );
+
+	glDisable( GL_TEXTURE_2D );
+}
+
+void CConStationView::DrawSun() const
+{
+//	glEnable( GL_LIGHTING );
+
+	glLoadIdentity();
+//	glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
+	RotateXY();
+	RotateLatitude();
+	RotateSeason();
+	RotateTime();
+
+//	GLfloat emission[] = {1.0f, 1.0f, 1.0f, 1.0f};
+//	glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, emission );
+
+	glTranslatef( 0.0f, 0.0f,-1.0f );
+
+	glColor( COLOR_WHITE );
+	gluSphere( gluNewQuadric(), 0.02f, 8, 2 );
+
+//	GLfloat dark[] = {0.0f, 0.0f, 0.0f, 0.0f};
+//	glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, dark );
+
+//	glDisable( GL_LIGHTING );
+}
+
 
 void CConStationView::DrawStarfield() const
 {
@@ -609,6 +756,13 @@ void CConStationView::DrawStar(int i) const
 	else
 		color = curStar->GetColor();
 
+	///
+//	if (i == 1175)
+//		color = COLOR_CROSS;
+//	if (i == 3619)
+//		color = COLOR_CROSS;
+
+
 	// Push matrix so quad rotation doesn't affect anything
 	glPushMatrix();
 
@@ -620,7 +774,7 @@ void CConStationView::DrawStar(int i) const
 	glRotatef( latitude, 1.0f, 0.0f, 0.0f );
 	glTranslatef( 0.0f, 1.0f, 0.0f );
 
-	/// Draw a
+	/// Draw a star quad
 	float quadSize = brightness / 170.0f;
 	glBegin( GL_QUADS );
 		glNormal3f( 0.0f, -1.0f, 0.0f );
@@ -630,7 +784,7 @@ void CConStationView::DrawStar(int i) const
 		glTexCoord2i( 0, 0 ); glVertex3f( -quadSize, 0.0f, -quadSize );
 	glEnd();
 
-//	/*/// POINT
+	/*/// POINT
 	glColor( COLOR_CROSS );
 	glBegin(GL_POINTS);
 		glVertex2f( 0, 0 );
@@ -786,7 +940,8 @@ void CConStationView::OnTimer(UINT nIDEvent)
 
 	if (GetStarfield()->IsSpinning() && state == Viewing)
 	{
-		GetStarfield()->AdjTime(0.05f);
+//		GetStarfield()->AdjTime(0.05f);
+		GetStarfield()->AdjTime(0.5f);
 		InvalidateRect(NULL, FALSE);
 	}
 }
@@ -1198,14 +1353,13 @@ int CConStationView::SelectStar()
 		for (int i=1; i<hits; i++)
 		{
 			// Get the brightest
-			if (GetStarfield()->GetStar(selectBuffer[i*4+3])->GetBrightness() >
+			if (GetStarfield()->GetStar(selectBuffer[i*4+3]-1)->GetBrightness() >
 						selectedStar->GetBrightness())
 			{
 				numStar = selectBuffer[i*4+3] - 1;	// Subtract 1 because terrain is 0
 				selectedStar = GetStarfield()->GetStar(numStar);
 			}
 		}
-
 		return numStar;
 	}
 	else return -1;

@@ -16,14 +16,14 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // CConStationApp
 
-BEGIN_MESSAGE_MAP(CConStationApp, CWinApp)
+BEGIN_MESSAGE_MAP( CConStationApp, CWinApp )
 	//{{AFX_MSG_MAP(CConStationApp)
 	ON_COMMAND(ID_APP_ABOUT, OnAppAbout)
 	ON_COMMAND(ID_STARF_NEWACTUAL, OnStarfNewActual)
 	ON_COMMAND(ID_STARF_NEWRANDOM, OnStarfNewRandom)
 	ON_COMMAND(ID_STARF_OPEN, OnStarfOpen)
 	//}}AFX_MSG_MAP
-	ON_COMMAND(ID_STARF_OPEN, CWinApp::OnFileOpen)
+	ON_COMMAND( ID_STARF_OPEN, CWinApp::OnFileOpen )
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -70,22 +70,22 @@ BOOL CConStationApp::InitInstance()
 //	CSingleDocTemplate* pDocTemplate;
 	pDocTemplate = new CSingleDocTemplate(
 		IDR_MAINFRAME,
-		RUNTIME_CLASS(CConStationDoc),
-		RUNTIME_CLASS(CMainFrame),       // main SDI frame window
-		RUNTIME_CLASS(CConStationView));
+		RUNTIME_CLASS( CConStationDoc ),
+		RUNTIME_CLASS( CMainFrame ),       // main SDI frame window
+		RUNTIME_CLASS( CConStationView ) );
 
 	AddDocTemplate(pDocTemplate);
 
 	// Parse command line for standard shell commands, DDE, file open
 	CCommandLineInfo cmdInfo;
-	ParseCommandLine(cmdInfo);
+	ParseCommandLine( cmdInfo );
 
 	// Dispatch commands specified on the command line
-	if (!ProcessShellCommand(cmdInfo))
+	if (!ProcessShellCommand( cmdInfo ))
 		return FALSE;
 
 	// The one and only window has been initialized, so show and update it.
-	m_pMainWnd->ShowWindow(SW_MAXIMIZE);
+	m_pMainWnd->ShowWindow( SW_MAXIMIZE );
 	m_pMainWnd->UpdateWindow();
 
 	return TRUE;
@@ -94,7 +94,7 @@ BOOL CConStationApp::InitInstance()
 CMainFrame* CConStationApp::GetMainFrame() const
 {
 #ifdef _DEBUG
-	ASSERT(m_pMainWnd->IsKindOf(RUNTIME_CLASS(CMainFrame)));
+	ASSERT( m_pMainWnd->IsKindOf( RUNTIME_CLASS( CMainFrame ) ) );
 #endif
 	return (CMainFrame *)m_pMainWnd;
 }
@@ -127,20 +127,20 @@ protected:
 	DECLARE_MESSAGE_MAP()
 };
 
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD)
+CAboutDlg::CAboutDlg() : CDialog( CAboutDlg::IDD )
 {
 	//{{AFX_DATA_INIT(CAboutDlg)
 	//}}AFX_DATA_INIT
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX)
+void CAboutDlg::DoDataExchange( CDataExchange* pDX )
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CAboutDlg)
 	//}}AFX_DATA_MAP
 }
 
-BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
+BEGIN_MESSAGE_MAP( CAboutDlg, CDialog )
 	//{{AFX_MSG_MAP(CAboutDlg)
 		// No message handlers
 	//}}AFX_MSG_MAP
@@ -151,19 +151,19 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // Globals
 
-const CColor COLOR_WHITE = {1.0f,1.0f,1.0f},
-			 COLOR_BLACK = {0.0f,0.0f,0.0f},
-			 COLOR_CROSS  = {0.3f,0.3f,0.8f},
-			 COLOR_ACTIVESTAR   = {1.0f,0.0f,0.0f},
-			 COLOR_NORTHSTAR = {0.0f,1.0f,0.0f},
-			 COLOR_CONSTLINE = {0.0f,0.5f,0.5f},
-			 COLOR_TERRAIN = {0.0f,0.01f,0.06f};
+const CColor COLOR_WHITE =		{1.0f, 1.0f, 1.0f},
+			 COLOR_BLACK =		{0.0f, 0.0f, 0.0f},
+			 COLOR_SKY =		{0.0f, 0.0f, 1.0f},
+			 COLOR_CROSS =		{0.3f, 0.3f, 0.8f},
+			 COLOR_ACTIVESTAR =	{1.0f, 0.0f, 0.0f},
+			 COLOR_NORTHSTAR =	{0.7f, 1.0f, 0.7f},
+			 COLOR_CONSTLINE =	{0.0f, 0.5f, 0.5f};
 
 
 // Convinience function for glColor3f
-void glColor(CColor c)
+void glColor( CColor c )
 {
-	glColor3f(c.r, c.g, c.b);
+	glColor3f( c.r, c.g, c.b );
 }
 
 

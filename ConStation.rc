@@ -88,8 +88,10 @@ BEGIN
     BUTTON      ID_STARF_OPEN
     BUTTON      ID_STARF_SAVE
     SEPARATOR
+    BUTTON      ID_OPTIONS_LOCATION
+    BUTTON      ID_OPTIONS_TERRAIN
+    SEPARATOR
     BUTTON      ID_STARF_ROTATE
-    BUTTON      ID_SHOW_HIDE
 END
 
 IDR_CONSTELLATION TOOLBAR DISCARDABLE  16, 16
@@ -100,6 +102,7 @@ BEGIN
     BUTTON      ID_CONST_DELETE
     BUTTON      ID_CONST_RENAME
     SEPARATOR
+    BUTTON      ID_SHOW_HIDE
     BUTTON      ID_CONST_HIDE
     SEPARATOR
     BUTTON      ID_CONST_ALINE
@@ -137,16 +140,16 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Hide",                       ID_CONST_HIDE
     END
-    POPUP "&Edit"
+    POPUP "&Options"
     BEGIN
-        MENUITEM "&Undo\tCtrl+Z",               ID_EDIT_UNDO
+        MENUITEM "Change &Location",            ID_OPTIONS_LOCATION
+        MENUITEM "&Terrain Settings",           ID_OPTIONS_TERRAIN
     END
     POPUP "&View"
     BEGIN
         MENUITEM "&Show All",                   ID_VIEW_SHOWALL
         MENUITEM "&Hide All",                   ID_VIEW_HIDEALL
-        MENUITEM SEPARATOR
-        MENUITEM "Status &Bar",                 ID_VIEW_STATUS_BAR
+        MENUITEM "Show / Hide &List",           ID_SHOW_HIDE
     END
     POPUP "&Help"
     BEGIN
@@ -218,6 +221,33 @@ BEGIN
     PUSHBUTTON      "&Hide All",IDC_HIDEALL,67,154,50,14
     PUSHBUTTON      "Invert",IDC_INVERT,129,154,50,14
     LTEXT           "Constellations to Show:",IDC_STATIC,7,7,74,8
+END
+
+IDD_TERRAIN DIALOG DISCARDABLE  0, 0, 189, 70
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Terrain Settings"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "&OK",IDOK,131,8,50,14
+    PUSHBUTTON      "&Cancel",IDCANCEL,131,29,50,14
+    PUSHBUTTON      "&New Terrain",IDC_NEW,131,48,50,14
+    CONTROL         "Slider2",IDC_ROUGHNESS,"msctls_trackbar32",
+                    TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,8,20,90,19
+    LTEXT           "Roughness: ",IDC_ROUGHNESS_LBL,8,8,41,8
+    PUSHBUTTON      "Color",IDC_COLOR,8,48,50,14
+    PUSHBUTTON      "",IDC_CUR_COLOR,61,48,16,14,BS_FLAT | WS_DISABLED | NOT 
+                    WS_TABSTOP
+    EDITTEXT        IDC_ROUGHNESS_TXT,52,8,40,12,ES_AUTOHSCROLL | 
+                    ES_READONLY | NOT WS_BORDER | NOT WS_TABSTOP
+END
+
+IDD_LOCATION DIALOG DISCARDABLE  0, 0, 186, 95
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
 END
 
 
@@ -297,6 +327,22 @@ BEGIN
         RIGHTMARGIN, 179
         TOPMARGIN, 7
         BOTTOMMARGIN, 168
+    END
+
+    IDD_TERRAIN, DIALOG
+    BEGIN
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 181
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 62
+    END
+
+    IDD_LOCATION, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -393,8 +439,15 @@ END
 
 STRINGTABLE DISCARDABLE 
 BEGIN
+    ID_SHOW_HIDE            "Display a list of constellations to show and hide\nShow / Hide List"
     ID_VIEW_SHOWALL         "Show all the constellations\nShow All"
     ID_VIEW_HIDEALL         "Hide all the constellations\nHide All"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_OPTIONS_LOCATION     "Change the current viewing location on Earth\nChange Location"
+    ID_OPTIONS_TERRAIN      "Change terrain settings\nTerrain Settings"
 END
 
 #endif    // English (U.S.) resources

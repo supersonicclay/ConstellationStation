@@ -14,7 +14,7 @@ class CConstNameDlg : public CDialog
 {
 // Construction
 public:
-	CConstNameDlg(CWnd* pParent = NULL);   // standard constructor
+	CConstNameDlg( CWnd* pParent = NULL );   // standard constructor
 
 // Dialog Data
 	//{{AFX_DATA(CConstNameDlg)
@@ -32,7 +32,7 @@ public:
 
 // Operations
 public:
-	void SetConstName(CString name);
+	void SetConstName( CString name );
 
 // Implementation
 protected:

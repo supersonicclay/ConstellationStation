@@ -25,15 +25,15 @@ typedef struct
 	float b;
 } CColor;
 
-void glColor(CColor c);
+void glColor( CColor c );
 
 extern const CColor COLOR_WHITE,
 					COLOR_BLACK,
+					COLOR_SKY,
 					COLOR_CROSS,
 					COLOR_ACTIVESTAR,
 					COLOR_NORTHSTAR,
-					COLOR_CONSTLINE,
-					COLOR_TERRAIN;
+					COLOR_CONSTLINE;
 
 typedef struct
 {

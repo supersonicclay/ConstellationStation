@@ -7,6 +7,7 @@
 
 #include "ConstNameDlg.h"
 #include "ShowHideDlg.h"
+#include "TerrainDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -31,6 +32,11 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_CONST_APOLY, OnConstAddPoly)
 	ON_COMMAND(ID_CONST_DLINE, OnConstDeleteLine)
 	ON_COMMAND(ID_STARF_ROTATE, OnStarfRotate)
+	ON_COMMAND(ID_SHOW_HIDE, OnShowHide)
+	ON_COMMAND(ID_VIEW_HIDEALL, OnViewHideAll)
+	ON_COMMAND(ID_VIEW_SHOWALL, OnViewShowAll)
+	ON_COMMAND(ID_OPTIONS_TERRAIN, OnOptionsTerrain)
+	ON_COMMAND(ID_OPTIONS_LOCATION, OnOptionsLocation)
 	ON_UPDATE_COMMAND_UI(ID_CONST_LIST, OnUpdateConstList)
 	ON_UPDATE_COMMAND_UI(ID_CONST_ADD, OnUpdateConstAdd)
 	ON_UPDATE_COMMAND_UI(ID_CONST_DELETE, OnUpdateConstDelete)
@@ -40,9 +46,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_CONST_APOLY, OnUpdateConstAddPoly)
 	ON_UPDATE_COMMAND_UI(ID_CONST_DLINE, OnUpdateConstDeleteLine)
 	ON_UPDATE_COMMAND_UI(ID_STARF_ROTATE, OnUpdateStarfRotate)
-	ON_COMMAND(ID_SHOW_HIDE, OnShowHide)
-	ON_COMMAND(ID_VIEW_HIDEALL, OnViewHideAll)
-	ON_COMMAND(ID_VIEW_SHOWALL, OnViewShowAll)
+	ON_UPDATE_COMMAND_UI(ID_OPTIONS_TERRAIN, OnUpdateOptionsTerrain)
+	ON_UPDATE_COMMAND_UI(ID_OPTIONS_LOCATION, OnUpdateOptionsLocation)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -145,11 +150,6 @@ void CMainFrame::Dump(CDumpContext& dc) const
 
 /////////////////////////////////////////////////////////////////////////////
 
-CStarfield* CMainFrame::GetStarfield() const
-{
-	return GetView()->GetDocument()->GetStarfield();
-}
-
 CConStationView* CMainFrame::GetView() const
 {
 #ifdef _DEBUG
@@ -158,6 +158,15 @@ CConStationView* CMainFrame::GetView() const
 	return (CConStationView *) GetActiveView();
 }
 
+CStarfield* CMainFrame::GetStarfield() const
+{
+	return GetView()->GetDocument()->GetStarfield();
+}
+
+CTerrain* CMainFrame::GetTerrain() const
+{
+	return GetView()->GetDocument()->GetTerrain();
+}
 
 ////////////////////////////
 // CConStationView States //
@@ -205,6 +214,9 @@ void CMainFrame::OnConstListCloseUp()
 
 void CMainFrame::OnConstAdd() 
 {
+	if( GetStarfield()->IsSpinning() )
+		GetStarfield()->SwitchSpinning();
+
 	CConstNameDlg dialog;
 
 	// Set name initially to "Constellation" prepended to a number
@@ -247,6 +259,8 @@ void CMainFrame::OnConstAdd()
 
 void CMainFrame::OnConstDelete() 
 {
+	if( GetStarfield()->IsSpinning() )
+		GetStarfield()->SwitchSpinning();
 
 	int m = MessageBox("Are you sure you want to delete this constellation?",
 		"Delete Constellation?", MB_YESNO | MB_ICONEXCLAMATION);
@@ -269,6 +283,9 @@ void CMainFrame::OnConstDelete()
 
 void CMainFrame::OnConstRename() 
 {
+	if( GetStarfield()->IsSpinning() )
+		GetStarfield()->SwitchSpinning();
+
 	CConstNameDlg dialog;
 
 	CString origConstName = m_wndConstBar.GetCurConst();
@@ -343,12 +360,42 @@ void CMainFrame::OnStarfRotate()
 
 void CMainFrame::OnShowHide() 
 {
+	if( GetStarfield()->IsSpinning() )
+		GetStarfield()->SwitchSpinning();
+
 	CShowHideDlg dialog;
 
 	dialog.DoModal();
 
 	GetActiveDocument()->SetModifiedFlag();
 	GetView()->SetState( Viewing );
+}
+
+void CMainFrame::OnOptionsTerrain() 
+{
+	if( GetStarfield()->IsSpinning() )
+		GetStarfield()->SwitchSpinning();
+
+	int r = (int)(GetTerrain()->GetRoughness() * 10);
+
+	CTerrainDlg* dialog = new CTerrainDlg( r );
+
+//	dialog.m_Roughness = r;
+//	dialog.m_RoughnessSlider.SetPos( r );
+
+	dialog->DoModal();
+
+	if( dialog->needsUpdate )
+		GetView()->NewTerrain( (float)dialog->m_Roughness / 10 );
+}
+
+void CMainFrame::OnOptionsLocation() 
+{
+	if( GetStarfield()->IsSpinning() )
+		GetStarfield()->SwitchSpinning();
+
+	///
+	
 }
 
 void CMainFrame::OnViewHideAll() 
@@ -460,3 +507,15 @@ void CMainFrame::OnUpdateStarfRotate(CCmdUI* pCmdUI)
 	pCmdUI->SetCheck( GetStarfield()->IsSpinning() );
 }
 
+
+void CMainFrame::OnUpdateOptionsTerrain(CCmdUI* pCmdUI) 
+{
+	///
+	
+}
+
+void CMainFrame::OnUpdateOptionsLocation(CCmdUI* pCmdUI) 
+{
+	///
+	
+}

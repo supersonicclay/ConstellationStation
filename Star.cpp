@@ -170,20 +170,17 @@ void CStar::PickBrightness()
 	float random = (float)(rand()%1000)/10;
 
 
-	// 97% are between 0 and 0.5
 	if( random < 97.0f )
 	{
-		brightness = (float)(rand()%1000)/1000;
+		brightness = (float)(rand()%1000)/2000;
 	}
-	// 2% are between 1 and 2
-	else if( random < 99.0f )
+	else if( random < 99.3f )
 	{
-		brightness = (float)(rand()%1000)/1000 + 1.0f;
+		brightness = (float)(rand()%1000)/2000 + 0.5f;
 	}
-	// 1% are between 2 and 3
 	else
 	{
-		brightness = (float)(rand()%1000)/1000 + 2.0f;
+		brightness = (float)(rand()%1000)/1000 + 0.75f;
 	}
 
 	PickColor();
@@ -191,11 +188,11 @@ void CStar::PickBrightness()
 
 void CStar::PickColor()
 {
-	if( brightness < 2.0f )
+	if( brightness < 1.0f )
 	{
-		color.r = brightness / 2.0f;
-		color.g = brightness / 2.0f;
-		color.b = brightness / 2.0f;
+		color.r = brightness;
+		color.g = brightness;
+		color.b = brightness;
 	}
 	else
 	{

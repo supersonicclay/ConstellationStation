@@ -21,11 +21,19 @@
 #define IDC_DLINEX                      150
 #define IDD_CONST_NAME                  152
 #define IDD_SHOW_HIDE                   155
+#define IDD_TERRAIN                     156
+#define IDD_LOCATION                    157
 #define IDC_CONST_NAME                  1014
 #define IDC_CONST_LIST                  1021
 #define IDC_SHOWALL                     1027
 #define IDC_HIDEALL                     1028
 #define IDC_INVERT                      1029
+#define IDC_NEW                         1030
+#define IDC_ROUGHNESS                   1035
+#define IDC_COLOR                       1036
+#define IDC_CUR_COLOR                   1039
+#define IDC_ROUGHNESS_LBL               1040
+#define IDC_ROUGHNESS_TXT               1041
 #define ID_STARF_NEWRANDOM              32772
 #define ID_STARF_NEWACTUAL              32773
 #define ID_STARF_OPEN                   32774
@@ -43,15 +51,17 @@
 #define ID_SHOW_HIDE                    32841
 #define ID_VIEW_SHOWALL                 32842
 #define ID_VIEW_HIDEALL                 32843
+#define ID_OPTIONS_LOCATION             32849
+#define ID_OPTIONS_TERRAIN              32850
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        156
-#define _APS_NEXT_COMMAND_VALUE         32847
-#define _APS_NEXT_CONTROL_VALUE         1030
+#define _APS_NEXT_RESOURCE_VALUE        158
+#define _APS_NEXT_COMMAND_VALUE         32851
+#define _APS_NEXT_CONTROL_VALUE         1042
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -1,33 +1,37 @@
 
 BUGS
-1	Dialogs disappear while starfrotating
-2	Memory Leaks
-		-change Document fields from pointers
+1	New Document needs to call SetTerrainOffset in ConStationView
+2	Terrain Color Dialog
+2	Memory Leaks -change Document fields from pointers
+		- lines
+		- constellations
+		- terrain
+		- starfield
 2	Open, Save should go to starfields folder
 
 TEXTURES
-2	Dark Terrain, Dark Blue Sky Gradient
 5	Print Constellation Name near constellation
 
 SELECTION
-
+2	Select ConstLine to select constellation
 
 IMPROVING
-2	Select ConstLine to select constellation
-5	Keep Mouse in place while rotating
+1	Improve performance of adding lines
+3	Keep Mouse in place while rotating
 5	Undo
 5	Add Stars?
 5	Tools / Options menu
 		-terrain editor (roughness, detail)
 		-number of stars
-		-colors
-		-star texture
+		-colors CColorDialog
+		-?star texture
 
 CODE
 1	Format ()'s
-2	Sets use newWhatever instead of whatever_
+3	Split initOpenGL. initView?
 4	Comments
 5	const's
+
 
 ACTUAL
 5	Input Actual stars & constellations
@@ -35,3 +39,4 @@ ACTUAL
 5	Choose season
 5	Choose day
 5	Choose time
+5	Constellation details

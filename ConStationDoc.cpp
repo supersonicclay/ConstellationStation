@@ -35,6 +35,8 @@ CConStationDoc::CConStationDoc()
 {
 	starfield = new CStarfield;
 	terrain = new CTerrain;
+
+	NewTerrain( DEF_ROUGHNESS );
 }
 
 CConStationDoc::~CConStationDoc()
@@ -76,7 +78,7 @@ void CConStationDoc::Dump( CDumpContext& dc ) const
 BOOL CConStationDoc::OnNewDocument() 
 {
 	starfield = new CStarfield;
-	terrain = new CTerrain;
+	NewTerrain( DEF_ROUGHNESS );
 
 	return CDocument::OnNewDocument();
 }
@@ -89,4 +91,12 @@ CStarfield* CConStationDoc::GetStarfield() const
 CTerrain* CConStationDoc::GetTerrain() const
 {
 	return terrain;
+}
+
+void CConStationDoc::NewTerrain( float roughness )
+{
+	CColor c = GetTerrain()->GetColor();
+	terrain = new CTerrain( roughness, c );
+
+
 }

@@ -17,7 +17,7 @@ class CConStationView : public CView
 {
 protected: // create from serialization only
 	CConStationView();
-	DECLARE_DYNCREATE(CConStationView)
+	DECLARE_DYNCREATE( CConStationView )
 
 // Attributes
 private:
@@ -29,6 +29,14 @@ private:
 	int height;
 
 	Texture starTex;
+	Texture skyTex;
+
+	GLUquadricObj* skySphere;
+
+	GLfloat* sunLight;
+	GLfloat* sunPosition;
+
+	float terrainOffset;
 
 // Input
 	// Keys
@@ -59,20 +67,26 @@ public:
 	CStarfield* GetStarfield() const;
 	CTerrain* GetTerrain() const;
 
+
 	BOOL InitializeOpenGL();
 	BOOL SetupPixelFormat();
 	BOOL LoadTextures();
-	BOOL LoadTGA(Texture &texture, char* filename);
+	BOOL LoadTGA( Texture &texture, char* filename );
+
+	void NewTerrain( float roughness );
+	void SetTerrainOffset();
 
 // States
 	StateType state;
 	StateType  GetState() const;
-	void SetState(StateType state_);
+	void SetState( StateType newState );
 	BOOL IsRotating() const;
 
 // Drawing functions
 	void DrawTerrain() const;
 	void PositionTerrain() const;
+	void DrawSky() const;
+	void DrawSun() const;
 	void DrawStarfield() const;
 	void DrawStars() const;
 	void DrawStar (int i) const;
@@ -97,17 +111,17 @@ public:
 // Selecting
 	int SelectStar();
 	int SelectConstLine();
-	BOOL Select(SelectType selection);
+	BOOL Select( SelectType selection );
 
 // Set Cursor
-	void SetCur(WORD cur);
+	void SetCur( WORD cur );
 
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CConStationView)
 	public:
-	virtual void OnDraw(CDC* pDC);  // overridden to draw this view
-	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+	virtual void OnDraw( CDC* pDC );  // overridden to draw this view
+	virtual BOOL PreCreateWindow( CREATESTRUCT& cs );
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -115,7 +129,7 @@ public:
 	virtual ~CConStationView();
 #ifdef _DEBUG
 	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
+	virtual void Dump( CDumpContext& dc ) const;
 #endif
 
 protected:
@@ -123,20 +137,20 @@ protected:
 // Generated message map functions
 protected:
 	//{{AFX_MSG(CConStationView)
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg int OnCreate( LPCREATESTRUCT lpCreateStruct );
 	afx_msg void OnDestroy();
-	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnTimer(UINT nIDEvent);
-	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
-	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
+	afx_msg BOOL OnEraseBkgnd( CDC* pDC );
+	afx_msg void OnSize( UINT nType, int cx, int cy );
+	afx_msg void OnTimer( UINT nIDEvent );
+	afx_msg void OnKeyDown( UINT nChar, UINT nRepCnt, UINT nFlags );
+	afx_msg void OnKeyUp( UINT nChar, UINT nRepCnt, UINT nFlags );
+	afx_msg void OnLButtonDown( UINT nFlags, CPoint point );
+	afx_msg void OnLButtonUp( UINT nFlags, CPoint point );
+	afx_msg void OnRButtonDown( UINT nFlags, CPoint point );
+	afx_msg void OnRButtonUp( UINT nFlags, CPoint point );
+	afx_msg BOOL OnMouseWheel( UINT nFlags, short zDelta, CPoint pt );
+	afx_msg void OnMouseMove( UINT nFlags, CPoint point );
+	afx_msg BOOL OnSetCursor( CWnd* pWnd, UINT nHitTest, UINT message );
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

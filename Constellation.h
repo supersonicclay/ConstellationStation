@@ -13,7 +13,7 @@ class CConstLine
 
 public:
 	CConstLine();
-	CConstLine(CStar* star1_, CStar* star2_);
+	CConstLine( CStar* star1_, CStar* star2_ );
 	~CConstLine();
 
 private:
@@ -21,8 +21,8 @@ private:
 	CStar* star2;
 
 public:
-	void SetStar1(CStar* star1_);
-	void SetStar2(CStar* star2_);
+	void SetStar1( CStar* star1_ );
+	void SetStar2( CStar* star2_ );
 
 	CStar* GetStar1() const;
 	CStar* GetStar2() const;
@@ -37,16 +37,16 @@ public:
 
 class CConstellation : public CObject
 {
-DECLARE_SERIAL (CConstellation)
+DECLARE_SERIAL( CConstellation )
 
 public:
 	CConstellation();
-	CConstellation(CString name_);
+	CConstellation( CString name_ );
 	~CConstellation();
 
-	const CConstellation& operator=(const CConstellation& c);
+	const CConstellation& operator=( const CConstellation& c );
 
-	void Serialize(CArchive& ar);
+	void Serialize( CArchive& ar );
 
 private:
 	CString name;
@@ -56,19 +56,21 @@ private:
 	int numLines;
 	CConstLine* lines;
 
+	int arraySize;
+
 public:
 	CString GetName() const;
-	void SetName(CString name_);
+	void SetName( CString name_ );
 
 	BOOL IsVisible() const;
 	void SwitchVisible();
-	void SetVisible(BOOL visible_);
+	void SetVisible( BOOL visible_ );
 
 	int GetNumLines() const;
-	CConstLine* GetLine(int i) const;
+	CConstLine* GetLine( int i ) const;
 
-	void AddLine(CStar* star1, CStar* star2);
-	void DeleteLine(int lineNum);
+	void AddLine( CStar* star1, CStar* star2 );
+	void DeleteLine( int lineNum );
 	void CheckForDuplicateLines();
 };
 

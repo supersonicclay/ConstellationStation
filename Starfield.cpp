@@ -13,7 +13,7 @@ IMPLEMENT_SERIAL (CStarfield, CObject, 0)
 
 CStarfield::CStarfield()
 {
-	numStars = 5000;
+	numStars = 8000;
 	stars = new CStar[numStars];
 	SetupStars();
 
@@ -176,7 +176,7 @@ void CStarfield::AdjRotX(float deltaRotX)
 	// Restrict up and down rotation
 	float newRotX = rotX + deltaRotX;
 
-	if (newRotX > -90 && newRotX < 10)
+	if (newRotX > -90 && newRotX < 30)
 		rotX = newRotX;
 }
 
@@ -258,8 +258,8 @@ void CStarfield::ResetZoom()
 void CStarfield::SetupStars()
 {
 	// North Star
-	stars[0].SetColor(COLOR_NORTHSTAR);
-	stars[0].SetBrightness(3.0f);
+	stars[0].SetColor( COLOR_NORTHSTAR );
+	stars[0].SetBrightness( 2.0f );
 	stars[0].SetLongitude( 0.0f );
 	stars[0].SetLatitude( 0.0f );
 	stars[0].SetX( 0.0f );

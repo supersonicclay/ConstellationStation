@@ -134,10 +134,14 @@ SOURCE=.\ConstNameDlg.cpp
 
 SOURCE=.\ShowHideDlg.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\TerrainDlg.cpp
+# End Source File
 # End Group
 # Begin Source File
 
-SOURCE=.\Costellation.cpp
+SOURCE=.\Constellation.cpp
 # End Source File
 # Begin Source File
 
@@ -197,6 +201,10 @@ SOURCE=.\ConstNameDlg.h
 # Begin Source File
 
 SOURCE=.\ShowHideDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TerrainDlg.h
 # End Source File
 # End Group
 # Begin Source File

@@ -9,14 +9,14 @@
 
 class CStarfield : public CObject
 {
-DECLARE_SERIAL(CStarfield)
+DECLARE_SERIAL( CStarfield )
 
 public:
 	CStarfield();
 	~CStarfield();
 
-	void Serialize(CArchive& ar);
-	void SerializeConstLines(CArchive& ar);
+	void Serialize( CArchive& ar );
+	void SerializeConstLines( CArchive& ar );
 
 private:
 	CStar* stars;
@@ -43,9 +43,9 @@ public:
 // Gets
 	CStar* GetStars() const;
 	CConstellation* GetConstellations() const;
-	CStar* GetStar(int i) const;
-	CConstellation* GetConstellation(int i) const;
-	CConstellation* GetConstellation(CString &name) const;
+	CStar* GetStar( int i ) const;
+	CConstellation* GetConstellation( int i ) const;
+	CConstellation* GetConstellation( CString &name ) const;
 	CConstellation* GetCurConstellation() const;
 
 	int GetNumStars() const;
@@ -64,27 +64,27 @@ public:
 
 // Sets
 	void IncNumNewConstellations();
-	void SetNumCurConstellation(int i);
-	void SetLatitude(float latitude_);
-	void SetSeason(float season_);
-	void SetTime(float time_);
+	void SetNumCurConstellation( int i );
+	void SetLatitude( float latitude_ );
+	void SetSeason( float season_ );
+	void SetTime( float time_ );
 	void SwitchSpinning();
 	// Adjusts
-	void AdjTime(float deltaTime);
-	void AdjRotX(float deltaRotX);
-	void AdjRotY(float deltaRotY);
-	void AdjZoom(float deltaZoom);
+	void AdjTime( float deltaTime );
+	void AdjRotX( float deltaRotX );
+	void AdjRotY( float deltaRotY );
+	void AdjZoom( float deltaZoom );
 
 // Star functions
 	void SetupStars();
 
 // Constellation functions
-	BOOL IsDuplicate(CString &name);
-	void AddConstellation(CString &name);
+	BOOL IsDuplicate( CString &name );
+	void AddConstellation( CString &name );
 	void DeleteConstellation();
-	void RenameConstellation(CString &name);
-	BOOL SetCurConstellation(CString name);
-	void AddConstLine(int starNum1, int starNum2);
+	void RenameConstellation( CString &name );
+	BOOL SetCurConstellation( CString name );
+	void AddConstLine( int starNum1, int starNum2 );
 
 // View Manipulation
 	void RotateUp   ();

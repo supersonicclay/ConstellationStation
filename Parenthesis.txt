@@ -1,15 +1,16 @@
 NAME					H			CPP
 -------------------------------------------
-Constation				
+Constation				-			-
 ConStationDoc			-			-
-ConStationView			
-ConstBar				
-Constellation			
-ConstNameDlg			
-MainFrm					
-Resource				
-ShowHideDlg				
-Star					
-Starfield				
-StdAfx					
-Terrain					
+ConStationView			-			
+ConstBar				-			-
+MainFrm					-			
+Resource				-			
+StdAfx					-			
+Constellation			-			
+Star					-			
+Starfield				-			
+Terrain					-			
+ConstNameDlg			-			
+ShowHideDlg				-			
+TerrainDlg				-			

@@ -10,9 +10,17 @@ IMPLEMENT_SERIAL (CTerrain, CObject, 0)
 
 CTerrain::CTerrain()
 {
+	CColor c = {0.2f, 0.2f, 0.2f};
+
+	CTerrain( DEF_ROUGHNESS, c );
+}
+
+CTerrain::CTerrain( float r, CColor c )
+{
 	scale = 1;
-	iterations = 4;
-	roughness = 0.2f;
+	iterations = 2;
+	roughness = r;
+	color = c;
 
 	size = (int)pow(2, iterations);
 
@@ -20,11 +28,17 @@ CTerrain::CTerrain()
 
 	heights = new float[arraySize * arraySize];
 
+	upperNormals = new float[ size*size*3 ];
+	lowerNormals = new float[ size*size*3 ];
+
 	MakeTerrain();
 }
 
 CTerrain::~CTerrain()
 {
+	delete heights;
+	delete upperNormals;
+	delete lowerNormals;
 }
 
 float* CTerrain::GetHeights() const
@@ -32,9 +46,19 @@ float* CTerrain::GetHeights() const
 	return heights;
 }
 
-float CTerrain::GetHeight(int i, int j) const
+float CTerrain::GetHeight( int i, int j ) const
 {
-	return heights[ (i*arraySize) + j ];
+	return heights[ i*arraySize + j ];
+}
+
+float* CTerrain::GetUpperNormal( int i, int j )
+{
+	return &upperNormals [ (size*j*3 + i*3) ];
+}
+
+float* CTerrain::GetLowerNormal( int i, int j )
+{
+	return &lowerNormals [ (size*j*3 + i*3) ];
 }
 
 int CTerrain::GetArraySize() const
@@ -61,6 +85,36 @@ int CTerrain::GetSize() const
 {
 	return size;
 }
+
+CColor CTerrain::GetColor() const
+{
+	return color;
+}
+
+void CTerrain::SetRoughness( float r )
+{
+	roughness = r;
+}
+
+void CTerrain::SetUpperNormal( int i, int j, float* n )
+{
+	upperNormals[ (size*j*3 + i*3 + 0) ] = n[0];
+	upperNormals[ (size*j*3 + i*3 + 1) ] = n[1];
+	upperNormals[ (size*j*3 + i*3 + 2) ] = n[2];
+}
+
+void CTerrain::SetLowerNormal( int i, int j, float* n )
+{
+	lowerNormals[ (size*j*3 + i*3 + 0) ] = n[0];
+	lowerNormals[ (size*j*3 + i*3 + 1) ] = n[1];
+	lowerNormals[ (size*j*3 + i*3 + 2) ] = n[2];
+}
+
+void CTerrain::SetColor( CColor color_ )
+{
+	color = color_;
+}
+
 
 void CTerrain::MakeTerrain()
 {
@@ -124,6 +178,8 @@ void CTerrain::MakeTerrain()
 		midSize /= 2;
 		range *= roughness;
 	}
+
+	CalculateNormals();
 }
 
 float CTerrain::AvgSquare(int i, int j, int midSize)
@@ -177,7 +233,66 @@ float CTerrain::RandomOffset( float range )
 }
 
 
+void CTerrain::CalculateNormals()
+{
+	float* vec1 = new float[3];
+	float* vec2 = new float[3];
+	float* normal = new float[3];
 
+//	inc = (float)pow(2, -iterations+1);
+
+	for( int x=0; x<size; x++ )
+	{
+		for( int z=0; z<size; z++ )
+		{
+			// Upper triangle
+			vec1[0] = (float) pow(2, -iterations+1);
+			vec1[1] = GetHeight( x+1, z ) - GetHeight( x, z );
+			vec1[2] = 0;
+			vec2[0] = 0;
+			vec2[1] = GetHeight( x, z+1 ) - GetHeight( x, z );
+			vec2[2] = (float) pow(2, -iterations+1);
+
+			CalculateNormal( vec1, vec2, normal );
+			SetUpperNormal( x, z, normal );
+
+			// Lower triangle
+			vec1[0] = -(float) pow(2, -iterations+1);
+			vec1[1] = GetHeight( x+1, z ) - GetHeight( x+1, z+1 );
+			vec1[2] = 0;
+			vec2[0] = 0;
+			vec2[1] = GetHeight( x, z+1 ) - GetHeight( x+1, z+1 );
+			vec2[2] = -(float) pow(2, -iterations+1);
+
+			CalculateNormal( vec1, vec2, normal );
+			SetLowerNormal( x, z, normal );
+		}
+	}
+}
+
+void CTerrain::CalculateNormal( float* vec1, float* vec2, float* normal )
+{
+	normal[0] = vec1[1]*vec2[2] - vec1[2]*vec2[1];
+	normal[1] = vec1[2]*vec2[0] - vec1[0]*vec2[2];
+	normal[2] = vec1[0]*vec2[1] - vec1[1]*vec2[0];
+
+	float normalLength = (float) sqrt (
+		normal[0]*normal[0] +
+		normal[1]*normal[1] +
+		normal[2]*normal[2] );
+
+	normal[0] /= normalLength;
+	normal[1] /= normalLength;
+	normal[2] /= normalLength;
+
+	// Make sure we have upward normals
+	if( normal[1] < 0 )
+	{
+		normal[0] = -normal[0];
+		normal[1] = -normal[1];
+		normal[2] = -normal[2];
+	}
+}
 
 
 void CTerrain::Serialize(CArchive& ar)

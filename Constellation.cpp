@@ -18,7 +18,7 @@ CConstLine::CConstLine()
 {
 }
 
-CConstLine::CConstLine(CStar* star1_, CStar* star2_)
+CConstLine::CConstLine( CStar* star1_, CStar* star2_ )
 {
 	star1 = star1_;
 	star2 = star2_;
@@ -28,12 +28,12 @@ CConstLine::~CConstLine()
 {
 }
 
-void CConstLine::SetStar1(CStar* star1_)
+void CConstLine::SetStar1( CStar* star1_ )
 {
 	star1 = star1_;
 }
 
-void CConstLine::SetStar2(CStar* star2_)
+void CConstLine::SetStar2( CStar* star2_ )
 {
 	star2 = star2_;
 }
@@ -87,6 +87,10 @@ CConstellation::CConstellation()
 {
 	numLines = 0;
 	visible = true;
+
+	// Reserve space for 5 lines
+	arraySize = 5;
+	lines = new CConstLine[arraySize];
 }
 
 CConstellation::CConstellation(CString name_)
@@ -138,23 +142,35 @@ CConstLine* CConstellation::GetLine(int i) const
 
 void CConstellation::AddLine(CStar* star1, CStar* star2)
 {
-	int i;
-	CConstLine* copy = new CConstLine[numLines];
+	numLines++;
 
-	// Backup lines
-	for (i=0; i<numLines; i++)
-		copy[i] = lines[i];
+	// If we have enough space
+	if ( numLines <= arraySize )
+	{
+		lines[numLines-1].SetStar1(star1);
+		lines[numLines-1].SetStar2(star2);
+	}
+	else	// We need to allocate more space
+	{
+		int i;
+		CConstLine* copy = new CConstLine[arraySize];
 
-	// Increase array size
-	lines = new CConstLine[++numLines];
+		// Copy lines
+		for (i=0; i<numLines-1; i++)
+			copy[i] = lines[i];
 
-	// Restore lines
-	for (i=0; i<numLines-1; i++)
-		lines[i] = copy[i];
+		// Increase array size
+		arraySize += 5;
+		lines = new CConstLine[arraySize];
 
-	// Make the newest line
-	lines[i].SetStar1(star1);
-	lines[i].SetStar2(star2);
+		// Restore lines
+		for (i=0; i<numLines-1; i++)
+			lines[i] = copy[i];
+
+		// Make the newest line
+		lines[i].SetStar1(star1);
+		lines[i].SetStar2(star2);
+	}
 
 	CheckForDuplicateLines();
 }
@@ -176,8 +192,8 @@ void CConstellation::DeleteLine(int lineNum)
 
 	numLines--;
 
-	// resize array
-	lines = new CConstLine[numLines];
+	// erase array
+	lines = new CConstLine[arraySize];
 
 	// copy back into array
 	for (i=0; i<numLines; i++)

@@ -2,29 +2,32 @@
 
 [General Info]
 Version=1
-LastClass=CConStationView
+LastClass=CMainFrame
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "ConStation.h"
 LastPage=0
 
-ClassCount=8
+ClassCount=9
 Class1=CConStationApp
 Class2=CConStationDoc
 Class3=CConStationView
 Class4=CMainFrame
 
-ResourceCount=6
+ResourceCount=8
 Resource1="IDR_TOOLBAR1"
 Class5=CAboutDlg
-Resource2=IDD_CONST_NAME
+Resource2=IDD_ABOUTBOX
 Resource3=IDR_CONSTELLATION
 Class6=CConstBar
-Resource4=IDD_ABOUTBOX
-Resource5=IDR_MAINFRAME
+Resource4=IDR_MAINFRAME
+Resource5=IDD_TERRAIN
 Class7=CConstNameDlg
 Class8=CShowHideDlg
-Resource6=IDD_SHOW_HIDE
+Resource6=IDD_CONST_NAME
+Resource7=IDD_SHOW_HIDE
+Class9=CTerrainDlg
+Resource8=IDD_LOCATION
 
 [CLS:CConStationApp]
 Type=0
@@ -40,7 +43,7 @@ Type=0
 HeaderFile=MainFrm.h
 ImplementationFile=MainFrm.cpp
 Filter=T
-LastObject=ID_STARF_ROTATE
+LastObject=ID_CONST_ALINE
 BaseClass=CFrameWnd
 VirtualFilter=fWC
 
@@ -79,12 +82,13 @@ Command9=ID_CONST_ALINE
 Command10=ID_CONST_APOLY
 Command11=ID_CONST_DLINE
 Command12=ID_CONST_HIDE
-Command13=ID_EDIT_UNDO
-Command14=ID_VIEW_SHOWALL
-Command15=ID_VIEW_HIDEALL
-Command16=ID_VIEW_STATUS_BAR
-Command17=ID_APP_ABOUT
-CommandCount=17
+Command13=ID_OPTIONS_LOCATION
+Command14=ID_OPTIONS_TERRAIN
+Command15=ID_VIEW_SHOWALL
+Command16=ID_VIEW_HIDEALL
+Command17=ID_SHOW_HIDE
+Command18=ID_APP_ABOUT
+CommandCount=18
 
 [ACL:IDR_MAINFRAME]
 Type=1
@@ -109,9 +113,10 @@ Class=CMainFrame
 Command1=ID_STARF_NEWRANDOM
 Command2=ID_STARF_OPEN
 Command3=ID_STARF_SAVE
-Command4=ID_STARF_ROTATE
-Command5=ID_SHOW_HIDE
-CommandCount=5
+Command4=ID_OPTIONS_LOCATION
+Command5=ID_OPTIONS_TERRAIN
+Command6=ID_STARF_ROTATE
+CommandCount=6
 
 [CLS:CConStationDoc]
 Type=0
@@ -138,11 +143,12 @@ Command1=ID_CONST_LIST
 Command2=ID_CONST_ADD
 Command3=ID_CONST_DELETE
 Command4=ID_CONST_RENAME
-Command5=ID_CONST_HIDE
-Command6=ID_CONST_ALINE
-Command7=ID_CONST_APOLY
-Command8=ID_CONST_DLINE
-CommandCount=8
+Command5=ID_SHOW_HIDE
+Command6=ID_CONST_HIDE
+Command7=ID_CONST_ALINE
+Command8=ID_CONST_APOLY
+Command9=ID_CONST_DLINE
+CommandCount=9
 
 [CLS:CConstBar]
 Type=0
@@ -187,6 +193,35 @@ HeaderFile=ShowHideDlg.h
 ImplementationFile=ShowHideDlg.cpp
 BaseClass=CDialog
 Filter=D
-LastObject=ID_VIEW_HIDEALL
+LastObject=IDC_HIDEALL
+VirtualFilter=dWC
+
+[DLG:IDD_TERRAIN]
+Type=1
+Class=CTerrainDlg
+ControlCount=8
+Control1=IDOK,button,1342242817
+Control2=IDCANCEL,button,1342242816
+Control3=IDC_NEW,button,1342242816
+Control4=IDC_ROUGHNESS,msctls_trackbar32,1342242821
+Control5=IDC_ROUGHNESS_LBL,static,1342308352
+Control6=IDC_COLOR,button,1342242816
+Control7=IDC_CUR_COLOR,button,1476427776
+Control8=IDC_ROUGHNESS_TXT,edit,1342179456
+
+[DLG:IDD_LOCATION]
+Type=1
+Class=?
+ControlCount=2
+Control1=IDOK,button,1342242817
+Control2=IDCANCEL,button,1342242816
+
+[CLS:CTerrainDlg]
+Type=0
+HeaderFile=TerrainDlg.h
+ImplementationFile=TerrainDlg.cpp
+BaseClass=CDialog
+Filter=D
+LastObject=IDC_COLOR
 VirtualFilter=dWC
 

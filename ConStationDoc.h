@@ -29,6 +29,8 @@ public:
 	CStarfield* GetStarfield() const;
 	CTerrain* GetTerrain() const;
 
+	void NewTerrain( float roughness );
+
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CConStationDoc)

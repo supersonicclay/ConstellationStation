@@ -7,13 +7,13 @@
 
 class CStar : public CObject
 {
-DECLARE_SERIAL (CStar)
+DECLARE_SERIAL( CStar )
 
 public:
 	CStar ();
 	~CStar();
 
-	void Serialize (CArchive& ar);
+	void Serialize( CArchive& ar );
 
 private:
 	float x, y, z;
@@ -32,13 +32,13 @@ public:
 	float GetBrightness() const;
 	CColor GetColor() const;
 
-	void SetX (float x_);
-	void SetY (float y_);
-	void SetZ (float z_);
+	void SetX( float x_ );
+	void SetY( float y_ );
+	void SetZ( float z_ );
 	void SetLongitude( float longitude_ );
 	void SetLatitude( float latitude_ );
-	void SetBrightness (float brightness_);
-	void SetColor (CColor color_);
+	void SetBrightness( float brightness_ );
+	void SetColor( CColor color_ );
 
 	void Randomize();
 	void PickXYZ();

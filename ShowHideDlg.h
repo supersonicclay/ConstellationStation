@@ -18,7 +18,7 @@ class CShowHideDlg : public CDialog
 {
 // Construction
 public:
-	CShowHideDlg(CWnd* pParent = NULL);   // standard constructor
+	CShowHideDlg( CWnd* pParent = NULL );
 
 	CStarfield* GetStarfield() const;
 

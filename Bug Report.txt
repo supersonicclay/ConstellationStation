@@ -27,3 +27,4 @@ Fixed		11-01-03		Constellations can have duplicate lines
 
 Fixed		11-01-03		Shouldn't select stars behind ground
 
+Fixed		11-25-03		Dialogs disappear while starfrotating

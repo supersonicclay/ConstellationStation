@@ -8,8 +8,6 @@
 #include "Starfield.h"
 
 
-IMPLEMENT_SERIAL (CConstellation, CObject, 0)
-
 
 ////////////////
 // CConstLine //
@@ -246,7 +244,8 @@ const CConstellation& CConstellation::operator =(const CConstellation& c)
 	return *this;
 }
 
-void CConstellation::Serialize(CArchive& ar)
+/*
+void CConstellation::Serialize(CArchive& ar)///
 {
 	CObject::Serialize(ar);
 
@@ -271,3 +270,4 @@ void CConstellation::Serialize(CArchive& ar)
 
 	// NOTE: Serialization for ConstLines is done in CStarfield
 }
+*/

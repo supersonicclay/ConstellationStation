@@ -1,8 +1,6 @@
 
-
 #include "stdafx.h"
-#include "mtxlib.h"
-
+#include "Matrix.h"
 
 
 /* Copyright (C) Dante Treglia II and Mark A. DeLoura, 2000. 
@@ -639,7 +637,7 @@ matrix44 FrustumMatrix44(float l, float r,
 }
 
 // Return a perspective matrix44 given the field-of-view in the Y
-//   direction in degrees, the aspect ratio of Y/X, and near and
+//   direction in degrees, the aspect ratio of X/Y, and near and
 //   far plane distances.
 matrix44 PerspectiveMatrix44(float fovY, float aspect, float n, float f) 
 {

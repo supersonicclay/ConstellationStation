@@ -7,7 +7,6 @@
 
 class CStar : public CObject
 {
-DECLARE_SERIAL( CStar )
 
 public:
 	CStar ();
@@ -17,8 +16,6 @@ public:
 	void PickXYZ();
 	void PickLocation();
 	void PickMag();
-
-	void Serialize( CArchive& ar );
 
 private:
 	ra_s ra;

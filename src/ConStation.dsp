@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 opengl32.lib glu32.lib /nologo /subsystem:windows /machine:I386 /out:"ConStation.exe"
+# ADD LINK32 opengl32.lib glu32.lib /nologo /subsystem:windows /machine:I386 /out:"../ConStation.exe"
 
 !ELSEIF  "$(CFG)" == "ConStation - Win32 Debug"
 
@@ -79,7 +79,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 opengl32.lib glu32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 opengl32.lib glu32.lib /nologo /subsystem:windows /debug /machine:I386 /out:"../ConStation[debug].exe" /pdbtype:sept
 
 !ENDIF 
 
@@ -103,15 +103,7 @@ SOURCE=.\ConStation.rc
 # End Source File
 # Begin Source File
 
-SOURCE=.\ConStationDoc.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\ConStationFrame.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ConStationUI.cpp
 # End Source File
 # Begin Source File
 
@@ -119,7 +111,7 @@ SOURCE=.\ConStationView.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\mtxlib.cpp
+SOURCE=.\Matrix.cpp
 # End Source File
 # Begin Source File
 
@@ -188,15 +180,7 @@ SOURCE=.\ConStation.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\ConStationDoc.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\ConStationFrame.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ConStationUI.h
 # End Source File
 # Begin Source File
 
@@ -204,7 +188,7 @@ SOURCE=.\ConStationView.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\mtxlib.h
+SOURCE=.\Matrix.h
 # End Source File
 # Begin Source File
 

@@ -16,7 +16,6 @@
 
 
 #include "ConStationFrame.h"
-#include "ConStationUI.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CConStationApp:
@@ -29,12 +28,9 @@ public:
 	CConStationApp();
 
 	CConStationFrame* GetFrame() const;
-	CConStationUI* GetUI() const;
 
 // Attributes
-	CSingleDocTemplate* pDocTemplate;
-
-	CConStationUI* m_UI;
+protected:
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -44,6 +40,7 @@ public:
 	//}}AFX_VIRTUAL
 
 // Implementation
+public:
 	//{{AFX_MSG(CConStationApp)
 	afx_msg void OnAppAbout();
 	afx_msg void OnStarfNewActual();

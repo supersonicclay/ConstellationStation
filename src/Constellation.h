@@ -37,7 +37,6 @@ public:
 
 class CConstellation : public CObject
 {
-DECLARE_SERIAL( CConstellation )
 
 public:
 	CConstellation();
@@ -45,8 +44,6 @@ public:
 	~CConstellation();
 
 	const CConstellation& operator=( const CConstellation& c );
-
-	void Serialize( CArchive& ar );
 
 private:
 	CString name;

@@ -1,6 +1,9 @@
 
 Textures are leaky
 
+UI
+1	CLASS
+
 BUGS
 1	Not saving Terrain color
 1	Memory Leaks
@@ -25,6 +28,7 @@ IMPROVING
 1	ORGANIZATION
 		- Why is everything in ConStationView, dork
 		- Put quad size in star
+		- dialogs should be members of frame
 
 1	TIME
 		- Increase year range
@@ -39,9 +43,11 @@ IMPROVING
 		- Sort stars by Mag
 		- Add Stars?
 
-5	UI
-		- Needs its own class
-		- Keep Mouse in place while rotating
+1	UI
+		- CLASS
+		  - View & Frame catch events and forward
+		  - Otherwise UI would handle clicks on toolbars
+		  - Keep Mouse in place while rotating
 		- Undo
 
 5	Textured terrain
@@ -52,9 +58,16 @@ IMPROVING
 		- brighness / gamma
 		- toggle constellation lables
 
-ACTUAL
-5	Input Actual stars & constellations
-5	Choose location (latitude)
-5	Choose date
-5	Choose time
-5	Constellation details
+5	CONSTELLATION TESTS
+		- TYPES
+		  - Show constlines. Pick a line
+		  - Don't show constlines. Pick a star 
+		  - Draw constellation
+		- Choose constellations in test
+
+5	ACTUAL
+		- Input actual constellations
+		- Choose location (lat & long)
+		- Choose date
+		- Choose time
+		- Constellation details

@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CConStationApp
+LastClass=CConStationUI
 LastTemplate=CCmdTarget
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "ConStation.h"
@@ -20,17 +20,17 @@ Class8=CDlgConstName
 Class9=CDlgShowHide
 Class10=CDlgTerrain
 Class11=CDlgLocation
+Class12=CConStationUI
 
 ResourceCount=9
 Resource1="IDR_TOOLBAR1"
-Resource2=IDD_TERRAIN
-Resource3=IDD_SHOW_HIDE
-Resource4=IDD_CONST_NAME
-Resource5=IDR_MAINFRAME
-Resource6=IDR_STARFIELD
-Resource7=IDR_CONSTELLATION
-Resource8=IDD_ABOUTBOX
-Class12=CConStationUI
+Resource2=IDR_CONSTELLATION
+Resource3=IDR_STARFIELD
+Resource4=IDD_TERRAIN
+Resource5=IDD_CONST_NAME
+Resource6=IDR_MAINFRAME
+Resource7=IDD_ABOUTBOX
+Resource8=IDD_SHOW_HIDE
 Resource9=IDD_LOCATION
 
 [CLS:CConStationApp]
@@ -121,7 +121,7 @@ VirtualFilter=DC
 Type=0
 HeaderFile=ConStationView.h
 ImplementationFile=ConStationView.cpp
-BaseClass=CView
+BaseClass=CWnd
 LastObject=CConStationView
 Filter=C
 VirtualFilter=VWC

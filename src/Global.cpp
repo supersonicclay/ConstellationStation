@@ -134,20 +134,13 @@ BOOL LoadTGA( UINT &texID, char* filename )
 void SetState( enum state_e s )
 {
 	// Clear the first star number in the view
-#ifdef _DEBUG
-	ASSERT( AfxGetMainWnd()->IsKindOf( RUNTIME_CLASS(CConStationFrame) ) );
-#endif
 	((CConStationFrame*)AfxGetMainWnd())->GetView()->ClearFirstStar();
 
 	state = s;
 }
 
 // TIME CONSUMING, SHOULD BE CALLED SPARINGLY
-// SHOULD NOT BE CALLED FROM CConStationView
 void RedrawView()
 {
-#ifdef _DEBUG
-	ASSERT( AfxGetMainWnd()->IsKindOf( RUNTIME_CLASS(CConStationFrame) ) );
-#endif
 	((CConStationFrame*)AfxGetMainWnd())->GetView()->Redraw();
 }

@@ -18,10 +18,9 @@
 
 class CConStationFrame : public CFrameWnd
 {
-	
-protected: // create from serialization only
+// Construction	
+public:
 	CConStationFrame();
-	DECLARE_DYNCREATE( CConStationFrame )
 
 // Attributes
 public:
@@ -29,7 +28,7 @@ public:
 
 // Operations
 public:
-	CConStationView* GetView() const;
+	CConStationView* GetView();
 
 	void UpdateList();
 
@@ -37,7 +36,9 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CConStationFrame)
+	public:
 	virtual BOOL PreCreateWindow( CREATESTRUCT& cs );
+	virtual BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo);
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -48,15 +49,17 @@ public:
 	virtual void Dump( CDumpContext& dc ) const;
 #endif
 
-protected:  // control bar embedded members
-	CStatusBar  m_wndStatusBar;
-	CStarfBar   m_wndStarfBar;
-	CConstBar	m_wndConstBar;
+protected:
+	CConStationView m_wndView;
+	CStatusBar      m_wndStatusBar;
+	CStarfBar       m_wndStarfBar;
+	CConstBar       m_wndConstBar;
 
 // Generated message map functions
 protected:
 	//{{AFX_MSG(CConStationFrame)
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg void OnConstListCloseUp();
 	afx_msg void OnConstAdd();
 	afx_msg void OnConstDelete();

@@ -19,11 +19,10 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // CConStationFrame
 
-IMPLEMENT_DYNCREATE(CConStationFrame, CFrameWnd)
-
 BEGIN_MESSAGE_MAP(CConStationFrame, CFrameWnd)
 	//{{AFX_MSG_MAP(CConStationFrame)
 	ON_WM_CREATE()
+	ON_WM_SETFOCUS()
 	ON_CBN_CLOSEUP(ID_CONST_LIST, OnConstListCloseUp)
 	ON_COMMAND(ID_CONST_ADD, OnConstAdd)
 	ON_COMMAND(ID_CONST_DELETE, OnConstDelete)
@@ -78,6 +77,14 @@ int CConStationFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CFrameWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
+	// Child View
+	if (!m_wndView.Create(NULL, NULL, AFX_WS_DEFAULT_VIEW,
+		CRect(0, 0, 0, 0), this, AFX_IDW_PANE_FIRST, NULL))
+	{
+		TRACE0("Failed to create view window\n");
+		return -1;
+	}
+
 	// Starfield ToolBar
 	if (!m_wndStarfBar.Init(this))
 	{
@@ -94,7 +101,8 @@ int CConStationFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	// Status Bar
 	if (!m_wndStatusBar.Create(this) ||
-		!m_wndStatusBar.SetIndicators(indicators, 1))
+		!m_wndStatusBar.SetIndicators(indicators,
+		  sizeof(indicators)/sizeof(UINT)))
 	{
 		TRACE0("Failed to create status bar\n");
 		return -1;
@@ -116,6 +124,9 @@ BOOL CConStationFrame::PreCreateWindow(CREATESTRUCT& cs)
 {
 	if( !CFrameWnd::PreCreateWindow(cs) )
 		return FALSE;
+
+	cs.dwExStyle &= ~WS_EX_CLIENTEDGE;
+	cs.lpszClass = AfxRegisterWndClass(0);
 
 	return TRUE;
 }
@@ -140,12 +151,28 @@ void CConStationFrame::Dump(CDumpContext& dc) const
 
 /////////////////////////////////////////////////////////////////////////////
 
-CConStationView* CConStationFrame::GetView() const
+void CConStationFrame::OnSetFocus(CWnd* pOldWnd)
 {
-#ifdef _DEBUG
-	ASSERT (GetActiveView()->IsKindOf( RUNTIME_CLASS (CConStationView)));
-#endif
-	return (CConStationView *) GetActiveView();
+	// forward focus to the view window
+	m_wndView.SetFocus();
+}
+
+BOOL CConStationFrame::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo)
+{
+	// let the view have first crack at the command
+	if (m_wndView.OnCmdMsg(nID, nCode, pExtra, pHandlerInfo))
+		return TRUE;
+
+	// otherwise, do default handling
+	return CFrameWnd::OnCmdMsg(nID, nCode, pExtra, pHandlerInfo);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+
+CConStationView* CConStationFrame::GetView()
+{
+	return &m_wndView;
 }
 
 
@@ -504,5 +531,10 @@ void CConStationFrame::OnUpdateStarfRotate(CCmdUI* pCmdUI)
 {
 	pCmdUI->SetCheck( starfield->IsSpinning() );
 }
+
+
+
+
+
 
 

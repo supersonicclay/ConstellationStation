@@ -9,8 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "ConStationDoc.h"
-
 #include "Starfield.h"
 
 // Frustum sides (for easy readability)
@@ -34,11 +32,11 @@ enum PlaneCoeff
 };
 
 
-class CConStationView : public CView
+class CConStationView : public CWnd
 {
-protected: // create from serialization only
+// Construction
+public:
 	CConStationView();
-	DECLARE_DYNCREATE( CConStationView )
 
 // Attributes
 private:
@@ -93,8 +91,6 @@ public:
 	BOOL SetupPixelFormat();
 	BOOL LoadTextures();
 
-	void SetTerrainOffset();
-
 // Drawing functions
 	void Redraw();
 	void DrawTerrain() const;
@@ -147,10 +143,6 @@ public:
 // Implementation
 public:
 	virtual ~CConStationView();
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump( CDumpContext& dc ) const;
-#endif
 
 protected:
 
@@ -159,6 +151,7 @@ protected:
 	//{{AFX_MSG(CConStationView)
 	afx_msg int OnCreate( LPCREATESTRUCT lpCreateStruct );
 	afx_msg void OnDestroy();
+	afx_msg void OnPaint();
 	afx_msg BOOL OnEraseBkgnd( CDC* pDC );
 	afx_msg void OnSize( UINT nType, int cx, int cy );
 	afx_msg void OnTimer( UINT nIDEvent );

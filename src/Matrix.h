@@ -1,11 +1,13 @@
 
 
-#ifndef MATH__H
-#define MATH__H
+#ifndef MATRIX_H
+#define MATRIX_H
 
-//=============================================================================
-// Vector and Matrix Library
-//=============================================================================
+#include <math.h>
+#include <stdio.h>
+#include <assert.h>
+
+#include "Global.h"
 
 //=============================================================================
 
@@ -18,18 +20,18 @@
  * below is included in the resulting source code, for example:
  * "Portions Copyright (C) Dante Treglia II and Mark A. DeLoura, 2000"
  */
-//==========================================================
+//=============================================================================
 // C++ Matrix Library
 // Version: 2.6
 // Date: May 19, 2000
 // Authors: Dante Treglia II and Mark A. DeLoura
 // Thanks to: Miguel Gomez, Stan Melax, Pete Isensee, 
 //   Gabor Nagy, Scott Bilas, James Boer, Eric Lengyel
-//==========================================================
+//=============================================================================
 
 
-static inline float DegToRad(float a) { return a*0.01745329252f;};
-static inline float RadToDeg(float a) { return a*57.29577951f;};
+static inline float DegToRad(float a) { return a*0.01745329252f; };
+static inline float RadToDeg(float a) { return a*57.29577951f;   };
 
 class vector2;
 class vector3;
@@ -37,9 +39,9 @@ class vector4;
 class matrix33;
 class matrix44;
 
-////////////////////////////////////////////////////////////
+
+//=============================================================================
 // vector2 class
-//
 
 class vector2 
 {
@@ -180,9 +182,13 @@ public:
 };
 
 
-////////////////////////////////////////////////////////////
+//=============================================================================
 // vector3 class
-//
+
+struct vector3i
+{
+	int x, y, z;
+};
 
 class vector3 
 {
@@ -343,9 +349,8 @@ public:
 };
 
 
-////////////////////////////////////////////////////////////
+//=============================================================================
 // vector4 class
-//
 
 class vector4 
 {
@@ -520,15 +525,25 @@ public:
     w *= m;
     return *this;
   }
+  // Homogenize a vector4
+  vector4				&homog() {
+    if( w != 0.0f )
+	{
+      x /= w;
+      y /= w;
+      z /= w;
+      w = 1.0f;
+	}
+	return *this;
+  }
 
   // Debug
   void                  fprint(FILE* file, char* str) const;
 };
 
 
-////////////////////////////////////////////////////////////
+//=============================================================================
 // Miscellaneous vector functions
-//
 
 vector2 Normalized(const vector2 &a);
 vector3 Normalized(const vector3 &a);
@@ -545,9 +560,8 @@ bool NearlyEquals(const vector3 &a, const vector3 &b, float r);
 bool NearlyEquals(const vector4 &a, const vector4 &b, float r);
 
 
-////////////////////////////////////////////////////////////
+//=============================================================================
 // matrix33 class
-//
 
 class matrix33 
 {
@@ -723,9 +737,8 @@ matrix33    TranslateMatrix33(float x, float y);
 matrix33    ScaleMatrix33(float x, float y, float z = 1.0);
 
 
-////////////////////////////////////////////////////////////
+//=============================================================================
 // matrix44 class
-//
 
 class matrix44 
 {

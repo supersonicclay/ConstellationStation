@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "ConStation.h"
 
-#include "ConStationDoc.h"
 #include "ConStationView.h"
 
 #include "Starfield.h"
@@ -22,9 +21,7 @@ static char THIS_FILE[] = __FILE__;
 ///////////////////////////////////////////////////////////////////////////////
 // CConStationView
 
-IMPLEMENT_DYNCREATE(CConStationView, CView)
-
-BEGIN_MESSAGE_MAP(CConStationView, CView)
+BEGIN_MESSAGE_MAP(CConStationView, CWnd)
 	//{{AFX_MSG_MAP(CConStationView)
 	ON_WM_CREATE()
 	ON_WM_DESTROY()
@@ -40,6 +37,7 @@ BEGIN_MESSAGE_MAP(CConStationView, CView)
 	ON_WM_MOUSEWHEEL()
 	ON_WM_MOUSEMOVE()
 	ON_WM_SETCURSOR()
+	ON_WM_PAINT()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -58,34 +56,20 @@ CConStationView::CConStationView()
 
 CConStationView::~CConStationView()
 {
-//	delete starTex.data;
 }
 
 BOOL CConStationView::PreCreateWindow(CREATESTRUCT& cs)
 {
-	cs.style |= WS_CLIPCHILDREN | WS_CLIPSIBLINGS | CS_OWNDC ;
-    cs.cx = 600;
-    cs.cy = 400;
+	cs.style |= WS_EX_CLIENTEDGE; //WS_CLIPCHILDREN | WS_CLIPSIBLINGS | CS_OWNDC ;
+	cs.style &= ~WS_BORDER;
+	cs.lpszClass = AfxRegisterWndClass(CS_HREDRAW|CS_VREDRAW|CS_DBLCLKS, 
+		::LoadCursor(NULL, IDC_ARROW), HBRUSH(COLOR_WINDOW+1), NULL);
+	cs.cx = 600;
+	cs.cy = 400;
 
-	return CView::PreCreateWindow(cs);
+	return TRUE;
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
-// CConStationView diagnostics
-
-#ifdef _DEBUG
-void CConStationView::AssertValid() const
-{
-	CView::AssertValid();
-}
-
-void CConStationView::Dump(CDumpContext& dc) const
-{
-	CView::Dump(dc);
-}
-
-#endif //_DEBUG
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -93,7 +77,7 @@ void CConStationView::Dump(CDumpContext& dc) const
 
 int CConStationView::OnCreate( LPCREATESTRUCT lpCreateStruct ) 
 {
-	if (CView::OnCreate(lpCreateStruct) == -1)
+	if (CWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
 	//Initialize OpenGL
@@ -110,13 +94,13 @@ void CConStationView::OnDestroy()
 {
 	
 	//Make the RC non-current
-	if(::wglMakeCurrent (0,0) == FALSE)
+	if(wglMakeCurrent (0,0) == FALSE)
 	{
 		MessageBox("Could not make RC non-current");
 	}
 	
 	//Delete the rendering context
-	if(::wglDeleteContext (m_hRC)==FALSE)
+	if(wglDeleteContext (m_hRC)==FALSE)
 	{
 		MessageBox("Could not delete RC");
 	}
@@ -142,7 +126,6 @@ void CConStationView::OnSize(UINT nType, int cx, int cy)
 {
 	width = cx;
 	height = cy;
-
 	
 	if ( width <= 0 || height <= 0)
 	{
@@ -437,7 +420,28 @@ void CConStationView::OnDraw(CDC* pDC)
 //		DrawActiveLine();
 
 	SwapBuffers(m_pDC->GetSafeHdc());
+}
 
+void CConStationView::OnPaint() 
+{
+	CPaintDC dc(this); // device context for painting
+	
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	CalculateFrustum();
+
+///	DrawSky();
+	DrawStarfield();
+	DrawSun();
+	DrawTerrain();
+	DrawHeading();
+
+	/// ACTIVE LINE ///
+	// Draw Active Line
+//	if (state == AddingLine && firstStarNum != -1)
+//		DrawActiveLine();
+
+	SwapBuffers(m_pDC->GetSafeHdc());
 }
 
 void CConStationView::DrawTerrain() const
@@ -948,7 +952,7 @@ void CConStationView::OnLButtonDown(UINT nFlags, CPoint point)
 				/// ACTIVE LINE
 			//	prevStarPoint = point;
 
-				GetDocument()->SetModifiedFlag();
+///				GetDocument()->SetModifiedFlag();
 
 				OnDraw( GetDC() );	// instead of InvalidateRect so it forces a redraw
 			}
@@ -962,7 +966,7 @@ void CConStationView::OnLButtonDown(UINT nFlags, CPoint point)
 		if (selectedLineNum != -1)
 		{
 			starfield->GetCurConstellation()->DeleteLine(selectedLineNum);
-			GetDocument()->SetModifiedFlag();
+///			GetDocument()->SetModifiedFlag();
 			Redraw();
 		}
 	}
@@ -1012,7 +1016,7 @@ void CConStationView::OnRButtonDown(UINT nFlags, CPoint point)
 			starfield->AddConstLine(firstStarNum, prevStarNum);
 			firstStarNum = -1;
 
-			GetDocument()->SetModifiedFlag();
+///			GetDocument()->SetModifiedFlag();
 			Redraw();
 		}
 		else
@@ -1273,3 +1277,8 @@ int CConStationView::SelectConstLine()
 		return selectBuffer[3];
 	else return -1;
 }
+
+
+
+
+

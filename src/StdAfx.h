@@ -31,7 +31,7 @@
 #include <math.h>
 
 #include "Global.h"
-#include "mtxlib.h"
+#include "Matrix.h"
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.

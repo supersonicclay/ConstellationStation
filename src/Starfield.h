@@ -9,7 +9,6 @@
 
 class CStarfield : public CObject
 {
-DECLARE_SERIAL( CStarfield )
 
 public:
 	CStarfield( bool random=false );
@@ -20,9 +19,6 @@ public:
 	void InitActualStars();
 	void InitRandomConstellations();
 	void InitActualConstellations();
-
-	void Serialize( CArchive& ar );
-	void SerializeConstLines( CArchive& ar );
 
 private:
 	CStar* stars;

@@ -6,8 +6,6 @@
 #include "Star.h"
 
 
-IMPLEMENT_SERIAL (CStar, CObject, 0)
-
 CStar::CStar()
 {
 	x = 0.0f;
@@ -299,7 +297,8 @@ void CStar::PickMag()
 }
 
 
-void CStar::Serialize(CArchive& ar)
+/*
+void CStar::Serialize(CArchive& ar)///
 {
 	CObject::Serialize(ar);
 
@@ -319,3 +318,4 @@ void CStar::Serialize(CArchive& ar)
 		   >> dec.positive >> dec.degree >> dec.minute >> dec.second;
 	}
 }
+*/

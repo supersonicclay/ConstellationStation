@@ -8,9 +8,8 @@
 #include "Star.h"
 #include "Constellation.h"
 
-#include <fstream.h>	// For star catalog file i/o
+#include <fstream.h>
 
-IMPLEMENT_SERIAL (CStarfield, CObject, 0)
 
 /// Make changeable
 #define MAX_STARS  15000
@@ -103,7 +102,6 @@ void CStarfield::InitRandomStars()
 
 void CStarfield::InitActualStars()
 {
-//	/*
 	numStars = MAX_STARS;
 
 	ifstream file( "data/hip_main.txt" );
@@ -161,94 +159,6 @@ void CStarfield::InitActualStars()
 	}
 
 	file.close();
-//	*/
-
-	/*
-	ifstream file( "data/hip_main.txt" );
-
-	char buffer[100];
-	ra_s ra;
-	char sign;
-	dec_s dec;
-	float mag;
-
-	///
-	float max=1;
-	float min=1;
-	double avg = 0;
-
-	int xx=0;///
-
-///	for( long i=0; i<100000; i++ )
-	while( file.peek() != EOF )
-	{
-		file.ignore( 17 );
-
-		// Right Ascension
-		file.read( buffer, 2 );
-		ra.hour = atoi( buffer );
-			file.ignore();
-		file.read( buffer, 2 );
-		ra.minute = atoi( buffer );
-			file.ignore();
-		file.read( buffer, 5 );
-		ra.second = (float) atof( buffer );
-
-		file.ignore();
-
-		// Declination
-		sign = file.get();
-		dec.positive = sign == '+';
-
-		file.read( buffer, 2 );
-		dec.degree = atoi( buffer );
-			file.ignore();
-		file.read( buffer, 2 );
-		dec.minute = atoi( buffer );
-			file.ignore();
-		file.read( buffer, 4 );
-		dec.second = (float) atof( buffer);
-
-		file.ignore();
-
-		// Magnitude
-		file.read( buffer, 5 );
-		mag = (float) atof( buffer );
-
-		avg += mag;
-		if( mag > max )
-		{
-			max = mag;
-		}
-		if( mag < min )
-		{
-			min = mag;
-		}
-
-		if( numStars == 6 )///
-			min = 0;
-
-		// Skip dim stars
-		if( mag < 6.0f )
-		{
-			avg += mag;
-
-			stars[numStars].SetRA( ra );
-			stars[numStars].SetDec( dec );
-			stars[numStars].SetXYZFromRADec();
-			stars[numStars].SetMag( mag );
-			stars[numStars].SetColorFromMag();
-			numStars++;
-		}
-
-		// Ignore rest of line
-		file.ignore(500, '\n');
-	}
-
-	avg /= numStars;
-
-	file.close();
-//	*/
 }
 
 
@@ -515,17 +425,6 @@ void CStarfield::DeleteConstellation()
 
 	CConstellation* curConstellation = &constellations[numCurConstellation];
 
-	/*
-	///////////////////////////////
-	// Restore the stars' colors //
-	///////////////////////////////
-	for (i=0; i<curConstellation->GetNumLines(); i++)
-	{
-		curConstellation->GetLine(i)->GetStar1()->RestoreColor();
-		curConstellation->GetLine(i)->GetStar2()->RestoreColor();
-	}
-	*/
-
 	// new temporary constellation list
 	CConstellation* newList = new CConstellation[numConstellations-1];
 
@@ -580,7 +479,8 @@ void CStarfield::AddConstLine(int starNum1, int starNum2)
 	constellations[numCurConstellation].AddLine(&stars[starNum1], &stars[starNum2]);
 }
 
-void CStarfield::Serialize(CArchive& ar)
+/*
+void CStarfield::Serialize(CArchive& ar)///
 {
 	CObject::Serialize(ar);
 
@@ -696,3 +596,4 @@ void CStarfield::SerializeConstLines(CArchive& ar)
 		}
 	}
 }
+*/

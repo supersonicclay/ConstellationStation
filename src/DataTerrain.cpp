@@ -162,9 +162,6 @@ void CDataTerrain::Init()
 	}
 	// Set midpoint to 0
 	heights[size/2][size/2] = 0.0f;
-	/// Set test points
-///	heights[size/4][size/4] = 1.4f;
-///	heights[size*3/4][size/4] = -1.4f;
 }
 
 
@@ -281,7 +278,7 @@ BOOL CDataTerrain::LoadTextures()
 
 	glGenTextures( 1, &texID );
 	glBindTexture( GL_TEXTURE_2D, texID );
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );/// Do i need this?
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 
 	return TRUE;
@@ -309,6 +306,8 @@ void CDataTerrain::MakeTexture()
 		tex = &summerTex; break;
 	case season_Autumn:
 		tex = &autumnTex; break;
+	default:
+		break;
 	}
 
 	// Initialize pixels array
@@ -322,8 +321,6 @@ void CDataTerrain::MakeTexture()
 		for( j=0; j<dims; ++j )
 		{
 			// Calculate ratio (0..1) to use as color index
-			if( heights[j][i]*roughness == maxOffset )///
-				int fdj = 1;
 			if( roughness != 0.0f )
 				ratio = heights[j][i]*roughness/(2*maxOffset)+0.5f;
 			else
@@ -459,7 +456,7 @@ void CDataTerrain::CalculateNormals()
 /// Calculate the viewing height (should just be able to do this in CMgrGraphics)
 void CDataTerrain::CalculateViewHeight()
 {
-	// Midpoint height should is always 0
+	/// Midpoint height should is always 0
 	viewHeight = 0.01f;
 	return;
 

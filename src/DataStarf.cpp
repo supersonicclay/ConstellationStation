@@ -60,7 +60,7 @@ void CDataStarf::Clear( BOOL clearStars )
 	tempRotX = 0.0f;
 	tempRotY = 0.0f;
 	rotTime = 0.0f;
-///	rotTime = 125.0f;///
+///	rotTime = 2.18f;///125 degrees
 	zoom = 0.0f;
 
 	spinning = FALSE;
@@ -108,8 +108,8 @@ void CDataStarf::New( BOOL actual )
 	else
 	{
 		seed = clock();
-///		InitRandomStars();
-		InitTestStars();
+		InitRandomStars();
+///		InitTestStars();
 		UpdateMats();
 	}
 }
@@ -123,17 +123,7 @@ void CDataStarf::InitRandomStars()
 	starCount = MAX_STARS;
 	CDataStar newStar;
 
-	/* /// North Star
-	newStar.SetColor( COLOR_GREEN );
-	newStar.SetMag( 2.0f );
-	newStar.SetRA( 0, 0, 0.0f );
-	newStar.SetDec( TRUE, 90, 0, 0.0f );
-	newStar.SetCenter( vector3(0.0f,1.0f,0.0f) );
-	stars.push_back( CDataStar(newStar) );
-	*/
-
-	// Randomize the rest
-	for (int i=1; i<starCount; ++i)
+	for (int i=0; i<starCount; ++i)
 	{
 		newStar.Randomize();
 		stars.push_back( CDataStar(newStar) );
@@ -185,13 +175,13 @@ void CDataStarf::InitTestStars()
 	starfMgr.UpdateStarsAppearance();
 }
 
-// Load the actual stars from the magnitude-sorted hipparcos catalog
+// Load the actual stars from the magnitude-sorted, extend hipparcos catalog
 void CDataStarf::InitActualStars()
 {
 	CDataStar newStar;
 
 	CFile file;
-	if( !file.Open( "data\\hip_main.txt", CFile::modeRead ) )
+	if( !file.Open( "data\\stars.dat", CFile::modeRead ) )
 	{
 		CSDebug( "Unable to open star catalog", "CDataStarf::InitActualStars" );
 		exit(0);
@@ -199,14 +189,112 @@ void CDataStarf::InitActualStars()
 	}
 
 	char buffer[100];
+	int hid;
+	CString name;
 	ra_s ra = {0};
 	dec_s dec = {0};
 	float mag = 0;
+	char spectral;
 
 	// Initially load all stars
 	for( int i=0; i<MAX_STARS; ++i )
 	{
-		file.Seek( 17, CFile::current );
+		ZeroMemory(&buffer, sizeof(buffer));
+
+		// Hipparcos id
+		file.Read( buffer, 7 );
+		hid = atoi( buffer );
+		ZeroMemory(&buffer, sizeof(buffer));
+
+		// Right Ascension
+		file.Read( buffer, 3 );
+		ra.hour = atoi( buffer );
+		file.Read( buffer, 3 );
+		ra.minute = atoi( buffer );
+		file.Read( buffer, 6 );
+		ra.second = (float) atof( buffer );
+		ZeroMemory(&buffer, sizeof(buffer));
+
+		// Declination
+		file.Read( buffer, 1 );
+		dec.positive = buffer[0] == '+';
+		file.Read( buffer, 3 );
+		dec.degree = atoi( buffer );
+		file.Read( buffer, 3 );
+		dec.minute = atoi( buffer );
+		file.Read( buffer, 5 );
+		dec.second = (float) atof( buffer);
+		ZeroMemory(&buffer, sizeof(buffer));
+
+		// Magnitude
+		file.Read( buffer, 7 );
+		mag = (float) atof( buffer );
+		ZeroMemory(&buffer, sizeof(buffer));
+
+		// Spectral type
+		file.Read( buffer, 2 );
+		if( buffer[0] == ' ' )
+			spectral = 'A';
+		else
+			spectral = buffer[0];
+
+		// Name
+		file.Read( buffer, 9 );
+		name = buffer;
+		name.TrimRight();
+
+		// Ignore rest of line
+		file.Seek( 2, CFile::current );
+
+		newStar.SetHID( hid );
+		newStar.SetName( name );
+		newStar.SetRA( ra );
+		newStar.SetDec( dec );
+		newStar.SetMag( mag );
+		newStar.SetSpectral( spectral );
+		newStar.UpdatePosFromRADec();
+
+		stars.push_back( CDataStar(newStar) );
+	}
+
+	CountStars();
+	starfMgr.UpdateStarsAppearance();
+
+	file.Close();
+}
+
+/*
+// Load the actual stars from the magnitude-sorted hipparcos catalog
+void CDataStarf::InitActualStars() /// before names
+{
+	CDataStar newStar;
+
+	CFile file;
+	if( !file.Open( "data\\stars[nonames].dat", CFile::modeRead ) )
+	{
+		CSDebug( "Unable to open star catalog", "CDataStarf::InitActualStars" );
+		exit(0);
+		return;
+	}
+
+	int hid;
+	char buffer[100];
+	ra_s ra = {0};
+	dec_s dec = {0};
+	float mag = 0;
+	char spectral;
+
+	// Initially load all stars
+	for( int i=0; i<MAX_STARS; ++i )
+	{
+		file.Seek( 2, CFile::current );
+		ZeroMemory(&buffer, sizeof(buffer));
+
+		// Hipparcos id
+		file.Read( buffer, 12 );
+		hid = atoi( buffer );
+
+		file.Seek( 1, CFile::current );
 		ZeroMemory(&buffer, sizeof(buffer));
 
 		// Right Ascension
@@ -246,12 +334,22 @@ void CDataStarf::InitActualStars()
 		file.Read( buffer, 5 );
 		mag = (float) atof( buffer );
 
+		file.Seek( 1, CFile::current );
+		ZeroMemory(&buffer, sizeof(buffer));
+
+		// Spectral type
+		file.Read( buffer, 1 );
+		spectral = buffer[0];
+
 		// Ignore rest of line
 		file.Seek( 3, CFile::current );
 
+		newStar.SetName( "A" );
+		newStar.SetHID( hid );
 		newStar.SetRA( ra );
 		newStar.SetDec( dec );
 		newStar.SetMag( mag );
+		newStar.SetSpectral( spectral );
 		newStar.UpdatePosFromRADec();
 
 		stars.push_back( CDataStar(newStar) );
@@ -262,6 +360,7 @@ void CDataStarf::InitActualStars()
 
 	file.Close();
 }
+*/
 
 /// Load actual constellations somehow
 void CDataStarf::InitActualConsts()
@@ -290,6 +389,7 @@ BOOL		CDataStarf::AreStarsLabeled()		{	return starsLabeled;			}
 BOOL		CDataStarf::AreConstsVisible()		{	return constsVisible;			}
 BOOL		CDataStarf::AreConstsDaylight()		{	return constsDaylight;			}
 BOOL		CDataStarf::AreConstsLabeled()		{	return constsLabeled;			}
+BOOL		CDataStarf::AreConstsLinesVisible()	{	return constsLinesVisible;		}
 BOOL		CDataStarf::IsSunVisible()			{	return sunVisible;				}
 BOOL		CDataStarf::IsSunShining()			{	return sunShine;				}
 
@@ -322,20 +422,22 @@ CDataConst*	CDataStarf::GetConst( CString& name )
 /////////////////////////////////////////////////////////////////////////////
 // Sets
 
-void CDataStarf::IncNewConstCount()				{	newConstCount++;				}
-void CDataStarf::SwitchStarsVisible()			{	starsVisible = !starsVisible;	}
-void CDataStarf::SetStarsVisible( BOOL x )		{	starsVisible = x;				}
-void CDataStarf::SetStarsDaylight( BOOL x )		{	starsDaylight = x;				}
-void CDataStarf::SetStarsLabeled( BOOL x )		{	starsLabeled = x;				}
-void CDataStarf::SwitchConstsVisible()			{	constsVisible = !constsVisible;	}
-void CDataStarf::SetConstsVisible( BOOL x )		{	constsVisible = x;				}
-void CDataStarf::SetConstsDaylight( BOOL x )	{	constsDaylight = x;				}
-void CDataStarf::SetConstsLabeled( BOOL x )		{	constsLabeled = x;				}
-void CDataStarf::SwitchSunVisible()				{	sunVisible = !sunVisible;		}
-void CDataStarf::SetSunVisible( BOOL x )		{	sunVisible = x;					}
-void CDataStarf::SwitchSunShine()				{	sunShine = !sunShine;			}
-void CDataStarf::SetSunShine( BOOL x )			{	sunShine = x;					}
-void CDataStarf::SwitchSpinning()				{	spinning = !spinning;			}
+void CDataStarf::IncNewConstCount()				{	newConstCount++;							}
+void CDataStarf::SwitchStarsVisible()			{	starsVisible = !starsVisible;				}
+void CDataStarf::SetStarsVisible( BOOL x )		{	starsVisible = x;							}
+void CDataStarf::SetStarsDaylight( BOOL x )		{	starsDaylight = x;							}
+void CDataStarf::SetStarsLabeled( BOOL x )		{	starsLabeled = x;							}
+void CDataStarf::SwitchConstsVisible()			{	constsVisible = !constsVisible;				}
+void CDataStarf::SetConstsVisible( BOOL x )		{	constsVisible = x;							}
+void CDataStarf::SetConstsDaylight( BOOL x )	{	constsDaylight = x;							}
+void CDataStarf::SetConstsLabeled( BOOL x )		{	constsLabeled = x;							}
+void CDataStarf::SwitchConstsLinesVisible()		{	constsLinesVisible = !constsLinesVisible;	}
+void CDataStarf::SetConstsLinesVisible( BOOL x ){	constsLinesVisible = x;						}
+void CDataStarf::SwitchSunVisible()				{	sunVisible = !sunVisible;					}
+void CDataStarf::SetSunVisible( BOOL x )		{	sunVisible = x;								}
+void CDataStarf::SwitchSunShine()				{	sunShine = !sunShine;						}
+void CDataStarf::SetSunShine( BOOL x )			{	sunShine = x;								}
+void CDataStarf::SwitchSpinning()				{	spinning = !spinning;						}
 
 void CDataStarf::SetLatitude( float l, BOOL updateMat )
 {
@@ -448,7 +550,7 @@ void CDataStarf::AdjRotY( float delta, BOOL updateMat )
 {
 	rotY += delta;
 
-	// Keep rotY between 0 and PI2
+	// Keep rotY between 0 and 2*PI
 	if( rotY < 0.0f )
 		rotY += PI2;
 	if( rotY > PI2 )
@@ -461,6 +563,13 @@ void CDataStarf::AdjRotY( float delta, BOOL updateMat )
 void CDataStarf::AdjRotTime( float delta, BOOL updateMat )
 {
 	rotTime += delta;
+
+	// Keep rotTime between 0 and 2*PI
+	if( rotTime < 0.0f )
+		rotTime += PI2;
+	if( rotTime > PI2 )
+		rotTime -= PI2;
+
 	if( tracking )
 		Track();
 	if( updateMat )
@@ -506,21 +615,17 @@ void CDataStarf::CountStars()
 }
 
 // Check if the given star number belongs to a hidden constellation
-BOOL CDataStarf::IsStarInHiddenConst( int i )
+BOOL CDataStarf::IsStarInCurConst( int i )
 {
-	for( int ci=0; ci<constCount; ++ci )
+	CDataConst* c = starfield.GetCurConst();
+
+	for( int li=0; li<c->GetLineCount(); ++li )
 	{
-		// Continue if this constellation isn't hidden
-		if( GetConst(ci)->IsVisible() )
-			continue;
-		// Otherwise search through lines
-		for( int li=0; li<GetConst(ci)->GetLineCount(); ++li )
-		{
-			if( i == GetConst(ci)->GetLine(li)->GetStar1() ||
-				i == GetConst(ci)->GetLine(li)->GetStar2() )
-				return TRUE;
-		}
+		if( i == c->GetLine(li)->GetStar1() ||
+			i == c->GetLine(li)->GetStar2() )
+			return TRUE;
 	}
+
 	return FALSE;
 }
 
@@ -533,6 +638,7 @@ void CDataStarf::LoadConstDefaults()
 	constsVisible = DEF_CONST_VISIBLE;
 	constsDaylight = DEF_CONST_DAYLIGHT;
 	constsLabeled = DEF_CONST_LABELED;
+	constsLinesVisible = DEF_CONST_LINESVISIBLE;
 }
 
 // Check if the given name is already in use
@@ -625,7 +731,7 @@ void CDataStarf::UpdateMats()
 void CDataStarf::UpdateViewMat()
 {
 	viewMat.identity();
-///	viewMat = TranslateMatrix44( 0, 0,-3 );
+///	viewMat = TranslateMatrix44( 0, 0,-3 ); /// External view of everything
 	viewMat *= RotateRadMatrix44( 'x', rotX+tempRotX );
 	viewMat *= RotateRadMatrix44( 'y', rotY+tempRotY );
 }
@@ -641,7 +747,7 @@ void CDataStarf::UpdateStarfMat()
 // Update time matrix
 void CDataStarf::UpdateTimeMat()
 {
-	timeMat = RotateRadMatrix44( 'y', DegToRad( rotTime ) );
+	timeMat = RotateRadMatrix44( 'y', rotTime );
 }
 
 // Update latitude matrix
@@ -653,7 +759,7 @@ void CDataStarf::UpdateLatMat()
 // Update longitude matrix
 void CDataStarf::UpdateLongMat()
 {
-	longMat = RotateRadMatrix44( 'y', 0.0f );///
+	longMat = RotateRadMatrix44( 'y', 0.0f );/// Don't rotate for longitude
 }
 
 // Rotate methods (for keyboard)
@@ -718,23 +824,7 @@ void CDataStarf::StartTracking( float x, float y, float z )
 // Track the spherical coordinates set in StartTracking
 void CDataStarf::Track()
 {
-//  Coordinates specify a point on celectial sphere
-//  (ie. doesn't include latitude or time rotation)
-
-	// Find world coordinates (ie. after latitude and time rotation)
-	vector4 worldVec( trackX, trackY, trackZ, 1.0f );
-	worldVec = latMat * timeMat * worldVec;
-
-	// Make up a fake star so we can use its methods
-	//   (little sloppy, but it'll work)
-	CDataStar fakeStar;
-	fakeStar.SetCenter( vector3(worldVec.x, worldVec.y, worldVec.z) );
-	fakeStar.UpdatePosFromXYZ();
-
-	rotX = fakeStar.GetPhi() - PIHALF;
-	rotY = PI - fakeStar.GetTheta();
-
-	UpdateViewMat();
+	Find( trackX, trackY, trackZ );
 }
 
 // Find and view the specified spherical coordinates
@@ -744,17 +834,17 @@ void CDataStarf::Find( float x, float y, float z )
 //  (ie. doesn't include latitude or time rotation)
 
 	// Find world coordinates (ie. after latitude and time rotation)
-	vector4 worldVec( x, y, z, 1.0f );
+	vector3 worldVec( x, y, z );
 	worldVec = latMat * timeMat * worldVec;
 
 	// Make up a fake star so we can use its methods
 	//   (little sloppy, but it'll work)
 	CDataStar fakeStar;
-	fakeStar.SetCenter( vector3(worldVec.x, worldVec.y, worldVec.z) );
+	fakeStar.SetCenter( worldVec );
 	fakeStar.UpdatePosFromXYZ();
 
-	rotX = fakeStar.GetPhi() - 90.0f;
-	rotY = 180.0f - fakeStar.GetTheta();
+	rotX = fakeStar.GetPhi() - PIHALF;
+	rotY = PI - fakeStar.GetTheta();
 
 	UpdateViewMat();
 }

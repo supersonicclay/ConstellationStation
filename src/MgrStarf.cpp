@@ -75,9 +75,9 @@ void CMgrStarf::Find( CDataConst* constellation )
 		return;
 	}
 
-	vector3 mid = constellation->GetMidpoint();
+	vector3 c = constellation->GetCenter();
 
-	starfield.Find( mid.x, mid.y, mid.z );
+	starfield.Find( c.x, c.y, c.z );
 }
 
 // Track the specified star
@@ -95,9 +95,9 @@ void CMgrStarf::StartTracking( CDataConst* constellation )
 		return;
 	}
 
-	vector3 mid = constellation->GetMidpoint();
+	vector3 c = constellation->GetCenter();
 
-	starfield.StartTracking( mid.x, mid.y, mid.z );
+	starfield.StartTracking( c.x, c.y, c.z );
 }
 
 // Turns starfield spinning on/off
@@ -171,7 +171,6 @@ void CMgrStarf::ToggleStars()
 void CMgrStarf::UpdateStarsAppearance()
 {
 	float mag, radius, alpha;
-	color_s color;
 
 	// Brightest color is always max
 	starsBrightColor = MAX_STARS_BRIGHT_COLOR;
@@ -208,12 +207,9 @@ void CMgrStarf::UpdateStarsAppearance()
 		// Linearly interpolate radius and color
 		radius = starsBrightRadius - starsRadiusDiff * (mag-starsMinMag)/magDiff;
 		alpha = starsBrightColor - starsColorDiff * (mag-starsMinMag)/magDiff;
-		color.r = alpha;
-		color.g = alpha;
-		color.b = alpha;
 
 		starfield.GetStar(i)->SetRadius( radius );
-		starfield.GetStar(i)->SetColor( color );
+		starfield.GetStar(i)->SetAlpha( alpha );
 		starfield.GetStar(i)->UpdateVerts();
 	}
 }
@@ -235,16 +231,11 @@ void CMgrStarf::ConstOptions()
 		starfield.SetConstsVisible( dialog.visible );
 		starfield.SetConstsDaylight( dialog.daylight );
 		starfield.SetConstsLabeled( dialog.labeled );
-		optionsMgr.SetConstStarsColored( dialog.starsColored );
 		optionsMgr.SetConstLineWidth( dialog.lineWidth+1 );
 	}
 	else
 	{
-		// Reset colors (they are updated in realtime)
-		optionsMgr.SetConstNormColor( dialog.origNormColor );
-		optionsMgr.SetConstSelColor( dialog.origSelColor );
-		optionsMgr.SetConstActiveColor( dialog.origActiveColor );
-		optionsMgr.SetConstStarColor( dialog.origStarColor );
+		// Reset options that are updated in realtime
 	}
 	Redraw();
 }
@@ -253,6 +244,12 @@ void CMgrStarf::ConstOptions()
 void CMgrStarf::ToggleConsts()
 {
 	starfield.SwitchConstsVisible(); Redraw();
+}
+
+// Toggle constellation lines on and off
+void CMgrStarf::ToggleConstsLines()
+{
+	starfield.SwitchConstsLinesVisible(); Redraw();
 }
 
 

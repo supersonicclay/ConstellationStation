@@ -58,9 +58,9 @@ BOOL CDlgShowHide::OnInitDialog()
 	for (int i=0; i<starfield.GetConstCount(); ++i)
 	{
 		// Add name to list
-		list.SetSel(
-			list.AddString( starfield.GetConst(i)->GetName() ),
-			starfield.GetConst(i)->IsVisible() );
+//		list.SetSel(
+//			list.AddString( starfield.GetConst(i)->GetName() ),
+//			starfield.GetConst(i)->IsVisible() );
 	}
 
 	return TRUE;
@@ -76,7 +76,7 @@ void CDlgShowHide::OnSelChange()
 		list.GetText( i, name );
 
 		// Set visibility of constellation
-		starfield.GetConst( name )->SetVisible( list.GetSel(i) );
+///		starfield.GetConst( name )->SetVisible( list.GetSel(i) );
 	}
 
 	Redraw();

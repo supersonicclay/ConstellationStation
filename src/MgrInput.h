@@ -35,8 +35,9 @@ public:
 	vector3 mouseLDownCoord;  // mouse coordinate when L button clicked
 
 	// Selecting
-	GLuint selectBuffer[100];
-	GLint  hits;
+	BOOL selecting;
+	UINT selectBuffer[100];
+	UINT  hits;
 
 	// Constellation editor
 	int firstStarNum;

@@ -165,12 +165,14 @@ void CMgrConst::Rename()
 	starfield.RenameConst(dialog.name);
 
 	documentMgr.SetModified();
+
+	Redraw();
 }
 
 // Hide the current constellation
 void CMgrConst::Hide()
 {
-	starfield.GetCurConst()->SwitchVisible();
+	starfield.SwitchConstsLinesVisible();
 
 	documentMgr.SetModified();
 	Redraw();
@@ -194,42 +196,5 @@ void CMgrConst::DeleteLine()
 		SetState( state_DeletingLine );
 }
 
-// Hide all constellations
-void CMgrConst::HideAll()
-{
-	for( int i=0; i<starfield.GetConstCount(); ++i )
-	{
-		starfield.GetConst(i)->SetVisible(FALSE);
-	}
-
-	documentMgr.SetModified();
-	Redraw();
-}
-
-// Show all constellations
-void CMgrConst::ShowAll()
-{
-	for( int i=0; i<starfield.GetConstCount(); ++i )
-	{
-		starfield.GetConst(i)->SetVisible(TRUE);
-	}
-
-	documentMgr.SetModified();
-	Redraw();
-}
-
-// Display show/hide dialog
-void CMgrConst::ShowHide()
-{
-	if( starfield.IsSpinning() )
-		starfield.SwitchSpinning();
-
-	CDlgShowHide dialog;
-
-	dialog.DoModal();
-
-	documentMgr.SetModified();
-	SetState( state_Viewing );
-}
 
 

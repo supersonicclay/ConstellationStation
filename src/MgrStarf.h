@@ -59,6 +59,7 @@ public:
 // Constellation methods
 	void ConstOptions();
 	void ToggleConsts();
+	void ToggleConstsLines();
 
 // Sun methods
 	void SunOptions();

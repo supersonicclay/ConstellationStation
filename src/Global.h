@@ -110,10 +110,18 @@ extern const float		DEF_STARS_BRIGHT_RADIUS;
 extern const float		DEF_STARS_BRIGHT_COLOR;
 extern const float		DEF_STARS_RADIUS_DIFF;
 extern const float		DEF_STARS_COLOR_DIFF;
+extern const color_s	DEF_STARS_SPECTRAL_O_COLOR;
+extern const color_s	DEF_STARS_SPECTRAL_B_COLOR;
+extern const color_s	DEF_STARS_SPECTRAL_A_COLOR;
+extern const color_s	DEF_STARS_SPECTRAL_F_COLOR;
+extern const color_s	DEF_STARS_SPECTRAL_G_COLOR;
+extern const color_s	DEF_STARS_SPECTRAL_K_COLOR;
+extern const color_s	DEF_STARS_SPECTRAL_M_COLOR;
 
 extern const BOOL		DEF_CONST_VISIBLE;
 extern const BOOL		DEF_CONST_DAYLIGHT;
 extern const BOOL		DEF_CONST_LABELED;
+extern const BOOL		DEF_CONST_LINESVISIBLE;
 extern const color_s	DEF_CONST_NORMCOLOR;
 extern const color_s	DEF_CONST_SELCOLOR;
 extern const color_s	DEF_CONST_ACTIVECOLOR;
@@ -139,6 +147,14 @@ extern const color_s	DEF_TERR_WINCOLOR;
 extern const color_s	DEF_TERR_SPRCOLOR;
 extern const color_s	DEF_TERR_SUMCOLOR;
 extern const color_s	DEF_TERR_FALCOLOR;
+
+extern const LOGFONT	DEF_TEXT_CONSTFONT;
+extern const LOGFONT	DEF_TEXT_STARFONT;
+extern const LOGFONT	DEF_TEXT_DIRFONT;
+extern const color_s	DEF_TEXT_CONSTCOLOR;
+extern const color_s	DEF_TEXT_CONSTSELCOLOR;
+extern const color_s	DEF_TEXT_STARCOLOR;
+extern const color_s	DEF_TEXT_DIRCOLOR;
 
 extern const color_s	DEF_COMPASS_CROSSCOLOR;
 extern const color_s	DEF_COMPASS_NEEDLECOLOR;
@@ -186,6 +202,7 @@ extern const color_s	DEF_COMPASS_NEEDLECOLOR;
 
 #include "MgrInput.h"
 #include "MgrGraphics.h"
+#include "MgrText.h"
 #include "MgrOptions.h"
 #include "MgrDocument.h"
 #include "MgrStarf.h"
@@ -198,6 +215,7 @@ extern CDataTerrain		terrain;
 
 extern CMgrInput		inputMgr;
 extern CMgrGraphics		graphicsMgr;
+extern CMgrText			textMgr;
 extern CMgrOptions		optionsMgr;
 extern CMgrDocument		documentMgr;
 extern CMgrStarf		starfMgr;
@@ -223,30 +241,37 @@ void Redraw();
 // Special CArchive functions
 CArchive& operator>> ( CArchive& ar, season_e& s );
 CArchive& operator>> ( CArchive& ar, color_s& c );
+CArchive& operator>> ( CArchive& ar, vector3& v );
+CArchive& operator>> ( CArchive& ar, vector2& v );
+CArchive& operator>> ( CArchive& ar, LOGFONT& f );
 
 CArchive& operator<< ( CArchive& ar, season_e s );
 CArchive& operator<< ( CArchive& ar, color_s c );
+CArchive& operator<< ( CArchive& ar, vector3 v );
+CArchive& operator<< ( CArchive& ar, vector2 v );
+CArchive& operator<< ( CArchive& ar, LOGFONT f );
 
-// Multiply color by a factor
+// Multiply color convenience functions
 color_s operator* ( const color_s c, const float f );
+color_s operator* ( const color_s c1, const color_s c2 );
 
 // Star comparison (for sorting by magnitude)
 BOOL operator< ( CDataStar& s1, CDataStar& s2 );
 
 // Message boxes (handle not specified)
-void CSInfo( char* msg, char* title="Information" );
-int  CSQuestion(  char* msg, char* title="Question" );
-int  CSYesNoCancel( char* msg, char* title="Question" );
-void CSWarn( char* msg, char* title="Warning" );
-void CSError( char* msg, char* title="Error" );
-void CSDebug( char* msg, char* title );
+void CSInfo( const char* msg, const char* title="Information" );
+int  CSQuestion(  const char* msg, const char* title="Question" );
+int  CSYesNoCancel( const char* msg, const char* title="Question" );
+void CSWarn( const char* msg, const char* title="Warning" );
+void CSError( const char* msg, const char* title="Error" );
+void CSDebug( const char* msg, const char* title );
 
 // Message boxes (handle specified)
-void CSInfo( HWND parent, char* msg, char* title="Information" );
-int  CSQuestion(  HWND parent, char* msg, char* title="Question" );
-int  CSYesNoCancel( HWND parent, char* msg, char* title="Question" );
-void CSWarn( HWND parent, char* msg, char* title="Warning" );
-void CSError( HWND parent, char* msg, char* title );
+void CSInfo( HWND parent, const char* msg, const char* title="Information" );
+int  CSQuestion(  HWND parent, const char* msg, const char* title="Question" );
+int  CSYesNoCancel( HWND parent, const char* msg, const char* title="Question" );
+void CSWarn( HWND parent, const char* msg, const char* title="Warning" );
+void CSError( HWND parent, const char* msg, const char* title );
 
 
 #endif

@@ -90,7 +90,7 @@ void CDlgOptionsTerr::InitOptions()
 	origWinColor = winColor = optionsMgr.GetTerrWinColor();
 	origSprColor = sprColor = optionsMgr.GetTerrSprColor();
 	origSumColor = sumColor = optionsMgr.GetTerrSumColor();
-	origFalColor = falColor = optionsMgr.GetTerrFalColor();
+	origFalColor = falColor = optionsMgr.GetTerrAutColor();
 
 	UpdateRoughnessTxt();
 	OnTerrTextured();

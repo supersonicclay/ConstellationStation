@@ -57,8 +57,8 @@ const CDataConstLine& CDataConstLine::operator=( const CDataConstLine& c )
 /////////////////////////////////////////////////////////////////////////////
 // Gets
 
-int		CDataConstLine::GetStar1()	{	return star1;								}
-int		CDataConstLine::GetStar2()	{	return star2;								}
+int		CDataConstLine::GetStar1()	{	return star1;	}
+int		CDataConstLine::GetStar2()	{	return star2;	}
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -100,7 +100,6 @@ CDataConst::CDataConst()
 {
 	lineCount = 0;
 	activeLineNum = -1;
-	visible = TRUE;
 }
 
 CDataConst::CDataConst( CString n )
@@ -108,7 +107,6 @@ CDataConst::CDataConst( CString n )
 	name = n;
 	lineCount = 0;
 	activeLineNum = -1;
-	visible = TRUE;
 }
 
 CDataConst::CDataConst( const CDataConst& c )
@@ -123,10 +121,10 @@ CDataConst::~CDataConst()
 const CDataConst& CDataConst::operator=( const CDataConst& c )
 {
 	name = c.name;
+	center = c.center;
 	lineCount = c.lineCount;
 	lines = c.lines;
 	activeLineNum = c.activeLineNum;
-	visible = c.visible;
 	return *this;
 }
 
@@ -135,9 +133,9 @@ const CDataConst& CDataConst::operator=( const CDataConst& c )
 // Gets
 
 CString			CDataConst::GetName()			{	return name;			}
+vector3			CDataConst::GetCenter()			{	return center;			}
 int				CDataConst::GetLineCount()		{	return lineCount;		}
 int				CDataConst::GetActiveLineNum()	{	return activeLineNum;	}
-BOOL			CDataConst::IsVisible()			{	return visible;			}
 CDataConstLine*	CDataConst::GetLine(int i)		{	return &lines[i];		}
 CDataConstLine*	CDataConst::GetNewLine()		{	return &newLine;		}
 
@@ -147,8 +145,6 @@ CDataConstLine*	CDataConst::GetNewLine()		{	return &newLine;		}
 
 void CDataConst::SetName( CString n )		{	name = n;			}
 void CDataConst::SetActiveLineNum( int n )	{	activeLineNum = n;	}
-void CDataConst::SwitchVisible()			{	visible = !visible;	}
-void CDataConst::SetVisible( BOOL v )		{	visible = v;		}
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -174,6 +170,7 @@ void CDataConst::AddLine()
 	lineCount++;
 
 	CheckForDuplicateLines();
+	UpdateCenter();
 }
 
 // Delete a line from this constellation indexed by lineNum
@@ -191,6 +188,8 @@ void CDataConst::DeleteLine( int lineNum )
 		++li;
 	lines.erase( li );
 	--lineCount;
+
+	UpdateCenter();
 }
 
 // Check this constellation for lines with the same endpoints
@@ -216,8 +215,8 @@ void CDataConst::CheckForDuplicateLines()
 	}
 }
 
-// Get the x,y,z midpoint of this constellation
-vector3 CDataConst::GetMidpoint()
+// Update the center of this constellation
+void CDataConst::UpdateCenter()
 {
 	int starCount = lineCount*2;
 	CDataStar* s1;
@@ -267,13 +266,11 @@ vector3 CDataConst::GetMidpoint()
 		if( s2->GetCenter().z > maxZ )
 			maxZ = s2->GetCenter().z;
 	}
-	// Find midpoint
-	vector3 mid;
-	mid.x = (maxX + minX) / 2;
-	mid.y = (maxY + minY) / 2;
-	mid.z = (maxZ + minZ) / 2;
 
-	return mid;
+	// Find center
+	center.x = (maxX + minX) / 2;
+	center.y = (maxY + minY) / 2;
+	center.z = (maxZ + minZ) / 2;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -288,13 +285,13 @@ void CDataConst::Serialize(CArchive& ar)
 	if( ar.IsLoading() )
 	{
 		ar >> name
-		   >> visible
+		   >> center
 		   >> lineCount;
 	}
 	else
 	{
 		ar << name
-		   << visible
+		   << center
 		   << lineCount;
 	}
 

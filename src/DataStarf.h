@@ -93,6 +93,7 @@ private:
 	BOOL constsVisible;
 	BOOL constsDaylight;  // constellations visible during daylight
 	BOOL constsLabeled;
+	BOOL constsLinesVisible;     // constellation lines visible
 
 // Sun options
 	BOOL sunVisible;
@@ -124,6 +125,7 @@ public:
 	BOOL AreConstsVisible();
 	BOOL AreConstsDaylight();
 	BOOL AreConstsLabeled();
+	BOOL AreConstsLinesVisible();
 	BOOL IsSunVisible();
 	BOOL IsSunShining();
 
@@ -156,6 +158,8 @@ public:
 	void SetConstsVisible( BOOL x );
 	void SetConstsDaylight( BOOL x );
 	void SetConstsLabeled( BOOL x );
+	void SwitchConstsLinesVisible();
+	void SetConstsLinesVisible( BOOL x );
 
 	void SwitchSunVisible();
 	void SetSunVisible( BOOL x );
@@ -182,7 +186,7 @@ public:
 // Star methods
 	void LoadStarDefaults();
 	void CountStars();
-	BOOL IsStarInHiddenConst( int i );
+	BOOL IsStarInCurConst( int i );
 
 
 // Constellation methods

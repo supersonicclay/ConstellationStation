@@ -29,6 +29,8 @@ public:
 
 // Attributes
 private:
+
+	color_s color;
 	float rotTime;
 
 	matrix44 timeMat;
@@ -36,6 +38,8 @@ private:
 
 // Methods
 public:
+
+	color_s GetColor();
 
 	float   GetRotTime();
 	matrix44* GetTimeMat();

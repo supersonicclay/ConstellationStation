@@ -8,11 +8,13 @@ PHASES
 3	Math - graphics optimization, terrain, selecting, random
 4	Graphics - effects, text
 5	Features - tests, actual
+6	Extras
 
+----------------------------------------------------------------
+ ALWAYS UPDATE COPY CONSTRUCTORS AND SERIALIZE WHEN ADDING VARS
+----------------------------------------------------------------
 
 BUGS
--	4	Sun glow quad needs to be perp to viewer
-	5	Won't track with multiple constellations
 	5	Program Icon
 		- Reinstall VC++
 		- frame.GetIcon()
@@ -21,44 +23,44 @@ BUGS
 		- (WM_SETICON)
 
 GENERAL
--	4	Store rotTime's as rad
+	5	Star info dialog
+	5	Save/Load terrain in document
 	5	Right click menu to track/center/magnify
-	5	Don't maximize on startup
+	5	Actual magnification 1X/2X/1024X
 	5	Redraw starfield toolbar buttons
 	5	Splash Screen
 	5	Loading message
 	5	Size controls to fit (large windows themes)
-	5	Print
-	5	Undo
+	5	Don't maximize on startup
+	6	Print
+	6	Undo
 
 OPTIONS
--	4	Terrain tex/height Iterations
--	4	Terrain scale
--	4	constellation labels
--	4	star labels
 	5	Track/Find
 		- constellation
 		- star
 		- ra dec
-	5	Prompt for seed with random stars
+	6	Prompt for seed with random stars
 
 INPUT
+-	4	Radius parameter for Select()
 	5	Shift + Left	rotTime
 	5	Ctrl  + Left	rotLatitude
 	5	Right			context menu
-	5	More accurate trackball
+	6	More accurate trackball
+	6	Select const label
 
 GRAPHICS
--	4	Use custom projection matrix
--	4	Heading indicator needs improvement.
--	4?	Moveable constellation labels
-	5	Lens flare
-	5	Stars shouldn't all fade at same rate
-	5	Actual magnification 1X/2X/1024X
-	5	Celestial/Equatorial Grid
+-	4	Compass needs improvement.
+	6	Lighting normals
+	6	Shadows
+	6	Lens flare
+	6	Stars shouldn't all fade at same rate
+	6	Celestial/Equatorial Grid
+
+TEXT
 
 CONSTELLATION
--	4	vector3 center (update when add/del line)
 	5	Input actual constellations
 	5	Constellation details
 
@@ -66,25 +68,25 @@ STARFIELD
 	5	Choose date
 	5	Choose time
 	5	Choose location (lat & long) (Portales: 34.60N)
-	5	Increase year range
 	5	Link time with starfield
 	5	Inc/Dec by 1/2/3 years/days/hours/mins
-	5?	Add Stars
-	5?	Precession
+	6	Increase year range
+	6	Add Stars
+	6	Precession
 
 STARS
 
 
 TERRAIN
--	4	Textured terrain
--	4	Normals probably aren't accurate (after z axis reversal)
-	5	Terrain shadows
+
 
 DOCUMENT
-	5	Import/Export constellations (must check seed)
+	6	Import/Export constellations (must check seed)
 
-TEACHER
+STUDENT
 	5	Disable tracking/finding
+	
+TEACHER
 	5	CONSTELLATION TESTS
 		- Types
 			- Show constlines. Pick a line

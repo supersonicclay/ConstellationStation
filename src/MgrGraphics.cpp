@@ -108,7 +108,6 @@ BOOL CMgrGraphics::InitializeOpenGL()
 	// Settings
 	glClearDepth( 1.0f );
 	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
-///	glEnable( GL_LINE_SMOOTH );
 	glShadeModel( GL_SMOOTH );
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE );
 	glEnable( GL_BLEND );
@@ -119,7 +118,7 @@ BOOL CMgrGraphics::InitializeOpenGL()
 	glFogi( GL_FOG_MODE, GL_EXP2  );
 	glFogf( GL_FOG_DENSITY, 1.0f );
 	glHint( GL_FOG_HINT, GL_FASTEST );
-	glFogf( GL_FOG_START, 0.75f );
+	glFogf( GL_FOG_START, 0.9f );
 	glFogf( GL_FOG_END, 1.0f );
 
 	// Material
@@ -187,10 +186,12 @@ void CMgrGraphics::Draw()
 	glClearColor( skyColor.r, skyColor.g, skyColor.b, 1.0f );
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
+	// Draw sky
 	if( starfield.IsSunShining() )
 	{
 		glLoadMatrixf( skyMat.getFloats() );
-		DrawSky();
+		if( redColor.r > 0.0f )
+			DrawSky();
 
 		glLoadMatrixf( sunMat.getFloats() );
 		DrawSunlight();
@@ -201,10 +202,12 @@ void CMgrGraphics::Draw()
 	// Calculate frustum for star culling
 	CalculateFrustum();
 
-	// Draw starfield objects
-	if( starfield.AreConstsVisible() )
+	// Draw constellations
+	if( starfield.AreConstsVisible() && constAlpha > 0.0f )
 		DrawConsts();
-	if( starfield.AreStarsVisible() )
+
+	// Draw stars
+	if( starfield.AreStarsVisible() && starAlpha > 0.0f )
 		DrawStars();
 
 	// Draw sun
@@ -214,15 +217,21 @@ void CMgrGraphics::Draw()
 		DrawSun();
 	}
 
+	// Draw terrain
 	if( optionsMgr.IsTerrVisible() )
 	{
 		glLoadMatrixf( terrainMat.getFloats() );
 		DrawTerrain();
 	}
 
-	// Draw heading indicator
+	// Draw direction indicators
+	glLoadMatrixf( terrainMat.getFloats() );
+	textMgr.TypeDirections();
+
+	// Draw compass
 	DrawCompass();
 
+	// Find OpenGL errors
 #ifdef _DEBUG
 	if( glGetError() != GL_NO_ERROR )
 	{
@@ -284,8 +293,6 @@ void CMgrGraphics::DrawTerrain()
 	glPushName( 0 );
 
 	glBindTexture( GL_TEXTURE_2D, terrain.GetTexID() );
-///	SelectColor( COLOR_WHITE );
-///	glDisable( GL_LIGHTING );
 
 	for( i=0; i<size; i+=iInc )
 	{
@@ -337,16 +344,6 @@ void CMgrGraphics::DrawTerrain()
 		x += cInc;
 	}
 	glPopName();
-
-	/// Draw Terrain texture below terrain
-	SelectColor( COLOR_WHITE );
-	glBindTexture( GL_TEXTURE_2D, terrain.GetTexID() );
-	glBegin( GL_QUADS );
-		glTexCoord2i(1,1); glVertex3f(  scale,-0.5f,-scale );
-		glTexCoord2i(0,1); glVertex3f( -scale,-0.5f,-scale );
-		glTexCoord2i(0,0); glVertex3f( -scale,-0.5f, scale );
-		glTexCoord2i(1,0); glVertex3f(  scale,-0.5f, scale );
-	glEnd();
 
 	glEnable( GL_TEXTURE_2D );
 	glEnable( GL_BLEND );
@@ -414,41 +411,53 @@ void CMgrGraphics::DrawSun()
 	//-----------
 	// Draw Glow
 	//-----------
-	if( starfield.IsSunShining() && optionsMgr.IsTerrVisible() )
+	if( starfield.IsSunShining() && optionsMgr.IsTerrVisible() && redColor.r > 0.0f )///
 	{
 		glDisable( GL_CULL_FACE );
 		glBindTexture( GL_TEXTURE_2D, sunGlowTex );
 
-		SelectColor( redColor );
-
-		// Load view matrix and work in world coordinates
-		glLoadMatrixf( starfield.GetViewMat()->getFloats() );
-
 		// Get world coordinates of sun center
 		vector3 wc = *(starfield.GetStarfMat()) * *(starfield.GetSun()->GetTimeMat()) * center;
 
-		float glowSize = 3.5f;
+		// Find angle to rotate to make quad perp to viewer
+		vector2 v1( wc.x, wc.z );
+		vector2 v2( -1, 0 );
+		float theta = (float)acos( DotProduct(v1,v2) );
+		// May need to get a negative theta
+		if( wc.z < 0.0f )
+			theta = -theta;
+
+		// Load necessary matrix
+		matrix44 mat = *(starfield.GetViewMat()) * 
+			TranslateMatrix44( wc.x, wc.y, wc.z ) *
+			RotateRadMatrix44( 'y', theta );
+		glLoadMatrixf( mat.getFloats() );
+
+		wc.set(0,0,0); 
+		SelectColor( redColor );
+		float glowSize = 6.0f;
 		glBegin( GL_QUADS );
 			// Draw big glow
-			glTexCoord2i(1,1); glVertex3f( wc.x, wc.y+glowSize, wc.z+glowSize );
-			glTexCoord2i(0,1); glVertex3f( wc.x, wc.y+glowSize, wc.z-glowSize );
-			glTexCoord2i(0,0); glVertex3f( wc.x, wc.y-glowSize, wc.z-glowSize );
-			glTexCoord2i(1,0); glVertex3f( wc.x, wc.y-glowSize, wc.z+glowSize );
+			glTexCoord2i(1,1); glVertex3f( 0.0f, glowSize/2, glowSize );
+			glTexCoord2i(0,1); glVertex3f( 0.0f, glowSize/2, -glowSize );
+			glTexCoord2i(0,0); glVertex3f( 0.0f, -glowSize/2, -glowSize );
+			glTexCoord2i(1,0); glVertex3f( 0.0f, -glowSize/2, glowSize );
 
 			// Draw smaller glow
-			glTexCoord2i(1,1); glVertex3f( wc.x, wc.y+glowSize/3, wc.z+glowSize/2 );
-			glTexCoord2i(0,1); glVertex3f( wc.x, wc.y+glowSize/3, wc.z-glowSize/2 );
-			glTexCoord2i(0,0); glVertex3f( wc.x, wc.y-glowSize/3, wc.z-glowSize/2 );
-			glTexCoord2i(1,0); glVertex3f( wc.x, wc.y-glowSize/3, wc.z+glowSize/2 );
+			glTexCoord2i(1,1); glVertex3f( 0.0f, glowSize/8, glowSize/4 );
+			glTexCoord2i(0,1); glVertex3f( 0.0f, glowSize/8, -glowSize/4 );
+			glTexCoord2i(0,0); glVertex3f( 0.0f, -glowSize/8, -glowSize/4 );
+			glTexCoord2i(1,0); glVertex3f( 0.0f, -glowSize/8, glowSize/4 );
 
 			// Draw smallest glow just red
 			color_s justRed = redColor;
 			justRed.g = 0.0f;
+			justRed.b = 0.0f;
 			SelectColor( justRed );
-			glTexCoord2i(1,1); glVertex3f( wc.x, wc.y+glowSize/3, wc.z+glowSize/4 );
-			glTexCoord2i(0,1); glVertex3f( wc.x, wc.y+glowSize/3, wc.z-glowSize/4 );
-			glTexCoord2i(0,0); glVertex3f( wc.x, wc.y-glowSize/3, wc.z-glowSize/4 );
-			glTexCoord2i(1,0); glVertex3f( wc.x, wc.y-glowSize/3, wc.z+glowSize/4 );
+			glTexCoord2i(1,1); glVertex3f( 0.0f, glowSize/8, glowSize/8 );
+			glTexCoord2i(0,1); glVertex3f( 0.0f, glowSize/8, -glowSize/8 );
+			glTexCoord2i(0,0); glVertex3f( 0.0f, -glowSize/8, -glowSize/8 );
+			glTexCoord2i(1,0); glVertex3f( 0.0f, -glowSize/8, glowSize/8 );
 		glEnd();
 
 		glEnable( GL_CULL_FACE );
@@ -456,6 +465,7 @@ void CMgrGraphics::DrawSun()
 }
 
 /// LIGHTING NEEDS WORK
+// Set GL_LIGHT0 attributes for sun
 void CMgrGraphics::DrawSunlight()
 {
 	// Update sunlight (GL_LIGHT0)
@@ -474,19 +484,27 @@ void CMgrGraphics::DrawSunlight()
 void CMgrGraphics::DrawConsts()
 {
 	glDisable( GL_TEXTURE_2D );
+	if( constAlpha > 0.99f )
+		glDisable( GL_BLEND );
 	glLineWidth( optionsMgr.GetConstLineWidth() );
 
 	// Draw each constellation
 	for( int i=0; i<starfield.GetConstCount(); ++i )
 	{
-		if( starfield.GetConst(i)->IsVisible() )
+		if( i == starfield.GetCurConstNum() && starfield.AreConstsLinesVisible() )
+			DrawCurConst(i);
+		else if( i != starfield.GetCurConstNum() )
+			DrawConst(i);
+
+		// Type constellation name if necessary
+		if( starfield.GetConst(i)->GetLineCount() != 0 && starfield.AreConstsLabeled() && !inputMgr.selecting )
 		{
-			if( i == starfield.GetCurConstNum() )
-				DrawCurConst(i);
-			else
-				DrawConst(i);
+			glPushName( 1 + MAX_STARS + i*(MAX_CONSTLINES+1) );
+			textMgr.TypeConst( starfield.GetConst(i) );
+			glPopName();
 		}
 	}
+	glEnable( GL_BLEND );
 	glEnable( GL_TEXTURE_2D );
 }
 
@@ -506,7 +524,7 @@ void CMgrGraphics::DrawConst( int i )
 	// Draw constellation lines
 	for( int lineIndex=0; lineIndex<lineCount; lineIndex++ )
 	{
-		glPushName( 1 + MAX_STARS + (i*MAX_CONSTLINES) + lineIndex );
+		glPushName( 1 + MAX_STARS + i*(MAX_CONSTLINES+1) + lineIndex + 1 );
 
 		s1 = starfield.GetStar( curConst->GetLine( lineIndex )->GetStar1() );
 		s2 = starfield.GetStar( curConst->GetLine( lineIndex )->GetStar2() );
@@ -569,7 +587,7 @@ void CMgrGraphics::DrawCurConst( int i )
 		else
 			SelectColor4( optionsMgr.GetConstSelColor(), constAlpha );
 
-		glPushName( 1 + MAX_STARS + (i*MAX_CONSTLINES) + lineIndex );
+		glPushName( 1 + MAX_STARS + i*(MAX_CONSTLINES+1) + lineIndex + 1 );
 
 		s1 = starfield.GetStar( curConst->GetLine( lineIndex )->GetStar1() );
 		s2 = starfield.GetStar( curConst->GetLine( lineIndex )->GetStar2() );
@@ -608,6 +626,8 @@ void CMgrGraphics::DrawStars()
 				glPushName( 1 + i );
 				DrawStarQuad( i );
 				glPopName();
+				if( starfield.AreStarsLabeled() && star->GetName() != "" && !inputMgr.selecting )
+					textMgr.TypeStar( star );
 			}
 		}
 	}
@@ -625,6 +645,8 @@ void CMgrGraphics::DrawStars()
 				glPushName( 1 + i );
 				DrawStarPoint( i );
 				glPopName();
+				if( starfield.AreStarsLabeled() && star->GetName() != "" && !inputMgr.selecting )
+					textMgr.TypeStar( star );
 			}
 		}
 
@@ -638,8 +660,7 @@ void CMgrGraphics::DrawStarQuad( int i )
 	CDataStar* curStar = starfield.GetStar(i);
 
 	// Find color for this star
-	if( starfield.AreConstsVisible() && optionsMgr.AreConstStarsColored() &&
-		starfield.IsStarInHiddenConst(i) )
+	if( starfield.AreConstsVisible() && !starfield.AreConstsLinesVisible() && starfield.IsStarInCurConst(i) )
 		SelectColor4( optionsMgr.GetConstStarColor(), starAlpha );
 	else
 		SelectColor4( curStar->GetColor(), starAlpha );
@@ -657,6 +678,25 @@ void CMgrGraphics::DrawStarQuad( int i )
 		glTexCoord2i( 0, 0 ); glVertex3f( blVert.x, blVert.y, blVert.z );
 		glTexCoord2i( 1, 0 ); glVertex3f( brVert.x, brVert.y, brVert.z );
 	glEnd();
+
+	/*
+	/// Offset after projection
+	float d = .01f;
+	vector3 c = curStar->GetCenter();
+	vector3 tr = c; tr.x+=d; tr.y+=d;
+	vector3 tl = c; tl.x-=d; tl.y+=d;
+	vector3 bl = c; bl.x-=d; bl.y-=d;
+	vector3 br = c; br.x+=d; br.y-=d;
+
+	glBegin( GL_QUADS );
+		glTexCoord2i( 1, 1 ); glVertex3f( tr.x, tr.y, tr.z );
+		glTexCoord2i( 0, 1 ); glVertex3f( tl.x, tl.y, tl.z );
+		glTexCoord2i( 0, 0 ); glVertex3f( bl.x, bl.y, bl.z );
+		glTexCoord2i( 1, 0 ); glVertex3f( br.x, br.y, br.z );
+	glEnd();
+	*/
+
+
 }
 
 // Draw star i as a point
@@ -665,8 +705,7 @@ void CMgrGraphics::DrawStarPoint( int i )
 	CDataStar* curStar = starfield.GetStar(i);
 
 	// Find color for this star
-	if( starfield.AreConstsVisible() && optionsMgr.AreConstStarsColored() &&
-		starfield.IsStarInHiddenConst(i) )
+	if( starfield.AreConstsVisible() && !starfield.AreConstsLinesVisible() && starfield.IsStarInCurConst(i) )
 		SelectColor4( optionsMgr.GetConstStarColor(), starAlpha );
 	else
 		SelectColor4( curStar->GetColor(), starAlpha );
@@ -748,40 +787,43 @@ void CMgrGraphics::Size( int cx, int cy )
 
 	glViewport( 0, 0, width, height );
 
-	Projection();
+	UpdatePerspMat();
 }
 
-// Set up projection matrix with a perspective matrix
-void CMgrGraphics::Projection()
+// Get the perspective matrix
+matrix44* CMgrGraphics::GetPerspMat()
 {
-	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity();
-
-	Perspective();
-
-	glMatrixMode( GL_MODELVIEW );
-}
-
-// Apply perspective matrix
-void CMgrGraphics::Perspective()
-{
-	fov = ( 1 - starfield.GetZoom() ) * 45;
-
-	gluPerspective( fov, (float)width / (float)height, 0.001f, 10.0f );
+	return &perspMat;
 }
 
 // Update all matrices
 void CMgrGraphics::UpdateMats()
 {
+	UpdatePerspMat();
 	UpdateStarfMat();
 	UpdateSkyMat();
 	UpdateSunMat();
 	UpdateTerrainMat();
 }
 
+// Update perspective matrix
+void CMgrGraphics::UpdatePerspMat()
+{
+	fov = ( 1 - starfield.GetZoom() ) * 45;
+	perspMat = PerspectiveMatrix44( fov, (float)width/height, 0.001f, 10.0f );
+
+	// Load the perspective matrix
+	glMatrixMode( GL_PROJECTION );
+	glLoadIdentity();
+	gluPerspective( fov, (float)width / (float)height, 0.001f, 10.0f );
+	glMatrixMode( GL_MODELVIEW );
+
+}
+
 // Update matrix for sky
 void CMgrGraphics::UpdateSkyMat()
 {
+///	skyMat = perspMat;
 	skyMat = *(starfield.GetViewMat());
 	skyMat *= RotateRadMatrix44( 'x', -PIHALF );
 }
@@ -789,6 +831,7 @@ void CMgrGraphics::UpdateSkyMat()
 // Update matrix for starfield objects (stars, constellations, sun)
 void CMgrGraphics::UpdateStarfMat()
 {
+///	starfMat = perspMat;
 	starfMat = *(starfield.GetViewMat());
 	starfMat *= *(starfield.GetStarfMat());
 }
@@ -803,10 +846,17 @@ void CMgrGraphics::UpdateSunMat()
 // Update matrix for terrain
 void CMgrGraphics::UpdateTerrainMat()
 {
-	terrainMat = TranslateMatrix44( 0.0f, -terrain.GetViewHeight(), -terrain.GetViewDistance() );///
+///	terrainMat = perspMat;
 	if( terrExternal )///
-		terrainMat *= TranslateMatrix44( 0.0f, 0.0f, -2.5f );
-	terrainMat *= *(starfield.GetViewMat());
+	{
+		terrainMat = TranslateMatrix44( 0.0f, 0.0f, -2.5f );
+		terrainMat *= *(starfield.GetViewMat());
+	}
+	else
+	{
+		terrainMat = *(starfield.GetViewMat());
+		terrainMat *= TranslateMatrix44( 0.0f, -terrain.GetViewHeight(), -terrain.GetViewDistance() );///
+	}
 }
 
 
@@ -889,8 +939,8 @@ void CMgrGraphics::UpdateColors()
 		else
 			redFactor = (float) cos( dayFactor*PI/2)/2 + 0.5;
 		redColor.r = redFactor/2;
-		redColor.g = redFactor/8;
-		redColor.b = 0.0f;
+		redColor.g = redFactor/6;
+		redColor.b = redFactor/10;
 	}
 	else
 		redColor = COLOR_BLACK;
@@ -898,7 +948,7 @@ void CMgrGraphics::UpdateColors()
 	// SET FOG COLOR
 	// Fog color is weighted average of clearColor and redddish
 	float fogColor[4];
-#if 0  /// fog color test
+#if 1  /// fog color test
 	fogColor[0] = (skyColor.r+skyColor.r+redColor.r)/3;
 	fogColor[1] = (skyColor.g+skyColor.g+redColor.g)/3;
 	fogColor[2] = (skyColor.b+skyColor.b+redColor.b)/3;

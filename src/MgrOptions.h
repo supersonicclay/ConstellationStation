@@ -23,6 +23,8 @@ public:
 	void LoadConstDefaults();
 	void LoadSunDefaults();
 	void LoadTerrDefaults();
+	void LoadColorDefaults();
+	void LoadTextDefaults();
 
 	void Serialize(CArchive& ar);
 
@@ -43,7 +45,6 @@ private:
 	color_s constSelColor;
 	color_s constActiveColor;
 	color_s constStarColor;
-	BOOL constStarsColored;
 	int constLineWidth;
 
 	// Terrain options
@@ -57,7 +58,16 @@ private:
 	color_s terrWinColor;
 	color_s terrSprColor;
 	color_s terrSumColor;
-	color_s terrFalColor;
+	color_s terrAutColor;
+
+	// Text options
+	LOGFONT textConstFont;
+	LOGFONT textStarFont;
+	LOGFONT textDirFont;
+	color_s textConstColor;
+	color_s textConstSelColor;
+	color_s textStarColor;
+	color_s textDirColor;
 
 	// Compass options
 	color_s compassColor;
@@ -79,7 +89,6 @@ public:
 	color_s GetConstSelColor();
 	color_s GetConstActiveColor();
 	color_s GetConstStarColor();
-	BOOL AreConstStarsColored();
 	int GetConstLineWidth();
 
 	BOOL IsTerrVisible();
@@ -93,8 +102,16 @@ public:
 	color_s GetTerrWinColor();
 	color_s GetTerrSprColor();
 	color_s GetTerrSumColor();
-	color_s GetTerrFalColor();
+	color_s GetTerrAutColor();
 	color_s GetTerrColor();
+
+	LOGFONT GetTextConstFont();
+	LOGFONT GetTextStarFont();
+	LOGFONT GetTextDirFont();
+	color_s GetTextConstColor();
+	color_s GetTextConstSelColor();
+	color_s GetTextStarColor();
+	color_s GetTextDirColor();
 
 // Sets
 	void SetStarsTextured( BOOL t );
@@ -108,7 +125,6 @@ public:
 	void SetConstSelColor( color_s c );
 	void SetConstActiveColor( color_s c );
 	void SetConstStarColor( color_s c );
-	void SetConstStarsColored( BOOL x );
 	void SetConstLineWidth( int w );
 
 	void SwitchTerrVisible();
@@ -122,11 +138,20 @@ public:
 	void SetTerrWinColor( color_s c );
 	void SetTerrSprColor( color_s c );
 	void SetTerrSumColor( color_s c );
-	void SetTerrFalColor( color_s c );
+	void SetTerrAutColor( color_s c );
 	void SetTerrColor( color_s c );
+
+	void SetTextConstFont( LOGFONT f );
+	void SetTextStarFont( LOGFONT f );
+	void SetTextDirFont( LOGFONT f );
+	void SetTextConstColor( color_s c );
+	void SetTextConstSelColor( color_s c );
+	void SetTextStarColor( color_s c );
+	void SetTextDirColor( color_s c );
 
 // Methods
 	void General();
+	void ColorOptions();
 
 	void Load();
 	void Save();

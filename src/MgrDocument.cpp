@@ -96,7 +96,7 @@ void CMgrDocument::NewActual()
 	UpdateTitle();
 	SetState( state_Viewing );
 	GetFrame()->GetConstBar()->UpdateList();
-	graphicsMgr.Projection();
+	graphicsMgr.UpdateMats();
 	Redraw();
 }
 
@@ -118,7 +118,7 @@ void CMgrDocument::NewRandom()
 	UpdateTitle();
 	SetState( state_Viewing );
 	GetFrame()->GetConstBar()->UpdateList();
-	graphicsMgr.Projection();
+	graphicsMgr.UpdateMats();
 	Redraw();
 
 }
@@ -165,7 +165,7 @@ void CMgrDocument::Open()
 	UpdateTitle();
 	SetState( state_Viewing );
 	GetFrame()->GetConstBar()->UpdateList();
-	graphicsMgr.Projection();
+	graphicsMgr.UpdateMats();
 	Redraw();
 }
 
@@ -208,7 +208,7 @@ void CMgrDocument::Save()
 	UpdateTitle();
 	SetState( state_Viewing );
 	GetFrame()->GetConstBar()->UpdateList();
-	graphicsMgr.Projection();
+	graphicsMgr.UpdateMats();
 	Redraw();
 }
 
@@ -249,7 +249,7 @@ void CMgrDocument::SaveAs()
 	UpdateTitle();
 	SetState( state_Viewing );
 	GetFrame()->GetConstBar()->UpdateList();
-	graphicsMgr.Projection();
+	graphicsMgr.UpdateMats();
 	Redraw();
 }
 
@@ -257,7 +257,7 @@ void CMgrDocument::SaveAs()
 //  returns answer to dialog or IDNO if starfield isn't modified
 int CMgrDocument::CheckModified()
 {
-	return IDNO;/// MAKES MY LIFE EASIER FOR NOW
+	return IDNO;/// Don't ask for save on modified
 	// Check if document is modified
 	if( modified )
 	{

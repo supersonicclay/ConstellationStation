@@ -89,13 +89,13 @@ void CMgrInput::ProcessKeys()
 	if( keyDown['X'] )
 	{
 		starfield.ZoomIn();
-		graphicsMgr.Projection();
+		graphicsMgr.UpdatePerspMat();
 		update = TRUE;
 	}
 	if( keyDown['Z'] )
 	{
 		starfield.ZoomOut();
-		graphicsMgr.Projection();
+		graphicsMgr.UpdatePerspMat();
 		update = TRUE;
 	}
 
@@ -103,14 +103,14 @@ void CMgrInput::ProcessKeys()
 	if( keyDown[' '] )
 	{
 		starfield.ResetZoom();
-		graphicsMgr.Projection();
+		graphicsMgr.UpdatePerspMat();
 		keyDown[' '] = FALSE; // Prevent repeat
 		update = TRUE;
 	}
 	if( keyDown[VK_RETURN] )
 	{
 		starfield.ResetView();
-		graphicsMgr.Projection();
+		graphicsMgr.UpdatePerspMat();
 		keyDown[VK_RETURN] = FALSE; // Prevent repeat
 		update = TRUE;
 	}
@@ -156,11 +156,11 @@ void CMgrInput::ProcessKeys()
 		if( starfield.IsTracking() )
 			starfield.StopTracking();
 		else
-			starfMgr.StartTracking( starfield.GetConst(0) );
-//		starfMgr.Find( starfield.GetConst(0) );
+			starfMgr.StartTracking( starfield.GetCurConst() );
+//			starfMgr.Find( starfield.GetConst(0) );
 		// 8 = Betelgeuse
-//		starfMgr.StartTracking( starfield.GetStar(8) );
-//		starfMgr.Find( starfield.GetStar(8) );
+//			starfMgr.StartTracking( starfield.GetStar(8) );
+//			starfMgr.Find( starfield.GetStar(8) );
 		update = TRUE;
 	}
 
@@ -179,6 +179,9 @@ void CMgrInput::MouseLDbl( CPoint point )
 	mousePoint.y = graphicsMgr.height - point.y;
 
 	GetCursorPos( &mouseScreenPoint );
+
+	if( state != state_Viewing )
+		return;
 
 	int constNum = SelectConst();
 
@@ -336,8 +339,6 @@ void CMgrInput::MouseLDownTest()///
 	vector3 coord = GetMouseSphereCoord();
 
 	int selectedStarNum = SelectStar();
-	if( selectedStarNum != -1 )
-		starfield.GetStar( selectedStarNum )->SetColor( COLOR_GREEN );
 
 	Redraw();
 }
@@ -498,7 +499,7 @@ void CMgrInput::MouseWheel( short zDelta )
 		starfield.ZoomIn();
 	}
 
-	graphicsMgr.Projection();
+	graphicsMgr.UpdatePerspMat();
 
 	Redraw();
 }
@@ -517,13 +518,13 @@ void CMgrInput::MouseMoveViewing3()  // Trackball
 		int diff = mousePoint.y-mouseRPoint.y;
 		// Rotate Sun
 		if( keyDown[VK_SHIFT] )
-			starfield.GetSun()->AdjRotTime( diff / 10.0f );
+			starfield.GetSun()->AdjRotTime( diff * 0.002f );
 		// Rotate latitude
 		else if( keyDown[VK_CONTROL] )
-			starfield.AdjLatitude( diff / 10.0f );
+			starfield.AdjLatitude( diff * 0.1f );
 		// Rotate time
 		else
-			starfield.AdjRotTime( diff / 10.0f );/// * (1-zoom);
+			starfield.AdjRotTime( -diff * 0.002f );/// * (1-zoom);
 		mouseRPoint = mousePoint;
 	}
 
@@ -571,11 +572,11 @@ void CMgrInput::MouseMoveViewing2()  // Mouse stays in place
 
 	if( mouseRotatingZ )
 	{
-		float deltaTime = (mouseScreenPoint.y-mouseScreenRPoint.y) / 10.0f;
+		float deltaTime = (mouseScreenPoint.y-mouseScreenRPoint.y) * 0.002f;
 
 		SetCursorPos( mouseScreenRPoint.x, mouseScreenRPoint.y );
 
-		starfield.AdjRotTime( deltaTime );
+		starfield.AdjRotTime( -deltaTime );
 	}
 
 	else if( mouseRotatingXY )
@@ -586,7 +587,7 @@ void CMgrInput::MouseMoveViewing2()  // Mouse stays in place
 		SetCursorPos( mouseScreenLPoint.x, mouseScreenLPoint.y );
 
 		starfield.AdjRotX( deltaX, FALSE ); // Prevent matrix update;
-		starfield.AdjRotY( deltaY );        // it's done here.
+		starfield.AdjRotY( deltaY );        // Because it's done here.
 	}
 
 	GetView()->RedrawWindow();  // Force a redraw
@@ -602,13 +603,13 @@ void CMgrInput::MouseMoveViewing()  // Original
 		int diff = mousePoint.y-mouseRPoint.y;
 		// Rotate Sun
 		if( keyDown[VK_SHIFT] )
-			starfield.GetSun()->AdjRotTime( diff / 10.0f );
+			starfield.GetSun()->AdjRotTime( diff * 0.002f );
 		// Rotate latitude
 		else if( keyDown[VK_CONTROL] )
-			starfield.AdjLatitude( diff / 10.0f );
+			starfield.AdjLatitude( diff * 0.1f );
 		// Rotate time
 		else
-			starfield.AdjRotTime( diff / 10.0f );/// * (1-zoom);
+			starfield.AdjRotTime( -diff * 0.002f );/// * (1-zoom);
 		mouseRPoint = mousePoint;
 	}
 
@@ -720,12 +721,13 @@ void CMgrInput::ClearSelection()
 // Try selecting a star or line
 //   Names for selection are as follows:
 //		0											Terrain
-//		1											Star number 0
-//		MAX_STARS									Star number (MAX_STARS-1)
-//		MAX_STARS+1									Constellation number 0 lines
-//		MAX_STARS+1 + (MAX_CONSTS*MAX_CONSTLINES)	Constellation number (MAX_CONSTS-1) Lines
+//		i+1											Star number i
+//		MAX_STARS+1 + i*(MAX_CONSTLINES+1)			Constellation i label
+//		MAX_STARS+1 + i*(MAX_CONSTLINES+1) + j + 1	Constellation i line j
 BOOL CMgrInput::Select( select_e selection )
 {
+	selecting = TRUE;
+
 	// The Size Of The Viewport. [0] Is <x>, [1] Is <y>, [2] Is <width>, [3] Is <height>
 	GLint	viewport[4];
 	glGetIntegerv( GL_VIEWPORT, viewport );
@@ -739,7 +741,6 @@ BOOL CMgrInput::Select( select_e selection )
 	glInitNames();
 
 	glMatrixMode( GL_PROJECTION );
-	glPushMatrix();
 	glLoadIdentity();
 
 	// This Creates A Matrix That Will Zoom Up To A Small Portion Of The Screen, Where The Mouse Is.
@@ -750,16 +751,18 @@ BOOL CMgrInput::Select( select_e selection )
 	else if( selection == select_Const )
 		gluPickMatrix( (GLdouble) mousePoint.x, (GLdouble) mousePoint.y, 100.0f, 100.0f, viewport );
 
-	// Apply The Perspective Matrix
-	graphicsMgr.Perspective();
+	glMultMatrixf( graphicsMgr.GetPerspMat()->getFloats() );
 
 	glMatrixMode( GL_MODELVIEW );
 
 	if( selection == select_Star )
 	{
 		// Draw stars
-		glLoadMatrixf( graphicsMgr.starfMat.getFloats() );
-		graphicsMgr.DrawStars();
+		if( starfield.AreStarsVisible() && graphicsMgr.starAlpha > 0.0f )
+		{
+			glLoadMatrixf( graphicsMgr.starfMat.getFloats() );
+			graphicsMgr.DrawStars();
+		}
 
 		// Draw terrain
 		if( optionsMgr.IsTerrVisible() )
@@ -783,9 +786,13 @@ BOOL CMgrInput::Select( select_e selection )
 	}
 	else if( selection == select_Const )
 	{
+
 		// Draw all constellations
-		glLoadMatrixf( graphicsMgr.starfMat.getFloats() );
-		graphicsMgr.DrawConsts();
+		if( starfield.AreConstsVisible() && graphicsMgr.constAlpha > 0.0f )
+		{
+			glLoadMatrixf( graphicsMgr.starfMat.getFloats() );
+			graphicsMgr.DrawConsts();
+		}
 
 		// Draw terrain
 		if( optionsMgr.IsTerrVisible() )
@@ -795,24 +802,28 @@ BOOL CMgrInput::Select( select_e selection )
 		}
 	}
 
-	glMatrixMode( GL_PROJECTION );
-	glPopMatrix();
-
 	glMatrixMode( GL_MODELVIEW );
 	hits = glRenderMode( GL_RENDER );
 
 	// Check if there is a hit
 	if( hits <= 0 )
+	{
+		selecting = FALSE;
 		return FALSE;
+	}
 
 	// Test if terrain was hit
 	for( int i=0; i<hits; ++i )
 	{
 		// If terrain was hit (terrain is 0)
 		if( selectBuffer[i*4 + 3] == 0 )
+		{
+			selecting = FALSE;
 			return FALSE;
+		}
 	}
 
+	selecting = FALSE;
 	// Terrain wasn't hit
 	return TRUE;
 }
@@ -847,12 +858,12 @@ int CMgrInput::SelectConst()
 		return -1;
 
 	// Calculate constellation number
-	int constNum = (selectBuffer[3] - MAX_STARS - 1) / MAX_CONSTLINES;
+	int constNum = (selectBuffer[3] - MAX_STARS - 1) / (MAX_CONSTLINES+1);
 
 	// See if a line from another constellation was selected
 	for( int i=1; i<hits; ++i )
 	{
-		if( (selectBuffer[i*4+3] - MAX_STARS - 1) / MAX_CONSTLINES != constNum )
+		if( (selectBuffer[i*4+3] - MAX_STARS - 1) / (MAX_CONSTLINES+1) != constNum )
 			return -1;
 	}
 
@@ -874,7 +885,7 @@ int CMgrInput::SelectConstLine()
 		return -1;
 
 	// Calculate line number
-	int lineNum = selectBuffer[3] - MAX_STARS - 1 - (starfield.GetCurConstNum()*MAX_CONSTLINES);
+	int lineNum = selectBuffer[3] - MAX_STARS - 1 - starfield.GetCurConstNum()*(MAX_CONSTLINES+1) - 1;
 
 	// Sanity check (Select only draws current constellation)
 	if( lineNum < 0 || lineNum > starfield.GetCurConst()->GetLineCount()-1 )

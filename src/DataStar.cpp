@@ -32,6 +32,8 @@ CDataStar::~CDataStar()
 
 const CDataStar& CDataStar::operator=( const CDataStar& s )
 {
+	name = s.name;
+	hid = s.hid;
 	ra = s.ra;
 	dec = s.dec;
 	phi = s.phi;
@@ -43,12 +45,15 @@ const CDataStar& CDataStar::operator=( const CDataStar& s )
 	brVert = s.brVert;
 	mag = s.mag;
 	radius = s.radius;
-	color = s.color;
+	alpha = s.alpha;
+	spectral = s.spectral;
 	return *this;
 }
 
 void CDataStar::Init()
 {
+	name = "";
+	hid = -1;
 	ra.hour = 0;
 	ra.minute = 0;
 	ra.second = 0.0f;
@@ -65,38 +70,76 @@ void CDataStar::Init()
 	brVert = vector3( 0.0f, 0.0f, 0.0f );
 	mag = 10.0f; // Make dim so it won't ever be seen
 	radius = 0.0f;
-	color = COLOR_WHITE;
+	alpha = 1.0f;
+	spectral = 'A';
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
 // Gets
 
-ra_s		CDataStar::GetRA()		{	return ra;		}
-dec_s		CDataStar::GetDec()		{	return dec;		}
-float		CDataStar::GetPhi()		{	return phi;		}
-float		CDataStar::GetTheta()	{	return theta;	}
-vector3		CDataStar::GetCenter()	{	return center;	}
-vector3		CDataStar::GetTRVert()	{	return trVert;	}
-vector3		CDataStar::GetTLVert()	{	return tlVert;	}
-vector3		CDataStar::GetBLVert()	{	return blVert;	}
-vector3		CDataStar::GetBRVert()	{	return brVert;	}
-float		CDataStar::GetMag()		{	return mag;		}
-float		CDataStar::GetRadius()	{	return radius;	}
-color_s		CDataStar::GetColor()	{	return color;	}
+CString		CDataStar::GetName()		{	return name;		}
+int			CDataStar::GetHID()			{	return hid;			}
+ra_s		CDataStar::GetRA()			{	return ra;			}
+dec_s		CDataStar::GetDec()			{	return dec;			}
+float		CDataStar::GetPhi()			{	return phi;			}
+float		CDataStar::GetTheta()		{	return theta;		}
+vector3		CDataStar::GetCenter()		{	return center;		}
+vector3		CDataStar::GetTRVert()		{	return trVert;		}
+vector3		CDataStar::GetTLVert()		{	return tlVert;		}
+vector3		CDataStar::GetBLVert()		{	return blVert;		}
+vector3		CDataStar::GetBRVert()		{	return brVert;		}
+float		CDataStar::GetMag()			{	return mag;			}
+float		CDataStar::GetRadius()		{	return radius;		}
+float		CDataStar::GetAlpha()		{	return alpha;		}
+char		CDataStar::GetSpectral()	{	return spectral;	}
+
+color_s		CDataStar::GetColor()
+{
+	color_s c = COLOR_WHITE*alpha;
+	if( !optionsMgr.AreStarsColored() )
+		return c;
+	else
+	{
+//obafgkm
+		if( spectral == 'O' )
+			return c*DEF_STARS_SPECTRAL_O_COLOR;
+		if( spectral == 'B' )
+			return c*DEF_STARS_SPECTRAL_B_COLOR;
+		if( spectral == 'A' )
+			return c*DEF_STARS_SPECTRAL_A_COLOR;
+		if( spectral == 'F' )
+			return c*DEF_STARS_SPECTRAL_F_COLOR;
+		if( spectral == 'G' )
+			return c*DEF_STARS_SPECTRAL_G_COLOR;
+		if( spectral == 'K' )
+			return c*DEF_STARS_SPECTRAL_K_COLOR;
+		if( spectral == 'M' )
+			return c*DEF_STARS_SPECTRAL_M_COLOR;
+		if( spectral == 'C' || spectral == 'N' || spectral == 'S' || spectral == 'W' || spectral == 'D' )///
+			return c;
+
+		CSDebug( CString("Bad spectral type: ") + spectral, "CDataStar::GetColor" );
+		PostQuitMessage(1);
+		return COLOR_WHITE;
+	}
+}
 
 
 /////////////////////////////////////////////////////////////////////////////
 // Sets
 
-void CDataStar::SetRA( ra_s r )			{	ra = r;		}
-void CDataStar::SetDec( dec_s d )		{	dec = d;	}
-void CDataStar::SetCenter( vector3 c )	{	center = c;	}
-void CDataStar::SetPhi( float p )		{	phi = p;	}
-void CDataStar::SetTheta( float t )		{	theta = t;	}
-void CDataStar::SetMag( float m )		{	mag = m;	}
-void CDataStar::SetRadius( float r )	{	radius = r;	}
-void CDataStar::SetColor( color_s c )	{	color = c;	}
+void CDataStar::SetName( CString n )	{	name = n;		}
+void CDataStar::SetHID( int h )			{	hid = h;		}
+void CDataStar::SetRA( ra_s r )			{	ra = r;			}
+void CDataStar::SetDec( dec_s d )		{	dec = d;		}
+void CDataStar::SetCenter( vector3 c )	{	center = c;		}
+void CDataStar::SetPhi( float p )		{	phi = p;		}
+void CDataStar::SetTheta( float t )		{	theta = t;		}
+void CDataStar::SetMag( float m )		{	mag = m;		}
+void CDataStar::SetRadius( float r )	{	radius = r;		}
+void CDataStar::SetAlpha( float a )		{	alpha = a;		}
+void CDataStar::SetSpectral( char s )	{	spectral = s;	}
 
 void CDataStar::SetRA( USHORT h, USHORT m, float s )
 {
@@ -355,19 +398,21 @@ void CDataStar::Serialize(CArchive& ar)
 
 	if( ar.IsLoading() )
 	{
-		ar >> ra.hour >> ra.minute >> ra.second
+		ar >> name >> hid
+		   >> ra.hour >> ra.minute >> ra.second
 		   >> dec.positive >> dec.degree >> dec.minute >> dec.second
 		   >> mag >> center.x >> center.y >> center.z
-		   >> color
-		   >> radius;
+		   >> radius
+		   >> alpha;
 	}
 	else
 	{
-		ar << ra.hour << ra.minute << ra.second
+		ar << name << hid
+		   << ra.hour << ra.minute << ra.second
 		   << dec.positive << dec.degree << dec.minute << dec.second
 		   << mag << center.x << center.y << center.z
-		   << color
-		   << radius;
+		   << radius
+		   << alpha;
 	}
 }
 

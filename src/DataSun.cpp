@@ -43,8 +43,9 @@ const CDataSun& CDataSun::operator=( const CDataSun& s )
 	brVert = s.brVert;
 	mag = s.mag;
 	radius = s.radius;
-	color = s.color;
 	rotTime = s.rotTime;
+	alpha = s.alpha;
+	color = s.color;
 	timeMat = s.timeMat;
 	return *this;
 }
@@ -73,8 +74,10 @@ void CDataSun::Init()
 /////////////////////////////////////////////////////////////////////////////
 // Gets
 
-float     CDataSun::GetRotTime()	{	return rotTime;		}
-matrix44* CDataSun::GetTimeMat()	{	return &timeMat;	}
+color_s		CDataSun::GetColor()	{	return color;		}
+float		CDataSun::GetRotTime()	{	return rotTime;		}
+matrix44*	CDataSun::GetTimeMat()	{	return &timeMat;	}
+
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -83,17 +86,19 @@ matrix44* CDataSun::GetTimeMat()	{	return &timeMat;	}
 void CDataSun::AdjRotTime( float delta )
 {
 	rotTime += delta;
-	if( rotTime > 360.0f )
-        rotTime -= 360.0f;
-	else if( rotTime < -360.0f )
-		rotTime += 360.0f;
+
+	// Keep rotTime between 0 and 2*PI
+	if( rotTime < 0.0f )
+		rotTime += PI2;
+	if( rotTime > PI2 )
+        rotTime -= PI2;
 
 	UpdateTimeMat();
 }
 
 void CDataSun::UpdateTimeMat()
 {
-	timeMat = RotateRadMatrix44( 'y', DegToRad(rotTime) );/// store as rad
+	timeMat = RotateRadMatrix44( 'y', rotTime );
 }
 
 
@@ -104,7 +109,7 @@ void CDataSun::Serialize(CArchive& ar)
 {
 	CObject::Serialize(ar);
 
-	CSDebug( "Shouldn't be serializing a star", "CDataSun::Serialize" );
+	CSDebug( "Shouldn't be serializing a sun", "CDataSun::Serialize" );
 	return;
 
 	if( ar.IsLoading() )
@@ -112,16 +117,18 @@ void CDataSun::Serialize(CArchive& ar)
 		ar >> ra.hour >> ra.minute >> ra.second
 		   >> dec.positive >> dec.degree >> dec.minute >> dec.second
 		   >> mag >> center.x >> center.y >> center.z
-		   >> color
-		   >> radius;
+		   >> radius
+		   >> alpha
+		   >> color;
 	}
 	else
 	{
 		ar << ra.hour << ra.minute << ra.second
 		   << dec.positive << dec.degree << dec.minute << dec.second
 		   << mag << center.x << center.y << center.z
-		   << color
-		   << radius;
+		   << radius
+		   << alpha
+		   << color;
 	}
 }
 

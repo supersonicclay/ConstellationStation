@@ -28,6 +28,13 @@ public:
 
 // Attributes
 protected:
+
+	// Common name
+	CString name;
+
+	// Hipparcos id
+	int hid;
+
 	// Position
 	ra_s ra;
 	dec_s dec;
@@ -41,14 +48,17 @@ protected:
 
 	// Appearance
 	float mag;
-	color_s color;
 	float radius;
+	float alpha;
+	char spectral;
 
 
 // Methods
 public:
 
 // Gets
+	CString GetName();
+	int GetHID();
 	ra_s GetRA();
 	dec_s GetDec();
 	float GetPhi();
@@ -60,10 +70,14 @@ public:
 	vector3 GetBLVert();
 	vector3 GetBRVert();
 	float GetMag();
-	color_s GetColor();
 	float GetRadius();
+	float GetAlpha();
+	color_s GetColor();
+	char GetSpectral();
 
 // Sets
+	void SetName( CString n );
+	void SetHID( int h );
 	void SetRA( ra_s r );
 	void SetDec( dec_s d );
 	void SetRA( USHORT h, USHORT m, float s );
@@ -72,8 +86,9 @@ public:
 	void SetPhi( float p );
 	void SetTheta( float t );
 	void SetMag( float m );
-	void SetColor( color_s c );
 	void SetRadius( float r );
+	void SetAlpha( float a );
+	void SetSpectral( char s );
 
 // Methods
 	// Right ascension and declination known

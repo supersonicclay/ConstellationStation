@@ -880,7 +880,7 @@ public:
   friend vector3    operator * (const matrix44 &m, const vector3 &v) {
     vector4 ret(v);
     ret = m * ret;
-    return vector3(ret.x, ret.y, ret.z);
+    return vector3(ret.x/ret.w, ret.y/ret.w, ret.z/ret.w);///
   }
   // Multiply a vector3 by this matrix44
   friend vector3    operator * (const vector3 &v, const matrix44 &m) {

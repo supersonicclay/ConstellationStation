@@ -72,15 +72,6 @@ int CCSView::OnCreate( LPCREATESTRUCT lpCreateStruct )
 	if (CWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
-	// Try initializing OpenGL
-	if( !graphicsMgr.InitializeOpenGL() )
-	{
-		CSDebug( "Error initializing OpenGL", "CCSView::OnCreate" );
-		graphicsMgr.Destroy();
-		exit(0);
-		return -1;
-	}
-
 	SetTimer( 1, 20, NULL );
 
 	return 0;
@@ -89,6 +80,7 @@ int CCSView::OnCreate( LPCREATESTRUCT lpCreateStruct )
 void CCSView::OnDestroy() 
 {
 	graphicsMgr.Destroy();
+	textMgr.KillFonts();
 }
 
 BOOL CCSView::OnEraseBkgnd(CDC* pDC) 
@@ -139,7 +131,7 @@ void CCSView::OnTimer(UINT nIDEvent)
 		state == state_Viewing &&
 		!inputMgr.mouseRotatingXY && !inputMgr.mouseRotatingZ )
 	{
-		starfield.AdjRotTime(0.05f);
+		starfield.AdjRotTime(-0.0009f);
 		Redraw();
 	}
 }

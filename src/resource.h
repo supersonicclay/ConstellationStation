@@ -24,7 +24,10 @@
 #define IDD_OPTIONS_TERR                162
 #define IDD_TIME                        163
 #define IDD_OPTIONS_COLORS              164
+#define IDD_OPTIONS_COLOR               164
 #define IDD_OPTIONS_SUN                 165
+#define IDD_OPTIONS_TEXT                166
+#define IDD_OPTIONS_COLORSold           167
 #define IDC_CONST_NAME                  1014
 #define IDC_CONST_LIST                  1021
 #define IDC_SHOWALL                     1027
@@ -70,7 +73,10 @@
 #define IDC_CONST_ACTIVECOLOR_PREV      1108
 #define IDC_CONST_STARCOLOR_PREV        1109
 #define IDC_TERR_WINCOLOR_PREV          1110
+#define IDC_COLOR_STARLABELS_PREV       1110
 #define IDC_CONST_STARSCOLORED          1111
+#define IDC_COLOR_CONSTSELLABELS_PREV   1111
+#define IDC_COLOR_CONSTLABELS_PREV      1112
 #define IDC_TERR_SPRCOLOR_PREV          1113
 #define IDC_TERR_SUMCOLOR_PREV          1115
 #define IDC_TERR_FALCOLOR_PREV          1116
@@ -80,10 +86,26 @@
 #define IDC_COLOR_CONSTSEL              1120
 #define IDC_COLOR_CONSTACTIVE           1121
 #define IDC_COLOR_CONSTSTAR             1122
+#define IDC_COLOR_STARLABELS            1123
 #define IDC_SUN_VISIBLE                 1124
+#define IDC_COLOR_CONSTSELLABELS        1124
 #define IDC_SUN_SHINE                   1125
+#define IDC_COLOR_DIRLABELS             1125
 #define IDC_SUN_DEFAULTS                1126
+#define IDC_COLOR_COMPASS               1126
+#define IDC_COLOR_CONSTLABELS           1127
 #define IDC_CONST_LINEWIDTH             1133
+#define IDC_TEXT_CONSTFONT              1134
+#define IDC_TEXT_STARFONT               1135
+#define IDC_TEXT_DIRFONT                1136
+#define IDC_TEXT_DEFAULTS               1141
+#define IDC_COLOR_CONSTSEL_PREV         1144
+#define IDC_COLOR_CONSTSTAR_PREV        1145
+#define IDC_COLOR_CONSTNORM_PREV        1146
+#define IDC_COLOR_CONSTACTIVE_PREV      1147
+#define IDC_COLOR_DIRLABELS_PREV        1148
+#define IDC_COLOR_COMPASS_PREV          1149
+#define IDC_COLOR_STARCONST             1150
 #define ID_STARF_NEWRANDOM              32772
 #define ID_STARF_NEWACTUAL              32773
 #define ID_STARF_OPEN                   32774
@@ -115,15 +137,18 @@
 #define ID_OPTIONS_SUN                  32872
 #define ID_SUN_TOGGLE                   32874
 #define ID_SUNSHINE_TOGGLE              32875
+#define ID_OPTIONS_TEXT                 32876
+#define ID_OPTIONS_COLOR                32879
+#define ID_CONST_LINESTOGGLE            32880
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        167
-#define _APS_NEXT_COMMAND_VALUE         32876
-#define _APS_NEXT_CONTROL_VALUE         1134
+#define _APS_NEXT_RESOURCE_VALUE        169
+#define _APS_NEXT_COMMAND_VALUE         32882
+#define _APS_NEXT_CONTROL_VALUE         1151
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

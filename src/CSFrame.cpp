@@ -34,13 +34,10 @@ BEGIN_MESSAGE_MAP(CCSFrame, CFrameWnd)
 	ON_COMMAND(ID_CONST_ADD, OnConstAdd)
 	ON_COMMAND(ID_CONST_DELETE, OnConstDelete)
 	ON_COMMAND(ID_CONST_RENAME, OnConstRename)
-	ON_COMMAND(ID_CONST_HIDE, OnConstHide)
 	ON_COMMAND(ID_CONST_ALINE, OnConstAddLine)
 	ON_COMMAND(ID_CONST_DLINE, OnConstDeleteLine)
-	ON_COMMAND(ID_CONST_SHOWHIDE, OnConstShowHide)
-	ON_COMMAND(ID_CONST_HIDEALL, OnConstHideAll)
-	ON_COMMAND(ID_CONST_SHOWALL, OnConstShowAll)
 	ON_COMMAND(ID_CONST_TOGGLE, OnConstToggle)
+	ON_COMMAND(ID_CONST_LINESTOGGLE, OnConstLinesToggle)
 	ON_COMMAND(ID_TERR_NEW, OnTerrNew)
 	ON_COMMAND(ID_SUN_TOGGLE, OnSunToggle)
 	ON_COMMAND(ID_SUNSHINE_TOGGLE, OnSunshineToggle)
@@ -52,19 +49,18 @@ BEGIN_MESSAGE_MAP(CCSFrame, CFrameWnd)
 	ON_COMMAND(ID_OPTIONS_CONST, OnOptionsConst)
 	ON_COMMAND(ID_OPTIONS_SUN, OnOptionsSun)
 	ON_COMMAND(ID_OPTIONS_TERR, OnOptionsTerr)
+	ON_COMMAND(ID_OPTIONS_COLOR, OnOptionsColor)
+	ON_COMMAND(ID_OPTIONS_TEXT, OnOptionsText)
 	ON_UPDATE_COMMAND_UI(ID_STARF_ROTATE, OnUpdateStarfRotate)
 	ON_UPDATE_COMMAND_UI(ID_STARS_TOGGLE, OnUpdateStarsToggle)
 	ON_UPDATE_COMMAND_UI(ID_CONST_LIST, OnUpdateConstList)
 	ON_UPDATE_COMMAND_UI(ID_CONST_ADD, OnUpdateConstAdd)
 	ON_UPDATE_COMMAND_UI(ID_CONST_DELETE, OnUpdateConstDelete)
 	ON_UPDATE_COMMAND_UI(ID_CONST_RENAME, OnUpdateConstRename)
-	ON_UPDATE_COMMAND_UI(ID_CONST_HIDE, OnUpdateConstHide)
 	ON_UPDATE_COMMAND_UI(ID_CONST_ALINE, OnUpdateConstAddLine)
 	ON_UPDATE_COMMAND_UI(ID_CONST_DLINE, OnUpdateConstDeleteLine)
-	ON_UPDATE_COMMAND_UI(ID_CONST_HIDEALL, OnUpdateConstHideAll)
-	ON_UPDATE_COMMAND_UI(ID_CONST_SHOWALL, OnUpdateConstShowAll)
-	ON_UPDATE_COMMAND_UI(ID_CONST_SHOWHIDE, OnUpdateConstShowHide)
 	ON_UPDATE_COMMAND_UI(ID_CONST_TOGGLE, OnUpdateConstToggle)
+	ON_UPDATE_COMMAND_UI(ID_CONST_LINESTOGGLE, OnUpdateConstLinesToggle)
 	ON_UPDATE_COMMAND_UI(ID_TERR_TOGGLE, OnUpdateTerrToggle)
 	ON_UPDATE_COMMAND_UI(ID_SUN_TOGGLE, OnUpdateSunToggle)
 	ON_UPDATE_COMMAND_UI(ID_SUNSHINE_TOGGLE, OnUpdateSunshineToggle)
@@ -133,9 +129,21 @@ int CCSFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	DockControlBar(&starfBar);
 	DockControlBar(&constBar);
 
-	/// Load options
-	optionsMgr.Load();
-///	optionsMgr.LoadDefaults();
+	// Try initializing OpenGL
+	if( !graphicsMgr.InitializeOpenGL() )
+	{
+		CSDebug( "Error initializing OpenGL", "CCSView::OnCreate" );
+		graphicsMgr.Destroy();
+		exit(0);
+		return -1;
+	}
+
+	// Initialize fonts
+	textMgr.InitFonts();
+
+	// Load options
+	optionsMgr.Load();///
+	optionsMgr.LoadDefaults();/// always defaults
 
 	// New document
 	documentMgr.NewActual();
@@ -237,6 +245,7 @@ void CCSFrame::OnStarfSaveAs()		{	documentMgr.SaveAs();			}
 void CCSFrame::OnStarfRotate()		{	starfMgr.Rotate();				}
 void CCSFrame::OnStarsToggle()		{	starfMgr.ToggleStars();			}
 void CCSFrame::OnConstToggle()		{	starfMgr.ToggleConsts();		}
+void CCSFrame::OnConstLinesToggle()	{	starfMgr.ToggleConstsLines();	}
 void CCSFrame::OnSunToggle()		{	starfMgr.ToggleSun();			}
 void CCSFrame::OnSunshineToggle()	{	starfMgr.ToggleSunshine();		}
 
@@ -244,12 +253,8 @@ void CCSFrame::OnSunshineToggle()	{	starfMgr.ToggleSunshine();		}
 void CCSFrame::OnConstAdd()			{	constMgr.Add();					}
 void CCSFrame::OnConstDelete()		{	constMgr.Delete();				}
 void CCSFrame::OnConstRename()		{	constMgr.Rename();				}
-void CCSFrame::OnConstHide()		{	constMgr.Hide();				}
 void CCSFrame::OnConstAddLine()		{	constMgr.AddLine();				}
 void CCSFrame::OnConstDeleteLine()	{	constMgr.DeleteLine();			}
-void CCSFrame::OnConstShowHide()	{	constMgr.ShowHide();			}
-void CCSFrame::OnConstHideAll()		{	constMgr.HideAll();				}
-void CCSFrame::OnConstShowAll()		{	constMgr.ShowAll();				}
 
 // Terrain commands
 void CCSFrame::OnTerrNew()			{	terrainMgr.New();				}
@@ -263,6 +268,8 @@ void CCSFrame::OnOptionsStar()		{	starfMgr.StarOptions();			}
 void CCSFrame::OnOptionsConst()		{	starfMgr.ConstOptions();		}
 void CCSFrame::OnOptionsSun()		{	starfMgr.SunOptions();			}
 void CCSFrame::OnOptionsTerr()		{	terrainMgr.Options();			}
+void CCSFrame::OnOptionsColor()		{	optionsMgr.ColorOptions();		}
+void CCSFrame::OnOptionsText()		{	textMgr.Options();				}
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -300,20 +307,6 @@ void CCSFrame::OnUpdateConstRename(CCmdUI* pCmdUI)
 					starfield.GetConstCount() > 0);
 }
 
-void CCSFrame::OnUpdateConstHide(CCmdUI* pCmdUI) 
-{
-	if( starfield.GetConstCount() == 0 )
-	{
-		pCmdUI->Enable( FALSE );
-		pCmdUI->SetCheck( FALSE );
-	}
-	else
-	{
-		pCmdUI->Enable( state == state_Viewing );
-		pCmdUI->SetCheck(!starfield.GetCurConst()->IsVisible());
-	}
-}
-
 void CCSFrame::OnUpdateConstAddLine(CCmdUI* pCmdUI) 
 {
 	if( starfield.GetConstCount() == 0 )
@@ -323,7 +316,7 @@ void CCSFrame::OnUpdateConstAddLine(CCmdUI* pCmdUI)
 	}
 	else
 	{
-		pCmdUI->Enable( starfield.GetCurConst()->IsVisible() );
+		pCmdUI->Enable( starfield.AreConstsVisible() && starfield.AreConstsLinesVisible() );
 		pCmdUI->SetCheck( state == state_AddingLine );
 	}
 }
@@ -337,32 +330,19 @@ void CCSFrame::OnUpdateConstDeleteLine(CCmdUI* pCmdUI)
 	}
 	else
 	{
-		pCmdUI->Enable( starfield.GetCurConst()->IsVisible() );
+		pCmdUI->Enable( starfield.AreConstsVisible() && starfield.AreConstsLinesVisible() );
 		pCmdUI->SetCheck( state == state_DeletingLine );
 	}
-}
-
-void CCSFrame::OnUpdateConstHideAll(CCmdUI* pCmdUI) 
-{
-	pCmdUI->Enable( state == state_Viewing &&
-		starfield.GetConstCount() > 0 );
-}
-
-void CCSFrame::OnUpdateConstShowAll(CCmdUI* pCmdUI) 
-{
-	pCmdUI->Enable( state == state_Viewing &&
-		starfield.GetConstCount() > 0 );
-}
-
-void CCSFrame::OnUpdateConstShowHide(CCmdUI* pCmdUI) 
-{
-	pCmdUI->Enable( state == state_Viewing &&
-		starfield.GetConstCount() > 0 );
 }
 
 void CCSFrame::OnUpdateConstToggle(CCmdUI* pCmdUI) 
 {
 	pCmdUI->SetCheck( starfield.AreConstsVisible() );	
+}
+
+void CCSFrame::OnUpdateConstLinesToggle(CCmdUI* pCmdUI) 
+{
+	pCmdUI->SetCheck( !starfield.AreConstsLinesVisible() );	
 }
 
 void CCSFrame::OnUpdateTerrToggle(CCmdUI* pCmdUI) 

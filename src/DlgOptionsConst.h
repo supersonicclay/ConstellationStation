@@ -1,7 +1,7 @@
 //===========================================================================
 // DlgOptionsConst.h
 //
-// CDlgOptionsCosnt
+// CDlgOptionsConst
 //   constellation options dialog.
 //===========================================================================
 
@@ -22,21 +22,8 @@ public:
 	BOOL	visible;
 	BOOL	daylight;
 	BOOL	labeled;
-	BOOL	starsColored;
 	int		lineWidth;
 	//}}AFX_DATA
-
-	color_s normColor;
-	color_s selColor;
-	color_s activeColor;
-	color_s starColor;
-	color_s origNormColor;
-	color_s origSelColor;
-	color_s origActiveColor;
-	color_s origStarColor;
-
-	// Color preview brush
-	CBrush colorBrush;
 
 
 // Methods
@@ -50,18 +37,13 @@ public:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
 
+
 // Implementation
 protected:
 
 	// Generated message map functions
 	//{{AFX_MSG(CDlgOptionsConst)
 	virtual BOOL OnInitDialog();
-	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
-	afx_msg void OnConstNormColor();
-	afx_msg void OnConstSelColor();
-	afx_msg void OnConstActiveColor();
-	afx_msg void OnConstStarColor();
-	afx_msg void OnConstStarsColored();
 	afx_msg void OnConstDefaults();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()

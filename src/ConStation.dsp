@@ -148,6 +148,10 @@ SOURCE=.\DlgLocation.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\DlgOptionsColor.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\DlgOptionsConst.cpp
 # End Source File
 # Begin Source File
@@ -165,6 +169,10 @@ SOURCE=.\DlgOptionsSun.cpp
 # Begin Source File
 
 SOURCE=.\DlgOptionsTerr.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\DlgOptionsText.cpp
 # End Source File
 # Begin Source File
 
@@ -239,6 +247,10 @@ SOURCE=.\MgrTeacher.cpp
 
 SOURCE=.\MgrTerrain.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\MgrText.cpp
+# End Source File
 # End Group
 # End Group
 # Begin Group "Header Files"
@@ -301,6 +313,10 @@ SOURCE=.\DlgLocation.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\DlgOptionsColor.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\DlgOptionsConst.h
 # End Source File
 # Begin Source File
@@ -318,6 +334,10 @@ SOURCE=.\DlgOptionsSun.h
 # Begin Source File
 
 SOURCE=.\DlgOptionsTerr.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\DlgOptionsText.h
 # End Source File
 # Begin Source File
 
@@ -391,6 +411,10 @@ SOURCE=.\MgrTeacher.h
 # Begin Source File
 
 SOURCE=.\MgrTerrain.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrText.h
 # End Source File
 # End Group
 # End Group

@@ -17,6 +17,20 @@
 	ConstLine width needs taller listbox
 	Terrain textures completed
 
+0.4.2
+	Store rotTime's as rad
+	Don't draw if alpha=0
+	Custom projection matrix
+	Constellation labels
+	Vector3 center (update when add/del line)
+	Text
+	Spectral type coloring
+	Color options dialog
+	Font options
+	Take out colors from other options dialogs
+	No independent constellation show/hide. Just const and const lines toggle
+	Take out ConstStarsColored
+
 
 
 -------------------------------------------------

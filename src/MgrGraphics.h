@@ -29,6 +29,7 @@ public:
 	int height;
 
 	// Matrices
+	matrix44 perspMat;
 	matrix44 skyMat;
 	matrix44 starfMat;
 	matrix44 sunMat;
@@ -67,6 +68,8 @@ public:
 
 // Methods
 public:
+
+
 // Initialization
 	BOOL InitializeOpenGL();
 	BOOL SetupPixelFormat();
@@ -88,9 +91,9 @@ public:
 
 // View manipulation
 	void Size( int cx, int cy );
-	void Projection();
-	void Perspective();
+	matrix44* GetPerspMat();
 	void UpdateMats();
+	void UpdatePerspMat();
 	void UpdateSkyMat();
 	void UpdateStarfMat();
 	void UpdateSunMat();

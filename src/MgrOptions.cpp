@@ -12,6 +12,7 @@
 #include "MgrOptions.h"
 
 #include "DlgOptionsGeneral.h"
+#include "DlgOptionsColor.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -27,7 +28,6 @@ IMPLEMENT_SERIAL( CMgrOptions, CObject, 1 )
 
 CMgrOptions::CMgrOptions()
 {
-	LoadDefaults();
 }
 
 CMgrOptions::~CMgrOptions()
@@ -40,6 +40,8 @@ void CMgrOptions::LoadDefaults()
 	LoadConstDefaults();
 	LoadSunDefaults();
 	LoadTerrDefaults();
+	LoadColorDefaults();
+	LoadTextDefaults();
 }
 
 void CMgrOptions::LoadStarDefaults()
@@ -62,11 +64,6 @@ void CMgrOptions::LoadStarDefaults()
 void CMgrOptions::LoadConstDefaults()
 {
 	starfield.LoadConstDefaults();
-	constNormColor = DEF_CONST_NORMCOLOR;
-	constSelColor = DEF_CONST_SELCOLOR;
-	constActiveColor = DEF_CONST_ACTIVECOLOR;
-	constStarColor = DEF_CONST_STARCOLOR;
-	constStarsColored = DEF_CONST_STARSCOLORED;
 	constLineWidth = DEF_CONST_LINEWIDTH;
 }
 
@@ -87,7 +84,32 @@ void CMgrOptions::LoadTerrDefaults()
 	terrWinColor = DEF_TERR_WINCOLOR;
 	terrSprColor = DEF_TERR_SPRCOLOR;
 	terrSumColor = DEF_TERR_SUMCOLOR;
-	terrFalColor = DEF_TERR_FALCOLOR;
+	terrAutColor = DEF_TERR_FALCOLOR;
+
+	terrain.MakeTerrain();
+}
+
+void CMgrOptions::LoadColorDefaults()
+{
+	starsColored = DEF_STARS_COLORED;
+	constNormColor = DEF_CONST_NORMCOLOR;
+	constSelColor = DEF_CONST_SELCOLOR;
+	constActiveColor = DEF_CONST_ACTIVECOLOR;
+	constStarColor = DEF_CONST_STARCOLOR;
+	textConstColor = DEF_TEXT_CONSTCOLOR;
+	textConstSelColor = DEF_TEXT_CONSTSELCOLOR;
+	textStarColor = DEF_TEXT_STARCOLOR;
+	textDirColor = DEF_TEXT_DIRCOLOR;
+}
+
+void CMgrOptions::LoadTextDefaults()
+{
+	textConstFont = DEF_TEXT_CONSTFONT;
+	textStarFont = DEF_TEXT_STARFONT;
+	textDirFont = DEF_TEXT_DIRFONT;
+
+	// Rebuild fonts
+	textMgr.BuildFonts();
 }
 
 
@@ -105,7 +127,6 @@ color_s		CMgrOptions::GetConstNormColor()		{	return constNormColor;			}
 color_s		CMgrOptions::GetConstSelColor()			{	return constSelColor;			}
 color_s		CMgrOptions::GetConstActiveColor()		{	return constActiveColor;		}
 color_s		CMgrOptions::GetConstStarColor()		{	return constStarColor;			}
-BOOL		CMgrOptions::AreConstStarsColored()		{	return constStarsColored;		}
 int			CMgrOptions::GetConstLineWidth()		{	return constLineWidth;			}
 
 BOOL		CMgrOptions::IsTerrVisible()			{	return terrVisible;				}
@@ -119,63 +140,88 @@ season_e	CMgrOptions::GetTerrSeason()			{	return terrSeason;				}
 color_s		CMgrOptions::GetTerrWinColor()			{	return terrWinColor;			}
 color_s		CMgrOptions::GetTerrSprColor()			{	return terrSprColor;			}
 color_s		CMgrOptions::GetTerrSumColor()			{	return terrSumColor;			}
-color_s		CMgrOptions::GetTerrFalColor()			{	return terrFalColor;			}
+color_s		CMgrOptions::GetTerrAutColor()			{	return terrAutColor;			}
+
+LOGFONT		CMgrOptions::GetTextConstFont()			{	return textConstFont;			}
+LOGFONT		CMgrOptions::GetTextStarFont()			{	return textStarFont;			}
+LOGFONT		CMgrOptions::GetTextDirFont()			{	return textDirFont;				}
+color_s		CMgrOptions::GetTextConstColor()		{	return textConstColor;			}
+color_s		CMgrOptions::GetTextConstSelColor()		{	return textConstSelColor;		}
+color_s		CMgrOptions::GetTextStarColor()			{	return textStarColor;			}
+color_s		CMgrOptions::GetTextDirColor()			{	return textDirColor;			}
 
 // Get terrain color for the current season
 color_s CMgrOptions::GetTerrColor()
 {
-	if( terrSeason == season_Winter )
-		return terrWinColor;
-	else if( terrSeason == season_Spring )
-		return terrSprColor;
-	else if( terrSeason == season_Summer )
-		return terrSumColor;
-	else
-		return terrFalColor;
+	switch( terrSeason )
+	{
+	case season_Winter:
+		return terrWinColor; break;
+	case season_Spring:
+		return terrSprColor; break;
+	case season_Summer:
+		return terrSumColor; break;
+	case season_Autumn:
+		return terrAutColor; break;
+	default:
+		return COLOR_WHITE;  break;
+	}
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
 // Sets
 
-void CMgrOptions::SetStarsTextured( BOOL t )		{	starsTextured = t;			}
-void CMgrOptions::SetStarsColored( BOOL c )			{	starsColored = c;			}
-void CMgrOptions::SetStarsLimMagX10( int x )		{	starsLimMagX10 = x;			}
-void CMgrOptions::SetStarsSize( int g )				{	starsSize = g;				}
-void CMgrOptions::SetStarsSContrast( int c )		{	starsSContrast = c;			}
-void CMgrOptions::SetStarsCContrast( int c )		{	starsCContrast = c;			}
+void CMgrOptions::SetStarsTextured( BOOL t )		{	starsTextured = t;						}
+void CMgrOptions::SetStarsColored( BOOL c )			{	starsColored = c;						}
+void CMgrOptions::SetStarsLimMagX10( int x )		{	starsLimMagX10 = x;						}
+void CMgrOptions::SetStarsSize( int g )				{	starsSize = g;							}
+void CMgrOptions::SetStarsSContrast( int c )		{	starsSContrast = c;						}
+void CMgrOptions::SetStarsCContrast( int c )		{	starsCContrast = c;						}
 
-void CMgrOptions::SetConstNormColor( color_s c )	{	constNormColor = c;			}
-void CMgrOptions::SetConstSelColor( color_s c )		{	constSelColor = c;			}
-void CMgrOptions::SetConstActiveColor( color_s c )	{	constActiveColor = c;		}
-void CMgrOptions::SetConstStarColor( color_s c )	{	constStarColor = c;			}
-void CMgrOptions::SetConstStarsColored( BOOL x )	{	constStarsColored = x;		}
-void CMgrOptions::SetConstLineWidth( int w )		{	constLineWidth = w;			}
+void CMgrOptions::SetConstNormColor( color_s c )	{	constNormColor = c;						}
+void CMgrOptions::SetConstSelColor( color_s c )		{	constSelColor = c;						}
+void CMgrOptions::SetConstActiveColor( color_s c )	{	constActiveColor = c;					}
+void CMgrOptions::SetConstStarColor( color_s c )	{	constStarColor = c;						}
+void CMgrOptions::SetConstLineWidth( int w )		{	constLineWidth = w;						}
 
-void CMgrOptions::SwitchTerrVisible()				{	terrVisible = !terrVisible;	}
-void CMgrOptions::SetTerrVisible( BOOL x )			{	terrVisible = x;			}
-void CMgrOptions::SetTerrTextured( BOOL t )			{	terrTextured = t;			}
-void CMgrOptions::SetTerrRoughnessX100( int r )		{	terrRoughnessX100 = r;		}
-void CMgrOptions::SetTerrScale( int s )				{	terrScale = s;				}
-void CMgrOptions::SetTerrTexIters( int i )			{	terrTexIters = i;			}
-void CMgrOptions::SetTerrHeightIters( int i )		{	terrHeightIters = i;		}
+void CMgrOptions::SwitchTerrVisible()				{	terrVisible = !terrVisible;				}
+void CMgrOptions::SetTerrVisible( BOOL x )			{	terrVisible = x;						}
+void CMgrOptions::SetTerrTextured( BOOL t )			{	terrTextured = t;						}
+void CMgrOptions::SetTerrRoughnessX100( int r )		{	terrRoughnessX100 = r;					}
+void CMgrOptions::SetTerrScale( int s )				{	terrScale = s;							}
+void CMgrOptions::SetTerrTexIters( int i )			{	terrTexIters = i;						}
+void CMgrOptions::SetTerrHeightIters( int i )		{	terrHeightIters = i;					}
 void CMgrOptions::SetTerrSeason( season_e s )		{	terrSeason = s;	terrain.MakeTerrain();	}
-void CMgrOptions::SetTerrWinColor( color_s c )		{	terrWinColor = c;			}
-void CMgrOptions::SetTerrSprColor( color_s c )		{	terrSprColor = c;			}
-void CMgrOptions::SetTerrSumColor( color_s c )		{	terrSumColor = c;			}
-void CMgrOptions::SetTerrFalColor( color_s c )		{	terrFalColor = c;			}
+void CMgrOptions::SetTerrWinColor( color_s c )		{	terrWinColor = c;						}
+void CMgrOptions::SetTerrSprColor( color_s c )		{	terrSprColor = c;						}
+void CMgrOptions::SetTerrSumColor( color_s c )		{	terrSumColor = c;						}
+void CMgrOptions::SetTerrAutColor( color_s c )		{	terrAutColor = c;						}
+
+void CMgrOptions::SetTextConstFont( LOGFONT f )		{	textConstFont = f;						}
+void CMgrOptions::SetTextStarFont( LOGFONT f )		{	textStarFont = f;						}
+void CMgrOptions::SetTextDirFont( LOGFONT f )		{	textDirFont = f;						}
+void CMgrOptions::SetTextConstColor( color_s c )	{	textConstColor = c;						}
+void CMgrOptions::SetTextConstSelColor( color_s c )	{	textConstSelColor = c;					}
+void CMgrOptions::SetTextStarColor( color_s c )		{	textStarColor = c;						}
+void CMgrOptions::SetTextDirColor( color_s c )		{	textDirColor = c;						}
 
 // Set terrain color for the current season
 void CMgrOptions::SetTerrColor( color_s c )
 {
-	if( terrSeason == season_Winter )
-		terrWinColor = c;
-	else if( terrSeason == season_Spring )
-		terrSprColor = c;
-	else if( terrSeason == season_Summer )
-		terrSumColor = c;
-	else
-		terrFalColor = c;
+	switch( terrSeason )
+	{
+	case season_Winter:
+		terrWinColor = c; break;
+	case season_Spring:
+		terrSprColor = c; break;
+	case season_Summer:
+		terrSumColor = c; break;
+	case season_Autumn:
+		terrAutColor = c; break;
+	default:
+		break;
+	}
 }
 
 
@@ -187,6 +233,31 @@ void CMgrOptions::General()
 {
 	CDlgOptionsGeneral dialog;
 	dialog.DoModal();
+}
+
+// Opens the color options dialog
+void CMgrOptions::ColorOptions()
+{
+	CDlgOptionsColor dialog;
+
+	if( dialog.DoModal() == IDOK )
+	{
+		optionsMgr.SetStarsColored( dialog.starColored );
+	}
+	else
+	{
+		// Reset colors (they are updated in realtime)
+		optionsMgr.SetTextConstColor( dialog.origConstLabels );
+		optionsMgr.SetTextConstSelColor( dialog.origConstSelLabels );
+		optionsMgr.SetConstNormColor( dialog.origConstNorm );
+		optionsMgr.SetConstSelColor( dialog.origConstSel );
+		optionsMgr.SetConstActiveColor( dialog.origConstActive );
+		optionsMgr.SetTextStarColor( dialog.origStarLabels );
+		optionsMgr.SetConstStarColor( dialog.origConstStar );
+		optionsMgr.SetTextDirColor( dialog.origDirLabels );
+	}
+
+	Redraw();
 }
 
 // Load options from storage
@@ -232,7 +303,7 @@ void CMgrOptions::Serialize( CArchive& ar )
 		{
 			ar
 
-			// Star Options
+			// Star options
 			>> starsTextured
 			>> starsColored
 			>> starsLimMagX10
@@ -240,12 +311,11 @@ void CMgrOptions::Serialize( CArchive& ar )
 			>> starsSContrast
 			>> starsCContrast
 
-			// Constellation Options
+			// Constellation options
 			>> constNormColor
 			>> constSelColor
 			>> constActiveColor
 			>> constStarColor
-			>> constStarsColored
 			>> constLineWidth
 
 			// Terrain options
@@ -259,7 +329,16 @@ void CMgrOptions::Serialize( CArchive& ar )
 			>> terrWinColor
 			>> terrSprColor
 			>> terrSumColor
-			>> terrFalColor
+			>> terrAutColor
+
+			// Text options
+			>> textConstFont
+			>> textStarFont
+			>> textDirFont
+			>> textConstColor
+			>> textConstSelColor
+			>> textStarColor
+			>> textDirColor
 
 			// Compass options
 			>> compassColor;
@@ -275,7 +354,7 @@ void CMgrOptions::Serialize( CArchive& ar )
 	{
 		ar
 
-		// Star Options
+		// Star options
 		<< starsTextured
 		<< starsColored
 		<< starsLimMagX10
@@ -283,12 +362,11 @@ void CMgrOptions::Serialize( CArchive& ar )
 		<< starsSContrast
 		<< starsCContrast
 
-		// Constellation Options
+		// Constellation options
 		<< constNormColor
 		<< constSelColor
 		<< constActiveColor
 		<< constStarColor
-		<< constStarsColored
 		<< constLineWidth
 
 		// Terrain options
@@ -302,7 +380,16 @@ void CMgrOptions::Serialize( CArchive& ar )
 		<< terrWinColor
 		<< terrSprColor
 		<< terrSumColor
-		<< terrFalColor
+		<< terrAutColor
+
+		// Text options
+		<< textConstFont
+		<< textStarFont
+		<< textDirFont
+		<< textConstColor
+		<< textConstSelColor
+		<< textStarColor
+		<< textDirColor
 
 		// Compass options
 		<< compassColor;

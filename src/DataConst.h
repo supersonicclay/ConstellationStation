@@ -75,9 +75,10 @@ public:
 
 // Attributes
 private:
+
 	CString name;
 
-	BOOL visible;
+	vector3 center;
 
 	int lineCount;
 	line_v lines;
@@ -92,23 +93,21 @@ public:
 
 // Gets
 	CString GetName();
+	vector3 GetCenter();
 	int GetLineCount();
 	int GetActiveLineNum();
 	CDataConstLine* GetLine( int i );
 	CDataConstLine* GetNewLine();
-	BOOL IsVisible();
 
 // Sets
 	void SetName( CString n );
 	void SetActiveLineNum( int n );
-	void SwitchVisible();
-	void SetVisible( BOOL v );
 
 // Methods
 	void AddLine();
 	void DeleteLine( int lineNum );
 	void CheckForDuplicateLines();
-	vector3 GetMidpoint();
+	void UpdateCenter();
 };
 
 // CDataConst Vector

@@ -85,3 +85,29 @@ Fixed		10-19-04		DrawTerrain should select white if textured
 
 Not Worried	10-19-04		Sphere texture has alpha=0
 
+Fixed		11-03-04		Textures not changing on load defaults.
+
+Fixed		11-10-04		Sun glow quad needs to be perp to viewer
+
+Fixed		11-12-04		perspMat killed selection
+
+Fixed		11-14-04		Sun glow not showing
+
+Fixed		11-14-04		Tracking after adding/deleting  (didn't update copy constructor)
+
+Fixed		11-18-04		Make sure and handle no spectral and no name
+
+Fixed		11-18-04		Selection screwed after TypeStar()
+
+Fixed		11-18-04		Should only dblclick if viewing
+
+Fixed		11-20-04		Const blend while daylight
+
+Fixed		11-20-04		Not loading font defaults
+
+Fixed		11-20-04		Font dialog needs better parent
+
+Fixed		11-20-04		Fonts not loading into dialog
+
+Fixed		11-26-04		terrain dissapearing when looking straight down
+

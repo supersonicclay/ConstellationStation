@@ -13,6 +13,27 @@
 
 #include "Starfield.h"
 
+// Frustum sides (for easy readability)
+enum FrustumSide
+{
+	RIGHT	= 0,
+	LEFT	= 1,
+	BOTTOM	= 2,
+	TOP		= 3,
+	BACK	= 4,
+	FRONT	= 5	
+}; 
+
+// Plane coefficients (again, for readability)
+enum PlaneCoeff
+{
+	A = 0,				// The X value of the plane's normal
+	B = 1,				// The Y value of the plane's normal
+	C = 2,				// The Z value of the plane's normal
+	D = 3				// The distance the plane is from the origin
+};
+
+
 class CConStationView : public CView
 {
 protected: // create from serialization only
@@ -28,9 +49,12 @@ private:
 	int width;
 	int height;
 
+// Frustum
+	vector4 frustum[6];
+
 // Textures
-	texture_t starTex;
-	texture_t skyTex;
+	UINT starTex;
+	UINT skyTex;
 
 	GLUquadricObj* skySphere;
 
@@ -50,7 +74,7 @@ private:
 	CPoint mouseLDownPoint;
 	CPoint mouseRDownPoint;
 ///	ACTIVE LINE
-///	CPoint prevStarPoint;
+//	CPoint prevStarPoint;
 
 // Selecting
 	enum SelectType {Star, Line};
@@ -68,13 +92,11 @@ public:
 	BOOL InitializeOpenGL();
 	BOOL SetupPixelFormat();
 	BOOL LoadTextures();
-///	BOOL LoadTGA( texture_t &texture, char* filename );
 
 	void SetTerrainOffset();
 
 // Drawing functions
 	void Redraw();
-	void DrawCurConstellation( CDC* pDC );
 	void DrawTerrain() const;
 	void PositionTerrain() const;
 	void DrawSky() const;
@@ -86,18 +108,21 @@ public:
 	void DrawConstellation (int i) const;
 	void DrawHeading() const;
 ///	ACTIVE LINE
-///	void DrawActiveLine() const;
+//	void DrawActiveLine() const;
 
 	// View manipulation
 	void Projection  () const;
 	void Perspective () const;
 
 	void RotateXY() const;
-	void RotateSeason() const;
 	void RotateLatitude() const;
 	void RotateTime() const;
 
 	BOOL IsRotating() const;
+
+	// Frustum
+	void CalculateFrustum();
+	bool SphereInFrustum( float x, float y, float z, float radius ) const;
 
 // Input
 	void ProcessKeys();

@@ -1,38 +1,60 @@
 
+Textures are leaky
+
 BUGS
+1	Not saving Terrain color
 1	Memory Leaks
 		-Bugs when you exit after adding a line
 		-Texture files
+		-Adding constellations to starfield
+1	BUGS occasionally on exit
 2	Open, Save should go to starfields folder
 
-TEXTURES
+TEXT
 5	Print Constellation Name near constellation
 
 SELECTION
+1	Cant select seven sisters
 2	Select ConstLine to select constellation
 
+GRAPHICS
+1	Make small stars points, not quads
+
+
 IMPROVING
-3	Keep Mouse in place while rotating
-5	Undo
+1	ORGANIZATION
+		- Why is everything in ConStationView, dork
+		- Put quad size in star
+
+1	TIME
+		- Increase year range
+		- Link with starfield
+		- Inc/Dec by 1/2/3 years/days/hours/mins
+		- Precession?
+
+2	STARS
+		- Hide dim stars when zoomed out
+		- Show dim stars when zoomed in
+		- Bright are too bright. Dim are too dim
+		- Sort stars by Mag
+		- Add Stars?
+
+5	UI
+		- Needs its own class
+		- Keep Mouse in place while rotating
+		- Undo
+
 5	Textured terrain
-5	Add Stars?
+
 5	Tools / Options menu
-		-terrain editor (roughness, detail)
-		-number of stars
-		-colors CColorDialog
-		-?star texture
-
-CODE
-1	Format ()'s
-3	Split initOpenGL. initView?
-4	Comments
-5	const's
-
+		- colors
+		- number of stars
+		- brighness / gamma
+		- toggle constellation lables
 
 ACTUAL
 5	Input Actual stars & constellations
-5	Choose location (lattitude)
-5	Choose season
-5	Choose day
+5	Choose location (latitude)
+5	Choose date
 5	Choose time
 5	Constellation details

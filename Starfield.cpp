@@ -8,28 +8,46 @@
 #include "Star.h"
 #include "Constellation.h"
 
+#include <fstream.h>	// For star catalog file i/o
 
 IMPLEMENT_SERIAL (CStarfield, CObject, 0)
 
-CStarfield::CStarfield()
+/// Make changeable
+#define MAX_STARS  15000
+
+
+//////////
+// Init //
+//////////
+CStarfield::CStarfield( bool random )
 {
-	numStars = 8000;
-	stars = new CStar[numStars];
-	SetupStars();
+	numStars = 0;
+	stars = new CStar[MAX_STARS];
 
-	numConstellations = 0;
-	numNewConstellations = 0;
-	numCurConstellation = 0;
-	constellations = new CConstellation[1];
+	// Gregorian Time
+	time_t seconds = time(NULL);
+	gregorian = *(localtime( &seconds ));
+	gregorian.tm_year += 1900;
 
-	latitude = 60.0f;
-	season = 0.0f;
-	time = 0.0f;
-	spinning = FALSE;
+	/// Julian Date
+///	julian = 
 
-	rotX = 0.0f;
-	rotY = 0.0f;
-	zoom = 0.0f;
+	/// Latitude & Longitude
+
+///	random = true;///
+
+	Init();
+
+	if( random )
+	{
+		InitRandomStars();
+		InitRandomConstellations();
+	}
+	else
+	{
+		InitActualStars();
+		InitActualConstellations();
+	}
 }
 
 CStarfield::~CStarfield()
@@ -38,6 +56,221 @@ CStarfield::~CStarfield()
 	delete[] constellations;
 }
 
+void CStarfield::Init()
+{
+	rotLatitude = 70.0f; ///
+	rotTime = 0.0f;
+	spinning = FALSE;
+
+	rotX = 0.0f;
+	rotY = 0.0f;
+	zoom = 0.0f;
+}
+
+////////////////
+// Stars Init //
+////////////////
+// Creates sphere of random stars with radius of 1
+void CStarfield::InitRandomStars()
+{
+	numStars = 8000;
+	/* /// North Star
+	stars[0].SetColor( COLOR_NORTHSTAR );
+	stars[0].SetMag( 2.0f );
+	stars[0].SetRA( 0, 0, 0.0f );
+	stars[0].SetDec( 90, 0, 0.0f );
+	stars[0].SetX( 0.0f );
+	stars[0].SetY( 1.0f );
+	stars[0].SetZ( 0.0f );
+	*/
+
+	// Sun Corona
+	stars[0].SetColor( COLOR_WHITE );
+	stars[0].SetMag( 60.0f );
+	stars[0].SetRA( 12, 0, 0.0f );
+	stars[0].SetDec( TRUE, 0, 0, 0.0f );
+	stars[0].SetX( 0.0f );
+	stars[0].SetY( 0.0f );
+	stars[0].SetZ(-1.0f );
+
+
+	// Randomize the rest
+	for (int i=1; i<numStars; i++)
+	{
+		stars[i].Randomize();
+	}
+}
+
+void CStarfield::InitActualStars()
+{
+//	/*
+	numStars = MAX_STARS;
+
+	ifstream file( "data/hip_main.txt" );
+
+	char buffer[100];
+	ra_s ra = {0};
+	char sign = 0;
+	dec_s dec = {0};
+	float mag = 0;
+
+	for( int i=0; i<MAX_STARS; ++i )
+	{
+		file.ignore( 17 );
+
+		// Right Ascension
+		file.read( buffer, 2 );
+		ra.hour = atoi( buffer );
+			file.ignore();
+		file.read( buffer, 2 );
+		ra.minute = atoi( buffer );
+			file.ignore();
+		file.read( buffer, 5 );
+		ra.second = (float) atof( buffer );
+
+		file.ignore();
+
+		// Declination
+		sign = file.get();
+		dec.positive = sign == '+';
+
+		file.read( buffer, 2 );
+		dec.degree = atoi( buffer );
+			file.ignore();
+		file.read( buffer, 2 );
+		dec.minute = atoi( buffer );
+			file.ignore();
+		file.read( buffer, 4 );
+		dec.second = (float) atof( buffer);
+
+		file.ignore();
+
+		// Magnitude
+		file.read( buffer, 5 );
+		mag = (float) atof( buffer );
+
+		// Ignore rest of line
+		file.ignore(500, '\n');
+
+		stars[i].SetRA( ra );
+		stars[i].SetDec( dec );
+		stars[i].SetXYZFromRADec();
+		stars[i].SetMag( mag );
+		stars[i].SetColorFromMag();
+		stars[i].SetRadiusFromMag();
+	}
+
+	file.close();
+//	*/
+
+	/*
+	ifstream file( "data/hip_main.txt" );
+
+	char buffer[100];
+	ra_s ra;
+	char sign;
+	dec_s dec;
+	float mag;
+
+	///
+	float max=1;
+	float min=1;
+	double avg = 0;
+
+	int xx=0;///
+
+///	for( long i=0; i<100000; i++ )
+	while( file.peek() != EOF )
+	{
+		file.ignore( 17 );
+
+		// Right Ascension
+		file.read( buffer, 2 );
+		ra.hour = atoi( buffer );
+			file.ignore();
+		file.read( buffer, 2 );
+		ra.minute = atoi( buffer );
+			file.ignore();
+		file.read( buffer, 5 );
+		ra.second = (float) atof( buffer );
+
+		file.ignore();
+
+		// Declination
+		sign = file.get();
+		dec.positive = sign == '+';
+
+		file.read( buffer, 2 );
+		dec.degree = atoi( buffer );
+			file.ignore();
+		file.read( buffer, 2 );
+		dec.minute = atoi( buffer );
+			file.ignore();
+		file.read( buffer, 4 );
+		dec.second = (float) atof( buffer);
+
+		file.ignore();
+
+		// Magnitude
+		file.read( buffer, 5 );
+		mag = (float) atof( buffer );
+
+		avg += mag;
+		if( mag > max )
+		{
+			max = mag;
+		}
+		if( mag < min )
+		{
+			min = mag;
+		}
+
+		if( numStars == 6 )///
+			min = 0;
+
+		// Skip dim stars
+		if( mag < 6.0f )
+		{
+			avg += mag;
+
+			stars[numStars].SetRA( ra );
+			stars[numStars].SetDec( dec );
+			stars[numStars].SetXYZFromRADec();
+			stars[numStars].SetMag( mag );
+			stars[numStars].SetColorFromMag();
+			numStars++;
+		}
+
+		// Ignore rest of line
+		file.ignore(500, '\n');
+	}
+
+	avg /= numStars;
+
+	file.close();
+//	*/
+}
+
+
+////////////////////////
+// Constellation Init //
+////////////////////////
+
+void CStarfield::InitRandomConstellations()
+{
+		numConstellations = 0;
+		numNewConstellations = 0;
+		numCurConstellation = 0;
+		constellations = new CConstellation[1];
+}
+
+void CStarfield::InitActualConstellations()
+{
+		numConstellations = 0;
+		numNewConstellations = 0;
+		numCurConstellation = 0;
+		constellations = new CConstellation[1];
+}
 
 //////////
 // Gets //
@@ -97,19 +330,14 @@ int CStarfield::GetNumNewConstellations() const
 	return numNewConstellations;
 }
 
-float CStarfield::GetLatitude() const
+float CStarfield::GetRotLatitude() const
 {
-	return latitude;
+	return rotLatitude;
 }
 
-float CStarfield::GetSeason() const
+float CStarfield::GetRotTime() const
 {
-	return season;
-}
-
-float CStarfield::GetTime() const
-{
-	return time;
+	return rotTime;
 }
 
 BOOL CStarfield::IsSpinning() const
@@ -141,24 +369,19 @@ void CStarfield::IncNumNewConstellations()
 	numNewConstellations++;
 }
 
-void CStarfield::SetNumCurConstellation(int i)
+void CStarfield::SetNumCurConstellation( int i )
 {
 	numCurConstellation = i;
 }
 
-void CStarfield::SetLatitude(float latitude_)
+void CStarfield::SetRotLatitude( float rotLatitude_ )
 {
-	latitude = latitude_;
+	rotLatitude = rotLatitude_;
 }
 
-void CStarfield::SetSeason(float season_)
+void CStarfield::SetRotTime( float rotTime_ )
 {
-	season = season_;
-}
-
-void CStarfield::SetTime(float time_)
-{
-	time = time_;
+	rotTime = rotTime_;
 }
 
 void CStarfield::SwitchSpinning()
@@ -166,9 +389,9 @@ void CStarfield::SwitchSpinning()
 	spinning = !spinning;
 }
 
-void CStarfield::AdjTime(float deltaTime)
+void CStarfield::AdjRotTime(float deltaTime)
 {
-	time += deltaTime;
+	rotTime += deltaTime;
 }
 
 void CStarfield::AdjRotX(float deltaRotX)
@@ -251,30 +474,6 @@ void CStarfield::ResetZoom()
 }
 
 
-////////////////////
-// Star functions //
-////////////////////
-// Creates sphere of random stars with radius of 1
-void CStarfield::SetupStars()
-{
-	// North Star
-	stars[0].SetColor( COLOR_NORTHSTAR );
-	stars[0].SetBrightness( 2.0f );
-	stars[0].SetLongitude( 0.0f );
-	stars[0].SetLatitude( 0.0f );
-	stars[0].SetX( 0.0f );
-	stars[0].SetY( 1.0f );
-	stars[0].SetZ( 0.0f );
-
-
-	// Randomize the rest
-	for (int i=1; i<numStars; i++)
-	{
-		stars[i].Randomize();
-	}
-}
-
-
 /////////////////////////////
 // Constellation functions //
 /////////////////////////////
@@ -299,6 +498,7 @@ void CStarfield::AddConstellation(CString &name)
 		copy[i] = constellations[i];
 
 	// Increase array size
+	delete[] constellations;
 	constellations = new CConstellation[++numConstellations];
 
 	// Restore constellations
@@ -388,14 +588,14 @@ void CStarfield::Serialize(CArchive& ar)
 	{
 		ar << numStars
 		   << numConstellations << numNewConstellations << numCurConstellation
-		   << latitude << season << time
+		   << rotLatitude << rotTime
 		   << rotX << rotY << zoom;
 	}
 	else
 	{
 		ar >> numStars
 		   >> numConstellations >> numNewConstellations >> numCurConstellation
-		   >> latitude >> season >> time
+		   >> rotLatitude >> rotTime
 		   >> rotX >> rotY >> zoom;
 	}
 

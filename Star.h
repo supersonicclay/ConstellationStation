@@ -13,39 +13,50 @@ public:
 	CStar ();
 	~CStar();
 
+	void Randomize();
+	void PickXYZ();
+	void PickLocation();
+	void PickMag();
+
 	void Serialize( CArchive& ar );
 
 private:
+	ra_s ra;
+	dec_s dec;
+	float mag;
 	float x, y, z;
-	float longitude;
-	float latitude;
-	float brightness;
-	color_t color;
+	color_s color;
+	float radius;
 
 public:
 
+	float GetMag() const;
+	color_s GetColor() const;
+	float GetRadius() const;
 	float GetX() const;
 	float GetY() const;
 	float GetZ() const;
-	float GetLongitude() const;
-	float GetLatitude() const;
-	float GetBrightness() const;
-	color_t GetColor() const;
+	float GetTheta() const;
+	float GetPhi() const;
 
+	void SetMag( float mag_ );
+	void SetColor( color_s color_ );
+	void SetColorFromMag();
+	void SetRadiusFromMag();
 	void SetX( float x_ );
 	void SetY( float y_ );
 	void SetZ( float z_ );
-	void SetLongitude( float longitude_ );
-	void SetLatitude( float latitude_ );
-	void SetBrightness( float brightness_ );
-	void SetColor( color_t color_ );
-
-	void Randomize();
-	void PickXYZ();
-	void PickDirection();
-	void PickBrightness();
-	void PickColor();
-
+	void SetRA( ra_s ra_ );
+	void SetDec( dec_s dec_ );
+	void SetRA( unsigned short hour,
+				unsigned short minute,
+				float second );
+	void SetDec( bool positive,
+				 unsigned short degree,
+				 unsigned short minute,
+				 float second );
+	void SetRADecFromXYZ();
+	void SetXYZFromRADec();
 };
 
 #endif

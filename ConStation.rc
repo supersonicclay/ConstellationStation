@@ -74,7 +74,7 @@ IDR_MAINFRAME           ICON    DISCARDABLE     "res\\ConStation.ico"
 // Bitmap
 //
 
-IDR_MAINFRAME           BITMAP  MOVEABLE PURE   "res\\Toolbar.bmp"
+IDR_STARFIELD           BITMAP  MOVEABLE PURE   "res\\Toolbar.bmp"
 IDR_CONSTELLATION       BITMAP  DISCARDABLE     "res\\Constell.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -82,7 +82,7 @@ IDR_CONSTELLATION       BITMAP  DISCARDABLE     "res\\Constell.bmp"
 // Toolbar
 //
 
-IDR_MAINFRAME TOOLBAR DISCARDABLE  16, 15
+IDR_STARFIELD TOOLBAR DISCARDABLE  16, 15
 BEGIN
     BUTTON      ID_STARF_NEWRANDOM
     BUTTON      ID_STARF_OPEN
@@ -93,6 +93,13 @@ BEGIN
     BUTTON      ID_TERR_NEW
     SEPARATOR
     BUTTON      ID_STARF_ROTATE
+    SEPARATOR
+    BUTTON      ID_STARF_DATE
+    BUTTON      ID_STARF_DATE
+    SEPARATOR
+    BUTTON      ID_STARF_TIME
+    BUTTON      ID_STARF_TIME
+    BUTTON      ID_STARF_SPEED
 END
 
 IDR_CONSTELLATION TOOLBAR DISCARDABLE  16, 16
@@ -247,6 +254,8 @@ FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+    CONTROL         "DateTimePicker2",IDC_DATETIMEPICKER2,"SysDateTimePick32",
+                    DTS_RIGHTALIGN | WS_TABSTOP,7,7,100,15
 END
 
 
@@ -446,6 +455,12 @@ END
 STRINGTABLE DISCARDABLE 
 BEGIN
     ID_TERR_NEW             "Generate a new random terrain\nNewTerrain"
+    ID_STARF_TIME           "Adjust the current viewing timee\nAdjust Time"
+    ID_STARF_DATE           "Adjust the current viewing date\nAdjust Date"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
     ID_OPTIONS_LOCATION     "Change the current viewing location on Earth\nChange Location"
     ID_OPTIONS_TERRAIN      "Change terrain settings\nTerrain Settings"
 END

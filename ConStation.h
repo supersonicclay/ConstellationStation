@@ -16,6 +16,7 @@
 
 
 #include "ConStationFrame.h"
+#include "ConStationUI.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CConStationApp:
@@ -28,9 +29,12 @@ public:
 	CConStationApp();
 
 	CConStationFrame* GetFrame() const;
+	CConStationUI* GetUI() const;
 
 // Attributes
 	CSingleDocTemplate* pDocTemplate;
+
+	CConStationUI* m_UI;
 
 // Overrides
 	// ClassWizard generated virtual function overrides

@@ -12,8 +12,14 @@ class CStarfield : public CObject
 DECLARE_SERIAL( CStarfield )
 
 public:
-	CStarfield();
+	CStarfield( bool random=false );
 	~CStarfield();
+
+	void Init();
+	void InitRandomStars();
+	void InitActualStars();
+	void InitRandomConstellations();
+	void InitActualConstellations();
 
 	void Serialize( CArchive& ar );
 	void SerializeConstLines( CArchive& ar );
@@ -22,20 +28,26 @@ private:
 	CStar* stars;
 	CConstellation* constellations;
 
-	int numStars;
+	long numStars;
 
 	int numConstellations;
 	int numNewConstellations;
 	int numCurConstellation;
 
-	// Settings
+	// Location & Time
+	struct tm gregorian;	// Gregorian time - people's time
+	long julian;			// Julian date
 	float latitude;
-	float season;
-	float time;
-	BOOL  spinning;
+	float longitude;
 
+	// Rotation
+	float rotLatitude;
+	float rotTime;
 	float rotX;
 	float rotY;
+	BOOL  spinning;
+
+	// Zoom
 	float zoom;
 
 public:
@@ -53,9 +65,8 @@ public:
 	int GetNumNewConstellations() const;
 	int GetNumCurConstellation() const;
 
-	float GetLatitude() const;
-	float GetSeason() const;
-	float GetTime() const;
+	float GetRotLatitude() const;
+	float GetRotTime() const;
 	BOOL  IsSpinning() const;
 
 	float GetRotX() const;
@@ -65,18 +76,14 @@ public:
 // Sets
 	void IncNumNewConstellations();
 	void SetNumCurConstellation( int i );
-	void SetLatitude( float latitude_ );
-	void SetSeason( float season_ );
-	void SetTime( float time_ );
+	void SetRotLatitude( float rotLatitude_ );
+	void SetRotTime( float time_ );
 	void SwitchSpinning();
 	// Adjusts
-	void AdjTime( float deltaTime );
+	void AdjRotTime( float deltaTime );
 	void AdjRotX( float deltaRotX );
 	void AdjRotY( float deltaRotY );
 	void AdjZoom( float deltaZoom );
-
-// Star functions
-	void SetupStars();
 
 // Constellation functions
 	BOOL IsDuplicate( CString &name );

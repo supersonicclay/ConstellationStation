@@ -19,7 +19,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // CConStationView
 
 IMPLEMENT_DYNCREATE(CConStationView, CView)
@@ -44,7 +44,7 @@ BEGIN_MESSAGE_MAP(CConStationView, CView)
 END_MESSAGE_MAP()
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // CConStationView construction/destruction
 
 CConStationView::CConStationView()
@@ -71,7 +71,7 @@ BOOL CConStationView::PreCreateWindow(CREATESTRUCT& cs)
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // CConStationView diagnostics
 
 #ifdef _DEBUG
@@ -87,39 +87,8 @@ void CConStationView::Dump(CDumpContext& dc) const
 
 #endif //_DEBUG
 
-/*
-// Calculate the offset of the terrain, so the viewer is placed above it.
-void CConStationView::SetTerrainOffset()
-{
-	// Get the index of the midpoint
-	int middleIndex = terrain->GetSize() / 2;
 
-	// Average the heights around the midpoint,
-	//  so the viewer isn't placed in a deep pit.
-
-	// Average of square points directly around middle
-	float avg1 = terrain->AvgSquare(middleIndex, middleIndex, 1);
-	// Average of diamond points directly around middle
-	float avg2 = terrain->AvgDiamond(middleIndex, middleIndex, 1);
-
-	// Average the two averages
-	float height = ((avg1 + avg2) / 2);
-
-	// Make sure the new height is not less than the height at the midpoint
-	//  (this would put the viewer under the terrain)
-	// If it is, then switch to the height of the midpoint
-	if (height < terrain->GetHeight(middleIndex, middleIndex))
-		height = terrain->GetHeight(middleIndex, middleIndex) + 0.2f;
-
-	// Move it down a little more than that so the viewer isn't exactly on the surface
-	terrainOffset = -height - 0.05f;
-}
-*/
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // CConStationView message handlers
 
 int CConStationView::OnCreate( LPCREATESTRUCT lpCreateStruct ) 
@@ -131,10 +100,8 @@ int CConStationView::OnCreate( LPCREATESTRUCT lpCreateStruct )
 	if (!InitializeOpenGL())
 		MessageBox("Error initializing OpneGL", "ERROR");
 
-//	SetTimer(TIMER_VIEWKEYS, 20, 0);
-//	SetTimer(TIMER_ROTATE, 50, 0);
+	SetTimer( 1, 20, NULL );
 
-	SetTimer( 1, 20, 0 );
 	return 0;
 }
 
@@ -168,8 +135,7 @@ void CConStationView::OnDestroy()
 
 BOOL CConStationView::OnEraseBkgnd(CDC* pDC) 
 {
-	// Don't erase the background
-	return TRUE;
+	return TRUE;	// Don't erase the background
 }
 
 void CConStationView::OnSize(UINT nType, int cx, int cy) 
@@ -189,7 +155,7 @@ void CConStationView::OnSize(UINT nType, int cx, int cy)
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // Open GL Initialization
 
 BOOL CConStationView::InitializeOpenGL()
@@ -227,7 +193,6 @@ BOOL CConStationView::InitializeOpenGL()
 		return FALSE;
 	}
 
-
 	// Settings
 	glClearColor( 0.0f,0.0f,0.0f,1.0f );
 	glClearDepth( 1.0f );
@@ -253,7 +218,7 @@ BOOL CConStationView::InitializeOpenGL()
 	glEnable( GL_LIGHT0 );
 
 	// Material
-	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 	glEnable(GL_COLOR_MATERIAL);
 
 	return TRUE;
@@ -301,15 +266,15 @@ BOOL CConStationView::SetupPixelFormat()
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // Textures
 
 BOOL CConStationView::LoadTextures()
 {
-	if (!LoadTGA(starTex, "textures/star.tga"))
+	if (!LoadTGA(starTex, "data/star.tga"))
 		return FALSE;
 
-	if (!LoadTGA(skyTex, "textures/sky.tga"))
+	if (!LoadTGA(skyTex, "data/sky.tga"))
 		return FALSE;
 
 	glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
@@ -319,7 +284,132 @@ BOOL CConStationView::LoadTextures()
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// Frustum
+
+void CConStationView::CalculateFrustum()
+{
+	float   proj[16];								// This will hold our projection matrix
+	float   modl[16];								// This will hold our modelview matrix
+	float   clip[16];								// This will hold the clipping frustum
+
+	// glGetFloatv() is used to extract information about our OpenGL world.
+	// Below, we pass in GL_PROJECTION_MATRIX to abstract our projection matrix.
+	// It then stores the matrix into an array of [16].
+	glGetFloatv( GL_PROJECTION_MATRIX, proj );
+
+	// By passing in GL_MODELVIEW_MATRIX, we can abstract our model view matrix.
+	// This also stores it in an array of [16].
+	glGetFloatv( GL_MODELVIEW_MATRIX, modl );
+
+	// Now that we have our modelview and projection matrix, if we combine these 2 matrices,
+	// it will give us our clipping frustum.  To combine 2 matrices, we multiply them.
+
+	clip[ 0] = modl[ 0] * proj[ 0] + modl[ 1] * proj[ 4] + modl[ 2] * proj[ 8] + modl[ 3] * proj[12];
+	clip[ 1] = modl[ 0] * proj[ 1] + modl[ 1] * proj[ 5] + modl[ 2] * proj[ 9] + modl[ 3] * proj[13];
+	clip[ 2] = modl[ 0] * proj[ 2] + modl[ 1] * proj[ 6] + modl[ 2] * proj[10] + modl[ 3] * proj[14];
+	clip[ 3] = modl[ 0] * proj[ 3] + modl[ 1] * proj[ 7] + modl[ 2] * proj[11] + modl[ 3] * proj[15];
+
+	clip[ 4] = modl[ 4] * proj[ 0] + modl[ 5] * proj[ 4] + modl[ 6] * proj[ 8] + modl[ 7] * proj[12];
+	clip[ 5] = modl[ 4] * proj[ 1] + modl[ 5] * proj[ 5] + modl[ 6] * proj[ 9] + modl[ 7] * proj[13];
+	clip[ 6] = modl[ 4] * proj[ 2] + modl[ 5] * proj[ 6] + modl[ 6] * proj[10] + modl[ 7] * proj[14];
+	clip[ 7] = modl[ 4] * proj[ 3] + modl[ 5] * proj[ 7] + modl[ 6] * proj[11] + modl[ 7] * proj[15];
+
+	clip[ 8] = modl[ 8] * proj[ 0] + modl[ 9] * proj[ 4] + modl[10] * proj[ 8] + modl[11] * proj[12];
+	clip[ 9] = modl[ 8] * proj[ 1] + modl[ 9] * proj[ 5] + modl[10] * proj[ 9] + modl[11] * proj[13];
+	clip[10] = modl[ 8] * proj[ 2] + modl[ 9] * proj[ 6] + modl[10] * proj[10] + modl[11] * proj[14];
+	clip[11] = modl[ 8] * proj[ 3] + modl[ 9] * proj[ 7] + modl[10] * proj[11] + modl[11] * proj[15];
+
+	clip[12] = modl[12] * proj[ 0] + modl[13] * proj[ 4] + modl[14] * proj[ 8] + modl[15] * proj[12];
+	clip[13] = modl[12] * proj[ 1] + modl[13] * proj[ 5] + modl[14] * proj[ 9] + modl[15] * proj[13];
+	clip[14] = modl[12] * proj[ 2] + modl[13] * proj[ 6] + modl[14] * proj[10] + modl[15] * proj[14];
+	clip[15] = modl[12] * proj[ 3] + modl[13] * proj[ 7] + modl[14] * proj[11] + modl[15] * proj[15];
+	
+	// Now we actually want to get the sides of the frustum.  To do this we take
+	// the clipping frustum we received above and extract the sides from them.
+
+	matrix44   proj2 = proj;								// This will hold our projection matrix
+	matrix44   modl2;								// This will hold our modelview matrix
+	matrix44   clip2;								// This will hold the clipping frustum
+
+	// This will extract the RIGHT side of the frustum
+	frustum[RIGHT][A] = clip[ 3] - clip[ 0];
+	frustum[RIGHT][B] = clip[ 7] - clip[ 4];
+	frustum[RIGHT][C] = clip[11] - clip[ 8];
+	frustum[RIGHT][D] = clip[15] - clip[12];
+
+	// Now that we have a normal (A,B,C) and a distance (D) to the plane,
+	// we want to normalize that normal and distance.
+
+	// Normalize the RIGHT side
+	frustum[RIGHT].normalize();
+
+	// This will extract the LEFT side of the frustum
+	frustum[LEFT][A] = clip[ 3] + clip[ 0];
+	frustum[LEFT][B] = clip[ 7] + clip[ 4];
+	frustum[LEFT][C] = clip[11] + clip[ 8];
+	frustum[LEFT][D] = clip[15] + clip[12];
+
+	// Normalize the LEFT side
+	frustum[LEFT].normalize();
+
+	// This will extract the BOTTOM side of the frustum
+	frustum[BOTTOM][A] = clip[ 3] + clip[ 1];
+	frustum[BOTTOM][B] = clip[ 7] + clip[ 5];
+	frustum[BOTTOM][C] = clip[11] + clip[ 9];
+	frustum[BOTTOM][D] = clip[15] + clip[13];
+
+	// Normalize the BOTTOM side
+	frustum[BOTTOM].normalize();
+
+	// This will extract the TOP side of the frustum
+	frustum[TOP][A] = clip[ 3] - clip[ 1];
+	frustum[TOP][B] = clip[ 7] - clip[ 5];
+	frustum[TOP][C] = clip[11] - clip[ 9];
+	frustum[TOP][D] = clip[15] - clip[13];
+
+	// Normalize the TOP side
+	frustum[TOP].normalize();
+
+	// This will extract the BACK side of the frustum
+	frustum[BACK][A] = clip[ 3] - clip[ 2];
+	frustum[BACK][B] = clip[ 7] - clip[ 6];
+	frustum[BACK][C] = clip[11] - clip[10];
+	frustum[BACK][D] = clip[15] - clip[14];
+
+	// Normalize the BACK side
+	frustum[BACK].normalize();
+
+	// This will extract the FRONT side of the frustum
+	frustum[FRONT][A] = clip[ 3] + clip[ 2];
+	frustum[FRONT][B] = clip[ 7] + clip[ 6];
+	frustum[FRONT][C] = clip[11] + clip[10];
+	frustum[FRONT][D] = clip[15] + clip[14];
+
+	// Normalize the FRONT side
+	frustum[FRONT].normalize();
+}
+
+bool CConStationView::SphereInFrustum( float x, float y, float z, float radius ) const
+{
+	// Go through all the sides of the frustum
+	for(int i = 0; i < 6; i++ )	
+	{
+		// If the center of the sphere is farther away from the plane than the radius
+		if( frustum[i][A] * x + frustum[i][B] * y + frustum[i][C] * z + frustum[i][D] <= -radius )
+		{
+			// The distance was greater than the radius so the sphere is outside of the frustum
+			return false;
+		}
+	}
+	
+	// The sphere was inside of the frustum!
+	return true;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
 // CConStationView drawing
 
 void CConStationView::Redraw()
@@ -331,41 +421,23 @@ void CConStationView::OnDraw(CDC* pDC)
 {
     CPaintDC dc(this); // Needed 
 
-	// Useful in multidoc templates
-	/// WELL THANK GOODNESS WE DON'T USE MDI!
-//	HWND hWnd = GetSafeHwnd();
-//	HDC hDC = ::GetDC(hWnd);
-//	wglMakeCurrent(hDC,m_hglrc);
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	DrawSky();
-	DrawSun();
+	CalculateFrustum();
+
+///	DrawSky();
 	DrawStarfield();
+	DrawSun();
 	DrawTerrain();
 	DrawHeading();
 
 	/// ACTIVE LINE ///
 	// Draw Active Line
-///	if (state == AddingLine && firstStarNum != -1)
-///		DrawActiveLine();
+//	if (state == AddingLine && firstStarNum != -1)
+//		DrawActiveLine();
 
 	SwapBuffers(m_pDC->GetSafeHdc());
 
-}
-
-/// Used for speedy adding of lines
-void CConStationView::DrawCurConstellation( CDC* pDC )
-{
-	CPaintDC dc(this);
-
-	glLineWidth(3);
-	glColor(COLOR_CONSTLINE);
-
-///	DrawStars();
-	DrawConstellation( starfield->GetNumCurConstellation() );
-
-	SwapBuffers( m_pDC->GetSafeHdc() );
 }
 
 void CConStationView::DrawTerrain() const
@@ -386,12 +458,10 @@ void CConStationView::DrawTerrain() const
 	int arraySize = terrain->GetArraySize();
 	int size = terrain->GetSize();
 
-///	float* n;
+	float* n;
 
 	float scale = terrain->GetScale();
 	int iterations = terrain->GetIterations();
-
-	float* n;
 
 	x = -scale;
 	z = -scale;
@@ -403,7 +473,7 @@ void CConStationView::DrawTerrain() const
 	{
 		for (j=0; j<size; j++)
 		{
-			/* ///
+			/* /// DRAW NORMALS
 			glDisable( GL_LIGHTING );
 			glColor3f( 1, 0, 0 );
 			glBegin(GL_LINES);
@@ -412,7 +482,7 @@ void CConStationView::DrawTerrain() const
 				glVertex3f( n[0], n[1], n[2] );
 			glEnd();
 			glEnable( GL_LIGHTING );
-//			*/
+			*/
 
 			n = terrain->GetUpperNormal( i, j );
 			glBegin(GL_TRIANGLES);
@@ -453,12 +523,11 @@ void CConStationView::DrawSky() const
 //	glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
 	RotateXY();
 	RotateLatitude();
-	RotateSeason();
 	RotateTime();
 
 	// Enable texture
 	glEnable( GL_TEXTURE_2D );
-	glBindTexture( GL_TEXTURE_2D, skyTex.textureID );
+	glBindTexture( GL_TEXTURE_2D, skyTex );
 
 	// Draw sky background
 	glColor( COLOR_SKY );
@@ -470,16 +539,14 @@ void CConStationView::DrawSky() const
 void CConStationView::DrawSun() const
 {
 	glLoadIdentity();
-//	glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
 	RotateXY();
 	RotateLatitude();
-	RotateSeason();
 	RotateTime();
 
 	glTranslatef( 0.0f, 0.0f,-1.0f );
 
 	// Sun Sphere
-	glColor( COLOR_WHITE );
+	glColor( COLOR_SUN );
 	gluSphere( sunSphere, 0.02f, 15, 2 );
 
 	/// LIGHTING NEEDS WORK
@@ -526,7 +593,6 @@ void CConStationView::DrawConstellation(int i) const
 
 	RotateXY();
 	RotateLatitude();
-	RotateSeason();
 	RotateTime();
 
 	CConstellation* curConstellation = starfield->GetConstellation(i);
@@ -557,20 +623,24 @@ void CConStationView::DrawStars() const
 	
 	RotateXY();
 	RotateLatitude();
-	RotateSeason();
 	RotateTime();
 
 	glEnable( GL_TEXTURE_2D );
 	glEnable( GL_BLEND );
 
-	glBindTexture(GL_TEXTURE_2D, starTex.textureID);
+	glBindTexture( GL_TEXTURE_2D, starTex );
 
 	// Go in reverse order so north star (star 0) is drawn last
 	for (int i=starfield->GetNumStars()-1; i>=0; i--)
 	{
-		glPushName( i+1 );
-		DrawStar( i );
-		glPopName();
+		CStar* star = starfield->GetStar(i);
+		// Check if in frustum
+		if( SphereInFrustum( star->GetX(), star->GetY(), star->GetZ(), star->GetRadius() ) )
+		{
+			glPushName( i+1 );
+			DrawStar( i );
+			glPopName();
+		}
 	}
 
 	glDisable( GL_BLEND );
@@ -580,10 +650,7 @@ void CConStationView::DrawStars() const
 void CConStationView::DrawStar(int i) const
 {
 	CStar* curStar = starfield->GetStar(i);
-	float longitude = curStar->GetLongitude();
-	float latitude = curStar->GetLatitude();
-	float brightness = curStar->GetBrightness();
-	color_t color;
+	color_s color;
 
 	bool active = false;
 
@@ -606,40 +673,25 @@ void CConStationView::DrawStar(int i) const
 	else
 		color = curStar->GetColor();
 
-	///
-//	if (i == 1175)
-//		color = COLOR_CROSS;
-//	if (i == 3619)
-//		color = COLOR_CROSS;
-
-
 	// Push matrix so quad rotation doesn't affect anything
 	glPushMatrix();
 
 	// Now we're ready to draw the star
 	glColor (color);
-	glPointSize(brightness);
 
-	glRotatef(longitude, 0.0f, 1.0f, 0.0f );
-	glRotatef( latitude, 1.0f, 0.0f, 0.0f );
+	glRotatef( curStar->GetTheta(),  0.0f, 1.0f, 0.0f );
+	glRotatef( curStar->GetPhi(), 1.0f, 0.0f, 0.0f );
 	glTranslatef( 0.0f, 1.0f, 0.0f );
 
-	/// Draw a star quad
-	float quadSize = brightness / 170.0f;
+	// Draw a star quad
+	float quadSize = curStar->GetRadius();
 	glBegin( GL_QUADS );
-		glNormal3f( 0.0f, -1.0f, 0.0f );
+		glNormal3f( 0.0f,-1.0f, 0.0f );
 		glTexCoord2i( 0, 1 ); glVertex3f( -quadSize, 0.0f,  quadSize );
 		glTexCoord2i( 1, 1 ); glVertex3f(  quadSize, 0.0f,  quadSize );
 		glTexCoord2i( 1, 0 ); glVertex3f(  quadSize, 0.0f, -quadSize );
 		glTexCoord2i( 0, 0 ); glVertex3f( -quadSize, 0.0f, -quadSize );
 	glEnd();
-
-	/*/// POINT
-	glColor( COLOR_CROSS );
-	glBegin(GL_POINTS);
-		glVertex2f( 0, 0 );
-	glEnd();
-//		*/
 
 	glPopMatrix();
 }
@@ -680,7 +732,6 @@ void CConStationView::DrawHeading() const
 
 	// North Star Pointer
 	RotateLatitude();
-	RotateSeason();
 	glColor (COLOR_NORTHSTAR);
 	glBegin(GL_LINES);
 		glVertex3f( 0.0f, 0.0f, 0.0f );
@@ -727,7 +778,7 @@ void CConStationView::DrawActiveLine() const
 */
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // View Manipulation
 
 void CConStationView::Projection() const
@@ -756,19 +807,13 @@ void CConStationView::RotateXY() const
 // Rotate the view depending on the latitude
 void CConStationView::RotateLatitude() const
 {
-	glRotatef( -starfield->GetLatitude(), 1.0f, 0.0f, 0.0f );
-}
-
-// Rotate the view depending on the season
-void CConStationView::RotateSeason() const
-{
-	glRotatef( starfield->GetSeason(), 1.0f, 0.0f, 0.0f );
+	glRotatef( -starfield->GetRotLatitude(), 1.0f, 0.0f, 0.0f );
 }
 
 // Rotate the view depending on the time
 void CConStationView::RotateTime() const
 {
-	glRotatef (starfield->GetTime(), 0.0f, 1.0f, 0.0f);
+	glRotatef (starfield->GetRotTime(), 0.0f, 1.0f, 0.0f);
 }
 
 BOOL CConStationView::IsRotating() const
@@ -777,7 +822,7 @@ BOOL CConStationView::IsRotating() const
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // Keyboard
 void CConStationView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
 {
@@ -797,8 +842,8 @@ void CConStationView::OnTimer(UINT nIDEvent)
 	if (starfield->IsSpinning() &&
 		state == state_Viewing)
 	{
-//		starfield->AdjTime(0.05f);
-		starfield->AdjTime(0.5f);
+//		starfield->AdjRotTime(0.05f);
+		starfield->AdjRotTime(0.5f);
 		Redraw();
 	}
 }
@@ -865,7 +910,7 @@ void CConStationView::ProcessKeys()
 		Redraw();
 }
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // Mouse Buttons
 void CConStationView::OnLButtonDown(UINT nFlags, CPoint point) 
 {
@@ -886,7 +931,7 @@ void CConStationView::OnLButtonDown(UINT nFlags, CPoint point)
 				prevStarNum = selectedStarNum;
 				firstStarNum = selectedStarNum;
 				/// ACTIVE LINE
-///				prevStarPoint = point;
+			//	prevStarPoint = point;
 			}
 			// Adding a line so this should complete a line
 			//   and set the previous star number
@@ -901,11 +946,11 @@ void CConStationView::OnLButtonDown(UINT nFlags, CPoint point)
 
 				prevStarNum = selectedStarNum;
 				/// ACTIVE LINE
-///				prevStarPoint = point;
+			//	prevStarPoint = point;
 
-				/// GetDocument()->SetModifiedFlag();
-				/// DrawCurConstellation( GetDC() );
-				OnDraw( GetDC() );
+				GetDocument()->SetModifiedFlag();
+
+				OnDraw( GetDC() );	// instead of InvalidateRect so it forces a redraw
 			}
 		}
 	}
@@ -1027,7 +1072,7 @@ BOOL CConStationView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 	return TRUE;
 }
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // Mouse Move
 void CConStationView::OnMouseMove(UINT nFlags, CPoint point) 
 {
@@ -1051,7 +1096,7 @@ void CConStationView::OnMouseMove(UINT nFlags, CPoint point)
 			starfield->AdjRotY((point.x-mouseLDownPoint.x) / 20.0f);// * (1-zoom);
 		}
 		if (mouseRotatingZ)
-			starfield->AdjTime((point.y-mouseRDownPoint.y) / 10.0f);// * (1-zoom);
+			starfield->AdjRotTime((point.y-mouseRDownPoint.y) / 10.0f);// * (1-zoom);
 
 		Redraw();
 
@@ -1061,13 +1106,13 @@ void CConStationView::OnMouseMove(UINT nFlags, CPoint point)
 
 	}
 
-	/// ACTIVE LINE ///
+	/// ACTIVE LINE
 	// Invalidate so it will show line as mouse moves
-///	if (state == AddingLine && firstStarNum != -1)
-///		Redraw();
+//	if (state == AddingLine && firstStarNum != -1)
+//		Redraw();
 }
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // Cursor
 void CConStationView::SetCur(WORD cur)
 {
@@ -1125,7 +1170,7 @@ BOOL CConStationView::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 // Selecting
 
 void CConStationView::ClearFirstStar()
@@ -1174,14 +1219,8 @@ BOOL CConStationView::Select(SelectType selection)
 	hits=glRenderMode(GL_RENDER);								// Switch To Render Mode, Find Out How Many
 																// Objects Were Drawn Where The Mouse Was
 
-	/// TAKE OUT after we're sure this doesn't happen
-	if( hits < 0 )
-	{
-		MessageBox("Hits is less than 0");
-		return false;
-	}
-
-	if( hits == 0 )
+	// Check if there is a hit
+	if( hits <= 0 )
 		return false;
 	else
 	{
@@ -1216,8 +1255,8 @@ int CConStationView::SelectStar()
 		for (int i=1; i<hits; i++)
 		{
 			// Get the brightest
-			if (starfield->GetStar(selectBuffer[i*4+3]-1)->GetBrightness() >
-						selectedStar->GetBrightness())
+			if (starfield->GetStar(selectBuffer[i*4+3]-1)->GetMag() <
+						selectedStar->GetMag())
 			{
 				numStar = selectBuffer[i*4+3] - 1;	// Subtract 1 because terrain is 0
 				selectedStar = starfield->GetStar(numStar);

@@ -87,6 +87,8 @@ BOOL CConStationApp::InitInstance()
 	m_pMainWnd->ShowWindow( SW_MAXIMIZE );
 	m_pMainWnd->UpdateWindow();
 
+	m_UI = new CConStationUI;
+
 	return TRUE;
 }
 
@@ -96,6 +98,11 @@ CConStationFrame* CConStationApp::GetFrame() const
 	ASSERT( m_pMainWnd->IsKindOf( RUNTIME_CLASS( CConStationFrame ) ) );
 #endif
 	return (CConStationFrame *)m_pMainWnd;
+}
+
+CConStationUI* CConStationApp::GetUI() const
+{
+	return m_UI;
 }
 
 
@@ -162,6 +169,12 @@ void CConStationApp::OnStarfNewActual()
 {
 	CWinApp::OnFileNew();
 
+	delete starfield;
+	delete terrain;
+
+	starfield = new CStarfield;
+	terrain = new CTerrain;
+
 	GetFrame()->UpdateList();
 	GetFrame()->GetView()->Projection();
 	SetState( state_Viewing );
@@ -170,6 +183,12 @@ void CConStationApp::OnStarfNewActual()
 void CConStationApp::OnStarfNewRandom() 
 {
 	CWinApp::OnFileNew();
+
+	delete starfield;
+	delete terrain;
+
+	starfield = new CStarfield(true);
+	terrain = new CTerrain;
 
 	GetFrame()->UpdateList();
 	GetFrame()->GetView()->Projection();
@@ -184,3 +203,4 @@ void CConStationApp::OnStarfOpen()
 	GetFrame()->GetView()->Projection();
 	SetState( state_Viewing );
 }
+

@@ -6,54 +6,28 @@
 --------------------Configuration: ConStation - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP3C8.tmp" with contents
-[
-/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Release/" /Fp"Release/ConStation.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
-"D:\DOCS\Code\old ConStations\v5.1\ConStation\Terrain.cpp"
-]
-Creating command line "cl.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP3C8.tmp" 
-Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP3C9.tmp" with contents
-[
-opengl32.lib glu32.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/ConStation.pdb" /machine:I386 /out:"Release/ConStation.exe" 
-".\Release\ConStation.obj"
-".\Release\ConStationDoc.obj"
-".\Release\ConStationFrame.obj"
-".\Release\ConStationView.obj"
-".\Release\ConstBar.obj"
-".\Release\Global.obj"
-".\Release\StdAfx.obj"
-".\Release\DlgConstName.obj"
-".\Release\DlgShowHide.obj"
-".\Release\DlgTerrain.obj"
-".\Release\Constellation.obj"
-".\Release\Star.obj"
-".\Release\Starfield.obj"
-".\Release\Terrain.obj"
-".\Release\ConStation.res"
-]
-Creating command line "link.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP3C9.tmp"
-<h3>Output Window</h3>
-Compiling...
-Terrain.cpp
-Linking...
-Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP3CB.tmp" with contents
+Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPC473.tmp" with contents
 [
 /nologo /o"Release/ConStation.bsc" 
-".\Release\StdAfx.sbr"
-".\Release\ConStation.sbr"
-".\Release\ConStationDoc.sbr"
-".\Release\ConStationFrame.sbr"
-".\Release\ConStationView.sbr"
-".\Release\ConstBar.sbr"
-".\Release\Global.sbr"
-".\Release\DlgConstName.sbr"
-".\Release\DlgShowHide.sbr"
-".\Release\DlgTerrain.sbr"
-".\Release\Constellation.sbr"
-".\Release\Star.sbr"
-".\Release\Starfield.sbr"
-".\Release\Terrain.sbr"]
-Creating command line "bscmake.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP3CB.tmp"
+.\Release\StdAfx.sbr
+.\Release\ConStation.sbr
+.\Release\ConStationDoc.sbr
+.\Release\ConStationFrame.sbr
+.\Release\ConStationUI.sbr
+.\Release\ConStationView.sbr
+.\Release\mtxlib.sbr
+.\Release\ConstBar.sbr
+.\Release\DlgConstName.sbr
+.\Release\DlgLocation.sbr
+.\Release\DlgShowHide.sbr
+.\Release\DlgTerrain.sbr
+.\Release\StarfBar.sbr
+.\Release\Constellation.sbr
+.\Release\Global.sbr
+.\Release\Star.sbr
+.\Release\Starfield.sbr
+.\Release\Terrain.sbr]
+Creating command line "bscmake.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPC473.tmp"
 Creating browse info file...
 <h3>Output Window</h3>
 

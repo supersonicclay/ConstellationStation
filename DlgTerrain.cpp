@@ -16,7 +16,7 @@ static char THIS_FILE[] = __FILE__;
 // CDlgTerrain dialog
 
 
-CDlgTerrain::CDlgTerrain( float roughness_, color_t color_, CWnd* pParent /*=NULL*/ )
+CDlgTerrain::CDlgTerrain( float roughness_, color_s color_, CWnd* pParent /*=NULL*/ )
 	: CDialog(CDlgTerrain::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(CDlgTerrain)

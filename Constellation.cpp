@@ -28,8 +28,8 @@ CConstLine::CConstLine( CStar* star1_, CStar* star2_ )
 
 CConstLine::~CConstLine()
 {
-	delete star1;
-	delete star2;
+///	delete star1;
+///	delete star2;
 }
 
 void CConstLine::SetStar1( CStar* star1_ )

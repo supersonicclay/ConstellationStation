@@ -8,6 +8,7 @@
 #include "DlgConstName.h"
 #include "DlgShowHide.h"
 #include "DlgTerrain.h"
+#include "DlgLocation.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -78,47 +79,34 @@ int CConStationFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 
 	// Starfield ToolBar
-	if (!m_wndToolBar.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP
-		| CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC) ||
-		!m_wndToolBar.LoadToolBar(IDR_MAINFRAME))
+	if (!m_wndStarfBar.Init(this))
 	{
-		TRACE0("Failed to create toolbar\n");
-		return -1;      // fail to create
+		TRACE0("Failed to create starfield toolbar\n");
+		return -1;
 	}
-
-	/* ///
-	CToolBar* constToolBar = new CToolBar;
-	if (!constToolBar->CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP
-		| CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC) ||
-		!constToolBar->LoadToolBar(IDR_CONSTELLATION))
-	{
-		TRACE0("Failed to create toolbar\n");
-		return -1;      // fail to create
-	}
-	*/
 
 	// Constellation ToolBar
 	if (!m_wndConstBar.Init(this))
 	{
 		TRACE0("Failed to create constellation bar\n");
-		return -1;		// fail to create
+		return -1;
 	}
 
+	// Status Bar
 	if (!m_wndStatusBar.Create(this) ||
 		!m_wndStatusBar.SetIndicators(indicators, 1))
-		  //sizeof(indicators)/sizeof(UINT)))
 	{
 		TRACE0("Failed to create status bar\n");
-		return -1;      // fail to create
+		return -1;
 	}
 
 	// Docking
 	EnableDocking(CBRS_ALIGN_ANY);
 
-	m_wndToolBar.EnableDocking(CBRS_ALIGN_ANY);
+	m_wndStarfBar.EnableDocking(CBRS_ALIGN_ANY);
 	m_wndConstBar.EnableDocking(CBRS_ALIGN_ANY);
 
-	DockControlBar(&m_wndToolBar);
+	DockControlBar(&m_wndStarfBar);
 	DockControlBar(&m_wndConstBar);
 
 	return 0;
@@ -176,7 +164,6 @@ void CConStationFrame::UpdateList()
 	// Send the names to ConstList
 	m_wndConstBar.UpdateList(constellationNames, numConstellations, numCurrent);
 
-	delete[] constellationNames;
 }
 
 
@@ -213,10 +200,10 @@ void CConStationFrame::OnConstAdd()
 	itoa (numNewConstellations+1, numString, 10);
 	constName += numString;
 
-	dialog.SetConstName(constName);
+	dialog.SetConstName( constName );
 
 	// If they cancel, return
-	if (dialog.DoModal() != IDOK)
+	if( dialog.DoModal() != IDOK )
 		return;
 
 	// Check for duplicate name
@@ -387,7 +374,7 @@ void CConStationFrame::OnOptionsTerrain()
 		starfield->SwitchSpinning();
 
 	float r = terrain->GetRoughness();
-	color_t c = terrain->GetColor();
+	color_s c = terrain->GetColor();
 
 	CDlgTerrain* dialog = new CDlgTerrain( r, c );
 
@@ -408,7 +395,9 @@ void CConStationFrame::OnOptionsLocation()
 		starfield->SwitchSpinning();
 
 	/// LOCATION DIALOG
-	
+	CDlgLocation* dialog = new CDlgLocation();
+
+	dialog->DoModal();	
 }
 
 

@@ -13,6 +13,7 @@
 #include "Terrain.h"
 #include "ConStationView.h"
 
+#include "StarfBar.h"
 #include "ConstBar.h"
 
 class CConStationFrame : public CFrameWnd
@@ -49,7 +50,7 @@ public:
 
 protected:  // control bar embedded members
 	CStatusBar  m_wndStatusBar;
-	CToolBar    m_wndToolBar;
+	CStarfBar   m_wndStarfBar;
 	CConstBar	m_wndConstBar;
 
 // Generated message map functions

@@ -14,21 +14,35 @@ typedef struct
 	float r;
 	float g;
 	float b;
-} color_t;
+} color_s;
 
 typedef struct
 {
-	GLubyte* data;
+	GLuint id;
 	GLuint width;
 	GLuint height;
-	GLuint textureID;
-} texture_t;
+	GLubyte* data;
+} texture_s;
 
-enum state_t {	state_Viewing,
+enum state_e {	state_Viewing,
 				state_AddingLine,
 				state_AddingPoly,
 				state_DeletingLine};
 
+typedef struct
+{
+	unsigned short hour;
+	unsigned short minute;
+	float second;
+} ra_s;
+
+typedef struct
+{
+	BOOL positive;
+	unsigned short degree;
+	unsigned short minute;
+	float second;
+} dec_s;
 
 #include "Starfield.h"
 #include "Terrain.h"
@@ -37,26 +51,27 @@ enum state_t {	state_Viewing,
 // VARIABLES
 extern CStarfield* starfield;
 extern CTerrain* terrain;
-extern state_t state;
-extern const color_t COLOR_WHITE,
+extern state_e state;
+extern const color_s COLOR_WHITE,
 					 COLOR_BLACK,
-					 COLOR_SKY,
 					 COLOR_CROSS,
 					 COLOR_ACTIVESTAR,
-					 COLOR_NORTHSTAR,
-					 COLOR_CONSTLINE;
+					 COLOR_CONSTLINE,
+					 COLOR_SUN,
+					 COLOR_SKY,
+					 COLOR_NORTHSTAR;
 
 #define	PI		3.14159265358979323846
 
 
 // FUNCTIONS
-void glColor( color_t c );
+void glColor( color_s c );
 
-BOOL LoadTGA( texture_t &texture, char* filename );
+BOOL LoadTGA( UINT &texID, char* filename );
 
-void SetState( enum state_t s );
+void SetState( enum state_e s );
 
-/// TIME CONSUMING, SHOULD BE CALLED SPARINGLY
+// TIME CONSUMING, SHOULD BE CALLED SPARINGLY
 void RedrawView();
 
 

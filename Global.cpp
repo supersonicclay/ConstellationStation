@@ -8,26 +8,30 @@ CStarfield* starfield = new CStarfield;
 CTerrain* terrain = new CTerrain;
 
 // STATES
-state_t state = state_Viewing;
+state_e state = state_Viewing;
 
 // COLOR
-const color_t	COLOR_WHITE =		{1.0f, 1.0f, 1.0f},
+const color_s	COLOR_WHITE =		{1.0f, 1.0f, 1.0f},
 				COLOR_BLACK =		{0.0f, 0.0f, 0.0f},
-				COLOR_SKY =			{0.0f, 0.0f, 1.0f},
 				COLOR_CROSS =		{0.3f, 0.3f, 0.8f},
 				COLOR_ACTIVESTAR =	{1.0f, 0.0f, 0.0f},
-				COLOR_NORTHSTAR =	{0.7f, 1.0f, 0.7f},
-				COLOR_CONSTLINE =	{0.0f, 0.5f, 0.5f};
+				COLOR_CONSTLINE =	{0.0f, 0.5f, 0.5f},
+				COLOR_SUN =			{1.0f, 1.0f, 1.0f},
+				COLOR_SKY =			{0.0f, 0.0f, 0.6f},
+				COLOR_NORTHSTAR =	{0.7f, 1.0f, 0.7f};
 
 
 // FUNCTIONS
-void glColor( color_t c )   // Convinience function for glColor3f
+void glColor( color_s c )   // Convinience function for glColor3f
 {
 	glColor3f( c.r, c.g, c.b );
 }
 
-BOOL LoadTGA( texture_t &texture, char* filename )
+BOOL LoadTGA( UINT &texID, char* filename )
 {
+	// Temporary texture for data storage
+	texture_s texture;
+
 	// Every TGA file has this header
 	GLubyte		TGAheader[12]={0,0,2,0,0,0,0,0,0,0,0,0};
 
@@ -36,7 +40,6 @@ BOOL LoadTGA( texture_t &texture, char* filename )
 
 	// Width, Height, and bpp information
 	GLubyte		imageInfo[6];
-
 	GLuint		bitsPerPixel;
 	GLuint		bytesPerPixel;
 
@@ -108,9 +111,9 @@ BOOL LoadTGA( texture_t &texture, char* filename )
 
 	fclose (file);											// Close The File
 
-	glGenTextures(1, &texture.textureID);
+	glGenTextures(1, &texture.id);
 
-	glBindTexture(GL_TEXTURE_2D, texture.textureID);
+	glBindTexture(GL_TEXTURE_2D, texture.id);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	
@@ -121,10 +124,14 @@ BOOL LoadTGA( texture_t &texture, char* filename )
 
 	glTexImage2D(GL_TEXTURE_2D, 0, type, texture.width, texture.height, 0, type, GL_UNSIGNED_BYTE, texture.data);
 
+	texID = texture.id;
+
+	delete texture.data;
+
 	return TRUE;
 }
 
-void SetState( enum state_t s )
+void SetState( enum state_e s )
 {
 	// Clear the first star number in the view
 #ifdef _DEBUG
@@ -135,8 +142,8 @@ void SetState( enum state_t s )
 	state = s;
 }
 
-/// TIME CONSUMING, SHOULD BE CALLED SPARINGLY
-/// SHOULD NOT BE CALLED FROM ConStationView
+// TIME CONSUMING, SHOULD BE CALLED SPARINGLY
+// SHOULD NOT BE CALLED FROM CConStationView
 void RedrawView()
 {
 #ifdef _DEBUG

@@ -17,7 +17,7 @@
 class CDlgTerrain : public CDialog
 {
 public:
-	CDlgTerrain( float roughness_, color_t color_, CWnd* pParent = NULL );
+	CDlgTerrain( float roughness_, color_s color_, CWnd* pParent = NULL );
 
 // Dialog Data
 	//{{AFX_DATA(CDlgTerrain)
@@ -25,7 +25,7 @@ public:
 	//}}AFX_DATA
 
 	int		roughness;
-	color_t color;
+	color_s color;
 
 	CSliderCtrl	roughnessSlider;
 	CString	roughnessTxt;

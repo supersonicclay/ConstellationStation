@@ -15,7 +15,7 @@ static char THIS_FILE[] = __FILE__;
 
 // ConstList dimensions
 #define CONSTLIST_INDEX		0
-#define CONSTLIST_WIDTH		210
+#define CONSTLIST_WIDTH		200
 #define CONSTLIST_HEIGHT	100
 
 /////////////////////////////////////////////////////////////////////////////
@@ -37,7 +37,7 @@ BOOL CConstBar::Init(CWnd *pParentWnd)
 		!LoadToolBar(IDR_CONSTELLATION))
 	{
 		TRACE0("Failed to create toolbar\n");
-		return FALSE;      // fail to create
+		return FALSE;
 	}
 
 	if (!InitList())
@@ -48,7 +48,6 @@ BOOL CConstBar::Init(CWnd *pParentWnd)
 
 BOOL CConstBar::InitList()
 {
-
 	CRect rect( -CONSTLIST_WIDTH, -CONSTLIST_HEIGHT, 0, 0 );
 
 	SetButtonInfo( CONSTLIST_INDEX, ID_CONST_LIST, TBBS_SEPARATOR, CONSTLIST_WIDTH );
@@ -62,7 +61,6 @@ BOOL CConstBar::InitList()
 
 	if ( m_List.m_hWnd != NULL )
 	{
-		CRect rect;
 		GetItemRect( CONSTLIST_INDEX, rect );
 
 		m_List.SetWindowPos( NULL, rect.left, rect.top, 0, 0,

@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 opengl32.lib glu32.lib /nologo /subsystem:windows /machine:I386
+# ADD LINK32 opengl32.lib glu32.lib /nologo /subsystem:windows /machine:I386 /out:"ConStation.exe"
 
 !ELSEIF  "$(CFG)" == "ConStation - Win32 Debug"
 
@@ -92,7 +92,7 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Group "Main Source Files"
 
-# PROP Default_Filter "cpp"
+# PROP Default_Filter ""
 # Begin Source File
 
 SOURCE=.\ConStation.cpp
@@ -111,15 +111,15 @@ SOURCE=.\ConStationFrame.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ConStationUI.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ConStationView.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ConstBar.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\Global.cpp
+SOURCE=.\mtxlib.cpp
 # End Source File
 # Begin Source File
 
@@ -129,10 +129,18 @@ SOURCE=.\StdAfx.cpp
 # End Group
 # Begin Group "Dialog Source Files"
 
-# PROP Default_Filter "cpp"
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\ConstBar.cpp
+# End Source File
 # Begin Source File
 
 SOURCE=.\DlgConstName.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\DlgLocation.cpp
 # End Source File
 # Begin Source File
 
@@ -142,10 +150,18 @@ SOURCE=.\DlgShowHide.cpp
 
 SOURCE=.\DlgTerrain.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\StarfBar.cpp
+# End Source File
 # End Group
 # Begin Source File
 
 SOURCE=.\Constellation.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\Global.cpp
 # End Source File
 # Begin Source File
 
@@ -165,7 +181,7 @@ SOURCE=.\Terrain.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Group "Main Header Files"
 
-# PROP Default_Filter "h"
+# PROP Default_Filter ""
 # Begin Source File
 
 SOURCE=.\ConStation.h
@@ -180,15 +196,15 @@ SOURCE=.\ConStationFrame.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ConStationUI.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\ConStationView.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\ConstBar.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\Global.h
+SOURCE=.\mtxlib.h
 # End Source File
 # Begin Source File
 
@@ -201,10 +217,18 @@ SOURCE=.\StdAfx.h
 # End Group
 # Begin Group "Dialog Header Files"
 
-# PROP Default_Filter "h"
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\ConstBar.h
+# End Source File
 # Begin Source File
 
 SOURCE=.\DlgConstName.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\DlgLocation.h
 # End Source File
 # Begin Source File
 
@@ -214,10 +238,18 @@ SOURCE=.\DlgShowHide.h
 
 SOURCE=.\DlgTerrain.h
 # End Source File
+# Begin Source File
+
+SOURCE=.\StarfBar.h
+# End Source File
 # End Group
 # Begin Source File
 
 SOURCE=.\Constellation.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Global.h
 # End Source File
 # Begin Source File
 

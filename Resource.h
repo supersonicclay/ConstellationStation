@@ -5,6 +5,7 @@
 #define IDD_ABOUTBOX                    100
 #define IDI_FILE                        110
 #define IDR_MAINFRAME                   120
+#define IDR_STARFIELD                   120
 #define IDR_CONSTELLATION               121
 #define IDR_CONSTELLATION1              122
 #define IDR_MAINFRAME1                  123
@@ -34,6 +35,7 @@
 #define IDC_CUR_COLOR                   1039
 #define IDC_ROUGHNESS_LBL               1040
 #define IDC_ROUGHNESS_TXT               1041
+#define IDC_DATETIMEPICKER2             1045
 #define ID_STARF_NEWRANDOM              32772
 #define ID_STARF_NEWACTUAL              32773
 #define ID_STARF_OPEN                   32774
@@ -52,6 +54,9 @@
 #define ID_CONST_SHOWALL                32842
 #define ID_CONST_HIDEALL                32843
 #define ID_TERR_NEW                     32850
+#define ID_STARF_TIME                   32851
+#define ID_STARF_DATE                   32852
+#define ID_STARF_SPEED                  32853
 #define ID_OPTIONS_LOCATION             32870
 #define ID_OPTIONS_TERRAIN              32871
 
@@ -61,8 +66,8 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        158
-#define _APS_NEXT_COMMAND_VALUE         32851
-#define _APS_NEXT_CONTROL_VALUE         1042
+#define _APS_NEXT_COMMAND_VALUE         32854
+#define _APS_NEXT_CONTROL_VALUE         1046
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

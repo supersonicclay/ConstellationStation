@@ -5,7 +5,7 @@
 #define TERRAIN_H
 
 extern const float		DEF_ROUGHNESS;
-extern const color_t	DEF_COLOR;
+extern const color_s	DEF_COLOR;
 
 class CTerrain : public CObject
 {
@@ -13,7 +13,7 @@ DECLARE_SERIAL( CTerrain )
 
 public:
 
-	CTerrain( float r=DEF_ROUGHNESS, color_t c=DEF_COLOR );
+	CTerrain( float r=DEF_ROUGHNESS, color_s c=DEF_COLOR );
 	~CTerrain();
 
 	void Serialize( CArchive& ar );
@@ -31,7 +31,7 @@ private:
 	int iterations;
 	float roughness;
 
-	color_t color;
+	color_s color;
 
 	float viewHeight;
 
@@ -39,7 +39,7 @@ private:
 public:
 	void MakeTerrain();
 	void SetRoughness( float r );
-	void SetColor( color_t color_ );
+	void SetColor( color_s color_ );
 
 	float* GetHeights() const;
 	float GetHeight( int i, int j ) const;
@@ -49,7 +49,7 @@ public:
 	float GetScale() const;
 	int GetIterations() const;
 	float GetRoughness() const;
-	color_t GetColor() const;
+	color_s GetColor() const;
 	float GetViewHeight() const;
 
 	float* GetUpperNormal( int i, int j );

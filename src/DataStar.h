@@ -69,6 +69,8 @@ public:
 	void SetRA( USHORT h, USHORT m, float s );
 	void SetDec( BOOL p, USHORT d, USHORT m, float s );
 	void SetCenter( vector3 c );
+	void SetPhi( float p );
+	void SetTheta( float t );
 	void SetMag( float m );
 	void SetColor( color_s c );
 	void SetRadius( float r );
@@ -76,12 +78,12 @@ public:
 // Methods
 	// Right ascension and declination known
 	void UpdatePosFromRADec();
-	void SetXYZFromRADec();
+	void SetXYZFromPhiTheta();
 	void SetPhiThetaFromRADec();
 
 	// X, Y, and Z coordinates known
 	void UpdatePosFromXYZ();
-	void SetRADecFromXYZ();
+	void SetRADecFromPhiTheta();
 	void SetPhiThetaFromXYZ();
 
 	void UpdateVerts();

@@ -19,6 +19,7 @@ public:
 	//{{AFX_DATA(CDlgOptionsStar)
 	enum { IDD = IDD_OPTIONS_STAR };
 	BOOL	visible;
+	BOOL	daylight;
 	BOOL	labeled;
 	BOOL	textured;
 	BOOL	colored;
@@ -33,9 +34,6 @@ public:
 	//}}AFX_DATA
 
 	int origLimMagX10;
-	int origSize;
-	int origSContrast;
-	int origCContrast;
 
 
 // Methods
@@ -58,10 +56,6 @@ protected:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnStarsDefaults();
-	afx_msg void OnChangeStarsDimR();
-	afx_msg void OnChangeStarsBrightR();
-	afx_msg void OnChangeStarsDimC();
-	afx_msg void OnChangeStarsBrightC();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

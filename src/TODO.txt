@@ -11,16 +11,16 @@ PHASES
 
 
 BUGS
-	4	Isn't calculating correct light position
+-	4	Sun glow quad needs to be perp to viewer
 	5	Program Icon
+		- Reinstall VC++
 		- frame.GetIcon()
 		- frame.SetIcon()
 		- create structure
 		- (WM_SETICON)
 
 GENERAL
--	1	Read-through cleaning / Sanity checks
-		- DataTerrain
+-	4	Store rotTime's as rad
 	5	Right click menu to track/center/magnify
 	5	Don't maximize on startup
 	5	Redraw starfield toolbar buttons
@@ -30,22 +30,24 @@ GENERAL
 	5	Undo
 
 OPTIONS
-	4	ConstLine width
-	4	Terrain shadows on/off
-	4	constellation labels
-	4	star names
-	5	Latitude		(Portales: 34.60N)
-	5	home location
+-	4	ConstLine width needs taller listbox
+-	4	Terrain tex/height Iterations
+-	4	constellation labels
+-	4	star labels
 
 INPUT
+	5	Shift + Left rotTime
+	5	Ctrl  + Left rotLatitude
+	5	Right        menu
 	5	More accurate trackball
 
 GRAPHICS
-	4	Lighting is shining through
-	4	Print Constellation Name near constellation
+-	4	Lens flare
+-	4	Print Constellation Name near constellation
 		- moveable?
-	4	Heading indicator needs work.
+-	4	Heading indicator needs improvement.
 		- Do it like Starry Night?
+	5	Stars shouldn't all fade at same rate
 	5	Actual magnification 1X/2X/1024X
 	5	Celestial/Equatorial Grid
 
@@ -61,7 +63,7 @@ STARFIELD
 	5	Prompt for seed with random stars
 	5	Choose date
 	5	Choose time
-	5	Choose location (lat & long)
+	5	Choose location (lat & long) (Portales: 34.60N)
 	5	Increase year range
 	5	Link time with starfield
 	5	Inc/Dec by 1/2/3 years/days/hours/mins
@@ -72,15 +74,16 @@ STARS
 
 
 TERRAIN
-	4	Textured terrain
-	4?	Generate first few so you're sitting in a valley
-	4?	Iterations / scale
-	4?	More circular
+-	4	Textured terrain
+-	4	Normals probably aren't accurate (after z axis reversal)
+-	4?	Terrain Scale
+-	4?	Terrain shadows
 
 DOCUMENT
 	5	Import/Export constellations (must check seed)
 
 TEACHER
+	5	Disable tracking/finding
 	5	CONSTELLATION TESTS
 		- Types
 			- Show constlines. Pick a line

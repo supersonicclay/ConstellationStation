@@ -49,6 +49,13 @@ CCSView* GetView()
 
 
 /////////////////////////////////////////////////////////////////////////////
+/// DEBUG VARS
+
+BOOL terrFog = TRUE;
+BOOL terrExternal = FALSE;
+
+
+/////////////////////////////////////////////////////////////////////////////
 // COLOR
 const color_s	COLOR_WHITE			= {1.0f, 1.0f, 1.0f},
 				COLOR_BLACK			= {0.0f, 0.0f, 0.0f},
@@ -66,38 +73,48 @@ const color_s	COLOR_WHITE			= {1.0f, 1.0f, 1.0f},
 // DEFAULTS
 
 const BOOL		DEF_STARS_VISIBLE		= TRUE;
+const BOOL		DEF_STARS_DAYLIGHT		= FALSE;
 const BOOL		DEF_STARS_LABELED		= FALSE;
 const BOOL		DEF_STARS_TEXTURED		= TRUE;
 const BOOL		DEF_STARS_COLORED		= TRUE;
 const int		DEF_STARS_LIMMAGX10		= 70;
-const int		DEF_STARS_SIZE			= 50;
-const int		DEF_STARS_SCONTRAST		= 75;
+const int		DEF_STARS_SIZE			= 40;
+const int		DEF_STARS_SCONTRAST		= 50;
 const int		DEF_STARS_CCONTRAST		= 75;
 const float		DEF_STARS_BRIGHT_RADIUS	= 0.013f;
 const float		DEF_STARS_BRIGHT_COLOR	= 1.0f;
 const float		DEF_STARS_RADIUS_DIFF	= 0.011f;
 const float		DEF_STARS_COLOR_DIFF	= 0.8f;
+
 const BOOL		DEF_CONST_VISIBLE		= TRUE;
+const BOOL		DEF_CONST_DAYLIGHT		= TRUE;
 const BOOL		DEF_CONST_LABELED		= TRUE;
 const color_s	DEF_CONST_NORMCOLOR		= {0.0f, 0.5f, 0.5f};
 const color_s	DEF_CONST_SELCOLOR		= {0.0f, 1.0f, 1.0f};
 const color_s	DEF_CONST_ACTIVECOLOR	= {1.0f, 1.0f, 0.0f};
 const color_s	DEF_CONST_STARCOLOR		= {0.0f, 0.0f, 1.0f};
 const BOOL		DEF_CONST_STARSCOLORED	= TRUE;
-const float		DEF_SUN_RADIUS			= 0.1f;
-const color_s	DEF_SUN_COLOR			= {1.0f, 1.0f, 0.2f};
-const BOOL		DEF_SUN_VISIBLE			= TRUE;///
-const BOOL		DEF_SUN_SHINE			= FALSE;///
+const int		DEF_CONST_LINEWIDTH		= 3;
+
+const float		DEF_SUN_RADIUS			= 0.08f;
+const color_s	DEF_SUN_COLOR			= {1.0f, 1.0f, 0.5f};
+const BOOL		DEF_SUN_VISIBLE			= TRUE;
+const BOOL		DEF_SUN_SHINE			= TRUE;
+
+const color_s	DEF_SKY_COLOR			= {0.6f, 0.7f, 1.0f};
+
 const BOOL		DEF_TERR_VISIBLE		= TRUE;
-const BOOL		DEF_TERR_TEXTURED		= FALSE;
-const int		DEF_TERR_ROUGHNESSX100	= 10;
+const BOOL		DEF_TERR_TEXTURED		= TRUE;
+const int		DEF_TERR_ROUGHNESSX100	= 20;
 const int		DEF_TERR_SCALE			= 1;
-const int		DEF_TERR_ITERS			= 3;
-const season_e	DEF_TERR_SEASON			= season_Summer;
-const color_s	DEF_TERR_WINCOLOR		= {0.7f, 0.7f, 0.7f};
+const int		DEF_TERR_TEX_ITERS		= 8;
+const int		DEF_TERR_HEIGHT_ITERS	= 4;
+const season_e	DEF_TERR_SEASON			= season_Winter;///season_Summer;
+const color_s	DEF_TERR_WINCOLOR		= {1,1,1};///{0.7f, 0.7f, 0.7f};
 const color_s	DEF_TERR_SPRCOLOR		= {0.15f, 0.25f, 0.1f};
-const color_s	DEF_TERR_SUMCOLOR		= {0.0f, 0.12f, 0.0f};///{0.1f, 0.3f, 0.1f};
+const color_s	DEF_TERR_SUMCOLOR		= {0.1f, 0.3f, 0.1f};
 const color_s	DEF_TERR_FALCOLOR		= {0.25f, 0.25f, 0.15f};
+
 const color_s	DEF_COMPASS_CROSSCOLOR	= {0.3f, 0.3f, 0.8f};
 const color_s	DEF_COMPASS_NEEDLECOLOR	= {0.7f, 1.0f, 0.7f};
 
@@ -144,6 +161,16 @@ CArchive& operator<< ( CArchive& ar, color_s c )
 	return ar << c.r << c.g << c.b;
 }
 
+
+// Multiply color by a factor
+color_s operator* ( const color_s c, const float f )
+{
+	color_s ret = c;
+	ret.r *= f;
+	ret.g *= f;
+	ret.b *= f;
+	return ret;
+}
 
 // Star comparison (for sorting by magnitude)
 BOOL operator< ( CDataStar& s1, CDataStar& s2 )

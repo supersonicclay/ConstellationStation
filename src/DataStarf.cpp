@@ -50,14 +50,17 @@ void CDataStarf::Clear( BOOL clearStars )
 
 	// Viewing
 	viewMat.identity();
+	starfMat.identity();
 	timeMat.identity();
 	latMat.identity();
+	longMat.identity();
 
 	rotX = 0.0f;
 	rotY = 0.0f;
 	tempRotX = 0.0f;
 	tempRotY = 0.0f;
 	rotTime = 0.0f;
+///	rotTime = 125.0f;///
 	zoom = 0.0f;
 
 	spinning = FALSE;
@@ -76,13 +79,15 @@ void CDataStarf::Clear( BOOL clearStars )
 	time_t seconds = time(NULL);
 	gregorian = *(localtime( &seconds ));
 	gregorian.tm_year += 1900;
-	latitude = 34.6f;//34.6N for Portales
+	latitude = 34.6f;///34.6N for Portales
 	longitude = 0.0f;
 }
 
 // Create a new random or actual starfield
 void CDataStarf::New( BOOL actual )
 {
+///	actual = FALSE;/// Faster loads
+
 	// Don't clear stars if we don't need to
 	if( actual && seed == -1 )
 		Clear( FALSE );
@@ -103,12 +108,13 @@ void CDataStarf::New( BOOL actual )
 	else
 	{
 		seed = clock();
-		InitRandomStars();
+///		InitRandomStars();
+		InitTestStars();
 		UpdateMats();
 	}
 }
 
-// Creates sphere of random stars with radius of 1
+// Creates sphere of random stars
 void CDataStarf::InitRandomStars()
 {
 	// Seed random numbers for predictable random starfield
@@ -126,19 +132,50 @@ void CDataStarf::InitRandomStars()
 	stars.push_back( CDataStar(newStar) );
 	*/
 
-	// Sun Corona
-	newStar.SetColor( COLOR_WHITE );
-	newStar.SetMag( -10.0f );
-	newStar.SetRA( 12, 0, 0.0f );
-	newStar.SetDec( TRUE, 0, 0, 0.0f );
-	newStar.SetCenter( vector3(0.0f,0.0f,-1.0f) );
-	stars.push_back( CDataStar(newStar) );
-
 	// Randomize the rest
 	for (int i=1; i<starCount; ++i)
 	{
 		newStar.Randomize();
 		stars.push_back( CDataStar(newStar) );
+	}
+
+	// Sort stars by magnitude
+	std::sort( stars.begin(), stars.end() );
+
+	CountStars();
+	starfMgr.UpdateStarsAppearance();
+}
+
+// Create sphere of evenly distributed stars
+void CDataStarf::InitTestStars()
+{
+	int latCount = 75;
+	int longCount = 50;
+
+	CDataStar newStar;
+	float phi, theta;
+
+	for( int i=0; i<latCount; ++i )
+	{
+		phi = (float)i/latCount*PI;
+		for( int j=0; j<longCount; ++j )
+		{
+			theta = (float)j/longCount*PI2;
+
+			newStar.SetPhi( phi );
+			newStar.SetTheta( theta );
+			newStar.SetMag( 2.0f );
+
+			newStar.SetXYZFromPhiTheta();
+			newStar.SetRADecFromPhiTheta();
+			stars.push_back( CDataStar( newStar ) );
+		}
+	}
+
+	// Fill in the rest with blanks
+	for( int rem = latCount*longCount; rem < MAX_STARS; ++rem )
+	{
+		stars.push_back( CDataStar() );
 	}
 
 	// Sort stars by magnitude
@@ -210,7 +247,7 @@ void CDataStarf::InitActualStars()
 		mag = (float) atof( buffer );
 
 		// Ignore rest of line
-		file.Seek( 406, CFile::current );
+		file.Seek( 3, CFile::current );
 
 		newStar.SetRA( ra );
 		newStar.SetDec( dec );
@@ -243,15 +280,24 @@ CDataConst*	CDataStarf::GetCurConst()			{	return &consts[curConstNum];	}
 int			CDataStarf::GetConstCount()			{	return constCount;				}
 int			CDataStarf::GetCurConstNum()		{	return curConstNum;				}
 int			CDataStarf::GetNewConstCount()		{	return newConstCount;			}
+
+float		CDataStarf::GetLatitude()			{	return latitude;				}
+float		CDataStarf::GetLongitude()			{	return longitude;				}
+
 BOOL		CDataStarf::AreStarsVisible()		{	return starsVisible;			}
+BOOL		CDataStarf::AreStarsDaylight()		{	return starsDaylight;			}
 BOOL		CDataStarf::AreStarsLabeled()		{	return starsLabeled;			}
 BOOL		CDataStarf::AreConstsVisible()		{	return constsVisible;			}
+BOOL		CDataStarf::AreConstsDaylight()		{	return constsDaylight;			}
 BOOL		CDataStarf::AreConstsLabeled()		{	return constsLabeled;			}
 BOOL		CDataStarf::IsSunVisible()			{	return sunVisible;				}
 BOOL		CDataStarf::IsSunShining()			{	return sunShine;				}
+
 matrix44*	CDataStarf::GetViewMat()			{	return &viewMat;				}
+matrix44*	CDataStarf::GetStarfMat()			{	return &starfMat;				}
 matrix44*	CDataStarf::GetTimeMat()			{	return &timeMat;				}
 matrix44*	CDataStarf::GetLatMat()				{	return &latMat;					}
+matrix44*	CDataStarf::GetLongMat()			{	return &longMat;				}
 float		CDataStarf::GetRotX()				{	return rotX;					}
 float		CDataStarf::GetRotY()				{	return rotY;					}
 float		CDataStarf::GetTempRotX()			{	return tempRotX;				}
@@ -279,11 +325,11 @@ CDataConst*	CDataStarf::GetConst( CString& name )
 void CDataStarf::IncNewConstCount()				{	newConstCount++;				}
 void CDataStarf::SwitchStarsVisible()			{	starsVisible = !starsVisible;	}
 void CDataStarf::SetStarsVisible( BOOL x )		{	starsVisible = x;				}
-void CDataStarf::SwitchStarsLabeled()			{	starsLabeled = !starsLabeled;	}
+void CDataStarf::SetStarsDaylight( BOOL x )		{	starsDaylight = x;				}
 void CDataStarf::SetStarsLabeled( BOOL x )		{	starsLabeled = x;				}
 void CDataStarf::SwitchConstsVisible()			{	constsVisible = !constsVisible;	}
 void CDataStarf::SetConstsVisible( BOOL x )		{	constsVisible = x;				}
-void CDataStarf::SwitchConstsLabeled()			{	constsLabeled = !constsLabeled;	}
+void CDataStarf::SetConstsDaylight( BOOL x )	{	constsDaylight = x;				}
 void CDataStarf::SetConstsLabeled( BOOL x )		{	constsLabeled = x;				}
 void CDataStarf::SwitchSunVisible()				{	sunVisible = !sunVisible;		}
 void CDataStarf::SetSunVisible( BOOL x )		{	sunVisible = x;					}
@@ -291,6 +337,24 @@ void CDataStarf::SwitchSunShine()				{	sunShine = !sunShine;			}
 void CDataStarf::SetSunShine( BOOL x )			{	sunShine = x;					}
 void CDataStarf::SwitchSpinning()				{	spinning = !spinning;			}
 
+void CDataStarf::SetLatitude( float l, BOOL updateMat )
+{
+	latitude = l;
+	if( updateMat )
+	{
+		UpdateLatMat();
+		UpdateStarfMat();
+	}
+}
+void CDataStarf::SetLongitude( float l, BOOL updateMat )
+{
+	longitude = l;
+	if( updateMat )
+	{
+		UpdateLongMat();
+		UpdateStarfMat();
+	}
+}
 void CDataStarf::SetRotX( float r, BOOL updateMat )
 {
 	rotX = r;
@@ -324,7 +388,44 @@ void CDataStarf::SetRotTime( float r, BOOL updateMat )
 {
 	rotTime = r;
 	if( updateMat )
+	{
 		UpdateTimeMat();
+		UpdateStarfMat();
+	}
+}
+
+void CDataStarf::AdjLatitude( float delta, BOOL updateMat )
+{
+	// Restrict latitude
+	if( latitude + delta > 90.0f )
+		latitude = 90.0f;
+	else if( latitude + delta < -90.0f )
+		latitude = -90.0f;
+	else
+		latitude += delta;
+
+	if( updateMat )
+	{
+		UpdateLatMat();
+		UpdateStarfMat();
+	}
+}
+
+void CDataStarf::AdjLongitude( float delta, BOOL updateMat )
+{
+	// Restrict longitude
+	if( longitude + delta > 180.0f )
+		longitude = 180.0f;
+	else if( longitude + delta < -180.0f )
+		longitude = -180.0f;
+	else
+		longitude += delta;
+
+	if( updateMat )
+	{
+		UpdateLongMat();
+		UpdateStarfMat();
+	}
 }
 
 void CDataStarf::AdjRotX( float delta, BOOL updateMat )
@@ -363,7 +464,10 @@ void CDataStarf::AdjRotTime( float delta, BOOL updateMat )
 	if( tracking )
 		Track();
 	if( updateMat )
+	{
 		UpdateTimeMat();
+		UpdateStarfMat();
+	}
 }
 
 void CDataStarf::AdjZoom( float delta )
@@ -383,6 +487,7 @@ void CDataStarf::AdjZoom( float delta )
 void CDataStarf::LoadStarDefaults()
 {
 	starsVisible = DEF_STARS_VISIBLE;
+	starsDaylight = DEF_STARS_DAYLIGHT;
 	starsLabeled = DEF_STARS_LABELED;
 }
 
@@ -426,6 +531,7 @@ BOOL CDataStarf::IsStarInHiddenConst( int i )
 void CDataStarf::LoadConstDefaults()
 {
 	constsVisible = DEF_CONST_VISIBLE;
+	constsDaylight = DEF_CONST_DAYLIGHT;
 	constsLabeled = DEF_CONST_LABELED;
 }
 
@@ -513,33 +619,40 @@ void CDataStarf::UpdateMats()
 	UpdateTimeMat();
 	UpdateLatMat();
 	UpdateLongMat();
+	UpdateStarfMat();
 }
 // Update view matrix
 void CDataStarf::UpdateViewMat()
 {
 	viewMat.identity();
-	viewMat = RotateRadMatrix44( 'x', rotX+tempRotX );
+///	viewMat = TranslateMatrix44( 0, 0,-3 );
+	viewMat *= RotateRadMatrix44( 'x', rotX+tempRotX );
 	viewMat *= RotateRadMatrix44( 'y', rotY+tempRotY );
+}
+
+// Update starfield matrix
+void CDataStarf::UpdateStarfMat()
+{
+	starfMat = latMat;
+	starfMat *= longMat;
+	starfMat *= timeMat;
 }
 
 // Update time matrix
 void CDataStarf::UpdateTimeMat()
 {
-	timeMat.identity();
 	timeMat = RotateRadMatrix44( 'y', DegToRad( rotTime ) );
 }
 
 // Update latitude matrix
 void CDataStarf::UpdateLatMat()
 {
-	latMat.identity();
 	latMat = RotateRadMatrix44( 'x', DegToRad( latitude-90.0f ) );
 }
 
 // Update longitude matrix
 void CDataStarf::UpdateLongMat()
 {
-	longMat.identity();
 	longMat = RotateRadMatrix44( 'y', 0.0f );///
 }
 
@@ -574,8 +687,10 @@ void CDataStarf::ResetRot()
 	rotX = 0.0f;
 	rotY = 0.0f;
 	rotTime = 0.0f;
+	latitude = 34.6f;
 	UpdateViewMat();
 	UpdateTimeMat();
+	UpdateStarfMat();
 }
 
 // Reset zoom

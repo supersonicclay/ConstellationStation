@@ -28,12 +28,10 @@ CDlgOptionsStar::CDlgOptionsStar(CWnd* pParent /*=NULL*/)
 	size = 0;
 	sContrast = 0;
 	cContrast = 0;
+	daylight = FALSE;
 	//}}AFX_DATA_INIT
 
 	origLimMagX10 = 0;
-	origSize = 0;
-	origSContrast = 0;
-	origCContrast = 0;
 }
 
 
@@ -53,6 +51,7 @@ void CDlgOptionsStar::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STARS_SCONTRAST, sContrastSlider);
 	DDX_Control(pDX, IDC_STARS_CCONTRAST, cContrastSlider);
 	DDX_Control(pDX, IDC_STARS_LIMMAG, limMagSlider);
+	DDX_Check(pDX, IDC_STARS_DAYLIGHT, daylight);
 	//}}AFX_DATA_MAP
 }
 
@@ -61,10 +60,6 @@ BEGIN_MESSAGE_MAP(CDlgOptionsStar, CDialog)
 	//{{AFX_MSG_MAP(CDlgOptionsStar)
 	ON_WM_HSCROLL()
 	ON_BN_CLICKED(IDC_STARS_DEFAULTS, OnStarsDefaults)
-	ON_EN_CHANGE(IDC_STARS_MINR, OnChangeStarsDimR)
-	ON_EN_CHANGE(IDC_STARS_MAXR, OnChangeStarsBrightR)
-	ON_EN_CHANGE(IDC_STARS_MINC, OnChangeStarsDimC)
-	ON_EN_CHANGE(IDC_STARS_MAXC, OnChangeStarsBrightC)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -91,6 +86,7 @@ BOOL CDlgOptionsStar::OnInitDialog()
 void CDlgOptionsStar::InitOptions()
 {
 	CheckDlgButton( IDC_STARS_VISIBLE, starfield.AreStarsVisible() );
+	CheckDlgButton( IDC_STARS_DAYLIGHT, starfield.AreStarsDaylight() );
 	CheckDlgButton( IDC_STARS_LABELED, starfield.AreStarsLabeled() );
 	CheckDlgButton( IDC_STARS_TEXTURED, optionsMgr.AreStarsTextured() );
 	CheckDlgButton( IDC_STARS_COLORED, optionsMgr.AreStarsColored() );
@@ -106,22 +102,8 @@ void CDlgOptionsStar::InitOptions()
 
 	// Initialize data that are updated realtime (in case of cancel button)
 	origLimMagX10 = limMagX10 = optionsMgr.GetStarsLimMagX10();
-	origSize = size = optionsMgr.GetStarsSize();
-	origSContrast = sContrast = optionsMgr.GetStarsSContrast();
-	origCContrast = cContrast = optionsMgr.GetStarsCContrast();
 
 	UpdateLimMagTxt();
-
-	/// star debug
-	char buf[10];
-	itoa( (int)(starfMgr.GetStarsDimRadius()*10000), buf, 10 );
-	SetDlgItemText( IDC_STARS_MINR, buf );
-	itoa( (int)(starfMgr.GetStarsBrightRadius()*10000), buf, 10 );
-	SetDlgItemText( IDC_STARS_MAXR, buf );
-	itoa( (int)(starfMgr.GetStarsDimColor()*100), buf, 10 );
-	SetDlgItemText( IDC_STARS_MINC, buf );
-	itoa( (int)(starfMgr.GetStarsBrightColor()*100), buf, 10 );
-	SetDlgItemText( IDC_STARS_MAXC, buf );
 }
 
 void CDlgOptionsStar::OnStarsDefaults() 
@@ -164,72 +146,10 @@ void CDlgOptionsStar::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		Redraw();
 	}
 
-	// Update brightness
-	if( size != sizeSlider.GetPos() )
-	{
-		size = sizeSlider.GetPos();
-		optionsMgr.SetStarsSize( sizeSlider.GetPos() );
-		starfMgr.UpdateStarsAppearance();
-		Redraw();
-	}
-
-	// Update size contrast
-	if( sContrast != sContrastSlider.GetPos() )
-	{
-		sContrast = sContrastSlider.GetPos();
-		optionsMgr.SetStarsSContrast( sContrastSlider.GetPos() );
-		starfMgr.UpdateStarsAppearance();
-		Redraw();
-	}
-
-	// Update color contrast
-	if( cContrast != cContrastSlider.GetPos() )
-	{
-		cContrast = cContrastSlider.GetPos();
-		optionsMgr.SetStarsCContrast( cContrastSlider.GetPos() );
-		starfMgr.UpdateStarsAppearance();
-		Redraw();
-	}
-
-	InitOptions();/// Don't need after mins/maxes are taken out
 	UpdateLimMagTxt();
 
 	CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
 
-void CDlgOptionsStar::OnChangeStarsDimR() 
-{
-	char buf[10];
-	GetDlgItemText(IDC_STARS_MINR, buf, 10);
-	starfMgr.SetStarsDimRadius( atoi( buf ) / 10000.0f );
-	starfMgr.UpdateStarsAppearance();
-	Redraw();
-}
 
-void CDlgOptionsStar::OnChangeStarsBrightR() 
-{
-	char buf[10];
-	GetDlgItemText(IDC_STARS_MAXR, buf, 10);
-	starfMgr.SetStarsBrightRadius( atoi( buf ) / 10000.0f );
-	starfMgr.UpdateStarsAppearance();
-	Redraw();
-}
-
-void CDlgOptionsStar::OnChangeStarsDimC() 
-{
-	char buf[10];
-	GetDlgItemText(IDC_STARS_MINC, buf, 10);
-	starfMgr.SetStarsDimColor( atoi( buf ) / 100.0f );
-	starfMgr.UpdateStarsAppearance();
-	Redraw();
-}
-
-void CDlgOptionsStar::OnChangeStarsBrightC() 
-{
-	char buf[10];
-	GetDlgItemText(IDC_STARS_MAXC, buf, 10);
-	starfMgr.SetStarsBrightColor( atoi( buf ) / 100.0f );
-	starfMgr.UpdateStarsAppearance();
-	Redraw();
-}

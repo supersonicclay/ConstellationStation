@@ -30,6 +30,7 @@ public:
 	void New( BOOL actual );
 
 	void InitRandomStars();
+	void InitTestStars();///
 	void InitActualStars();
 	void InitActualConsts();
 
@@ -54,6 +55,7 @@ private:
 	matrix44 timeMat;
 	matrix44 latMat;
 	matrix44 longMat;
+	matrix44 starfMat;      // compilation of latMat, longMat, and timeMat
 
 	// Viewing
 	float rotX;
@@ -84,10 +86,12 @@ private:
 
 // Star options
 	BOOL starsVisible;
+	BOOL starsDaylight;   // stars visible during daylight
 	BOOL starsLabeled;
 
 // Constellation options
 	BOOL constsVisible;
+	BOOL constsDaylight;  // constellations visible during daylight
 	BOOL constsLabeled;
 
 // Sun options
@@ -111,18 +115,23 @@ public:
 	int GetNewConstCount();
 	int GetCurConstNum();
 
+	float GetLatitude();
+	float GetLongitude();
+
 	BOOL AreStarsVisible();
+	BOOL AreStarsDaylight();
 	BOOL AreStarsLabeled();
-
 	BOOL AreConstsVisible();
+	BOOL AreConstsDaylight();
 	BOOL AreConstsLabeled();
-
 	BOOL IsSunVisible();
 	BOOL IsSunShining();
 
 	matrix44* GetViewMat();
+	matrix44* GetStarfMat();
 	matrix44* GetTimeMat();
 	matrix44* GetLatMat();
+	matrix44* GetLongMat();
 
 	float GetRotX();
 	float GetRotY();
@@ -140,12 +149,12 @@ public:
 
 	void SwitchStarsVisible();
 	void SetStarsVisible( BOOL x );
-	void SwitchStarsLabeled();
+	void SetStarsDaylight( BOOL x );
 	void SetStarsLabeled( BOOL x );
 
 	void SwitchConstsVisible();
 	void SetConstsVisible( BOOL x );
-	void SwitchConstsLabeled();
+	void SetConstsDaylight( BOOL x );
 	void SetConstsLabeled( BOOL x );
 
 	void SwitchSunVisible();
@@ -153,11 +162,15 @@ public:
 	void SwitchSunShine();
 	void SetSunShine( BOOL x );
 
+	void SetLatitude( float l, BOOL updateMat=TRUE );
+	void SetLongitude( float l, BOOL updateMat=TRUE );
 	void SetRotX( float r, BOOL updateMat=TRUE );
 	void SetRotY( float r, BOOL updateMat=TRUE );
 	void SetTempRotX( float r, BOOL updateMat=TRUE );
 	void SetTempRotY( float r, BOOL updateMat=TRUE );
 	void SetRotTime( float r, BOOL updateMat=TRUE );
+	void AdjLatitude( float delta, BOOL updateMat=TRUE );
+	void AdjLongitude( float delta, BOOL updateMat=TRUE );
 	void AdjRotX( float delta, BOOL updateMat=TRUE );
 	void AdjRotY( float delta, BOOL updateMat=TRUE );
 	void AdjRotTime( float delta, BOOL updateMat=TRUE );
@@ -189,6 +202,7 @@ public:
 // View methods
 	void UpdateMats();
 	void UpdateViewMat();
+	void UpdateStarfMat();
 	void UpdateTimeMat();
 	void UpdateLatMat();
 	void UpdateLongMat();

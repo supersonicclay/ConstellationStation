@@ -115,23 +115,48 @@ void CMgrInput::ProcessKeys()
 		update = TRUE;
 	}
 
-	/// Test Terrain Height
-	if( keyDown[VK_ADD] )
+	/// Debug Terrain View
+	if( keyDown[VK_ADD] && keyDown[VK_SHIFT] )
+	{
+		terrain.IncViewDistance();
+		update = TRUE;
+	}
+	if( keyDown[VK_SUBTRACT] && keyDown[VK_SHIFT] )
+	{
+		terrain.DecViewDistance();
+		update = TRUE;
+	}
+	if( keyDown[VK_ADD] && !keyDown[VK_SHIFT] )
 	{
 		terrain.IncViewHeight();
 		update = TRUE;
 	}
-	if( keyDown[VK_SUBTRACT] )
+	if( keyDown[VK_SUBTRACT] && !keyDown[VK_SHIFT] )
 	{
 		terrain.DecViewHeight();
+		update = TRUE;
+	}
+	if( keyDown['E'] )
+	{
+		keyDown['E'] = FALSE;
+		terrExternal = !terrExternal;
+		update = TRUE;
+	}
+	if( keyDown['F'] )
+	{
+		keyDown['F'] = FALSE;
+		terrFog = !terrFog;
 		update = TRUE;
 	}
 
 	/// Test finding and tracking
 	if( keyDown['T'] )
 	{
-		keyDown['T'] = FALSE; // Prevent repeat
-		starfMgr.StartTracking( starfield.GetConst(0) );
+		keyDown['T'] = FALSE;
+		if( starfield.IsTracking() )
+			starfield.StopTracking();
+		else
+			starfMgr.StartTracking( starfield.GetConst(0) );
 //		starfMgr.Find( starfield.GetConst(0) );
 		// 8 = Betelgeuse
 //		starfMgr.StartTracking( starfield.GetStar(8) );
@@ -489,11 +514,16 @@ void CMgrInput::MouseMoveViewing3()  // Trackball
 
 	if( mouseRotatingZ )
 	{
-		// If shift is down, it only rotates sun
+		int diff = mousePoint.y-mouseRPoint.y;
+		// Rotate Sun
 		if( keyDown[VK_SHIFT] )
-			starfield.GetSun()->AdjRotTime( (mousePoint.y-mouseRPoint.y) / 10.0f );
+			starfield.GetSun()->AdjRotTime( diff / 10.0f );
+		// Rotate latitude
+		else if( keyDown[VK_CONTROL] )
+			starfield.AdjLatitude( diff / 10.0f );
+		// Rotate time
 		else
-			starfield.AdjRotTime( (mousePoint.y-mouseRPoint.y) / 10.0f );// * (1-zoom);
+			starfield.AdjRotTime( diff / 10.0f );/// * (1-zoom);
 		mouseRPoint = mousePoint;
 	}
 
@@ -568,7 +598,19 @@ void CMgrInput::MouseMoveViewing()  // Original
 		return;
 
 	if( mouseRotatingZ )
-		starfield.AdjRotTime( (mousePoint.y-mouseRPoint.y) / 10.0f );// * (1-zoom);
+	{
+		int diff = mousePoint.y-mouseRPoint.y;
+		// Rotate Sun
+		if( keyDown[VK_SHIFT] )
+			starfield.GetSun()->AdjRotTime( diff / 10.0f );
+		// Rotate latitude
+		else if( keyDown[VK_CONTROL] )
+			starfield.AdjLatitude( diff / 10.0f );
+		// Rotate time
+		else
+			starfield.AdjRotTime( diff / 10.0f );/// * (1-zoom);
+		mouseRPoint = mousePoint;
+	}
 
 	else if( mouseRotatingXY && !mouseRotatingZ )
 	{
@@ -716,39 +758,39 @@ BOOL CMgrInput::Select( select_e selection )
 	if( selection == select_Star )
 	{
 		// Draw stars
-		graphicsMgr.LoadStarfMat();
+		glLoadMatrixf( graphicsMgr.starfMat.getFloats() );
 		graphicsMgr.DrawStars();
 
 		// Draw terrain
 		if( optionsMgr.IsTerrVisible() )
 		{
-			graphicsMgr.LoadTerrainMat();
+			glLoadMatrixf( graphicsMgr.terrainMat.getFloats() );
 			graphicsMgr.DrawTerrain();
 		}
 	}
 	else if( selection == select_Line )
 	{
 		// Draw current constellation
-		graphicsMgr.LoadStarfMat();
+		glLoadMatrixf( graphicsMgr.starfMat.getFloats() );
 		graphicsMgr.DrawCurConst( starfield.GetCurConstNum() );
 
 		// Draw terrain
 		if( optionsMgr.IsTerrVisible() )
 		{
-			graphicsMgr.LoadTerrainMat();
+			glLoadMatrixf( graphicsMgr.terrainMat.getFloats() );
 			graphicsMgr.DrawTerrain();
 		}
 	}
 	else if( selection == select_Const )
 	{
 		// Draw all constellations
-		graphicsMgr.LoadStarfMat();
+		glLoadMatrixf( graphicsMgr.starfMat.getFloats() );
 		graphicsMgr.DrawConsts();
 
 		// Draw terrain
 		if( optionsMgr.IsTerrVisible() )
 		{
-			graphicsMgr.LoadTerrainMat();
+			glLoadMatrixf( graphicsMgr.terrainMat.getFloats() );
 			graphicsMgr.DrawTerrain();
 		}
 	}

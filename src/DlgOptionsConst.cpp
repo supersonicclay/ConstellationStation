@@ -23,6 +23,8 @@ CDlgOptionsConst::CDlgOptionsConst(CWnd* pParent /*=NULL*/)
 	visible = FALSE;
 	labeled = FALSE;
 	starsColored = FALSE;
+	lineWidth = -1;
+	daylight = FALSE;
 	//}}AFX_DATA_INIT
 }
 
@@ -31,9 +33,12 @@ void CDlgOptionsConst::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CDlgOptionsConst)
+	DDX_Control(pDX, IDC_CONST_LINEWIDTH, lineWidthControl);
 	DDX_Check(pDX, IDC_CONST_VISIBLE, visible);
 	DDX_Check(pDX, IDC_CONST_LABELED, labeled);
 	DDX_Check(pDX, IDC_CONST_STARSCOLORED, starsColored);
+	DDX_CBIndex(pDX, IDC_CONST_LINEWIDTH, lineWidth);
+	DDX_Check(pDX, IDC_CONST_DAYLIGHT, daylight);
 	//}}AFX_DATA_MAP
 }
 
@@ -58,6 +63,8 @@ BOOL CDlgOptionsConst::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
+	/// Set lineWidthControl height taller here
+
 	InitOptions();
 
 	return TRUE;
@@ -66,8 +73,10 @@ BOOL CDlgOptionsConst::OnInitDialog()
 void CDlgOptionsConst::InitOptions()
 {
 	CheckDlgButton( IDC_CONST_VISIBLE, starfield.AreConstsVisible() );
+	CheckDlgButton( IDC_CONST_DAYLIGHT, starfield.AreConstsDaylight() );
 	CheckDlgButton( IDC_CONST_LABELED, starfield.AreConstsLabeled() );
 	CheckDlgButton( IDC_CONST_STARSCOLORED, optionsMgr.AreConstStarsColored() );
+	lineWidthControl.SetCurSel( optionsMgr.GetConstLineWidth()-1 );
 
 	// Initialize data that are updated realtime (in case of cancel button)
 	origNormColor = normColor = optionsMgr.GetConstNormColor();

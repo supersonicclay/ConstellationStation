@@ -165,7 +165,7 @@ BEGIN
         MENUITEM "&Location...",                ID_OPTIONS_LOCATION
         MENUITEM "&Stars...",                   ID_OPTIONS_STAR
         MENUITEM "&Constellations...",          ID_OPTIONS_CONST
-        MENUITEM "S&un",                        ID_OPTIONS_SUN
+        MENUITEM "S&un...",                     ID_OPTIONS_SUN
         MENUITEM "Te&rrain...",                 ID_OPTIONS_TERR
     END
     POPUP "&View"
@@ -257,7 +257,7 @@ BEGIN
                     BS_AUTOCHECKBOX | WS_TABSTOP,20,40,85,10
     GROUPBOX        "Roughness",IDC_STATIC,10,70,120,65
     EDITTEXT        IDC_TERR_ROUGHNESS_TXT,20,85,100,12,ES_AUTOHSCROLL | 
-                    WS_DISABLED | NOT WS_TABSTOP
+                    ES_READONLY | NOT WS_TABSTOP
     CONTROL         "Slider2",IDC_TERR_ROUGHNESS,"msctls_trackbar32",
                     TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,20,103,100,22
     GROUPBOX        "Display",IDC_STATIC,145,10,120,95
@@ -291,79 +291,77 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,215,156,50,14
 END
 
-IDD_OPTIONS_STAR DIALOG DISCARDABLE  0, 0, 205, 310
+IDD_OPTIONS_STAR DIALOG DISCARDABLE  0, 0, 205, 326
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Star Options"
 FONT 8, "MS Sans Serif"
 BEGIN
-    GROUPBOX        "Options",IDC_STATIC,10,10,120,75
+    GROUPBOX        "Options",IDC_STATIC,10,10,120,90
     CONTROL         "Visible",IDC_STARS_VISIBLE,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,20,25,36,10
     CONTROL         "Labeled",IDC_STARS_LABELED,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,20,38,41,10
+                    WS_TABSTOP,20,51,41,10
     CONTROL         "Textured (high quality)",IDC_STARS_TEXTURED,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,20,51,85,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,20,64,85,10
     CONTROL         "Spectral Type Coloring",IDC_STARS_COLORED,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,20,64,87,10
-    GROUPBOX        "Limiting Magnitude",IDC_STATIC,10,95,120,65
-    EDITTEXT        IDC_STARS_LIMMAG_TXT,20,110,25,12,ES_AUTOHSCROLL | 
-                    ES_NUMBER | WS_DISABLED
+                    BS_AUTOCHECKBOX | WS_TABSTOP,20,77,87,10
+    GROUPBOX        "Limiting Magnitude",IDC_STATIC,10,110,120,65
+    EDITTEXT        IDC_STARS_LIMMAG_TXT,20,126,25,12,ES_AUTOHSCROLL | 
+                    ES_READONLY | ES_NUMBER
     CONTROL         "Slider1",IDC_STARS_LIMMAG,"msctls_trackbar32",
-                    TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,20,127,100,23
-    GROUPBOX        "Size / Contrast",IDC_STATIC,10,170,120,130
-    LTEXT           "Size",IDC_STATIC,20,185,100,12,SS_CENTERIMAGE
+                    TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,20,142,100,23
+    GROUPBOX        "Size / Contrast",IDC_STATIC,10,185,120,130
+    LTEXT           "Size",IDC_STATIC,20,200,100,12,SS_CENTERIMAGE
     CONTROL         "Slider1",IDC_STARS_SIZE,"msctls_trackbar32",TBS_BOTH | 
-                    TBS_NOTICKS | WS_TABSTOP,20,201,100,16
-    LTEXT           "Size Contrast",IDC_STATIC,20,221,100,12,SS_CENTERIMAGE
+                    TBS_NOTICKS | WS_TABSTOP,20,216,100,16
+    LTEXT           "Size Contrast",IDC_STATIC,20,236,100,12,SS_CENTERIMAGE
     CONTROL         "Slider1",IDC_STARS_SCONTRAST,"msctls_trackbar32",
-                    TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,20,237,100,16
+                    TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,20,252,100,16
     DEFPUSHBUTTON   "OK",IDOK,145,10,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,145,30,50,14
-    PUSHBUTTON      "Defaults",IDC_STARS_DEFAULTS,145,286,50,14
-    LTEXT           "Dim Radius",IDC_STATIC,145,85,50,10
-    EDITTEXT        IDC_STARS_MINR,145,95,50,15,ES_AUTOHSCROLL
-    LTEXT           "Bright Radius",IDC_STATIC,145,120,50,10
-    LTEXT           "Dim Color",IDC_STATIC,145,155,50,10
-    EDITTEXT        IDC_STARS_MAXR,145,130,50,15,ES_AUTOHSCROLL
-    EDITTEXT        IDC_STARS_MINC,145,165,50,15,ES_AUTOHSCROLL
-    LTEXT           "Bright Color",IDC_STATIC,145,190,50,10
-    EDITTEXT        IDC_STARS_MAXC,145,200,50,15,ES_AUTOHSCROLL
-    LTEXT           "(Radius*10000)",IDC_STATIC,145,57,50,8
-    LTEXT           "(Color*100)",IDC_STATIC,145,69,50,8
+    PUSHBUTTON      "Defaults",IDC_STARS_DEFAULTS,145,302,50,14
     CONTROL         "Slider1",IDC_STARS_CCONTRAST,"msctls_trackbar32",
-                    TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,20,273,100,16
-    LTEXT           "Color Contrast",IDC_STATIC,20,257,100,12,SS_CENTERIMAGE
+                    TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,20,288,100,16
+    LTEXT           "Color Contrast",IDC_STATIC,20,272,100,12,SS_CENTERIMAGE
+    CONTROL         "Visible in Daylight",IDC_STARS_DAYLIGHT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,20,38,71,10
 END
 
-IDD_OPTIONS_CONST DIALOG DISCARDABLE  0, 0, 205, 225
+IDD_OPTIONS_CONST DIALOG DISCARDABLE  0, 0, 205, 255
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Constellation Options"
 FONT 8, "MS Sans Serif"
 BEGIN
-    GROUPBOX        "Options",IDC_STATIC,10,10,120,50
+    GROUPBOX        "Options",IDC_STATIC,10,10,120,65
     CONTROL         "Visible",IDC_CONST_VISIBLE,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,20,25,36,10
     CONTROL         "Labeled",IDC_CONST_LABELED,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,20,40,41,10
-    GROUPBOX        "Line Colors",IDC_STATIC,10,70,120,80
-    PUSHBUTTON      "Normal Color",IDC_CONST_NORMCOLOR,20,85,66,14
-    EDITTEXT        IDC_CONST_NORMCOLOR_PREV,91,85,29,14,ES_AUTOHSCROLL | 
+                    WS_TABSTOP,20,55,41,10
+    GROUPBOX        "Line Colors",IDC_STATIC,10,85,120,95
+    PUSHBUTTON      "Normal Color",IDC_CONST_NORMCOLOR,20,98,66,14
+    EDITTEXT        IDC_CONST_NORMCOLOR_PREV,91,98,29,14,ES_AUTOHSCROLL | 
                     WS_DISABLED
-    PUSHBUTTON      "Selected Color",IDC_CONST_SELCOLOR,20,106,66,14
-    EDITTEXT        IDC_CONST_SELCOLOR_PREV,91,106,29,14,ES_AUTOHSCROLL | 
+    PUSHBUTTON      "Selected Color",IDC_CONST_SELCOLOR,20,117,66,14
+    EDITTEXT        IDC_CONST_SELCOLOR_PREV,91,117,29,14,ES_AUTOHSCROLL | 
                     WS_DISABLED
-    PUSHBUTTON      "Active Color",IDC_CONST_ACTIVECOLOR,20,126,66,14
-    EDITTEXT        IDC_CONST_ACTIVECOLOR_PREV,91,126,29,14,ES_AUTOHSCROLL | 
+    PUSHBUTTON      "Active Color",IDC_CONST_ACTIVECOLOR,20,136,66,14
+    EDITTEXT        IDC_CONST_ACTIVECOLOR_PREV,91,136,29,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    LTEXT           "Line Width: ",IDC_STATIC,31,158,39,12,SS_CENTERIMAGE
+    COMBOBOX        IDC_CONST_LINEWIDTH,71,158,31,30,CBS_DROPDOWNLIST | 
+                    CBS_NOINTEGRALHEIGHT | CBS_DISABLENOSCROLL | WS_VSCROLL | 
+                    WS_TABSTOP
+    GROUPBOX        "Hidden Constellations",IDC_STATIC,10,190,120,55
+    CONTROL         "Color stars while hidden",IDC_CONST_STARSCOLORED,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,20,206,90,10
+    PUSHBUTTON      "Star Color",IDC_CONST_STARCOLOR,20,222,66,14
+    EDITTEXT        IDC_CONST_STARCOLOR_PREV,91,222,29,14,ES_AUTOHSCROLL | 
                     WS_DISABLED
     DEFPUSHBUTTON   "OK",IDOK,145,10,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,145,30,50,14
-    PUSHBUTTON      "Defaults",IDC_CONST_DEFAULTS,145,201,50,14
-    GROUPBOX        "Hidden Constellations",IDC_STATIC,10,160,120,55
-    PUSHBUTTON      "Star Color",IDC_CONST_STARCOLOR,20,191,66,14
-    EDITTEXT        IDC_CONST_STARCOLOR_PREV,91,191,29,14,ES_AUTOHSCROLL | 
-                    WS_DISABLED
-    CONTROL         "Color stars while hidden",IDC_CONST_STARSCOLORED,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,20,175,90,10
+    PUSHBUTTON      "Defaults",IDC_CONST_DEFAULTS,145,231,50,14
+    CONTROL         "Visible in Daylight",IDC_CONST_DAYLIGHT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,20,40,71,10
 END
 
 IDD_TIME DIALOG DISCARDABLE  0, 0, 186, 94
@@ -562,7 +560,7 @@ BEGIN
         VERTGUIDE, 20
         VERTGUIDE, 120
         TOPMARGIN, 10
-        BOTTOMMARGIN, 300
+        BOTTOMMARGIN, 316
     END
 
     IDD_OPTIONS_CONST, DIALOG
@@ -570,6 +568,7 @@ BEGIN
         LEFTMARGIN, 10
         RIGHTMARGIN, 195
         TOPMARGIN, 10
+        BOTTOMMARGIN, 245
     END
 
     IDD_TIME, DIALOG
@@ -631,6 +630,35 @@ IDC_DLINE               CURSOR  DISCARDABLE     "res\\dline.cur"
 IDC_ALINEX              CURSOR  DISCARDABLE     "res\\alinex.cur"
 IDC_EDITX               CURSOR  DISCARDABLE     "res\\editx.cur"
 IDC_DLINEX              CURSOR  DISCARDABLE     "res\\dlinex.cur"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_OPTIONS_CONST DLGINIT
+BEGIN
+    IDC_CONST_LINEWIDTH, 0x403, 2, 0
+0x0031, 
+    IDC_CONST_LINEWIDTH, 0x403, 2, 0
+0x0032, 
+    IDC_CONST_LINEWIDTH, 0x403, 2, 0
+0x0033, 
+    IDC_CONST_LINEWIDTH, 0x403, 2, 0
+0x0034, 
+    IDC_CONST_LINEWIDTH, 0x403, 2, 0
+0x0035, 
+    IDC_CONST_LINEWIDTH, 0x403, 2, 0
+0x0036, 
+    IDC_CONST_LINEWIDTH, 0x403, 2, 0
+0x0037, 
+    IDC_CONST_LINEWIDTH, 0x403, 2, 0
+0x0038, 
+    IDC_CONST_LINEWIDTH, 0x403, 2, 0
+0x0039, 
+    0
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

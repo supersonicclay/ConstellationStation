@@ -31,14 +31,19 @@ public:
 private:
 	float rotTime;
 
+	matrix44 timeMat;
+
 
 // Methods
 public:
 
 	float   GetRotTime();
+	matrix44* GetTimeMat();
 
 	void AdjRotTime( float delta );
 
+	void UpdateTimeMat();
+	
 };
 
 #endif

@@ -142,17 +142,19 @@ void CMgrStarf::StarOptions()
 	{
 		// Change star settings
 		starfield.SetStarsVisible( dialog.visible );
+		starfield.SetStarsDaylight( dialog.daylight );
 		starfield.SetStarsLabeled( dialog.labeled );
 		optionsMgr.SetStarsTextured( dialog.textured );
 		optionsMgr.SetStarsColored( dialog.colored );
+		optionsMgr.SetStarsSize( dialog.size );
+		optionsMgr.SetStarsSContrast( dialog.sContrast );
+		optionsMgr.SetStarsCContrast( dialog.cContrast );
+		UpdateStarsAppearance();
 	}
 	else
 	{
 		// Reset options that are changed in realtime
 		optionsMgr.SetStarsLimMagX10( dialog.origLimMagX10 );
-		optionsMgr.SetStarsSize( dialog.origSize );
-		optionsMgr.SetStarsSContrast( dialog.origSContrast );
-		optionsMgr.SetStarsCContrast( dialog.origCContrast );
 		starfield.CountStars();
 		UpdateStarsAppearance();
 	}
@@ -231,8 +233,10 @@ void CMgrStarf::ConstOptions()
 	{
 		// Change constellation settings
 		starfield.SetConstsVisible( dialog.visible );
+		starfield.SetConstsDaylight( dialog.daylight );
 		starfield.SetConstsLabeled( dialog.labeled );
 		optionsMgr.SetConstStarsColored( dialog.starsColored );
+		optionsMgr.SetConstLineWidth( dialog.lineWidth+1 );
 	}
 	else
 	{

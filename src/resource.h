@@ -48,6 +48,7 @@
 #define IDC_COLOR_TERRSUM               1081
 #define ID_STARS_TOGGLE                 1082
 #define IDC_COLOR_TERRFAL               1082
+#define IDC_CONST_DAYLIGHT              1082
 #define IDC_STARS_LABELED               1083
 #define IDC_TERR_VISIBLE                1084
 #define IDC_TERR_SEASONS                1086
@@ -59,6 +60,7 @@
 #define IDC_STARS_TEXTURED              1095
 #define IDC_STARS_COLORED               1096
 #define IDC_STARS_CCONTRAST             1097
+#define IDC_STARS_DAYLIGHT              1098
 #define IDC_TERR_DEFAULTS               1099
 #define IDC_CONST_DEFAULTS              1101
 #define IDC_STARS_DEFAULTS              1103
@@ -81,10 +83,7 @@
 #define IDC_SUN_VISIBLE                 1124
 #define IDC_SUN_SHINE                   1125
 #define IDC_SUN_DEFAULTS                1126
-#define IDC_STARS_MINR                  1127
-#define IDC_STARS_MAXR                  1128
-#define IDC_STARS_MINC                  1129
-#define IDC_STARS_MAXC                  1130
+#define IDC_CONST_LINEWIDTH             1133
 #define ID_STARF_NEWRANDOM              32772
 #define ID_STARF_NEWACTUAL              32773
 #define ID_STARF_OPEN                   32774
@@ -122,9 +121,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        166
+#define _APS_NEXT_RESOURCE_VALUE        167
 #define _APS_NEXT_COMMAND_VALUE         32876
-#define _APS_NEXT_CONTROL_VALUE         1133
+#define _APS_NEXT_CONTROL_VALUE         1134
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -28,15 +28,34 @@ public:
 	int width;
 	int height;
 
-	// Frustum
-	vector4 frustum[6];
+	// Matrices
+	matrix44 skyMat;
+	matrix44 starfMat;
+	matrix44 sunMat;
+	matrix44 terrainMat;
 
 	// Fov angle
 	float fov;
 
+	// Colors
+	color_s skyColor;
+	color_s redColor;  // sunrise and sunset
+
+	// Frustum
+	vector4 frustum[6];
+
 	// Textures
 	UINT starTex;
+	UINT sunBodyTex;
+	UINT sunCoronaTex;
+	UINT sunGlowTex;
 	UINT skyTex;
+
+	// Daylight
+	float dayFactor;   // see UpdateDayFactor()
+	float dayAlpha;
+	float starAlpha;
+	float constAlpha;
 
 	// Sky
 	GLUquadricObj* skySphere;
@@ -71,17 +90,25 @@ public:
 	void Size( int cx, int cy );
 	void Projection();
 	void Perspective();
-	void LoadSkyMat();
-	void LoadStarfMat();
-	void LoadSunMat();
-	void LoadTerrainMat();
+	void UpdateMats();
+	void UpdateSkyMat();
+	void UpdateStarfMat();
+	void UpdateSunMat();
+	void UpdateTerrainMat();
 
-// Textures
-	BOOL LoadTGA( UINT &texID, char* filename );
-	BOOL LoadTextures();
+// Daylight
+	void UpdateDayFactor();
+	void UpdateDayAlpha();
 
 // Colors
-	void SetColor( color_s c );
+	void UpdateColors();
+	void SelectColor( color_s c );
+	void SelectColor4( color_s c, float a );
+
+// Textures
+	BOOL LoadTGA( texture_s& tex, char* filename );
+	BOOL LoadTexture( UINT& texID, char* filename );
+	BOOL LoadTextures();
 
 // Frustum
 	void CalculateFrustum();

@@ -70,3 +70,18 @@ Fixed		08-30-04		SetTempRot should check if it will go to far (poles)
 Disappeared	08-30-04		Random starfield has circles around E and W poles
 
 Fixed		08-30-04		First star is a blank InitActualStars
+
+Fixed		08-30-04		Isn't calculating correct light position
+
+Disappeared	09-03-04		No depth test on compass
+
+Fixed		10-18-04		Star options sliders not moving
+
+Fixed		10-18-04		Fog stays blue after sunshine toggle
+
+Fixed		10-19-04		Consts are being drawn with dayAlpha = 0
+
+Fixed		10-19-04		DrawTerrain should select white if textured
+
+Not Worried	10-19-04		Sphere texture has alpha=0
+

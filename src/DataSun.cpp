@@ -44,6 +44,8 @@ const CDataSun& CDataSun::operator=( const CDataSun& s )
 	mag = s.mag;
 	radius = s.radius;
 	color = s.color;
+	rotTime = s.rotTime;
+	timeMat = s.timeMat;
 	return *this;
 }
 
@@ -64,13 +66,15 @@ void CDataSun::Init()
 	UpdateVerts();
 
 	rotTime = 0.0f;
+	timeMat.identity();
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
 // Gets
 
-float   CDataSun::GetRotTime()	{	return rotTime;		}
+float     CDataSun::GetRotTime()	{	return rotTime;		}
+matrix44* CDataSun::GetTimeMat()	{	return &timeMat;	}
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -83,6 +87,13 @@ void CDataSun::AdjRotTime( float delta )
         rotTime -= 360.0f;
 	else if( rotTime < -360.0f )
 		rotTime += 360.0f;
+
+	UpdateTimeMat();
+}
+
+void CDataSun::UpdateTimeMat()
+{
+	timeMat = RotateRadMatrix44( 'y', DegToRad(rotTime) );/// store as rad
 }
 
 

@@ -63,7 +63,7 @@ void CDataStar::Init()
 	tlVert = vector3( 0.0f, 0.0f, 0.0f );
 	blVert = vector3( 0.0f, 0.0f, 0.0f );
 	brVert = vector3( 0.0f, 0.0f, 0.0f );
-	mag = 1.0f;
+	mag = 10.0f; // Make dim so it won't ever be seen
 	radius = 0.0f;
 	color = COLOR_WHITE;
 }
@@ -91,7 +91,9 @@ color_s		CDataStar::GetColor()	{	return color;	}
 
 void CDataStar::SetRA( ra_s r )			{	ra = r;		}
 void CDataStar::SetDec( dec_s d )		{	dec = d;	}
-void CDataStar::SetCenter( vector3 c )		{	center = c;	}
+void CDataStar::SetCenter( vector3 c )	{	center = c;	}
+void CDataStar::SetPhi( float p )		{	phi = p;	}
+void CDataStar::SetTheta( float t )		{	theta = t;	}
 void CDataStar::SetMag( float m )		{	mag = m;	}
 void CDataStar::SetRadius( float r )	{	radius = r;	}
 void CDataStar::SetColor( color_s c )	{	color = c;	}
@@ -119,19 +121,19 @@ void CDataStar::SetDec( BOOL p, USHORT d, USHORT m, float s )
 void CDataStar::UpdatePosFromRADec()
 {
 	SetPhiThetaFromRADec();
-	SetXYZFromRADec();
+	SetXYZFromPhiTheta();
 }
 
 // Update all position info from the x, y, and z coordinates that are already set
 void CDataStar::UpdatePosFromXYZ()
 {
 	SetPhiThetaFromXYZ();
-	SetRADecFromXYZ();
+	SetRADecFromPhiTheta();
 }
 
 // Set the x, y, and z coords from the right ascension and declination
 // Phi and theta must already be calculated
-void CDataStar::SetXYZFromRADec()
+void CDataStar::SetXYZFromPhiTheta()
 {
 	center.x = (float) ( sin(phi) * sin(theta) );
 	center.y = (float) ( cos(phi) );
@@ -154,7 +156,7 @@ void CDataStar::SetPhiThetaFromRADec()
 
 // Set right ascension and Declination from the x, y, and z coordinates
 // Phi and theta must already be calculated
-void CDataStar::SetRADecFromXYZ()
+void CDataStar::SetRADecFromPhiTheta()
 {
 	float hour, minute;
 
@@ -183,6 +185,11 @@ void CDataStar::SetPhiThetaFromXYZ()
 	phi  = (float) acos( (double) center.y  );
 
 	// Theta is measured from 0 to 2*PI degrees
+	if( center.z == 0.0f && center.x == 0.0f )  // Prevent divide by 0
+	{
+		theta = 0.0f;
+		return;
+	}
 	if( center.z >= 0 )
 		theta = (float)       asin( center.x / sqrt( (double)(center.z*center.z) + (center.x*center.x) ) );
 	else

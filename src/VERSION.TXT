@@ -7,6 +7,12 @@
 0.4 - Graphics
 -------------------------------------------------
 
+-0.4.0
+	Fancy sunrise / sunset
+	Condensed star catalog
+	Textured Terrain
+	Terrain Fog (haze)
+
 
 -------------------------------------------------
 0.3 - Math

@@ -135,11 +135,11 @@ void CCSView::OnTimer(UINT nIDEvent)
 {
 	inputMgr.ProcessKeys();
 
-	if (starfield.IsSpinning() &&
-		state == state_Viewing)
+	if( starfield.IsSpinning() &&
+		state == state_Viewing &&
+		!inputMgr.mouseRotatingXY && !inputMgr.mouseRotatingZ )
 	{
-//		starfield.AdjRotTime(0.05f);
-		starfield.AdjRotTime(0.5f);
+		starfield.AdjRotTime(0.05f);
 		Redraw();
 	}
 }

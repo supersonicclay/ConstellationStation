@@ -18,9 +18,12 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CDlgOptionsConst)
 	enum { IDD = IDD_OPTIONS_CONST };
+	CComboBox	lineWidthControl;
 	BOOL	visible;
+	BOOL	daylight;
 	BOOL	labeled;
 	BOOL	starsColored;
+	int		lineWidth;
 	//}}AFX_DATA
 
 	color_s normColor;

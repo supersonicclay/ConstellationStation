@@ -29,12 +29,24 @@ private:
 
 	float** heights;
 	int size;
-	int arraySize;  // size + 1
+	int arraySize;    // size + 1
+	float maxOffset;  // maximum absolute-valued height
+
+	int texIters;
+	int heightIters;
+	float roughness;
 
 	vector3** upperNormals;
 	vector3** lowerNormals;
 
-	float viewHeight;
+	UINT texID;
+	texture_s winterTex;
+	texture_s springTex;
+	texture_s summerTex;
+	texture_s autumnTex;
+
+	float viewHeight;///
+	float viewDistance;///
 
 
 // Methods
@@ -44,22 +56,32 @@ public:
 	float** GetHeights();
 	float GetHeight( int i, int j );
 
-	int GetArraySize();
 	int GetSize();
-	float GetViewHeight();
+	int GetArraySize();
 
+	vector3** GetUpperNormals();
+	vector3** GetLowerNormals();
 	vector3 GetUpperNormal( int i, int j );
 	vector3 GetLowerNormal( int i, int j );
 
-// Sets
-	void SetUpperNormal( int i, int j, vector3 n );
-	void SetLowerNormal( int i, int j, vector3 n );
+	UINT GetTexID();
 
-	void IncViewHeight();///
-	void DecViewHeight();///
+/// Debug View
+	float GetViewHeight();
+	float GetViewDistance();
+	void IncViewHeight();
+	void DecViewHeight();
+	void IncViewDistance();
+	void DecViewDistance();
+
 
 // Methods
+
+	void Init();
 	void MakeTerrain();
+
+	BOOL LoadTextures();
+	void MakeTexture();
 
 	float AvgSquare( int i, int j, int midSize );
 	float AvgDiamond( int i, int j, int midSize );

@@ -61,14 +61,14 @@ BOOL CDlgOptionsTerr::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	// Initialize slider
-	roughnessSlider.SetRange( 0, 40 );
-	roughnessSlider.SetTicFreq( 10 );
+	roughnessSlider.SetRange( 0, 100 );
+	roughnessSlider.SetTicFreq( 20 );
 
 	// Initialize list box
 	seasonsListBox.AddString( "Winter" );
 	seasonsListBox.AddString( "Spring" );
 	seasonsListBox.AddString( "Summer" );
-	seasonsListBox.AddString( "Fall"   );
+	seasonsListBox.AddString( "Autumn" );
 
 	InitOptions();
 
@@ -114,9 +114,9 @@ void CDlgOptionsTerr::UpdateRoughnessTxt()
 {
 		CString s;
 		// Update roughness text
-		if( roughnessX100 < 10 )
+		if( roughnessX100 < 20 )
 			s = "Plains";
-		else if( roughnessX100 < 20 )
+		else if( roughnessX100 < 40 )
 			s = "Hills";
 		else
 			s = "Mountains";
@@ -160,8 +160,8 @@ void CDlgOptionsTerr::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		roughnessX100 = roughnessSlider.GetPos();
 		optionsMgr.SetTerrRoughnessX100( roughnessX100 );
 
-		// Pick terrain with specified roughness without generating new seed
-		terrain.MakeTerrain();
+		// Update terrain textuer
+		terrain.MakeTexture();
 
 		UpdateRoughnessTxt();
 		Redraw();

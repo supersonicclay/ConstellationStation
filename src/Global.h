@@ -32,7 +32,7 @@ enum season_e
 	season_Winter=0,
 	season_Spring,
 	season_Summer,
-	season_Fall
+	season_Autumn
 };
 
 typedef struct
@@ -45,6 +45,7 @@ typedef struct
 typedef struct
 {
 	GLuint id;
+	GLuint type;
 	GLuint width;
 	GLuint height;
 	GLubyte* data;
@@ -67,8 +68,14 @@ typedef struct
 
 
 /////////////////////////////////////////////////////////////////////////////
-// VARIABLES
+/// DEBUG VARS
 
+extern BOOL terrFog;
+extern BOOL terrExternal;
+
+
+/////////////////////////////////////////////////////////////////////////////
+// VARIABLES
 
 extern state_e state;
 extern const color_s COLOR_WHITE,
@@ -91,6 +98,7 @@ extern const color_s COLOR_WHITE,
 // DEFAULTS
 
 extern const BOOL		DEF_STARS_VISIBLE;
+extern const BOOL		DEF_STARS_DAYLIGHT;
 extern const BOOL		DEF_STARS_LABELED;
 extern const BOOL		DEF_STARS_TEXTURED;
 extern const BOOL		DEF_STARS_COLORED;
@@ -102,27 +110,36 @@ extern const float		DEF_STARS_BRIGHT_RADIUS;
 extern const float		DEF_STARS_BRIGHT_COLOR;
 extern const float		DEF_STARS_RADIUS_DIFF;
 extern const float		DEF_STARS_COLOR_DIFF;
+
 extern const BOOL		DEF_CONST_VISIBLE;
+extern const BOOL		DEF_CONST_DAYLIGHT;
 extern const BOOL		DEF_CONST_LABELED;
 extern const color_s	DEF_CONST_NORMCOLOR;
 extern const color_s	DEF_CONST_SELCOLOR;
 extern const color_s	DEF_CONST_ACTIVECOLOR;
 extern const color_s	DEF_CONST_STARCOLOR;
 extern const BOOL		DEF_CONST_STARSCOLORED;
+extern const int		DEF_CONST_LINEWIDTH;
+
 extern const float		DEF_SUN_RADIUS;
 extern const color_s	DEF_SUN_COLOR;
 extern const BOOL		DEF_SUN_VISIBLE;
 extern const BOOL		DEF_SUN_SHINE;
+
+extern const color_s	DEF_SKY_COLOR;
+
 extern const BOOL		DEF_TERR_VISIBLE;
 extern const BOOL		DEF_TERR_TEXTURED;
 extern const int		DEF_TERR_ROUGHNESSX100;
 extern const int		DEF_TERR_SCALE;
-extern const int		DEF_TERR_ITERS;
+extern const int		DEF_TERR_TEX_ITERS;
+extern const int		DEF_TERR_HEIGHT_ITERS;
 extern const season_e	DEF_TERR_SEASON;
 extern const color_s	DEF_TERR_WINCOLOR;
 extern const color_s	DEF_TERR_SPRCOLOR;
 extern const color_s	DEF_TERR_SUMCOLOR;
 extern const color_s	DEF_TERR_FALCOLOR;
+
 extern const color_s	DEF_COMPASS_CROSSCOLOR;
 extern const color_s	DEF_COMPASS_NEEDLECOLOR;
 
@@ -135,8 +152,8 @@ extern const color_s	DEF_COMPASS_NEEDLECOLOR;
 #define MAX_CONSTLINES				100
 #define	MAX_DOC_NAME				32
 #define MIN_STARS_MAG				-1.44F
-#define MAX_STARS_BRIGHT_RADIUS		0.02F
-#define MIN_STARS_BRIGHT_RADIUS		0.005F
+#define MAX_STARS_BRIGHT_RADIUS		0.0300F
+#define MIN_STARS_BRIGHT_RADIUS		0.0001F
 #define MAX_STARS_BRIGHT_COLOR		1.0F
 #define MIN_STARS_BRIGHT_COLOR		0.01F
 // Dim radius is stored as a percent of the brightest radius
@@ -145,6 +162,7 @@ extern const color_s	DEF_COMPASS_NEEDLECOLOR;
 // Dim color is stored as a percent of the brightest color
 #define MAX_STARS_DIM_COLOR_PERC	80   // User has control from 80%
 #define MIN_STARS_DIM_COLOR_PERC	0    //  to 0%
+#define MAX_TERR_ROUGHNESS			0.6F
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -208,6 +226,9 @@ CArchive& operator>> ( CArchive& ar, color_s& c );
 
 CArchive& operator<< ( CArchive& ar, season_e s );
 CArchive& operator<< ( CArchive& ar, color_s c );
+
+// Multiply color by a factor
+color_s operator* ( const color_s c, const float f );
 
 // Star comparison (for sorting by magnitude)
 BOOL operator< ( CDataStar& s1, CDataStar& s2 );

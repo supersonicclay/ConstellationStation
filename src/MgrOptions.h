@@ -44,13 +44,15 @@ private:
 	color_s constActiveColor;
 	color_s constStarColor;
 	BOOL constStarsColored;
+	int constLineWidth;
 
 	// Terrain options
 	BOOL terrVisible;
 	BOOL terrTextured;
 	int terrRoughnessX100;
 	int terrScale;
-	int terrIters;
+	int terrTexIters;
+	int terrHeightIters;
 	season_e terrSeason;
 	color_s terrWinColor;
 	color_s terrSprColor;
@@ -78,13 +80,15 @@ public:
 	color_s GetConstActiveColor();
 	color_s GetConstStarColor();
 	BOOL AreConstStarsColored();
+	int GetConstLineWidth();
 
 	BOOL IsTerrVisible();
 	BOOL IsTerrTextured();
 	int GetTerrRoughnessX100();
 	float GetTerrRoughness();
 	int GetTerrScale();
-	int GetTerrIters();
+	int GetTerrTexIters();
+	int GetTerrHeightIters();
 	season_e GetTerrSeason();
 	color_s GetTerrWinColor();
 	color_s GetTerrSprColor();
@@ -105,13 +109,15 @@ public:
 	void SetConstActiveColor( color_s c );
 	void SetConstStarColor( color_s c );
 	void SetConstStarsColored( BOOL x );
+	void SetConstLineWidth( int w );
 
 	void SwitchTerrVisible();
 	void SetTerrVisible( BOOL x );
 	void SetTerrTextured( BOOL t );
 	void SetTerrRoughnessX100( int r );
 	void SetTerrScale( int s );
-	void SetTerrIters( int i );
+	void SetTerrTexIters( int i );
+	void SetTerrHeightIters( int i );
 	void SetTerrSeason( season_e s );
 	void SetTerrWinColor( color_s c );
 	void SetTerrSprColor( color_s c );

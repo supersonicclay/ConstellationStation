@@ -81,7 +81,7 @@ void CDataStarf::New( BOOL actual )
 // Creates sphere of random stars with radius of 1
 void CDataStarf::InitRandomStars()
 {
-	starCount = 8000;
+	starCount = 10000;
 	CDataStar newStar;
 
 	/* /// North Star
@@ -106,7 +106,7 @@ void CDataStarf::InitRandomStars()
 	stars.push_back( CDataStar(newStar) );
 
 	// Randomize the rest
-	for (int i=1; i<starCount; i++)
+	for (int i=1; i<starCount; ++i)
 	{
 		newStar.Randomize();
 		stars.push_back( CDataStar(newStar) );
@@ -118,9 +118,6 @@ void CDataStarf::InitActualStars()
 {
 	CDataStar newStar;
 
-	starCount = MAX_STARS;///
-	stars.reserve( starCount );
-
 	CFile file( "data\\hip_main.txt", CFile::modeRead );
 
 	char buffer[100];
@@ -128,7 +125,8 @@ void CDataStarf::InitActualStars()
 	dec_s dec = {0};
 	float mag = 0;
 
-	for( int i=0; i<starCount; ++i )
+	// Initially load all stars
+	for( int i=0; i<MAX_STARS; ++i )
 	{
 		file.Seek( 17, CFile::current );
 		ZeroMemory(&buffer, sizeof(buffer));
@@ -177,14 +175,14 @@ void CDataStarf::InitActualStars()
 		newStar.SetDec( dec );
 		newStar.SetXYZFromRADec();
 		newStar.SetMag( mag );
-		newStar.SetColorFromMag();
-		newStar.SetRadiusFromMag();
 
 		stars.push_back( CDataStar(newStar) );
 	}
 
-	file.Close();
+	CountStars();
+	starfMgr.UpdateStarsAppearance();
 
+	file.Close();
 }
 
 /// Load actual constellations somehow
@@ -196,36 +194,35 @@ void CDataStarf::InitActualConsts()
 /////////////////////////////////////////////////////////////////////////////
 // Gets
 
-CDataStar*	CDataStarf::GetStar(int i)				{	return &stars[i];					}
-int			CDataStarf::GetStarCount()				{	return starCount;					}
-CDataConst*	CDataStarf::GetConst(int i)				{	return &consts[i];					}
-CDataConst*	CDataStarf::GetCurConst()				{	return &consts[curConstNum];		}
-int			CDataStarf::GetConstCount()				{	return constCount;					}
-int			CDataStarf::GetCurConstNum()			{	return curConstNum;					}
-int			CDataStarf::GetNewConstCount()			{	return newConstCount;				}
-BOOL		CDataStarf::AreStarsVisible()			{	return starsVisible;				}
-BOOL		CDataStarf::AreStarsLabeled()			{	return starsLabeled;				}
-float		CDataStarf::GetLimitingMag()			{	return limitingMag;					}
-///float		CDataStarf::GetLimitingMag()			{	return limitingMagX10 / 10.0f;	}
-///int			CDataStarf::GetLimitingMagX10()			{	return limitingMagX10;			}
-BOOL		CDataStarf::AreConstsVisible()			{	return constsVisible;				}
-BOOL		CDataStarf::AreConstsLabeled()			{	return constsLabeled;				}
-BOOL		CDataStarf::IsSunVisible()				{	return sunVisible;					}
-BOOL		CDataStarf::IsSunShining()				{	return sunShine;					}
-BOOL		CDataStarf::IsModified()				{	return modified;					}
-float		CDataStarf::GetRotLatitude()			{	return rotLatitude;					}
-float		CDataStarf::GetRotTime()				{	return rotTime;						}
-BOOL		CDataStarf::IsSpinning()				{	return spinning;					}
-float		CDataStarf::GetRotX()					{	return rotX;						}
-float		CDataStarf::GetRotY()					{	return rotY;						}
-float		CDataStarf::GetZoom()					{	return zoom;						}
+CDataStar*	CDataStarf::GetStar(int i)				{	return &stars[i];				}
+int			CDataStarf::GetStarCount()				{	return starCount;				}
+CDataConst*	CDataStarf::GetConst(int i)				{	return &consts[i];				}
+CDataConst*	CDataStarf::GetCurConst()				{	return &consts[curConstNum];	}
+int			CDataStarf::GetConstCount()				{	return constCount;				}
+int			CDataStarf::GetCurConstNum()			{	return curConstNum;				}
+int			CDataStarf::GetNewConstCount()			{	return newConstCount;			}
+BOOL		CDataStarf::AreStarsVisible()			{	return starsVisible;			}
+BOOL		CDataStarf::AreStarsLabeled()			{	return starsLabeled;			}
+float		CDataStarf::GetLimitingMag()			{	return limitingMagX10 / 10.0f;	}
+int			CDataStarf::GetLimitingMagX10()			{	return limitingMagX10;			}
+BOOL		CDataStarf::AreConstsVisible()			{	return constsVisible;			}
+BOOL		CDataStarf::AreConstsLabeled()			{	return constsLabeled;			}
+BOOL		CDataStarf::IsSunVisible()				{	return sunVisible;				}
+BOOL		CDataStarf::IsSunShining()				{	return sunShine;				}
+BOOL		CDataStarf::IsModified()				{	return modified;				}
+float		CDataStarf::GetRotLatitude()			{	return rotLatitude;				}
+float		CDataStarf::GetRotTime()				{	return rotTime;					}
+BOOL		CDataStarf::IsSpinning()				{	return spinning;				}
+float		CDataStarf::GetRotX()					{	return rotX;					}
+float		CDataStarf::GetRotY()					{	return rotY;					}
+float		CDataStarf::GetZoom()					{	return zoom;					}
 
 // Find the constellation with the given name
 CDataConst*	CDataStarf::GetConst( CString& name )
 {
-	for (int i=0; i<constCount; i++)
+	for( int i=0; i<constCount; ++i )
 	{
-		if (consts[i].GetName() == name)
+		if( GetConst(i)->GetName() == name )
 			return &consts[i];
 	}
 	return NULL;
@@ -240,8 +237,7 @@ void CDataStarf::SwitchStarsVisible()					{	starsVisible = !starsVisible;	}
 void CDataStarf::SetStarsVisible( BOOL x )				{	starsVisible = x;				}
 void CDataStarf::SwitchStarsLabeled()					{	starsLabeled = !starsLabeled;	}
 void CDataStarf::SetStarsLabeled( BOOL x )				{	starsLabeled = x;				}
-void CDataStarf::SetLimitingMag( float m )				{	limitingMag = m;				}
-///void CDataStarf::SetLimitingMagX10( int x )			{	limitingMagX10 = x;				}
+void CDataStarf::SetLimitingMagX10( int x )				{	limitingMagX10 = x;				}
 void CDataStarf::SwitchConstsVisible()					{	constsVisible = !constsVisible;	}
 void CDataStarf::SetConstsVisible( BOOL x )				{	constsVisible = x;				}
 void CDataStarf::SwitchConstsLabeled()					{	constsLabeled = !constsLabeled;	}
@@ -264,7 +260,7 @@ void CDataStarf::AdjRotX( float deltaRotX )
 	// Restrict up and down rotation
 	float newRotX = rotX + deltaRotX;
 
-	if (newRotX > -90 && newRotX < 90) /// < 30
+	if( newRotX > -90 && newRotX < 90 )
 		rotX = newRotX;
 }
 
@@ -273,9 +269,9 @@ void CDataStarf::AdjRotY(float deltaRotY)
 	rotY += deltaRotY;
 
 	// Keep rotY between -360 and 360
-	if (rotY < 360.0f)
+	if( rotY < 360.0f )
 		rotY += 360.0f;
-	if (rotY > 360.0f)
+	if( rotY > 360.0f )
 		rotY -= 360.0f;
 }
 
@@ -300,18 +296,18 @@ void CDataStarf::AdjZoom( float deltaZoom )
 void CDataStarf::RotateUp()		{	AdjRotX(-0.5f);	}
 void CDataStarf::RotateDown()	{	AdjRotX( 0.5f);	}
 void CDataStarf::RotateLeft()	{	AdjRotY(-0.5f);	}
-void CDataStarf::RotateRight()	{	AdjRotY(0.5f);	}
+void CDataStarf::RotateRight()	{	AdjRotY( 0.5f);	}
 
 void CDataStarf::ZoomIn()
 {
-	if (zoom < 0.9f)
-		zoom += 0.01f;
+	if( zoom < 0.9f )
+		zoom += 0.04f;
 }
 
 void CDataStarf::ZoomOut()
 {
-	if (zoom > -0.8f)
-		zoom -= 0.01f;
+	if( zoom > -0.8f )
+		zoom -= 0.04f;
 }
 
 // Reset viewing rotation and zoom
@@ -343,7 +339,21 @@ void CDataStarf::LoadStarDefaults()
 {
 	starsVisible = DEF_STARS_VISIBLE;
 	starsLabeled = DEF_STARS_LABELED;
-	limitingMag = DEF_STARS_LIMMAG;
+	limitingMagX10 = DEF_STARS_LIMMAGX10;
+}
+
+// Count the number of stars brighter than the limiting magnitude
+void CDataStarf::CountStars()
+{
+	starCount = 0;
+
+	for( int i=0; i<MAX_STARS; ++i )
+	{
+		if( GetStar(i)->GetMag() <= GetLimitingMag() )
+			++starCount;
+		else
+			break;
+	}
 }
 
 // Check if the given star number belongs to a hidden constellation
@@ -352,13 +362,13 @@ BOOL CDataStarf::IsStarInHiddenConst( int i )
 	for( int ci=0; ci<constCount; ++ci )
 	{
 		// Continue if this constellation isn't hidden
-		if( consts[ci].IsVisible() )
+		if( GetConst(ci)->IsVisible() )
 			continue;
 		// Otherwise search through lines
-		for( int li=0; li<consts[ci].GetLineCount(); ++li )
+		for( int li=0; li<GetConst(ci)->GetLineCount(); ++li )
 		{
-			if( i == consts[ci].GetLine(li)->GetStar1() ||
-				i == consts[ci].GetLine(li)->GetStar2() )
+			if( i == GetConst(ci)->GetLine(li)->GetStar1() ||
+				i == GetConst(ci)->GetLine(li)->GetStar2() )
 				return TRUE;
 		}
 	}
@@ -378,9 +388,9 @@ void CDataStarf::LoadConstDefaults()
 // Check if the given name is already in use
 BOOL CDataStarf::IsDuplicate( CString& name )
 {
-	for (int i=0; i<constCount; i++)
+	for( int i=0; i<constCount; ++i )
 	{
-		if (consts[i].GetName() == name)
+		if( GetConst(i)->GetName() == name )
 			return TRUE;
 	}
 
@@ -418,9 +428,9 @@ void CDataStarf::RenameConst( CString& name )
 BOOL CDataStarf::SelectConst( CString& name )
 {
 	// Search for constellation name
-	for (int i=0; i<constCount; i++)
+	for( int i=0; i<constCount; ++i )
 	{
-		if (consts[i].GetName() == name)
+		if( GetConst(i)->GetName() == name )
 		{
 			curConstNum = i;
 			return TRUE;
@@ -489,11 +499,11 @@ void CDataStarf::Serialize(CArchive& ar)
 
 	// Serialize stars
 	for( i=0; i<starCount; ++i )
-		stars[i].Serialize( ar );
+		GetStar(i)->Serialize( ar );
 
 	// Serialize constellations
 	for( i=0; i<constCount; ++i )
-		consts[i].Serialize( ar );
+		GetConst(i)->Serialize( ar );
 }
 
 

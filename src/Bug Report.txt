@@ -53,5 +53,7 @@ Fixed		08-05-04		Select line isn't checking for terrain hits
 
 Fixed		08-12-04		Show / Hide list is using number index instead of name index
 
+Fixed		8-13-04			Terrain stays lit after toggle sun command
 
+Fixed		8-14-04			Roundoff error with sliders
 

@@ -127,7 +127,7 @@ void CBarConst::UpdateList()
 	constList.ResetContent();
 
 	// Cycle through the names
-	for( int i=0; i<starfield.GetConstCount(); i++ )
+	for( int i=0; i<starfield.GetConstCount(); ++i )
 	{
 		// If this is the current constellation select it after adding it
 		if( i == starfield.GetCurConstNum() )

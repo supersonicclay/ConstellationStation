@@ -31,10 +31,11 @@ public:
 private:
 
 	// Star options
-	int starsGamma;
-	int starsContrast;
 	BOOL starsTextured;
 	BOOL starsColored;
+	int starsSize;
+	int starsSContrast; // Size contrast
+	int starsCContrast; // Color contrast
 
 	// Constellation options
 	color_s constNormColor;
@@ -46,7 +47,7 @@ private:
 	// Terrain options
 	BOOL terrVisible;
 	BOOL terrTextured;
-	float terrRoughness;
+	int terrRoughnessX100;
 	int terrScale;
 	int terrIters;
 	season_e terrSeason;
@@ -63,8 +64,9 @@ private:
 public:
 
 // Gets
-	int GetStarsGamma();
-	int GetStarsContrast();
+	int GetStarsSize();
+	int GetStarsSContrast();
+	int GetStarsCContrast();
 	BOOL AreStarsTextured();
 	BOOL AreStarsColored();
 
@@ -76,6 +78,7 @@ public:
 
 	BOOL IsTerrVisible();
 	BOOL IsTerrTextured();
+	int GetTerrRoughnessX100();
 	float GetTerrRoughness();
 	int GetTerrScale();
 	int GetTerrIters();
@@ -87,8 +90,9 @@ public:
 	color_s GetTerrColor();
 
 // Sets
-	void SetStarsGamma( int g );
-	void SetStarsContrast( int c );
+	void SetStarsSize( int g );
+	void SetStarsSContrast( int c );
+	void SetStarsCContrast( int c );
 	void SetStarsTextured( BOOL t );
 	void SetStarsColored( BOOL c );
 
@@ -101,7 +105,7 @@ public:
 	void SwitchTerrVisible();
 	void SetTerrVisible( BOOL x );
 	void SetTerrTextured( BOOL t );
-	void SetTerrRoughness( float r );
+	void SetTerrRoughnessX100( int r );
 	void SetTerrScale( int s );
 	void SetTerrIters( int i );
 	void SetTerrSeason( season_e s );

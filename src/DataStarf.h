@@ -48,7 +48,7 @@ private:
 	// Star options
 	BOOL starsVisible;
 	BOOL starsLabeled;
-	float limitingMag;
+	int limitingMagX10;
 
 	// Constellation options
 	BOOL constsVisible;
@@ -95,6 +95,7 @@ public:
 	BOOL AreStarsVisible();
 	BOOL AreStarsLabeled();
 	float GetLimitingMag();
+	int GetLimitingMagX10();
 
 	BOOL AreConstsVisible();
 	BOOL AreConstsLabeled();
@@ -119,7 +120,7 @@ public:
 	void SetStarsVisible( BOOL x );
 	void SwitchStarsLabeled();
 	void SetStarsLabeled( BOOL x );
-	void SetLimitingMag( float m );
+	void SetLimitingMagX10( int m );
 
 	void SwitchConstsVisible();
 	void SetConstsVisible( BOOL x );
@@ -143,6 +144,7 @@ public:
 
 // Star methods
 	void LoadStarDefaults();
+	void CountStars();
 	BOOL IsStarInHiddenConst( int i );
 
 // Constellation methods
@@ -153,21 +155,20 @@ public:
 	void RenameConst( CString& name );
 	BOOL SelectConst( CString& name );
 	void SelectConst( int i );
-	void AddConstLine( int starNum1, int starNum2 );
 
 // Sun methods
 	void LoadSunDefaults();
 
 // View methods
-	void RotateUp   ();
-	void RotateDown ();
-	void RotateLeft ();
+	void RotateUp();
+	void RotateDown();
+	void RotateLeft();
 	void RotateRight();
-	void ZoomIn  ();
-	void ZoomOut ();
-	void ResetView ();
-	void ResetRot  ();
-	void ResetZoom ();
+	void ZoomIn();
+	void ZoomOut();
+	void ResetView();
+	void ResetRot();
+	void ResetZoom();
 
 };
 

@@ -31,17 +31,12 @@
 #define IDC_HIDEALL                     1028
 #define IDC_INVERT                      1029
 #define IDC_TERR_NEW                    1030
-#define IDC_ROUGHNESS                   1035
 #define IDC_TERR_ROUGHNESS              1035
 #define IDC_TERR_COLOR                  1036
-#define IDC_ROUGHNESS_TXT               1041
 #define IDC_TERR_ROUGHNESS_TXT          1041
-#define IDC_DATETIMEPICKER2             1045
 #define IDC_DATETIMEPICKER              1045
-#define IDC_CONST_LINECOLOR             1074
 #define IDC_CONST_NORMCOLOR             1074
 #define IDC_CONST_ACTIVECOLOR           1075
-#define IDC_CONST_LINECOLORPREV         1076
 #define IDC_CONST_SELCOLOR              1076
 #define IDC_CONST_STARCOLOR             1077
 #define IDC_TERR_WINCOLOR               1078
@@ -56,13 +51,14 @@
 #define IDC_STARS_LABELED               1083
 #define IDC_TERR_VISIBLE                1084
 #define IDC_TERR_SEASONS                1086
-#define IDC_STARS_CONTRAST              1090
-#define IDC_STARS_GAMMA                 1091
+#define IDC_STARS_SCONTRAST             1090
+#define IDC_STARS_SIZE                  1091
 #define IDC_STARS_LIMMAG                1092
 #define IDC_STARS_LIMMAG_TXT            1093
 #define IDC_STARS_VISIBLE               1094
 #define IDC_STARS_TEXTURED              1095
 #define IDC_STARS_COLORED               1096
+#define IDC_STARS_CCONTRAST             1097
 #define IDC_TERR_DEFAULTS               1099
 #define IDC_CONST_DEFAULTS              1101
 #define IDC_STARS_DEFAULTS              1103
@@ -85,6 +81,10 @@
 #define IDC_SUN_VISIBLE                 1124
 #define IDC_SUN_SHINE                   1125
 #define IDC_SUN_DEFAULTS                1126
+#define IDC_STARS_MINR                  1127
+#define IDC_STARS_MAXR                  1128
+#define IDC_STARS_MINC                  1129
+#define IDC_STARS_MAXC                  1130
 #define ID_STARF_NEWRANDOM              32772
 #define ID_STARF_NEWACTUAL              32773
 #define ID_STARF_OPEN                   32774
@@ -124,7 +124,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        166
 #define _APS_NEXT_COMMAND_VALUE         32876
-#define _APS_NEXT_CONTROL_VALUE         1127
+#define _APS_NEXT_CONTROL_VALUE         1133
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

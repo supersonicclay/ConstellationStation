@@ -86,15 +86,20 @@ extern const color_s COLOR_WHITE,
 
 
 /////////////////////////////////////////////////////////////////////////////
-// ABSOLUTE DEFAULTS
+// DEFAULTS
 
 extern const BOOL		DEF_STARS_VISIBLE;
 extern const BOOL		DEF_STARS_LABELED;
 extern const BOOL		DEF_STARS_TEXTURED;
 extern const BOOL		DEF_STARS_COLORED;
-extern const float		DEF_STARS_LIMMAG;
-extern const int		DEF_STARS_GAMMA;
-extern const int		DEF_STARS_CONTRAST;
+extern const int		DEF_STARS_LIMMAGX10;
+extern const int		DEF_STARS_SIZE;
+extern const int		DEF_STARS_SCONTRAST;
+extern const int		DEF_STARS_CCONTRAST;
+extern const float		DEF_STARS_BRIGHT_RADIUS;
+extern const float		DEF_STARS_BRIGHT_COLOR;
+extern const float		DEF_STARS_RADIUS_DIFF;
+extern const float		DEF_STARS_COLOR_DIFF;
 extern const BOOL		DEF_CONST_VISIBLE;
 extern const BOOL		DEF_CONST_LABELED;
 extern const color_s	DEF_CONST_NORMCOLOR;
@@ -106,7 +111,7 @@ extern const BOOL		DEF_SUN_VISIBLE;
 extern const BOOL		DEF_SUN_SHINE;
 extern const BOOL		DEF_TERR_VISIBLE;
 extern const BOOL		DEF_TERR_TEXTURED;
-extern const float		DEF_TERR_ROUGHNESS;
+extern const int		DEF_TERR_ROUGHNESSX100;
 extern const int		DEF_TERR_SCALE;
 extern const int		DEF_TERR_ITERS;
 extern const season_e	DEF_TERR_SEASON;
@@ -119,12 +124,32 @@ extern const color_s	DEF_COMPASS_NEEDLECOLOR;
 
 
 /////////////////////////////////////////////////////////////////////////////
-// MAXIMUMS
+// MAXIMUMS / MINIMUMS
 
-#define	MAX_STARS			20000///100000
-#define	MAX_CONSTS			200
-#define MAX_CONSTLINES		100
-#define	MAX_DOC_NAME		32
+#define	MAX_STARS					100000
+#define	MAX_CONSTS					200
+#define MAX_CONSTLINES				100
+#define	MAX_DOC_NAME				32
+#define MIN_STARS_MAG				-1.44F
+#define MAX_STARS_BRIGHT_RADIUS		0.02F
+#define MIN_STARS_BRIGHT_RADIUS		0.005F
+#define MAX_STARS_BRIGHT_COLOR		1.0F
+#define MIN_STARS_BRIGHT_COLOR		0.01F
+// Dim radius is stored as a percent of the brightest radius
+#define MAX_STARS_DIM_RADIUS_PERC	100   // User has full control from 100%
+#define MIN_STARS_DIM_RADIUS_PERC	0     //  to 0%
+// Dim color is stored as a percent of the brightest color
+#define MAX_STARS_DIM_COLOR_PERC	100   // User has full control from 100%
+#define MIN_STARS_DIM_COLOR_PERC	0     //  to 0%
+
+
+/////////////////////////////////////////////////////////////////////////////
+// OTHER DEFINES
+
+#define STARS_BRIGHT_RADIUS_RANGE	(MAX_STARS_BRIGHT_RADIUS - MIN_STARS_BRIGHT_RADIUS)
+#define STARS_BRIGHT_COLOR_RANGE	(MAX_STARS_BRIGHT_COLOR - MIN_STARS_BRIGHT_COLOR)
+#define STARS_DIM_RADIUS_PERC_RANGE	(MAX_STARS_DIM_RADIUS_PERC - MIN_STARS_DIM_RADIUS_PERC)
+#define STARS_DIM_COLOR_PERC_RANGE	(MAX_STARS_DIM_COLOR_PERC - MIN_STARS_DIM_COLOR_PERC)
 
 
 /////////////////////////////////////////////////////////////////////////////

@@ -63,15 +63,20 @@ const color_s	COLOR_WHITE			= {1.0f, 1.0f, 1.0f},
 
 
 /////////////////////////////////////////////////////////////////////////////
-// ABSOLUTE DEFAULTS
+// DEFAULTS
 
 const BOOL		DEF_STARS_VISIBLE		= TRUE;
 const BOOL		DEF_STARS_LABELED		= FALSE;
 const BOOL		DEF_STARS_TEXTURED		= TRUE;
 const BOOL		DEF_STARS_COLORED		= TRUE;
-const float		DEF_STARS_LIMMAG		= 5.0f;
-const int		DEF_STARS_GAMMA			= 50;
-const int		DEF_STARS_CONTRAST		= 50;
+const int		DEF_STARS_LIMMAGX10		= 70;
+const int		DEF_STARS_SIZE			= 50;
+const int		DEF_STARS_SCONTRAST		= 50;
+const int		DEF_STARS_CCONTRAST		= 50;
+const float		DEF_STARS_BRIGHT_RADIUS	= 0.013f;
+const float		DEF_STARS_BRIGHT_COLOR	= 1.0f;
+const float		DEF_STARS_RADIUS_DIFF	= 0.011f;
+const float		DEF_STARS_COLOR_DIFF	= 0.8f;
 const BOOL		DEF_CONST_VISIBLE		= TRUE;
 const BOOL		DEF_CONST_LABELED		= TRUE;
 const color_s	DEF_CONST_NORMCOLOR		= {0.0f, 0.5f, 0.5f};
@@ -83,11 +88,11 @@ const BOOL		DEF_SUN_VISIBLE			= TRUE;
 const BOOL		DEF_SUN_SHINE			= TRUE;
 const BOOL		DEF_TERR_VISIBLE		= TRUE;
 const BOOL		DEF_TERR_TEXTURED		= FALSE;
-const float		DEF_TERR_ROUGHNESS		= 0.1f;
+const int		DEF_TERR_ROUGHNESSX100	= 10;
 const int		DEF_TERR_SCALE			= 1;
 const int		DEF_TERR_ITERS			= 3;
 const season_e	DEF_TERR_SEASON			= season_Summer;
-const color_s	DEF_TERR_WINCOLOR		= {0.7f, 0.7f, 0.7f};///{0.4f, 0.4f, 0.4f};
+const color_s	DEF_TERR_WINCOLOR		= {0.7f, 0.7f, 0.7f};
 const color_s	DEF_TERR_SPRCOLOR		= {0.15f, 0.25f, 0.1f};
 const color_s	DEF_TERR_SUMCOLOR		= {0.1f, 0.3f, 0.1f};
 const color_s	DEF_TERR_FALCOLOR		= {0.25f, 0.25f, 0.15f};

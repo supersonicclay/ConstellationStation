@@ -117,56 +117,20 @@ float CDataStar::GetPhi() const
 /////////////////////////////////////////////////////////////////////////////
 // Sets
 
-void CDataStar::SetMag( float mag_ )
+void CDataStar::SetMag( float m )
 {
-	mag = mag_;
+	mag = m;
 }
 
-void CDataStar::SetColor( color_s color_ )
+void CDataStar::SetColor( color_s c )
 {
-	color = color_;
+	color = c;
 }
 
-
-void CDataStar::SetColorFromMag()
+void CDataStar::SetRadius( float r )
 {
-	if( mag > 2.0f )
-	{
-		color.r = (8-mag)/7;
-		color.g = (8-mag)/7;
-		color.b = (8-mag)/7;
-	}
-	else
-	{
-		color = COLOR_WHITE;
-	}
+	radius = r;
 }
-
-void CDataStar::SetRadiusFromMag()
-{
-	radius = (8-mag) / 600.0f;///
-}
-
-/*/// old star color/radius
-void CDataStar::SetColorFromMag()
-{
-	if( mag > 2.0f )
-	{
-		color.r = (6-mag)/5;
-		color.g = (6-mag)/5;
-		color.b = (6-mag)/5;
-	}
-	else
-	{
-		color = COLOR_WHITE;
-	}
-}
-
-void CDataStar::SetRadiusFromMag()
-{
-	radius = (6-mag) / 500.0f;///
-}
-*/
 
 void CDataStar::SetX( float x_ )
 {
@@ -215,7 +179,46 @@ void CDataStar::SetDec( BOOL positive,
 
 
 /////////////////////////////////////////////////////////////////////////////
-// Sets
+// Methods
+
+//*/// test star color/radius
+void CDataStar::SetColorFromMag()
+{
+	if( mag < 3.5f )
+		color.r = color.g = color.b = starfMgr.GetStarsBrightColor();
+	else
+		color.r = color.g = color.b = starfMgr.GetStarsDimColor();
+}
+
+void CDataStar::SetRadiusFromMag()
+{
+	if( mag < 3.5f )
+		radius = starfMgr.GetStarsBrightRadius();
+	else
+		radius = starfMgr.GetStarsDimRadius();
+}
+///*/
+
+/*/// old star color/radius
+void CDataStar::SetColorFromMag()
+{
+	if( mag > 2.0f )
+	{
+		color.r = (8-mag)/7;
+		color.g = (8-mag)/7;
+		color.b = (8-mag)/7;
+	}
+	else
+	{
+		color = COLOR_WHITE;
+	}
+}
+
+void CDataStar::SetRadiusFromMag()
+{
+	radius = (8-mag) / 600.0f;
+}
+///*/
 
 // Set Right Ascension and Declination from the x, y, and z coords.
 //   First calculates spherical coordinates for x, y, z.

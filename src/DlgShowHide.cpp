@@ -55,7 +55,7 @@ BOOL CDlgShowHide::OnInitDialog()
 	CDialog::OnInitDialog();
 	
 	// Add strings to list box
-	for (int i=0; i<starfield.GetConstCount(); i++)
+	for (int i=0; i<starfield.GetConstCount(); ++i)
 	{
 		// Add name to list
 		list.SetSel(
@@ -70,7 +70,7 @@ void CDlgShowHide::OnSelChange()
 {
 	CString name;
 
-	for (int i=0; i<starfield.GetConstCount(); i++)
+	for (int i=0; i<starfield.GetConstCount(); ++i)
 	{
 		// Get name of constellation
 		list.GetText( i, name );
@@ -84,7 +84,7 @@ void CDlgShowHide::OnSelChange()
 
 void CDlgShowHide::OnShowAll() 
 {
-	for (int i=0; i<list.GetCount(); i++)
+	for (int i=0; i<list.GetCount(); ++i)
 	{
 		list.SetSel(i, TRUE);
 	}
@@ -95,7 +95,7 @@ void CDlgShowHide::OnShowAll()
 
 void CDlgShowHide::OnHideAll() 
 {
-	for (int i=0; i<list.GetCount(); i++)
+	for (int i=0; i<list.GetCount(); ++i)
 	{
 		list.SetSel(i, FALSE);
 	}
@@ -106,7 +106,7 @@ void CDlgShowHide::OnHideAll()
 
 void CDlgShowHide::OnInvert() 
 {
-	for (int i=0; i<list.GetCount(); i++)
+	for (int i=0; i<list.GetCount(); ++i)
 	{
 		if (list.GetSel(i) == TRUE)
 			list.SetSel(i, FALSE);

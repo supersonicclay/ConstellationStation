@@ -77,7 +77,7 @@ void CMgrConst::Add()
 
 	// Convert the number to a string and append
 	char numString[20];
-	itoa (newConstCount+1, numString, 10);
+	itoa( newConstCount+1, numString, 10 );
 	constName += numString;
 
 	dialog.name = constName;
@@ -87,7 +87,7 @@ void CMgrConst::Add()
 		return;
 
 	// Check for duplicate name
-	while (starfield.IsDuplicate(dialog.name))
+	while( starfield.IsDuplicate( dialog.name ) )
 	{
 		CSError( "There is already a constellation with this name." );
 
@@ -118,7 +118,7 @@ void CMgrConst::Delete()
 	GetConstBar()->DeleteConst();
 
 	// Set newly selected constellation as the current one
-	if (starfield.GetConstCount() > 0)
+	if( starfield.GetConstCount() > 0 )
 		starfield.SelectConst( GetConstBar()->GetCurConst() );
 
 	SetState( state_Viewing );
@@ -146,9 +146,9 @@ void CMgrConst::Rename()
 	while (starfield.IsDuplicate(dialog.name) &&
 		dialog.name != origConstName)
 	{
-		CSError("There is already a constellation with this name.");
+		CSError( "There is already a constellation with this name." );
 
-		if (dialog.DoModal() != IDOK)
+		if( dialog.DoModal() != IDOK )
 			return;
 	}
 
@@ -160,7 +160,7 @@ void CMgrConst::Rename()
 
 	// Remove old name from the list and add new name
 	GetConstBar()->DeleteConst();
-	GetConstBar()->AddConst(dialog.name);
+	GetConstBar()->AddConst( dialog.name );
 
 	starfield.RenameConst(dialog.name);
 
@@ -179,7 +179,7 @@ void CMgrConst::Hide()
 // Set state to AddingLine or back to Viewing
 void CMgrConst::AddLine()
 {
-	if (state == state_AddingLine)
+	if( state == state_AddingLine )
 		SetState( state_Viewing );
 	else
 		SetState( state_AddingLine );
@@ -197,7 +197,7 @@ void CMgrConst::DeleteLine()
 // Hide all constellations
 void CMgrConst::HideAll()
 {
-	for (int i=0; i<starfield.GetConstCount(); i++)
+	for( int i=0; i<starfield.GetConstCount(); ++i )
 	{
 		starfield.GetConst(i)->SetVisible(FALSE);
 	}
@@ -209,7 +209,7 @@ void CMgrConst::HideAll()
 // Show all constellations
 void CMgrConst::ShowAll()
 {
-	for (int i=0; i<starfield.GetConstCount(); i++)
+	for( int i=0; i<starfield.GetConstCount(); ++i )
 	{
 		starfield.GetConst(i)->SetVisible(TRUE);
 	}

@@ -193,8 +193,9 @@ void CBarStarf::OnTimer(UINT nIDEvent)
 {
 	CToolBar ::OnTimer(nIDEvent);
 
-	/// SPEED
+	/*
 	COleDateTime curTime = COleDateTime::GetCurrentTime();
 	time.SetTime(curTime);
 	date.SetTime(curTime);
+	*/
 }

@@ -22,16 +22,20 @@ public:
 	BOOL	labeled;
 	BOOL	textured;
 	BOOL	colored;
-	int		gamma;
-	int		contrast;
-	int		limitingMag;
-	CSliderCtrl	gammaSlider;
-	CSliderCtrl	contrastSlider;
+	int		limMagX10;
+	int		size;
+	int		sContrast;
+	int		cContrast;
+	CSliderCtrl	sizeSlider;
+	CSliderCtrl	sContrastSlider;
+	CSliderCtrl cContrastSlider;
 	CSliderCtrl	limMagSlider;
 	//}}AFX_DATA
 
-	int origGamma;
-	int origContrast;
+	int origLimMagX10;
+	int origSize;
+	int origSContrast;
+	int origCContrast;
 
 
 // Methods
@@ -54,6 +58,10 @@ protected:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnStarsDefaults();
+	afx_msg void OnChangeStarsDimR();
+	afx_msg void OnChangeStarsBrightR();
+	afx_msg void OnChangeStarsDimC();
+	afx_msg void OnChangeStarsBrightC();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

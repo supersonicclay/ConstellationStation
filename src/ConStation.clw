@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CCSFrame
+LastClass=CDlgOptionsStar
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "ConStation.h"
@@ -22,22 +22,22 @@ Class10=CDlgOptionsStar
 
 ResourceCount=15
 Resource1="IDR_TOOLBAR1"
-Resource2=IDD_SHOW_HIDE
-Resource3=IDR_STARFIELD
-Resource4=IDR_MAINFRAME
-Resource5=IDR_CONSTELLATION
-Resource6=IDD_OPTIONS_TERR
-Resource7=IDD_CONST_NAME
-Resource8=IDD_TIME
-Resource9=IDD_OPTIONS_CONST
+Resource2=IDD_TIME
+Resource3=IDR_CONSTELLATION
+Resource4=IDD_CONST_NAME
+Resource5=IDR_MAINFRAME
+Resource6=IDD_OPTIONS_GENERAL
+Resource7=IDR_STARFIELD
+Resource8=IDD_OPTIONS_TERR
+Resource9=IDD_OPTIONS_STAR
 Class11=CDlgOptionsConst
-Resource10=IDD_ABOUTBOX
-Resource11=IDD_OPTIONS_GENERAL
+Resource10=IDD_OPTIONS_CONST
+Resource11=IDD_SHOW_HIDE
 Resource12=IDD_OPTIONS_COLORS
 Class12=CDlgTime
 Resource13=IDD_LOCATION
 Class13=CDlgColors
-Resource14=IDD_OPTIONS_STAR
+Resource14=IDD_ABOUTBOX
 Class14=CDlgOptionsSun
 Resource15=IDD_OPTIONS_SUN
 
@@ -186,7 +186,7 @@ LastObject=CDlgLocation
 [DLG:IDD_OPTIONS_STAR]
 Type=1
 Class=CDlgOptionsStar
-ControlCount=16
+ControlCount=28
 Control1=IDC_STATIC,button,1342177287
 Control2=IDC_STARS_VISIBLE,button,1342242819
 Control3=IDC_STARS_LABELED,button,1342242819
@@ -197,12 +197,24 @@ Control7=IDC_STARS_LIMMAG_TXT,edit,1484857472
 Control8=IDC_STARS_LIMMAG,msctls_trackbar32,1342242821
 Control9=IDC_STATIC,button,1342177287
 Control10=IDC_STATIC,static,1342308864
-Control11=IDC_STARS_GAMMA,msctls_trackbar32,1342242840
+Control11=IDC_STARS_SIZE,msctls_trackbar32,1342242840
 Control12=IDC_STATIC,static,1342308864
-Control13=IDC_STARS_CONTRAST,msctls_trackbar32,1342242840
+Control13=IDC_STARS_SCONTRAST,msctls_trackbar32,1342242840
 Control14=IDOK,button,1342242817
 Control15=IDCANCEL,button,1342242816
 Control16=IDC_STARS_DEFAULTS,button,1342242816
+Control17=IDC_STATIC,static,1342308352
+Control18=IDC_STARS_MINR,edit,1350631552
+Control19=IDC_STATIC,static,1342308352
+Control20=IDC_STATIC,static,1342308352
+Control21=IDC_STARS_MAXR,edit,1350631552
+Control22=IDC_STARS_MINC,edit,1350631552
+Control23=IDC_STATIC,static,1342308352
+Control24=IDC_STARS_MAXC,edit,1350631552
+Control25=IDC_STATIC,static,1342308352
+Control26=IDC_STATIC,static,1342308352
+Control27=IDC_STARS_CCONTRAST,msctls_trackbar32,1342242840
+Control28=IDC_STATIC,static,1342308864
 
 [DLG:IDD_OPTIONS_CONST]
 Type=1
@@ -273,7 +285,7 @@ HeaderFile=DlgOptionsStar.h
 ImplementationFile=DlgOptionsStar.cpp
 BaseClass=CDialog
 Filter=D
-LastObject=CDlgOptionsStar
+LastObject=IDC_STARS_COLORCONTRAST
 VirtualFilter=dWC
 
 [DLG:IDD_OPTIONS_TERR]

@@ -197,9 +197,9 @@ void CDataConst::DeleteLine( int lineNum )
 // Check this constellation for lines with the same endpoints
 void CDataConst::CheckForDuplicateLines()
 {
-	for( int i=0; i<lineCount; i++ )
+	for( int i=0; i<lineCount; ++i )
 	{
-		for( int j=0; j<lineCount; j++ )
+		for( int j=0; j<lineCount; ++j )
 		{
 			// we don't check for duplicate against itself
 			if( i != j )

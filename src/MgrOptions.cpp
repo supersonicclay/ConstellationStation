@@ -45,10 +45,17 @@ void CMgrOptions::LoadDefaults()
 void CMgrOptions::LoadStarDefaults()
 {
 	starfield.LoadStarDefaults();
-	starsGamma = DEF_STARS_GAMMA;
-	starsContrast = DEF_STARS_CONTRAST;
+	starsSize = DEF_STARS_SIZE;
+	starsSContrast = DEF_STARS_SCONTRAST;
+	starsCContrast = DEF_STARS_CCONTRAST;
 	starsTextured = DEF_STARS_TEXTURED;
 	starsColored = DEF_STARS_COLORED;
+
+	/// STAR DIFFERENCE DEFAULTS
+	starfMgr.SetStarsDimRadius( DEF_STARS_BRIGHT_RADIUS - DEF_STARS_RADIUS_DIFF );
+	starfMgr.SetStarsBrightRadius( DEF_STARS_BRIGHT_RADIUS );
+	starfMgr.SetStarsDimColor( DEF_STARS_BRIGHT_COLOR - DEF_STARS_COLOR_DIFF );
+	starfMgr.SetStarsBrightColor( DEF_STARS_BRIGHT_COLOR );
 }
 
 void CMgrOptions::LoadConstDefaults()
@@ -70,7 +77,7 @@ void CMgrOptions::LoadTerrDefaults()
 {
 	terrVisible = DEF_TERR_VISIBLE;
 	terrTextured = DEF_TERR_TEXTURED;
-	terrRoughness = DEF_TERR_ROUGHNESS;
+	terrRoughnessX100 = DEF_TERR_ROUGHNESSX100;
 	terrScale = DEF_TERR_SCALE;
 	terrIters = DEF_TERR_ITERS;
 	terrSeason = DEF_TERR_SEASON;
@@ -83,25 +90,27 @@ void CMgrOptions::LoadTerrDefaults()
 
 /////////////////////////////////////////////////////////////////////////////
 // Gets
-int			CMgrOptions::GetStarsGamma()			{	return starsGamma;			}
-int			CMgrOptions::GetStarsContrast()			{	return starsContrast;		}
-BOOL		CMgrOptions::AreStarsTextured()			{	return starsTextured;		}
-BOOL		CMgrOptions::AreStarsColored()			{	return starsColored;		}
-color_s		CMgrOptions::GetConstNormColor()		{	return constNormColor;		}
-color_s		CMgrOptions::GetConstSelColor()			{	return constSelColor;		}
-color_s		CMgrOptions::GetConstActiveColor()		{	return constActiveColor;	}
-color_s		CMgrOptions::GetConstStarColor()		{	return constStarColor;		}
-BOOL		CMgrOptions::AreConstStarsColored()		{	return constStarsColored;	}
-BOOL		CMgrOptions::IsTerrVisible()			{	return terrVisible;			}
-BOOL		CMgrOptions::IsTerrTextured()			{	return terrTextured;		}
-float		CMgrOptions::GetTerrRoughness()			{	return terrRoughness;		}
-int			CMgrOptions::GetTerrScale()				{	return terrScale;			}
-int			CMgrOptions::GetTerrIters()				{	return terrIters;			}
-season_e	CMgrOptions::GetTerrSeason()			{	return terrSeason;			}
-color_s		CMgrOptions::GetTerrWinColor()			{	return terrWinColor;		}
-color_s		CMgrOptions::GetTerrSprColor()			{	return terrSprColor;		}
-color_s		CMgrOptions::GetTerrSumColor()			{	return terrSumColor;		}
-color_s		CMgrOptions::GetTerrFalColor()			{	return terrFalColor;		}
+int			CMgrOptions::GetStarsSize()			{	return starsSize;				}
+int			CMgrOptions::GetStarsSContrast()		{	return starsSContrast;			}
+int			CMgrOptions::GetStarsCContrast()		{	return starsCContrast;			}
+BOOL		CMgrOptions::AreStarsTextured()			{	return starsTextured;			}
+BOOL		CMgrOptions::AreStarsColored()			{	return starsColored;			}
+color_s		CMgrOptions::GetConstNormColor()		{	return constNormColor;			}
+color_s		CMgrOptions::GetConstSelColor()			{	return constSelColor;			}
+color_s		CMgrOptions::GetConstActiveColor()		{	return constActiveColor;		}
+color_s		CMgrOptions::GetConstStarColor()		{	return constStarColor;			}
+BOOL		CMgrOptions::AreConstStarsColored()		{	return constStarsColored;		}
+BOOL		CMgrOptions::IsTerrVisible()			{	return terrVisible;				}
+BOOL		CMgrOptions::IsTerrTextured()			{	return terrTextured;			}
+int			CMgrOptions::GetTerrRoughnessX100()		{	return terrRoughnessX100;		}
+float		CMgrOptions::GetTerrRoughness()			{	return terrRoughnessX100/100.0f;}
+int			CMgrOptions::GetTerrScale()				{	return terrScale;				}
+int			CMgrOptions::GetTerrIters()				{	return terrIters;				}
+season_e	CMgrOptions::GetTerrSeason()			{	return terrSeason;				}
+color_s		CMgrOptions::GetTerrWinColor()			{	return terrWinColor;			}
+color_s		CMgrOptions::GetTerrSprColor()			{	return terrSprColor;			}
+color_s		CMgrOptions::GetTerrSumColor()			{	return terrSumColor;			}
+color_s		CMgrOptions::GetTerrFalColor()			{	return terrFalColor;			}
 
 // Get terrain color for the current season
 color_s CMgrOptions::GetTerrColor()
@@ -120,8 +129,9 @@ color_s CMgrOptions::GetTerrColor()
 /////////////////////////////////////////////////////////////////////////////
 // Sets
 
-void CMgrOptions::SetStarsGamma( int g )			{	starsGamma = g;				}
-void CMgrOptions::SetStarsContrast( int c )			{	starsContrast = c;			}
+void CMgrOptions::SetStarsSize( int g )			{	starsSize = g;				}
+void CMgrOptions::SetStarsSContrast( int c )		{	starsSContrast = c;			}
+void CMgrOptions::SetStarsCContrast( int c )		{	starsCContrast = c;			}
 void CMgrOptions::SetStarsTextured( BOOL t )		{	starsTextured = t;			}
 void CMgrOptions::SetStarsColored( BOOL c )			{	starsColored = c;			}
 void CMgrOptions::SetConstNormColor( color_s c )	{	constNormColor = c;			}
@@ -132,7 +142,7 @@ void CMgrOptions::SetConstStarsColored( BOOL x )	{	constStarsColored = x;		}
 void CMgrOptions::SwitchTerrVisible()				{	terrVisible = !terrVisible;	}
 void CMgrOptions::SetTerrVisible( BOOL x )			{	terrVisible = x;			}
 void CMgrOptions::SetTerrTextured( BOOL t )			{	terrTextured = t;			}
-void CMgrOptions::SetTerrRoughness( float r )		{	terrRoughness = r;			}
+void CMgrOptions::SetTerrRoughnessX100( int r )		{	terrRoughnessX100 = r;		}
 void CMgrOptions::SetTerrScale( int s )				{	terrScale = s;				}
 void CMgrOptions::SetTerrIters( int i )				{	terrIters = i;				}
 void CMgrOptions::SetTerrSeason( season_e s )		{	terrSeason = s;				}
@@ -209,8 +219,9 @@ void CMgrOptions::Serialize( CArchive& ar )
 			ar
 
 			// Star Options
-			>> starsGamma
-			>> starsContrast
+			>> starsSize
+			>> starsSContrast
+			>> starsCContrast
 			>> starsTextured
 			>> starsColored
 
@@ -224,7 +235,7 @@ void CMgrOptions::Serialize( CArchive& ar )
 			// Terrain options
 			>> terrVisible
 			>> terrTextured
-			>> terrRoughness
+			>> terrRoughnessX100
 			>> terrScale
 			>> terrIters
 			>> terrSeason
@@ -248,8 +259,9 @@ void CMgrOptions::Serialize( CArchive& ar )
 		ar
 
 		// Star Options
-		<< starsGamma
-		<< starsContrast
+		<< starsSize
+		<< starsSContrast
+		<< starsCContrast
 		<< starsTextured
 		<< starsColored
 
@@ -263,7 +275,7 @@ void CMgrOptions::Serialize( CArchive& ar )
 		// Terrain options
 		<< terrVisible
 		<< terrTextured
-		<< terrRoughness
+		<< terrRoughnessX100
 		<< terrScale
 		<< terrIters
 		<< terrSeason

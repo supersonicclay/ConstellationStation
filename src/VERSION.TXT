@@ -48,9 +48,9 @@
 0.3 - Math
 -------------------------------------------------
 
--0.3.1
--	Trackball mouse interface
--	Cursor stays in place while rotating
+0.3.0
+	Limiting magnitude option
+	Brightness / Contrast options
 
 
 

@@ -22,7 +22,7 @@ static char THIS_FILE[] = __FILE__;
 
 CMgrInput::CMgrInput()
 {
-	for( int i=0; i<256; i++ )
+	for( int i=0; i<256; ++i )
 		keyDown[i] = FALSE;
 
 	mouseRotatingXY = FALSE;
@@ -110,6 +110,18 @@ void CMgrInput::ProcessKeys()
 	{
 		starfield.ResetView();
 		graphicsMgr.Projection();
+		update = TRUE;
+	}
+
+	/// Terrain Height
+	if( keyDown[VK_ADD] )
+	{
+		terrain.IncViewHeight();
+		update = TRUE;
+	}
+	if( keyDown[VK_SUBTRACT] )
+	{
+		terrain.DecViewHeight();
 		update = TRUE;
 	}
 
@@ -640,7 +652,7 @@ BOOL CMgrInput::Select( select_e selection )
 		return FALSE;
 
 	// Test if terrain was hit
-	for( int i=0; i<hits; i++ )
+	for( int i=0; i<hits; ++i )
 	{
 		// If terrain was hit (terrain is 0)
 		if( selectBuffer[i*4 + 3] == 0 )

@@ -49,10 +49,9 @@ public:
 	float GetPhi() const;
 
 // Sets
-	void SetMag( float mag_ );
-	void SetColor( color_s color_ );
-	void SetColorFromMag();
-	void SetRadiusFromMag();
+	void SetMag( float m );
+	void SetColor( color_s c );
+	void SetRadius( float r );
 	void SetX( float x_ );
 	void SetY( float y_ );
 	void SetZ( float z_ );
@@ -65,6 +64,8 @@ public:
 				 unsigned short degree,
 				 unsigned short minute,
 				 float second );
+	void SetColorFromMag();
+	void SetRadiusFromMag();
 	void SetRADecFromXYZ();
 	void SetXYZFromRADec();
 

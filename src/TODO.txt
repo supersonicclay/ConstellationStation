@@ -11,11 +11,9 @@ PHASES
 
 
 BUGS
--	2	Roundoff error with sliders
-		- Save as int until needed as float
-+	2	Terrain stays lit after ID_SUN_TOGGLE
-	3	cursor doesn't hide after open
-	3	Random starfield is blank
+-	3	Terrain isn't depth testing
+-	3	cursor doesn't hide after open
+-	3	Random starfield is blank
 	5	Program Icon
 		- frame.GetIcon()
 		- frame.SetIcon()
@@ -23,40 +21,38 @@ BUGS
 		- (WM_SETICON)
 
 GENERAL
+-	1	PORTALES: 34.6 North
 -	1	Read-through cleaning / Sanity checks
 		- DataTerrain
--	2	Redraw starfield toolbar
-	3	Spin sun separately
+-	3	Spin sun separately
+-	3	Improve zooming (dependent on zoom)
+	5	Don't maximize on startup
+	5	Redraw starfield toolbar buttons
 	5	Splash Screen
 	5	Print
 	5	Undo
 
 OPTIONS
-	3	number of stars
-	3	textured stars
-	3	brighness / gamma
-	3?	Rotate / Zoom speed
-	3	Terrain iterations / scale
+-	3	textured stars
+-	3?	Rotate / Zoom speed
 	4	Terrain shadows on/off
 	4	constellation labels
 	4	star names
 	5	home location
 
 INPUT MGR
-	3	Keep Mouse in place while rotating
-	3	Trackball
+-	3	Trackball
+-	3	Keep Mouse in place while rotating
 
 GRAPHICS MGR
-	3	Find constellation
-	3	Draw mouse-overed line different color
-	3	Improve 3D math.
-	3	Implement brightness and contrast
-	3	Make small stars points, not quads
-	3	Hide dim stars when zoomed out
-	3	Show dim stars when zoomed in
-	3	Bright are too bright. Dim are too dim
-	3	Lighting is shining through
-	3?	Lower star texture quality
+-	3	Find constellation
+-	3	Draw mouse-overed line different color
+-	3	Improve 3D math.
+-	3	Make small stars points, not quads
+-	3	Hide dim stars when zoomed out
+-	3	Show dim stars when zoomed in
+-	3	Lighting is shining through
+-	3?	Lower star texture quality
 	4	Print Constellation Name near constellation
 		- moveable?
 	4	Heading indicator needs work.
@@ -64,13 +60,11 @@ GRAPHICS MGR
 	5	Celestial Grid
 
 CONSTELLATION MGR
-+	2	show hide revision
 	5	Input actual constellations
 	5	Constellation details
 
 STARFIELD MGR
-	3	Implement limiting magnitude
-	3?	Prompt for seed with random stars
+-	3?	Prompt for seed with random stars
 	5	Choose date
 	5	Choose time
 	5	Choose location (lat & long)
@@ -81,15 +75,16 @@ STARFIELD MGR
 	5?	Precession
 
 TERRAIN MGR
-	3	change spaces to tabs
-	3	viewheight is choppy
-	3	Generate first few so you're sitting in a valley
-	3?	More circular
-	3?	vectors
+-	3	change spaces to tabs
+-	3	viewheight is choppy
+-	3	Generate first few so you're sitting in a valley
+-	3?	More circular
+-	3?	vectors
+-	3	Iterations / scale
 	4	Textured terrain
 
 DOCUMENT MGR
-	3	Save just seed. Actual = -1
+-	3	Save just seed. Actual = -1
 	5	Import/Export constellations (must check seed if random starf)
 
 TEACHER MGR

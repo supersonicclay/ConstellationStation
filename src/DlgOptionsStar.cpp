@@ -20,14 +20,20 @@ CDlgOptionsStar::CDlgOptionsStar(CWnd* pParent /*=NULL*/)
 	: CDialog(CDlgOptionsStar::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(CDlgOptionsStar)
-	contrast = 0;
-	gamma = 0;
-	colored = FALSE;
-	textured = FALSE;
 	visible = FALSE;
 	labeled = FALSE;
-	limitingMag = 0;
+	textured = FALSE;
+	colored = FALSE;
+	limMagX10 = 0;
+	size = 0;
+	sContrast = 0;
+	cContrast = 0;
 	//}}AFX_DATA_INIT
+
+	origLimMagX10 = 0;
+	origSize = 0;
+	origSContrast = 0;
+	origCContrast = 0;
 }
 
 
@@ -39,11 +45,13 @@ void CDlgOptionsStar::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_STARS_LABELED, labeled);
 	DDX_Check(pDX, IDC_STARS_TEXTURED, textured);
 	DDX_Check(pDX, IDC_STARS_COLORED, colored);
-	DDX_Slider(pDX, IDC_STARS_GAMMA, gamma);
-	DDX_Control(pDX, IDC_STARS_GAMMA, gammaSlider);
-	DDX_Slider(pDX, IDC_STARS_CONTRAST, contrast);
-	DDX_Control(pDX, IDC_STARS_CONTRAST, contrastSlider);
-	DDX_Slider(pDX, IDC_STARS_LIMMAG, limitingMag);
+	DDX_Slider(pDX, IDC_STARS_LIMMAG, limMagX10);
+	DDX_Slider(pDX, IDC_STARS_SIZE, size);
+	DDX_Slider(pDX, IDC_STARS_SCONTRAST, sContrast);
+	DDX_Slider(pDX, IDC_STARS_CCONTRAST, cContrast);
+	DDX_Control(pDX, IDC_STARS_SIZE, sizeSlider);
+	DDX_Control(pDX, IDC_STARS_SCONTRAST, sContrastSlider);
+	DDX_Control(pDX, IDC_STARS_CCONTRAST, cContrastSlider);
 	DDX_Control(pDX, IDC_STARS_LIMMAG, limMagSlider);
 	//}}AFX_DATA_MAP
 }
@@ -53,6 +61,10 @@ BEGIN_MESSAGE_MAP(CDlgOptionsStar, CDialog)
 	//{{AFX_MSG_MAP(CDlgOptionsStar)
 	ON_WM_HSCROLL()
 	ON_BN_CLICKED(IDC_STARS_DEFAULTS, OnStarsDefaults)
+	ON_EN_CHANGE(IDC_STARS_MINR, OnChangeStarsDimR)
+	ON_EN_CHANGE(IDC_STARS_MAXR, OnChangeStarsBrightR)
+	ON_EN_CHANGE(IDC_STARS_MINC, OnChangeStarsDimC)
+	ON_EN_CHANGE(IDC_STARS_MAXC, OnChangeStarsBrightC)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -64,14 +76,10 @@ BOOL CDlgOptionsStar::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	/// HOW IMPORTANT IS ROUNDOFF ERROR?
-	float f = 5.1f;
-	float fX10 = f*10;
-	int i = fX10;
-
 	// Initialize sliders
-	gammaSlider.SetRange( 0, 100 );
-	contrastSlider.SetRange( 0, 100 );
+	sizeSlider.SetRange( 0, 100 );
+	sContrastSlider.SetRange( 0, 100 );
+	cContrastSlider.SetRange( 0, 100 );
 	limMagSlider.SetRange( 30, 90 );
 	limMagSlider.SetTicFreq( 10 );
 
@@ -86,19 +94,34 @@ void CDlgOptionsStar::InitOptions()
 	CheckDlgButton( IDC_STARS_LABELED, starfield.AreStarsLabeled() );
 	CheckDlgButton( IDC_STARS_TEXTURED, optionsMgr.AreStarsTextured() );
 	CheckDlgButton( IDC_STARS_COLORED, optionsMgr.AreStarsColored() );
-	SetDlgItemInt( IDC_STARS_GAMMA, optionsMgr.GetStarsGamma() );
-	SetDlgItemInt( IDC_STARS_CONTRAST, optionsMgr.GetStarsContrast() );
-	SetDlgItemInt( IDC_STARS_LIMMAG, (int)(starfield.GetLimitingMag()*10) );
+	SetDlgItemInt( IDC_STARS_SIZE, optionsMgr.GetStarsSize() );
+	SetDlgItemInt( IDC_STARS_SCONTRAST, optionsMgr.GetStarsSContrast() );
+	SetDlgItemInt( IDC_STARS_CCONTRAST, optionsMgr.GetStarsCContrast() );
+	SetDlgItemInt( IDC_STARS_LIMMAG, starfield.GetLimitingMagX10() );
 
-	gammaSlider.SetPos( GetDlgItemInt(IDC_STARS_GAMMA) );
-	contrastSlider.SetPos( GetDlgItemInt(IDC_STARS_CONTRAST) );
+	sizeSlider.SetPos( GetDlgItemInt(IDC_STARS_SIZE) );
+	sContrastSlider.SetPos( GetDlgItemInt(IDC_STARS_SCONTRAST) );
+	cContrastSlider.SetPos( GetDlgItemInt(IDC_STARS_CCONTRAST) );
 	limMagSlider.SetPos( GetDlgItemInt(IDC_STARS_LIMMAG) );
 
 	// Initialize data that are updated realtime (in case of cancel button)
-	origGamma = gamma = optionsMgr.GetStarsGamma();
-	origContrast = contrast = optionsMgr.GetStarsContrast();
+	origLimMagX10 = limMagX10 = starfield.GetLimitingMagX10();
+	origSize = size = optionsMgr.GetStarsSize();
+	origSContrast = sContrast = optionsMgr.GetStarsSContrast();
+	origCContrast = cContrast = optionsMgr.GetStarsCContrast();
 
 	UpdateLimMagTxt();
+
+	/// star debug
+	char buf[10];
+	itoa( (int)(starfMgr.GetStarsDimRadius()*10000), buf, 10 );
+	SetDlgItemText( IDC_STARS_MINR, buf );
+	itoa( (int)(starfMgr.GetStarsBrightRadius()*10000), buf, 10 );
+	SetDlgItemText( IDC_STARS_MAXR, buf );
+	itoa( (int)(starfMgr.GetStarsDimColor()*100), buf, 10 );
+	SetDlgItemText( IDC_STARS_MINC, buf );
+	itoa( (int)(starfMgr.GetStarsBrightColor()*100), buf, 10 );
+	SetDlgItemText( IDC_STARS_MAXC, buf );
 }
 
 void CDlgOptionsStar::OnStarsDefaults() 
@@ -130,24 +153,82 @@ void CDlgOptionsStar::UpdateLimMagTxt()
 // User is or is about to move slider
 void CDlgOptionsStar::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 {
+	// Update limiting magnitude
+	if( limMagX10 != limMagSlider.GetPos() )
+	{
+		limMagX10 = limMagSlider.GetPos();
+		starfield.SetLimitingMagX10( limMagX10 );
+		starfield.CountStars();
+		starfMgr.UpdateStarsAppearance();
+		Redraw();
+	}
+
 	// Update brightness
-	if( gamma != gammaSlider.GetPos() )
+	if( size != sizeSlider.GetPos() )
 	{
-		gamma = gammaSlider.GetPos();
-		optionsMgr.SetStarsGamma( gammaSlider.GetPos() );
+		size = sizeSlider.GetPos();
+		optionsMgr.SetStarsSize( sizeSlider.GetPos() );
+		starfMgr.UpdateStarsAppearance();
 		Redraw();
 	}
 
-	// Update contrast
-	if( contrast != contrastSlider.GetPos() )
+	// Update size contrast
+	if( sContrast != sContrastSlider.GetPos() )
 	{
-		contrast = contrastSlider.GetPos();
-		optionsMgr.SetStarsContrast( contrastSlider.GetPos() );
+		sContrast = sContrastSlider.GetPos();
+		optionsMgr.SetStarsSContrast( sContrastSlider.GetPos() );
+		starfMgr.UpdateStarsAppearance();
 		Redraw();
 	}
 
+	// Update color contrast
+	if( cContrast != cContrastSlider.GetPos() )
+	{
+		cContrast = cContrastSlider.GetPos();
+		optionsMgr.SetStarsCContrast( cContrastSlider.GetPos() );
+		starfMgr.UpdateStarsAppearance();
+		Redraw();
+	}
+
+	InitOptions();/// Don't need after mins/maxes are taken out
 	UpdateLimMagTxt();
 
 	CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
+
+void CDlgOptionsStar::OnChangeStarsDimR() 
+{
+	char buf[10];
+	GetDlgItemText(IDC_STARS_MINR, buf, 10);
+	starfMgr.SetStarsDimRadius( atoi( buf ) / 10000.0f );
+	starfMgr.UpdateStarsAppearance();
+	Redraw();
+}
+
+void CDlgOptionsStar::OnChangeStarsBrightR() 
+{
+	char buf[10];
+	GetDlgItemText(IDC_STARS_MAXR, buf, 10);
+	starfMgr.SetStarsBrightRadius( atoi( buf ) / 10000.0f );
+	starfMgr.UpdateStarsAppearance();
+	Redraw();
+}
+
+void CDlgOptionsStar::OnChangeStarsDimC() 
+{
+	char buf[10];
+	GetDlgItemText(IDC_STARS_MINC, buf, 10);
+	starfMgr.SetStarsDimColor( atoi( buf ) / 100.0f );
+	starfMgr.UpdateStarsAppearance();
+	Redraw();
+}
+
+void CDlgOptionsStar::OnChangeStarsBrightC() 
+{
+	char buf[10];
+	GetDlgItemText(IDC_STARS_MAXC, buf, 10);
+	starfMgr.SetStarsBrightColor( atoi( buf ) / 100.0f );
+	starfMgr.UpdateStarsAppearance();
+	Redraw();
+}

@@ -18,25 +18,48 @@ public:
 
 // Attributes
 public:
+	float starsBrightRadius;
+	float starsBrightColor;
+	float starsDimRadiusPerc;    // Stored as percent of brightest radius
+	float starsDimColorPerc;     // Stored as percent of brightest color
+	float starsDimRadius;
+	float starsDimColor;
 
 
 // Methods
 public:
 
+// Gets
 	CBarStarf* GetStarfBar();
+	float GetStarsDimRadius();
+	float GetStarsBrightRadius();
+	float GetStarsDimColor();
+	float GetStarsBrightColor();
 
-	void StarOptions();
-	void ConstOptions();
-	void SunOptions();
+// Sets
+	void SetStarsDimRadius( float x );
+	void SetStarsBrightRadius( float x );
+	void SetStarsDimColor( float x );
+	void SetStarsBrightColor( float x );
 
-	void ToggleStars();
-	void ToggleConsts();
-	void ToggleSun();
-	void ToggleSunshine();
-
+// Starfield methods
 	void Rotate();
 	void Location();
 	void Time();
+
+// Star methods
+	void StarOptions();
+	void ToggleStars();
+	void UpdateStarsAppearance();
+
+// Constellation methods
+	void ConstOptions();
+	void ToggleConsts();
+
+// Sun methods
+	void SunOptions();
+	void ToggleSun();
+	void ToggleSunshine();
 
 
 // Destruction

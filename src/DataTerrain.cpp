@@ -11,8 +11,6 @@
 #include "CSApp.h"
 #include "DataTerrain.h"
 
-IMPLEMENT_SERIAL( CDataTerrain, CObject, 1 )
-
 
 /////////////////////////////////////////////////////////////////////////////
 // Construction / Destruction
@@ -49,9 +47,10 @@ void CDataTerrain::New()
 	Clear();
 
 	// Generate new seed
-	seed = (unsigned)clock();
+	seed = (unsigned)clock(); 
+	seed = 10; /// 10 looks horid
 
-	size = (int)pow( 2, optionsMgr.GetTerrIters() );  /// use binary shift (1<<iterations)
+	size = 1<<optionsMgr.GetTerrIters(); // 2^
 
 	arraySize = size + 1;
 
@@ -104,6 +103,11 @@ void CDataTerrain::SetLowerNormal( int i, int j, float* n )
 	lowerNormals[ (size*j*3 + i*3 + 2) ] = n[2];
 }
 
+void CDataTerrain::IncViewHeight()///
+{	viewHeight += 0.01f;	}
+void CDataTerrain::DecViewHeight()///
+{	viewHeight -= 0.01f;	}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // Methods
@@ -113,7 +117,7 @@ void CDataTerrain::MakeTerrain()
 	// Set seed so terrain is predictable
 	srand( seed );
 
-	float roughness = optionsMgr.GetTerrRoughness(); /// / 100.0f
+	float roughness = optionsMgr.GetTerrRoughness();
 
 	int i;        // row index
 	int j;        // col index
@@ -121,9 +125,9 @@ void CDataTerrain::MakeTerrain()
 	int midSize;  // used to keep track of current iteration
 	BOOL findingOddPoints;
 
-	for (i=0; i<arraySize; i++)
+	for (i=0; i<arraySize; ++i)
 	{
-		for (j=0; j<arraySize; j++)
+		for (j=0; j<arraySize; ++j)
 		{
 			heights[(i*arraySize) + j] = 0.0f;
 		}
@@ -313,43 +317,7 @@ void CDataTerrain::CalculateViewHeight()
 
 	// Just set the viewer a little above the midpoint
 	viewHeight = GetHeight( middleIndex, middleIndex ) + 0.05f;
-
-	/*
-
-	// Average the heights around the midpoint,
-	//  so the viewer isn't placed in a deep pit.
-
-	// Average of square points directly around middle
-	float avg1 = AvgSquare(middleIndex, middleIndex, 1);
-	// Average of diamond points directly around middle
-	float avg2 = AvgDiamond(middleIndex, middleIndex, 1);
-
-	// Average the two averages
-	viewHeight = ((avg1 + avg2) / 2);
-
-	/// HERE'S THE PROBLEM - viewHeight is always the same at this point
-	// once terrain midpoint is higher than viewHeight, viewHeight jumps up 0.2f
-	//  |
-	//  |
-	// \ /
-
-	// Make sure the new height is not less than the height at the midpoint
-	//  (this would put the viewer under the terrain)
-	// If it is, then switch to the height of the midpoint
-	if (viewHeight < GetHeight(middleIndex, middleIndex))
-		viewHeight = GetHeight(middleIndex, middleIndex) + 0.2f;
-
-	// Move it down a little more than that so the viewer isn't exactly on the surface
-	viewHeight += 0.05f;
-	*/
 }
 
 
-/////////////////////////////////////////////////////////////////////////////
-// Serialization
-
-void CDataTerrain::Serialize(CArchive& ar)///
-{
-	CObject::Serialize(ar);
-}
 

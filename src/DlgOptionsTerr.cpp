@@ -33,7 +33,7 @@ void CDlgOptionsTerr::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_TERR_COLOR_PREV, colorPrev);
 	DDX_Check(pDX, IDC_TERR_VISIBLE, visible);
 	DDX_Check(pDX, IDC_TERR_TEXTURED, textured);
-	DDX_Slider(pDX, IDC_TERR_ROUGHNESS, roughness);
+	DDX_Slider(pDX, IDC_TERR_ROUGHNESS, roughnessX100);
 	DDX_Control(pDX, IDC_TERR_ROUGHNESS, roughnessSlider);
 	DDX_Control(pDX, IDC_TERR_SEASONS, seasonsListBox);
 	//}}AFX_DATA_MAP
@@ -80,12 +80,12 @@ void CDlgOptionsTerr::InitOptions()
 {
 	CheckDlgButton( IDC_TERR_VISIBLE, optionsMgr.IsTerrVisible() );
 	CheckDlgButton( IDC_TERR_TEXTURED, optionsMgr.IsTerrTextured() );
-	SetDlgItemInt( IDC_TERR_ROUGHNESS, (int)(optionsMgr.GetTerrRoughness()*100) );
+	SetDlgItemInt( IDC_TERR_ROUGHNESS, optionsMgr.GetTerrRoughnessX100() );
 	roughnessSlider.SetPos( GetDlgItemInt(IDC_TERR_ROUGHNESS) );
 	seasonsListBox.SetCurSel( optionsMgr.GetTerrSeason() );
 
 	// Initialize data that are updated realtime (in case of cancel button)
-	origRoughness = roughness = (int)(optionsMgr.GetTerrRoughness()*100);
+	origRoughnessX100 = roughnessX100 = optionsMgr.GetTerrRoughnessX100();
 	origSeason = season = optionsMgr.GetTerrSeason();
 	origWinColor = winColor = optionsMgr.GetTerrWinColor();
 	origSprColor = sprColor = optionsMgr.GetTerrSprColor();
@@ -114,9 +114,9 @@ void CDlgOptionsTerr::UpdateRoughnessTxt()
 {
 		CString s;
 		// Update roughness text
-		if( roughness < 10 )
+		if( roughnessX100 < 10 )
 			s = "Plains";
-		else if( roughness < 20 )
+		else if( roughnessX100 < 20 )
 			s = "Hills";
 		else
 			s = "Mountains";
@@ -155,10 +155,10 @@ void CDlgOptionsTerr::OnTerrTextured()
 void CDlgOptionsTerr::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
 {
 	// Check if changed
-	if( roughness != roughnessSlider.GetPos() )
+	if( roughnessX100 != roughnessSlider.GetPos() )
 	{
-		roughness = roughnessSlider.GetPos();
-		optionsMgr.SetTerrRoughness( roughness / 100.0f );
+		roughnessX100 = roughnessSlider.GetPos();
+		optionsMgr.SetTerrRoughnessX100( roughnessX100 );
 
 		// Pick terrain with specified roughness without generating new seed
 		terrain.MakeTerrain();

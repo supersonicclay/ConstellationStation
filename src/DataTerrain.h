@@ -12,7 +12,6 @@
 
 class CDataTerrain : public CObject
 {
-DECLARE_SERIAL( CDataTerrain )
 
 // Construction / Destruction
 public:
@@ -22,8 +21,6 @@ public:
 
 	void Clear();
 	void New();
-
-	void Serialize( CArchive& ar );
 
 
 // Attributes
@@ -57,6 +54,9 @@ public:
 // Sets
 	void SetUpperNormal( int i, int j, float* n );
 	void SetLowerNormal( int i, int j, float* n );
+
+	void IncViewHeight();///
+	void DecViewHeight();///
 
 // Methods
 	void MakeTerrain();

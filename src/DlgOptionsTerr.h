@@ -21,7 +21,7 @@ public:
 	CEdit	colorPrev;
 	BOOL	visible;
 	BOOL	textured;
-	int		roughness;
+	int		roughnessX100;
 	CSliderCtrl	roughnessSlider;
 	CListBox	seasonsListBox;
 	//}}AFX_DATA
@@ -32,7 +32,7 @@ public:
 	color_s sumColor;
 	color_s falColor;
 
-	int origRoughness;
+	int origRoughnessX100;
 	season_e origSeason;
 	color_s origWinColor;
 	color_s origSprColor;

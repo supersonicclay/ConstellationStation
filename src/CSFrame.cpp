@@ -133,12 +133,13 @@ int CCSFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	DockControlBar(&starfBar);
 	DockControlBar(&constBar);
 
+	// Load options
+	optionsMgr.Load();
+
 	// New document
 	documentMgr.NewActual();
 	documentMgr.UpdateTitle();
 
-	// Load options
-	optionsMgr.Load();
 
 	return 0;
 }

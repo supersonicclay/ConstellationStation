@@ -159,13 +159,13 @@ BOOL CMgrGraphics::SetupPixelFormat()
 
 	int pixelFormat = ChoosePixelFormat( hDC, &pfd );
 
-	if ( pixelFormat == 0 )
+	if( pixelFormat == 0 )
 	{
 		CSDebug( "Couldn't Choose Pixel Format", "CMgrGraphics::SetupPixelFormat" );
 		return FALSE;
 	}
 
-	if ( SetPixelFormat(hDC, pixelFormat, &pfd) == FALSE)
+	if( SetPixelFormat(hDC, pixelFormat, &pfd) == FALSE )
 	{
 		CSDebug( "Couldn't Set Pixel Format", "CMgrGraphics::SetupPixelFormat" );
 		return FALSE;
@@ -444,7 +444,7 @@ void CMgrGraphics::CalculateFrustum()
 BOOL CMgrGraphics::SphereInFrustum( float x, float y, float z, float radius ) const
 {
 	// Go through all the sides of the frustum
-	for( int i = 0; i < 6; i++ )	
+	for( int i = 0; i < 6; ++i )	
 	{
 		// If the center of the sphere is farther away from the plane than the radius
 		if( frustum[i][A] * x + frustum[i][B] * y + frustum[i][C] * z + frustum[i][D] <= -radius )
@@ -533,21 +533,10 @@ void CMgrGraphics::DrawTerrain() const
 
 	glPushName( 0 );
 
-	for (i=0; i<size; i++)
+	for( i=0; i<size; ++i )
 	{
-		for (j=0; j<size; j++)
+		for( j=0; j<size; ++j )
 		{
-			/* /// DRAW NORMALS
-			glDisable( GL_LIGHTING );
-			glColor3f( 1, 0, 0 );
-			glBegin( GL_LINES );
-				glVertex3f( x, heights[ i*arraySize + j ], z );
-				glVertex3f( x, heights[ i*arraySize + j ]+0.5f, z );
-				glVertex3f( n[0], n[1], n[2] );
-			glEnd();
-			glEnable( GL_LIGHTING );
-			*/
-
 			n = terrain.GetUpperNormal( i, j );
 			glBegin( GL_TRIANGLES );
 				glNormal3f( n[0], n[1], n[2] );
@@ -563,6 +552,17 @@ void CMgrGraphics::DrawTerrain() const
 				glVertex3f( x+inc, heights[ ((i+1)*arraySize) + j ], z );
 				glVertex3f( x, heights[ (i*arraySize) + (j+1) ], z+inc );
 			glEnd();
+
+			/*/// DRAW NORMALS
+			glDisable( GL_LIGHTING );
+			glColor3f(0,1,0);
+			glBegin( GL_LINES );
+				glVertex3f( x, heights[ i*arraySize + j ], z );
+				glVertex3f( x, heights[ i*arraySize + j ]+0.5f, z );
+				glVertex3f( n[0], n[1], n[2] );
+			glEnd();
+			glEnable( GL_LIGHTING );
+			*/
 
 			z += inc;
 		}
@@ -581,7 +581,7 @@ void CMgrGraphics::PositionTerrain() const
 	glTranslatef( 0.0f, -terrain.GetViewHeight(), 0.0f );
 }
 
-// Draw sky (not including stars, sun, ///and moon)
+// Draw sky (not including stars and sun)
 void CMgrGraphics::DrawSky() const
 {
 	// Enable texture
@@ -631,7 +631,7 @@ void CMgrGraphics::DrawConstellations() const
 	glLineWidth(3);
 
 	// Draw each constellation
-	for( int i=0; i<starfield.GetConstCount(); i++ )
+	for( int i=0; i<starfield.GetConstCount(); ++i )
 	{
 		if( starfield.GetConst(i)->IsVisible() )
 		{
@@ -697,7 +697,7 @@ void CMgrGraphics::DrawStars() const
 	glBindTexture( GL_TEXTURE_2D, starTex );
 
 	// Go in reverse order so north star (star 0) is drawn last
-	for (int i=starfield.GetStarCount()-1; i>=0; i--)
+	for( int i=starfield.GetStarCount()-1; i>=0; --i )
 	{
 		CDataStar* star = starfield.GetStar(i);
 		// Check if in frustum
@@ -748,11 +748,11 @@ void CMgrGraphics::DrawStar( int i ) const
 // Draw the compass
 void CMgrGraphics::DrawCompass() const
 {
-	glEnable(GL_DEPTH_TEST);
+	glEnable( GL_DEPTH_TEST );
 	glDisable( GL_LINE_SMOOTH );
 
 	// Set up projection
-	glMatrixMode(GL_PROJECTION);
+	glMatrixMode( GL_PROJECTION );
 	glPushMatrix();
 
 	glLoadIdentity();
@@ -760,10 +760,10 @@ void CMgrGraphics::DrawCompass() const
 	// Set up the ortho view
 	//  horizontal dependant on vertical
 	float aspect = (float)width / (float)height;
-	glOrtho(-12*aspect, 12*aspect, -2, 22, -2,2);
+	glOrtho( -12*aspect, 12*aspect, -2, 22, -2,2 );
 
 
-	glMatrixMode(GL_MODELVIEW);
+	glMatrixMode( GL_MODELVIEW );
 
 	glLoadIdentity();
 	RotateXY();
@@ -771,11 +771,9 @@ void CMgrGraphics::DrawCompass() const
 	// Cross
 	glLineWidth(3);
 	SetColor( DEF_COMPASS_CROSSCOLOR );
-	glBegin(GL_LINES);
+	glBegin( GL_LINES );
 		glVertex3f ( 1.0f, 0.0f, 0.0f);
 		glVertex3f (-1.0f, 0.0f, 0.0f);
-		//glVertex3f ( 0.0f, 1.0f, 0.0f);
-		//glVertex3f ( 0.0f,-1.0f, 0.0f);
 		glVertex3f ( 0.0f, 0.0f, 1.0f);
 		glVertex3f ( 0.0f, 0.0f,-1.0f);
 	glEnd();
@@ -783,17 +781,17 @@ void CMgrGraphics::DrawCompass() const
 	// North Star Pointer
 	RotateLatitude();
 	SetColor( DEF_COMPASS_NEEDLECOLOR );
-	glBegin(GL_LINES);
+	glBegin( GL_LINES );
 		glVertex3f( 0.0f, 0.0f, 0.0f );
 		glVertex3f( 0.0f, 1.0f, 0.0f );
 	glEnd();
 
 	// Pop Projection Matrix
-	glMatrixMode(GL_PROJECTION);
+	glMatrixMode( GL_PROJECTION );
 	glPopMatrix();
 
 	// Switch back to Model View
-	glMatrixMode(GL_MODELVIEW);
+	glMatrixMode( GL_MODELVIEW );
 
 	glEnable( GL_LINE_SMOOTH );
 	glDisable( GL_DEPTH_TEST );
@@ -806,27 +804,27 @@ void CMgrGraphics::DrawCompass() const
 // Set up projection matrix with a perspective matrix
 void CMgrGraphics::Projection() const
 {
-    glMatrixMode(GL_PROJECTION);
+    glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
 
-	Perspective ();
+	Perspective();
 
-    glMatrixMode(GL_MODELVIEW);
+    glMatrixMode( GL_MODELVIEW );
 }
 
 // Apply perspective matrix
 void CMgrGraphics::Perspective() const
 {
-	float persp = (1 - starfield.GetZoom()) * 45;
+	float persp = ( 1 - starfield.GetZoom() ) * 45;
 
-	gluPerspective(persp,(float)width/(float)height,0.001f,10.0f);
+	gluPerspective( persp, (float)width / (float)height, 0.001f, 10.0f );
 }
 
 // Rotate viewing location of starfield
 void CMgrGraphics::RotateXY() const
 {
-	glRotatef (starfield.GetRotX(), 1.0f, 0.0f, 0.0f);
-	glRotatef (starfield.GetRotY(), 0.0f, 1.0f, 0.0f);
+	glRotatef( starfield.GetRotX(), 1.0f, 0.0f, 0.0f );
+	glRotatef( starfield.GetRotY(), 0.0f, 1.0f, 0.0f );
 }
 
 // Rotate the view due to latitude
@@ -838,6 +836,6 @@ void CMgrGraphics::RotateLatitude() const
 // Rotate the view due to time
 void CMgrGraphics::RotateTime() const
 {
-	glRotatef (starfield.GetRotTime(), 0.0f, 1.0f, 0.0f);
+	glRotatef( starfield.GetRotTime(), 0.0f, 1.0f, 0.0f );
 }
 

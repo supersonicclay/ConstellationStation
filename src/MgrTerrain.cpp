@@ -10,7 +10,7 @@
 #include "ConStation.h"
 #include "MgrTerrain.h"
 
-#include "DlgTerrain.h"
+#include "DlgOptionsTerr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -37,26 +37,43 @@ CMgrTerrain::~CMgrTerrain()
 // Generate a new terrain with the same settings
 void CMgrTerrain::New()
 {
-	terrain.MakeTerrain();
+	terrain.New();
+	starfield.SetModified();
 	Redraw();
 }
 
-// Open the terrain options dialog
+// Opens the terrain options dialog
 void CMgrTerrain::Options()
 {
 	if( starfield.IsSpinning() )
 		starfield.SwitchSpinning();
 
-	float r = terrain.GetRoughness();
-	color_s c = terrain.GetColor();
+	CDlgOptionsTerr dialog;
 
-	CDlgTerrain dialog( r, c );
+	if( dialog.DoModal() == IDOK )
+	{
+		// Change terrain settings
+		terrain.SetVisible( dialog.visible );
+		optionsMgr.SetTerrTextured( dialog.textured );
+		starfield.SetModified();
+	}
+	else
+	{
+		// Reset options
+		optionsMgr.SetTerrSeason( dialog.origSeason );
+		optionsMgr.SetTerrColor( dialog.origColor );
+		if( dialog.roughness != dialog.origRoughness )
+		{
+			optionsMgr.SetTerrRoughness( dialog.origRoughness / 100.0f );
+			terrain.New();
+		}
+	}
 
-	dialog.DoModal();
-
-	if( !dialog.needsUpdate )
-		return;
-
-	terrain.MakeTerrain();
 	Redraw();
+}
+
+// Toggles the terrain on and off
+void CMgrTerrain::Toggle()
+{
+	terrain.SwitchVisible(); Redraw();
 }

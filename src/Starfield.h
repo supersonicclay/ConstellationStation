@@ -20,9 +20,10 @@ DECLARE_SERIAL( CStarfield )
 
 // Construction / Destruction
 public:
-	CStarfield( BOOL actual=TRUE );
+	CStarfield();
 	~CStarfield();
 
+	void Clear();
 	void New( BOOL actual );
 	void InitRandomStars();
 	void InitActualStars();
@@ -33,15 +34,27 @@ public:
 
 // Attributes
 private:
+	// Stars
 	star_v stars;
+	long numStars;
+
+	// Constellations
 	constellation_v  constellations;
 	constellation_vi constellationsItor;
-
-	long numStars;
 	int numConstellations;
 	int numNewConstellations;
 	int numCurConstellation;
 
+	// Star options
+	BOOL starsVisible;
+	BOOL starsLabeled;
+	float limitingMag;
+
+	// Constellation options
+	BOOL constsVisible;
+	BOOL constsLabeled;
+
+	// Document
 	BOOL modified;
 
 	// Location & Time
@@ -60,19 +73,26 @@ private:
 	// Zoom
 	float zoom;
 
-
 // Methods
 public:
 
+	// Gets
 	CStar* GetStar( int i );
+	int GetNumStars();
+
 	CConstellation* GetConstellation( int i );
 	CConstellation* GetConstellation( CString &name );
 	CConstellation* GetCurConstellation();
-
-	int GetNumStars();
 	int GetNumConstellations();
 	int GetNumNewConstellations();
 	int GetNumCurConstellation();
+
+	BOOL AreStarsVisible();
+	BOOL AreStarsLabeled();
+	float GetLimitingMag();
+
+	BOOL AreConstsVisible();
+	BOOL AreConstsLabeled();
 
 	BOOL IsModified();
 
@@ -84,8 +104,20 @@ public:
 	float GetRotY();
 	float GetZoom();
 
+	// Sets
 	void IncNumNewConstellations();
 	void SetNumCurConstellation( int i );
+
+	void SwitchStarsVisible();
+	void SetStarsVisible( BOOL x );
+	void SwitchStarsLabeled();
+	void SetStarsLabeled( BOOL x );
+	void SetLimitingMag( float m );
+
+	void SwitchConstsVisible();
+	void SetConstsVisible( BOOL x );
+	void SwitchConstsLabeled();
+	void SetConstsLabeled( BOOL x );
 
 	void SetModified( BOOL m=TRUE );
 

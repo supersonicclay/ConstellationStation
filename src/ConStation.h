@@ -34,15 +34,10 @@ public:
 
 // Attributes
 protected:
-	OPENFILENAME ofn;
-	char filename[MAX_PATH];
-	char cwd[MAX_PATH];
-	char starfieldDir[MAX_PATH];
 
 
 // Methods
 public:
-	void InitOFN( BOOL saving );
 
 
 // Overrides
@@ -57,10 +52,6 @@ public:
 public:
 	//{{AFX_MSG(CConStationApp)
 	afx_msg void OnAppAbout();
-	afx_msg void OnStarfNewActual();
-	afx_msg void OnStarfNewRandom();
-	afx_msg void OnStarfOpen();
-	afx_msg void OnStarfSave();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

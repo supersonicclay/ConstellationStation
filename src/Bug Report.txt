@@ -45,5 +45,8 @@ Fixed		7-23-04			Message Box's aren't modal
 
 Fixed		7-25-04			New after save or open (save/open dlg was changing working dir)
 
+Fixed		7-30-04			Frustum culling
+
+Fixed		7-31-04			Color components were multiplied by 256 instead of 255
 
 

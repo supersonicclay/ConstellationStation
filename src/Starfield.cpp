@@ -24,18 +24,38 @@ const int MAX_STARS = 15000;/// Make changeable
 /////////////////////////////////////////////////////////////////////////////
 // Construction / Destruction
 
-CStarfield::CStarfield( BOOL actual )
+CStarfield::CStarfield()
 {
-	New( actual );
+	Clear();
 }
 
 CStarfield::~CStarfield()
 {
 }
 
-void CStarfield::New( BOOL actual )
+void CStarfield::Clear()
 {
 	modified = FALSE;
+
+	numStars = 0;
+	numConstellations = 0;
+	numNewConstellations = 0;
+	numCurConstellation = 0;
+
+	stars.clear();
+	constellations.clear();
+
+	rotX = 0.0f;
+	rotY = 0.0f;
+	zoom = 0.0f;
+	spinning = FALSE;
+
+	starsVisible = TRUE;
+	starsLabeled = FALSE;
+	limitingMag = 5.0f;
+
+	constsVisible = TRUE;
+	constsLabeled = TRUE;
 
 	// Time
 	time_t seconds = time(NULL);
@@ -44,24 +64,13 @@ void CStarfield::New( BOOL actual )
 ///	julian = 
 	rotTime = 0.0f;
 
-	/// Latitude & Longitude
-	rotLatitude = 70.0f;
+	// Latitude & Longitude
+	rotLatitude = 50.0f;
+}
 
-///	actual = false;///
-
-	// Viewing
-	spinning = FALSE;
-
-	rotX = 0.0f;
-	rotY = 0.0f;
-	zoom = 0.0f;
-
-	stars.clear();
-	constellations.clear();
-
-	numConstellations = 0;
-	numNewConstellations = 0;
-	numCurConstellation = 0;
+void CStarfield::New( BOOL actual )
+{
+	Clear();
 
 	if( actual )
 	{
@@ -192,28 +201,25 @@ void CStarfield::InitActualConstellations()
 /////////////////////////////////////////////////////////////////////////////
 // Gets
 
-CStar*	CStarfield::GetStar(int i)			{	return &stars[i];			}
-int		CStarfield::GetNumStars()			{	return numStars;			}
-int		CStarfield::GetNumConstellations()	{	return numConstellations;	}
-int		CStarfield::GetNumCurConstellation(){	return numCurConstellation;	}
-int		CStarfield::GetNumNewConstellations(){	return numNewConstellations;}
-BOOL	CStarfield::IsModified()			{	return modified;			}
-float	CStarfield::GetRotLatitude()		{	return rotLatitude;			}
-float	CStarfield::GetRotTime()			{	return rotTime;				}
-BOOL	CStarfield::IsSpinning()			{	return spinning;			}
-float	CStarfield::GetRotX()				{	return rotX;				}
-float	CStarfield::GetRotY()				{	return rotY;				}
-float	CStarfield::GetZoom()				{	return zoom;				}
-
-CConstellation*	CStarfield::GetConstellation(int i)
-{
-	return &constellations[i];
-}
-
-CConstellation*	CStarfield::GetCurConstellation()
-{
-	return &constellations[numCurConstellation];
-}
+CStar*			CStarfield::GetStar(int i)				{	return &stars[i];								}
+int				CStarfield::GetNumStars()				{	return numStars;								}
+CConstellation*	CStarfield::GetConstellation(int i)		{	return &constellations[i];						}
+CConstellation*	CStarfield::GetCurConstellation()		{	return &constellations[numCurConstellation];	}
+int				CStarfield::GetNumConstellations()		{	return numConstellations;						}
+int				CStarfield::GetNumCurConstellation()	{	return numCurConstellation;						}
+int				CStarfield::GetNumNewConstellations()	{	return numNewConstellations;					}
+BOOL			CStarfield::AreStarsVisible()			{	return starsVisible;							}
+BOOL			CStarfield::AreStarsLabeled()			{	return starsLabeled;							}
+float			CStarfield::GetLimitingMag()			{	return limitingMag;								}
+BOOL			CStarfield::AreConstsVisible()			{	return constsVisible;							}
+BOOL			CStarfield::AreConstsLabeled()			{	return constsLabeled;							}
+BOOL			CStarfield::IsModified()				{	return modified;								}
+float			CStarfield::GetRotLatitude()			{	return rotLatitude;								}
+float			CStarfield::GetRotTime()				{	return rotTime;									}
+BOOL			CStarfield::IsSpinning()				{	return spinning;								}
+float			CStarfield::GetRotX()					{	return rotX;									}
+float			CStarfield::GetRotY()					{	return rotY;									}
+float			CStarfield::GetZoom()					{	return zoom;									}
 
 // Find the constellation with the given name
 CConstellation*	CStarfield::GetConstellation( CString& name )
@@ -230,47 +236,32 @@ CConstellation*	CStarfield::GetConstellation( CString& name )
 /////////////////////////////////////////////////////////////////////////////
 // Sets
 
-void CStarfield::IncNumNewConstellations()
-{
-	numNewConstellations++;
-}
-
-void CStarfield::SetNumCurConstellation( int i )
-{
-	numCurConstellation = i;
-}
+void CStarfield::IncNumNewConstellations()				{	numNewConstellations++;			}
+void CStarfield::SetNumCurConstellation( int i )		{	numCurConstellation = i;		}
+void CStarfield::SwitchStarsVisible()					{	starsVisible = !starsVisible;	}
+void CStarfield::SetStarsVisible( BOOL x )				{	starsVisible = x;				}
+void CStarfield::SwitchStarsLabeled()					{	starsLabeled = !starsLabeled;	}
+void CStarfield::SetStarsLabeled( BOOL x )				{	starsLabeled = x;				}
+void CStarfield::SetLimitingMag( float m )				{	limitingMag = m;				}
+void CStarfield::SwitchConstsVisible()					{	constsVisible = !constsVisible;	}
+void CStarfield::SetConstsVisible( BOOL x )				{	constsVisible = x;				}
+void CStarfield::SwitchConstsLabeled()					{	constsLabeled = !constsLabeled;	}
+void CStarfield::SetConstsLabeled( BOOL x )				{	constsLabeled = x;				}
+void CStarfield::SetRotLatitude( float rotLatitude_ )	{	rotLatitude = rotLatitude_;		}
+void CStarfield::SetRotTime( float rotTime_ )			{	rotTime = rotTime_;				}
+void CStarfield::SwitchSpinning()						{	spinning = !spinning;			}
 
 void CStarfield::SetModified( BOOL m )
 {
-	modified = m;
+	modified = m; starfieldMgr.UpdateTitle();
 }
 
-void CStarfield::SetRotLatitude( float rotLatitude_ )
-{
-	rotLatitude = rotLatitude_;
-}
-
-void CStarfield::SetRotTime( float rotTime_ )
-{
-	rotTime = rotTime_;
-}
-
-void CStarfield::SwitchSpinning()
-{
-	spinning = !spinning;
-}
-
-void CStarfield::AdjRotTime(float deltaTime)
-{
-	rotTime += deltaTime;
-}
-
-void CStarfield::AdjRotX(float deltaRotX)
-{
+void CStarfield::AdjRotX( float deltaRotX )
+{	
 	// Restrict up and down rotation
 	float newRotX = rotX + deltaRotX;
 
-	if (newRotX > -90 && newRotX < 30)
+	if (newRotX > -90 && newRotX < 90) /// < 30
 		rotX = newRotX;
 }
 
@@ -285,7 +276,12 @@ void CStarfield::AdjRotY(float deltaRotY)
 		rotY -= 360.0f;
 }
 
-void CStarfield::AdjZoom(float deltaZoom)
+void CStarfield::AdjRotTime( float deltaTime )
+{
+	rotTime += deltaTime;
+}
+
+void CStarfield::AdjZoom( float deltaZoom )
 {
 	zoom += deltaZoom;
 }
@@ -391,7 +387,7 @@ BOOL CStarfield::SetCurConstellation( CString& name )
 		}
 	}
 
-	// Return false if name wasn't found
+	// Return FALSE if name wasn't found
 	return FALSE;
 }
 

@@ -27,7 +27,10 @@
 -------------------------------------------------
 
 0.2.0
-	
+	Working document architecture
+	Star, constellation and terrain option dialogs
+	Working color options
+	Revised terrain options (stored in CMgrOptions)
 
 
 -------------------------------------------------

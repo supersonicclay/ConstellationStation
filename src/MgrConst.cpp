@@ -12,6 +12,7 @@
 
 #include "DlgConstName.h"
 #include "DlgShowHide.h"
+#include "DlgOptionsConst.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -210,4 +211,34 @@ void CMgrConst::ShowHide()
 	starfield.SetModified();
 	SetState( state_Viewing );
 }
+
+// Opens the constellation options dialog
+void CMgrConst::Options()
+{
+	if( starfield.IsSpinning() )
+		starfield.SwitchSpinning();
+
+	CDlgOptionsConst dialog;
+	if( dialog.DoModal() == IDOK )
+	{
+		// Change constellation settings
+		starfield.SetConstsVisible( dialog.visible );
+		starfield.SetConstsLabeled( dialog.labeled );
+	}
+	else
+	{
+		// Reset colors (they are updated in realtime)
+		optionsMgr.SetConstNormColor( dialog.origNormColor );
+		optionsMgr.SetConstSelColor( dialog.origSelColor );
+		optionsMgr.SetConstActiveColor( dialog.origActiveColor );
+	}
+	Redraw();
+}
+
+// Toggles constellations on and off
+void CMgrConst::Toggle()
+{
+	starfield.SwitchConstsVisible(); Redraw();
+}
+
 

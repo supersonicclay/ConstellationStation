@@ -36,13 +36,13 @@ CMgrGraphics::~CMgrGraphics()
 void CMgrGraphics::Destroy() 
 {
 	//Make the RC non-current
-	if(wglMakeCurrent (0,0) == FALSE)
+	if( wglMakeCurrent(0,0) == FALSE )
 	{
 		CSError( "Could not make RC non-current", "CMgrGraphics::Destroy" );
 	}
 	
 	//Delete the RC
-	if(wglDeleteContext (hRC)==FALSE)
+	if( wglDeleteContext(hRC)==FALSE )
 	{
 		CSError("Could not delete RC", "CMgrGraphics::Destroy" );
 	}
@@ -51,7 +51,7 @@ void CMgrGraphics::Destroy()
 // Change the size of the viewport
 void CMgrGraphics::Size( int cx, int cy ) 
 {
-	if ( cx <= 0 || cy <= 0)
+	if( cx <= 0 || cy <= 0 )
 	{
 		return;
 	}
@@ -59,7 +59,7 @@ void CMgrGraphics::Size( int cx, int cy )
 	width = cx;
 	height = cy;
 
-	glViewport(0, 0, width, height);
+	glViewport( 0, 0, width, height );
 
 	Projection();
 }
@@ -125,8 +125,8 @@ BOOL CMgrGraphics::InitializeOpenGL()
 	glEnable( GL_LIGHT0 );
 
 	// Material
-	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-	glEnable(GL_COLOR_MATERIAL);
+	glColorMaterial( GL_FRONT, GL_AMBIENT_AND_DIFFUSE );
+	glEnable( GL_COLOR_MATERIAL );
 
 	return TRUE;
 }
@@ -187,7 +187,7 @@ void CMgrGraphics::SetColor( color_s c ) const
 /////////////////////////////////////////////////////////////////////////////
 // Textures
 
-// Load a TGA file and put its OpenGL id in texID. Returns true on success.
+// Load a TGA file and put its OpenGL id in texID. Returns TRUE on success.
 BOOL CMgrGraphics::LoadTGA( UINT &texID, char* filename )
 {
 	// Temporary texture for data storage
@@ -211,7 +211,7 @@ BOOL CMgrGraphics::LoadTGA( UINT &texID, char* filename )
 	GLuint		type=GL_RGBA;
 
 	// Open for binary reading
-	FILE *file = fopen(filename, "rb");
+	FILE *file = fopen( filename, "rb" );
 
 	if(	file==NULL ||
 		fread(fileHeader,1,sizeof(fileHeader),file)!=sizeof(fileHeader) ||	// Make sure the header is there
@@ -263,7 +263,7 @@ BOOL CMgrGraphics::LoadTGA( UINT &texID, char* filename )
 
 	// GL uses RGB, TGA uses BGR so we must swap Red and Blue
 	GLubyte temp;
-	for(GLuint i=0; i<int(imageSize); i+=bytesPerPixel)
+	for( GLuint i=0; i<int(imageSize); i+=bytesPerPixel )
 	{
 		temp=texture.data[i];
 		texture.data[i] = texture.data[i + 2];
@@ -272,18 +272,18 @@ BOOL CMgrGraphics::LoadTGA( UINT &texID, char* filename )
 
 	fclose (file);											// Close The File
 
-	glGenTextures(1, &texture.id);
+	glGenTextures( 1, &texture.id );
 
-	glBindTexture(GL_TEXTURE_2D, texture.id);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBindTexture( GL_TEXTURE_2D, texture.id );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );  /// Maybe lower?
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	
-	if (bitsPerPixel==24)
+	if( bitsPerPixel==24 )
 	{
 		type=GL_RGB;
 	}
 
-	glTexImage2D(GL_TEXTURE_2D, 0, type, texture.width, texture.height, 0, type, GL_UNSIGNED_BYTE, texture.data);
+	glTexImage2D( GL_TEXTURE_2D, 0, type, texture.width, texture.height, 0, type, GL_UNSIGNED_BYTE, texture.data );
 
 	texID = texture.id;
 
@@ -295,14 +295,14 @@ BOOL CMgrGraphics::LoadTGA( UINT &texID, char* filename )
 // Load all textures used by graphics manager
 BOOL CMgrGraphics::LoadTextures()
 {
-	if (!LoadTGA(starTex, "data/star.tga"))
+	if( !LoadTGA(starTex, "data/star.tga") )
 		return FALSE;
 
-	if (!LoadTGA(skyTex, "data/sky.tga"))
+	if( !LoadTGA(skyTex, "data/sky.tga") )
 		return FALSE;
 
-	glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
-	glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+	glTexGeni( GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP );
+	glTexGeni( GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP );
 
 	return TRUE;
 }
@@ -439,7 +439,7 @@ void CMgrGraphics::CalculateFrustum()
 BOOL CMgrGraphics::SphereInFrustum( float x, float y, float z, float radius ) const
 {
 	// Go through all the sides of the frustum
-	for(int i = 0; i < 6; i++ )	
+	for( int i = 0; i < 6; i++ )	
 	{
 		// If the center of the sphere is farther away from the plane than the radius
 		if( frustum[i][A] * x + frustum[i][B] * y + frustum[i][C] * z + frustum[i][D] <= -radius )
@@ -460,15 +460,37 @@ BOOL CMgrGraphics::SphereInFrustum( float x, float y, float z, float radius ) co
 // Main draw function
 void CMgrGraphics::Draw()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
+	// Get ready to draw sky objects
+	glLoadIdentity();
+	RotateXY();
+	RotateLatitude();
+	RotateTime();
 	CalculateFrustum();
 
+	// Draw sky objects
 ///	DrawSky();
-	DrawStarfield();
-	DrawSun();
-	DrawTerrain();
-	DrawHeading();
+	if( starfield.AreConstsVisible() )
+		DrawConstellations();
+	if( starfield.AreStarsVisible() )
+		DrawStars();
+///	if( starfield.IsSunVisible() )
+		DrawSun();
+
+	if( terrain.IsVisible() )
+	{
+		// Get ready to draw terrain
+		glLoadIdentity();
+		RotateXY();
+		PositionTerrain();
+
+		// Draw terrain
+		DrawTerrain();
+	}
+
+	// Draw heading indicator
+	DrawCompass();
 
 	SwapBuffers( hDC );
 }
@@ -478,11 +500,7 @@ void CMgrGraphics::DrawTerrain() const
 {
 	glEnable( GL_LIGHTING );
 
-	glLoadIdentity();
-	RotateXY();
-	PositionTerrain();
-
-	SetColor( terrain.GetColor() );
+	SetColor( optionsMgr.GetTerrColor() );
 
 	int i, j;
 	float x, z;
@@ -510,7 +528,7 @@ void CMgrGraphics::DrawTerrain() const
 			/* /// DRAW NORMALS
 			glDisable( GL_LIGHTING );
 			glColor3f( 1, 0, 0 );
-			glBegin(GL_LINES);
+			glBegin( GL_LINES );
 				glVertex3f( x, heights[ i*arraySize + j ], z );
 				glVertex3f( x, heights[ i*arraySize + j ]+0.5f, z );
 				glVertex3f( n[0], n[1], n[2] );
@@ -519,7 +537,7 @@ void CMgrGraphics::DrawTerrain() const
 			*/
 
 			n = terrain.GetUpperNormal( i, j );
-			glBegin(GL_TRIANGLES);
+			glBegin( GL_TRIANGLES );
 				glNormal3f( n[0], n[1], n[2] );
 				glVertex3f( x, heights[ (i*arraySize) + j ], z );
 				glVertex3f( x, heights[ (i*arraySize) + (j+1) ], z+inc );
@@ -527,7 +545,7 @@ void CMgrGraphics::DrawTerrain() const
 			glEnd();
 
 			n = terrain.GetLowerNormal( i, j );
-			glBegin(GL_TRIANGLES);
+			glBegin( GL_TRIANGLES );
 				glNormal3f( n[0], n[1], n[2] );
 				glVertex3f( x+inc, heights[ ((i+1)*arraySize) + (j+1) ], z+inc );
 				glVertex3f( x+inc, heights[ ((i+1)*arraySize) + j ], z );
@@ -565,7 +583,7 @@ void CMgrGraphics::DrawSky() const
 	glBindTexture( GL_TEXTURE_2D, skyTex );
 
 	// Draw sky background
-	SetColor( COLOR_SKY );
+	SetColor( COLOR_DARKBLUE );
 	gluSphere( skySphere, 1.0f, 20, 5 );
 
 	glDisable( GL_TEXTURE_2D );
@@ -582,7 +600,7 @@ void CMgrGraphics::DrawSun() const
 	glTranslatef( 0.0f, 0.0f,-1.0f );
 
 	// Sun Sphere
-	SetColor( COLOR_SUN );
+	SetColor( COLOR_WHITE );
 	gluSphere( sunSphere, 0.02f, 15, 2 );
 
 	/// LIGHTING NEEDS WORK
@@ -601,53 +619,59 @@ void CMgrGraphics::DrawSun() const
 
 }
 
-// Draw all stars
-void CMgrGraphics::DrawStarfield() const
-{
-	// Rotation and Zooming done in these functions
-
-	DrawConstellations();
-
-	DrawStars();
-}
-
 // Draw all constellations
 void CMgrGraphics::DrawConstellations() const
 {
 	glLineWidth(3);
-	SetColor(COLOR_CONSTLINE);
 
 	// Draw each constellation
-	for (int i=0; i<starfield.GetNumConstellations(); i++)
+	for( int i=0; i<starfield.GetNumConstellations(); i++ )
 	{
-		if (starfield.GetConstellation(i)->IsVisible())
+		if( starfield.GetConstellation(i)->IsVisible() )
 			DrawConstellation(i);
 	}
 }
 
 // Draw constellation i
-void CMgrGraphics::DrawConstellation(int i) const
+void CMgrGraphics::DrawConstellation( int i ) const
 {
-	glLoadIdentity();
-
-	RotateXY();
-	RotateLatitude();
-	RotateTime();
-
 	CConstellation* curConstellation = starfield.GetConstellation(i);
 	int numLines = curConstellation->GetNumLines();
 
 	float x1, y1, z1, x2, y2, z2;
 
-	for (int j=0; j<numLines; j++)
+	// Draw new (proposed) line
+	SetColor( optionsMgr.GetConstActiveColor() );
+	if( curConstellation->GetNewLine()->GetStar2() != -1 )
 	{
-		glPushName(j);
-		x1 = curConstellation->GetLine(j)->GetX1();
-		y1 = curConstellation->GetLine(j)->GetY1();
-		z1 = curConstellation->GetLine(j)->GetZ1();
-		x2 = curConstellation->GetLine(j)->GetX2();
-		y2 = curConstellation->GetLine(j)->GetY2();
-		z2 = curConstellation->GetLine(j)->GetZ2();
+		x1 = curConstellation->GetNewLine()->GetX1();
+		y1 = curConstellation->GetNewLine()->GetY1();
+		z1 = curConstellation->GetNewLine()->GetZ1();
+		x2 = curConstellation->GetNewLine()->GetX2();
+		y2 = curConstellation->GetNewLine()->GetY2();
+		z2 = curConstellation->GetNewLine()->GetZ2();
+		glBegin( GL_LINES );
+			glVertex3f( x1, y1, z1 );
+			glVertex3f( x2, y2, z2 );
+		glEnd();
+	}
+
+	// Set color for the rest of the lines
+	if( i == starfield.GetNumCurConstellation() )
+		SetColor( optionsMgr.GetConstSelColor() );
+	else
+		SetColor( optionsMgr.GetConstNormColor() );
+
+	// Draw constellation lines
+	for( int lineIndex=0; lineIndex<numLines; lineIndex++ )
+	{
+		glPushName(lineIndex);
+		x1 = curConstellation->GetLine(lineIndex)->GetX1();
+		y1 = curConstellation->GetLine(lineIndex)->GetY1();
+		z1 = curConstellation->GetLine(lineIndex)->GetZ1();
+		x2 = curConstellation->GetLine(lineIndex)->GetX2();
+		y2 = curConstellation->GetLine(lineIndex)->GetY2();
+		z2 = curConstellation->GetLine(lineIndex)->GetZ2();
 		glBegin(GL_LINES);
 			glVertex3f (x1, y1, z1);
 			glVertex3f (x2, y2, z2);
@@ -659,12 +683,6 @@ void CMgrGraphics::DrawConstellation(int i) const
 // Draw all stars
 void CMgrGraphics::DrawStars() const
 {
-	glLoadIdentity();
-	
-	RotateXY();
-	RotateLatitude();
-	RotateTime();
-
 	glEnable( GL_TEXTURE_2D );
 	glEnable( GL_BLEND );
 
@@ -674,7 +692,7 @@ void CMgrGraphics::DrawStars() const
 	for (int i=starfield.GetNumStars()-1; i>=0; i--)
 	{
 		CStar* star = starfield.GetStar(i);
-		/// Check if in frustum
+		// Check if in frustum
 		if( SphereInFrustum( star->GetX(), star->GetY(), star->GetZ(), star->GetRadius() ) )
 		{
 			glPushName( i+1 );
@@ -688,37 +706,15 @@ void CMgrGraphics::DrawStars() const
 }
 
 // Draw star i
-void CMgrGraphics::DrawStar(int i) const
+void CMgrGraphics::DrawStar( int i ) const
 {
 	CStar* curStar = starfield.GetStar(i);
-	color_s color;
-
-	bool active = false;
-
-	// Determine if this star is active (part of the current constellation)
-	if (starfield.GetNumConstellations() > 0)
-	{
-		for (int lineIndex=0; lineIndex < starfield.GetCurConstellation()->GetNumLines(); lineIndex++)
-		{
-			if (i == starfield.GetCurConstellation()->GetLine(lineIndex)->GetStar1() ||
-				i == starfield.GetCurConstellation()->GetLine(lineIndex)->GetStar2())
-			{
-				active = true;
-				break;
-			}
-		}
-	}
-
-	if (active)
-		color = COLOR_ACTIVESTAR;
-	else
-		color = curStar->GetColor();
 
 	// Push matrix so quad rotation doesn't affect anything
 	glPushMatrix();
 
-	// Now we're ready to draw the star
-	SetColor( color );
+	// Get ready to draw the star
+	SetColor( curStar->GetColor() );
 
 	glRotatef( curStar->GetTheta(),  0.0f, 1.0f, 0.0f );
 	glRotatef( curStar->GetPhi(), 1.0f, 0.0f, 0.0f );
@@ -737,8 +733,8 @@ void CMgrGraphics::DrawStar(int i) const
 	glPopMatrix();
 }
 
-// Draw the heading indicator
-void CMgrGraphics::DrawHeading() const
+// Draw the compass
+void CMgrGraphics::DrawCompass() const
 {
 	glEnable(GL_DEPTH_TEST);
 	glDisable( GL_LINE_SMOOTH );
@@ -762,7 +758,7 @@ void CMgrGraphics::DrawHeading() const
 
 	// Cross
 	glLineWidth(3);
-	SetColor( COLOR_CROSS );
+	SetColor( optionsMgr.GetCompassColor() );
 	glBegin(GL_LINES);
 		glVertex3f ( 1.0f, 0.0f, 0.0f);
 		glVertex3f (-1.0f, 0.0f, 0.0f);

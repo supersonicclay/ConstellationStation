@@ -186,3 +186,6 @@ BOOL CConStationView::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 
 
 
+
+
+

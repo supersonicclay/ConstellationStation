@@ -34,7 +34,11 @@ public:
 	void ShowAll();
 	void ShowHide();
 
-	// Destruction
+	void Options();
+	void Toggle();
+
+
+// Destruction
 public:
 	~CMgrConst();
 

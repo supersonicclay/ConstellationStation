@@ -2,7 +2,7 @@
 // Terrain.cpp
 //
 // CTerrain
-//   contains height information, roughness settings, and surface texture.
+//   contains heights and surface texture.
 //===========================================================================
 
 
@@ -13,63 +13,68 @@
 IMPLEMENT_SERIAL( CTerrain, CObject, 1 )
 
 
-const float DEF_ROUGHNESS = 0.2f;
-const color_s DEF_COLOR = {0.1f, 0.2f, 0.1f};
-
-
 /////////////////////////////////////////////////////////////////////////////
 // Construction / Destruction
 
-CTerrain::CTerrain( float r, color_s c )
+CTerrain::CTerrain()
 {
 	heights = upperNormals = lowerNormals = NULL;	/// UGLY!
 
-	New( r, c );
+	scale = 1;
+	iterations = 2;
+
+	Clear();
 }
 
 CTerrain::~CTerrain()
 {
+	/// UGLY!
 	delete[] heights;
 	delete[] upperNormals;
 	delete[] lowerNormals;
 }
 
-void CTerrain::New( float r, color_s c )
+void CTerrain::Clear()
 {
-	scale = 1;
-	iterations = 2;
-	roughness = r;
-	color = c;
-	viewHeight = 0.0f;
-
-	size = (int)pow(2, iterations);
-
-	arraySize = size + 1;
-
 	/// UGLY!
 	delete[] heights;
 	delete[] upperNormals;
 	delete[] lowerNormals;
 
-	heights = new float[arraySize * arraySize];
+	size = arraySize = 0;
 
+	visible = TRUE;
+
+	viewHeight = 0.0f;
+}
+
+void CTerrain::New()
+{
+	Clear();
+
+	size = (int)pow(2, iterations);
+
+	arraySize = size + 1;
+
+
+	heights = new float[arraySize * arraySize];
 	upperNormals = new float[ size*size*3 ];
 	lowerNormals = new float[ size*size*3 ];
 
 	MakeTerrain();
 }
 
+
 /////////////////////////////////////////////////////////////////////////////
 // Gets
 
-float*	CTerrain::GetHeights()		{	return heights;		}
-int		CTerrain::GetArraySize()	{	return arraySize;	}
-float	CTerrain::GetScale()		{	return scale;		}
-int		CTerrain::GetIterations()	{	return iterations;	}
-float	CTerrain::GetRoughness()	{	return roughness;	}
-int		CTerrain::GetSize()			{	return size;		}
-color_s	CTerrain::GetColor()		{	return color;		}
-float	CTerrain::GetViewHeight()	{	return viewHeight;	}
+float*		CTerrain::GetHeights()		{	return heights;		}
+int			CTerrain::GetArraySize()	{	return arraySize;	}
+int			CTerrain::GetSize()			{	return size;		}
+BOOL		CTerrain::IsVisible()		{	return visible;		}
+float		CTerrain::GetScale()		{	return scale;		}
+int			CTerrain::GetIterations()	{	return iterations;	}
+float		CTerrain::GetViewHeight()	{	return viewHeight;	}
 
 float CTerrain::GetHeight( int i, int j )
 {
@@ -90,17 +95,8 @@ float* CTerrain::GetLowerNormal( int i, int j )
 /////////////////////////////////////////////////////////////////////////////
 // Sets
 
-void CTerrain::SetRoughness( float r )
-{
-	roughness = r;
-
-	MakeTerrain();
-}
-
-void CTerrain::SetColor( color_s color_ )
-{
-	color = color_;
-}
+void CTerrain::SwitchVisible()			{	visible = !visible;	}
+void CTerrain::SetVisible( BOOL x )		{	visible = x;		}
 
 void CTerrain::SetUpperNormal( int i, int j, float* n )
 {
@@ -122,6 +118,8 @@ void CTerrain::SetLowerNormal( int i, int j, float* n )
 
 void CTerrain::MakeTerrain()
 {
+	float roughness = optionsMgr.GetTerrRoughness();
+
 	int i, j;
 	float range;
 	int midSize;

@@ -95,6 +95,14 @@ LINK32=link.exe
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\BarConst.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\BarStarf.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ConStation.cpp
 # End Source File
 # Begin Source File
@@ -115,39 +123,6 @@ SOURCE=.\Global.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\MgrBlank.cpp
-# PROP Exclude_From_Build 1
-# End Source File
-# Begin Source File
-
-SOURCE=.\MgrConst.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\MgrGraphics.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\MgrInput.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\MgrOptions.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\MgrStarf.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\MgrTeacher.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\MgrTerrain.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\StdAfx.cpp
 # ADD CPP /Yc"stdafx.h"
 # End Source File
@@ -155,14 +130,6 @@ SOURCE=.\StdAfx.cpp
 # Begin Group "Dialog Source Files"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\BarConst.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\BarStarf.cpp
-# End Source File
 # Begin Source File
 
 SOURCE=.\DlgConstName.cpp
@@ -173,11 +140,27 @@ SOURCE=.\DlgLocation.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\DlgOptionsConst.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\DlgOptionsGeneral.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\DlgOptionsStar.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\DlgOptionsTerr.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\DlgShowHide.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\DlgTerrain.cpp
+SOURCE=.\DlgTime.cpp
 # End Source File
 # End Group
 # Begin Group "Data Source Files"
@@ -204,6 +187,47 @@ SOURCE=.\Starfield.cpp
 SOURCE=.\Terrain.cpp
 # End Source File
 # End Group
+# Begin Group "Mgr Source Files"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\MgrBlank.cpp
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrConst.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrGraphics.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrInput.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrOptions.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrStarfield.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrStars.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrTeacher.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrTerrain.cpp
+# End Source File
+# End Group
 # End Group
 # Begin Group "Header Files"
 
@@ -211,6 +235,14 @@ SOURCE=.\Terrain.cpp
 # Begin Group "Main Header Files"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\BarConst.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\BarStarf.h
+# End Source File
 # Begin Source File
 
 SOURCE=.\ConStation.h
@@ -229,39 +261,6 @@ SOURCE=.\Global.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\MgrBlank.h
-# PROP Exclude_From_Build 1
-# End Source File
-# Begin Source File
-
-SOURCE=.\MgrConst.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\MgrGraphics.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\MgrInput.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\MgrOptions.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\MgrStarf.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\MgrTeacher.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\MgrTerrain.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\resource.h
 # End Source File
 # Begin Source File
@@ -274,14 +273,6 @@ SOURCE=.\StdAfx.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\BarConst.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\BarStarf.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\DlgConstName.h
 # End Source File
 # Begin Source File
@@ -290,11 +281,27 @@ SOURCE=.\DlgLocation.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\DlgOptionsConst.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\DlgOptionsGeneral.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\DlgOptionsStar.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\DlgOptionsTerr.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\DlgShowHide.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\DlgTerrain.h
+SOURCE=.\DlgTime.h
 # End Source File
 # End Group
 # Begin Group "Data Header Files"
@@ -319,6 +326,47 @@ SOURCE=.\Starfield.h
 # Begin Source File
 
 SOURCE=.\Terrain.h
+# End Source File
+# End Group
+# Begin Group "Mgr Header Files"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\MgrBlank.h
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrConst.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrGraphics.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrInput.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrOptions.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrStarfield.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrStars.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrTeacher.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MgrTerrain.h
 # End Source File
 # End Group
 # End Group

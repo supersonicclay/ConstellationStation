@@ -2,7 +2,7 @@
 // ConStationFrame.h
 //
 // CConStationFrame
-///   contains all toolbars and dialogs. Forwards commands.
+//   handles (forwards) most non-view related commands and messages
 //===========================================================================
 
 #ifndef CS_CONSTATIONFRAME_H
@@ -62,6 +62,14 @@ protected:
 	//{{AFX_MSG(CConStationFrame)
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
+	afx_msg void OnClose();
+	afx_msg void OnStarfNewActual();
+	afx_msg void OnStarfNewRandom();
+	afx_msg void OnStarfOpen();
+	afx_msg void OnStarfSave();
+	afx_msg void OnStarfSaveAs();
+	afx_msg void OnStarfRotate();
+	afx_msg void OnStarsToggle();
 	afx_msg void OnConstAdd();
 	afx_msg void OnConstDelete();
 	afx_msg void OnConstRename();
@@ -71,10 +79,17 @@ protected:
 	afx_msg void OnConstShowHide();
 	afx_msg void OnConstHideAll();
 	afx_msg void OnConstShowAll();
-	afx_msg void OnStarfRotate();
-	afx_msg void OnTerrainNew();
-	afx_msg void OnOptionsTerrain();
+	afx_msg void OnConstToggle();
+	afx_msg void OnTerrNew();
+	afx_msg void OnTerrToggle();
+	afx_msg void OnOptionsTime();
 	afx_msg void OnOptionsLocation();
+	afx_msg void OnOptionsStar();
+	afx_msg void OnOptionsConst();
+	afx_msg void OnOptionsTerr();
+	afx_msg void OnOptionsGeneral();
+	afx_msg void OnUpdateStarfRotate(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateStarsToggle(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateConstList(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateConstAdd(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateConstDelete(CCmdUI* pCmdUI);
@@ -82,11 +97,11 @@ protected:
 	afx_msg void OnUpdateConstHide(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateConstAddLine(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateConstDeleteLine(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateStarfRotate(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateConstHideAll(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateConstShowAll(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateConstShowHide(CCmdUI* pCmdUI);
-	afx_msg void OnOptionsTime();
+	afx_msg void OnUpdateConstToggle(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateTerrToggle(CCmdUI* pCmdUI);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

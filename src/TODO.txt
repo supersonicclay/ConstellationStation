@@ -1,56 +1,71 @@
+
+CONSTELLATION STATION - YOU Make the Night Sky!
+------------------------------------------------
+
 PHASES
 1	Bugs, Code organization, cleanup, saving
-2	Options, UI
-3	Graphics optimization, selecting
-4	Pretty graphics
+2	Options, UI, terrain cleaning
+3	Graphics optimization, selecting, random starfield
+4	Pretty graphics, text
 5	Features (tests, actual)
 
 
 BUGS
-	3	Stars aren't drawn at first
-	5	Program Icon
+-	2	Roundoff error with sliders
+	3	Random starfield is blank
+	3	select line isn't checking for terrain hits
+	5	Program Icon  (WM_SETICON)
 
 GENERAL
-	1	Read-through cleaning
-		1	Sanity checks
-	2	Document name in title bar
-	2	Don't ask for save so much with actual
+-	1	Read-through cleaning
+		- terrain
+-	1	Sanity checks
+-	2	Splash Screen
+-	2	Need star colors again
+	3	Spin sun separately
 	5	Undo
 	5	Print
 
 OPTIONS
-	2	Load on startup
-	2	terrain on/off
-	2	colors
-	2	number of stars
-	2	brighness / gamma
-	4	toggle constellation lables
+-	2	sun options
+-	2	compass options
+-	2	colors (terrain seasons)
+-	2	Load on startup
+	3	number of stars
+	3	textured stars
+	3	brighness / gamma
+	4	constellation labels
+	4	star names
+	5	home location
 
 INPUT MGR
-	2	Keep Mouse in place while rotating
-	2	Drag lines (? on/off option ?)
-		- Make temp line in CConstellation
-	3	Cant select seven sisters
-		-	If more than 1 hit, shrink quad size and repeat
-	3	Select ConstLine to select constellation
+-	2	Double click to select constellation
+-	2	Keep Mouse in place while rotating
 
 GRAPHICS MGR
+	3	Draw mouse-overed line different color
 	3	Improve 3D math.
-	3	Correct Frustum Culling
+	3	Implement brightness and contrast
 	3	Make small stars points, not quads
-	3	Put quad size in star
 	3	Hide dim stars when zoomed out
 	3	Show dim stars when zoomed in
 	3	Bright are too bright. Dim are too dim
+	3	Lighting is shining through
+	3?	Lower texture quality
 	4	Print Constellation Name near constellation
+	4	Heading indicator needs work.
+		- Do it like Starry Night?
+	5	Celestial Grid
 
 CONSTELLATION MGR
-	2	Show just current constellation (solo)
-	4	Input actual constellations
+	5	Input actual constellations
 	5	Constellation details
 
 STARFIELD MGR
-	2	New actual without constellations?
+-	2	New actual without constellations?
+-	2	Don't ask for save so much with actual
+	3	Implement limiting magnitude
+	3?	Prompt for seed with random stars
 	5	Choose date
 	5	Choose time
 	5	Choose location (lat & long)
@@ -61,7 +76,8 @@ STARFIELD MGR
 	5	Precession?
 
 TERRAIN MGR
-	2?	vectors
+-	2	Same seed for all roughnesses until generate new
+-	2?	vectors
 	4	Textured terrain
 
 TEACHER MGR

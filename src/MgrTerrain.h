@@ -25,6 +25,7 @@ public:
 
 	void New();
 	void Options();
+	void Toggle();
 
 
 // Destruction

@@ -31,7 +31,6 @@ CDlgShowHide::CDlgShowHide(CWnd* pParent /*=NULL*/)
 
 CDlgShowHide::~CDlgShowHide()
 {
-///	delete[] constellations;
 }
 
 
@@ -45,7 +44,7 @@ void CDlgShowHide::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CDlgShowHide, CDialog)
 	//{{AFX_MSG_MAP(CDlgShowHide)
-	ON_LBN_SELCHANGE(IDC_CONST_LIST, OnSelchangeConstList)
+	ON_LBN_SELCHANGE(IDC_CONST_LIST, OnSelChange)
 	ON_BN_CLICKED(IDC_SHOWALL, OnShowAll)
 	ON_BN_CLICKED(IDC_HIDEALL, OnHideAll)
 	ON_BN_CLICKED(IDC_INVERT, OnInvert)
@@ -84,7 +83,7 @@ BOOL CDlgShowHide::OnInitDialog()
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void CDlgShowHide::OnSelchangeConstList() 
+void CDlgShowHide::OnSelChange() 
 {
 	for (int i=0; i<starfield.GetNumConstellations(); i++)
 	{
@@ -103,7 +102,7 @@ void CDlgShowHide::OnShowAll()
 	}
 
 	// Update
-	OnSelchangeConstList();
+	OnSelChange();
 }
 
 void CDlgShowHide::OnHideAll() 
@@ -114,7 +113,7 @@ void CDlgShowHide::OnHideAll()
 	}
 
 	// Update
-	OnSelchangeConstList();
+	OnSelChange();
 }
 
 void CDlgShowHide::OnInvert() 
@@ -128,5 +127,5 @@ void CDlgShowHide::OnInvert()
 	}
 
 	// Update
-	OnSelchangeConstList();
+	OnSelChange();
 }

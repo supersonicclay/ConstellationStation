@@ -41,7 +41,6 @@ protected:
 
 	// Generated message map functions
 	//{{AFX_MSG(CDlgConstName)
-	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

@@ -1,42 +1,41 @@
 //===========================================================================
-// DlgTerrain.h
 //
-// CDlgTerrain
-//   terrain dialog
+//
 //===========================================================================
 
-#ifndef CS_DLGTERRAIN_H
-#define CS_DLGTERRAIN_H
+#ifndef CS_DLGOPTIONSCONST_H
+#define CS_DLGOPTIONSCONST_H
 
-
-#include "Terrain.h"
 
 /////////////////////////////////////////////////////////////////////////////
-// CDlgTerrain dialog
+// CDlgOptionsConst dialog
 
-class CDlgTerrain : public CDialog
+class CDlgOptionsConst : public CDialog
 {
+// Construction
 public:
-	CDlgTerrain( float roughness_, color_s color_, CWnd* pParent = NULL );
+	CDlgOptionsConst(CWnd* pParent = NULL);   // standard constructor
 
 // Dialog Data
-	//{{AFX_DATA(CDlgTerrain)
-	enum { IDD = IDD_TERRAIN };
+	//{{AFX_DATA(CDlgOptionsConst)
+	enum { IDD = IDD_OPTIONS_CONST };
+	BOOL	visible;
+	BOOL	labeled;
 	//}}AFX_DATA
 
-	int		roughness;
-	color_s color;
+	color_s normColor;
+	color_s selColor;
+	color_s activeColor;
+	color_s origNormColor;
+	color_s origSelColor;
+	color_s origActiveColor;
 
-	CSliderCtrl	roughnessSlider;
-	CString	roughnessTxt;
-
-	BOOL needsUpdate;
-	int lastRoughness;
-
+	// Color preview brush
+	CBrush colorBrush;
 
 // Overrides
 	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CDlgTerrain)
+	//{{AFX_VIRTUAL(CDlgOptionsConst)
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
@@ -45,18 +44,16 @@ public:
 protected:
 
 	// Generated message map functions
-	//{{AFX_MSG(CDlgTerrain)
+	//{{AFX_MSG(CDlgOptionsConst)
 	virtual BOOL OnInitDialog();
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	afx_msg void OnNewTerrain();
-	afx_msg void OnColor();
+	afx_msg void OnConstNormColor();
+	afx_msg void OnConstSelColor();
+	afx_msg void OnConstActiveColor();
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
 
-
-
-/////////////////////////////////////////////////////////////////////////////
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 

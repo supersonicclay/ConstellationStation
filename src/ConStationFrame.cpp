@@ -2,7 +2,7 @@
 // ConStationFrame.cpp
 //
 // CConStationFrame
-///   contains all toolbars and dialogs. Forwards commands.
+//   handles (forwards) most non-view related commands and messages
 //===========================================================================
 
 #include "stdafx.h"
@@ -22,6 +22,14 @@ BEGIN_MESSAGE_MAP(CConStationFrame, CFrameWnd)
 	//{{AFX_MSG_MAP(CConStationFrame)
 	ON_WM_CREATE()
 	ON_WM_SETFOCUS()
+	ON_WM_CLOSE()
+	ON_COMMAND(ID_STARF_NEWACTUAL, OnStarfNewActual)
+	ON_COMMAND(ID_STARF_NEWRANDOM, OnStarfNewRandom)
+	ON_COMMAND(ID_STARF_OPEN, OnStarfOpen)
+	ON_COMMAND(ID_STARF_SAVE, OnStarfSave)
+	ON_COMMAND(ID_STARF_SAVEAS, OnStarfSaveAs)
+	ON_COMMAND(ID_STARF_ROTATE, OnStarfRotate)
+	ON_COMMAND(ID_STARS_TOGGLE, OnStarsToggle)
 	ON_COMMAND(ID_CONST_ADD, OnConstAdd)
 	ON_COMMAND(ID_CONST_DELETE, OnConstDelete)
 	ON_COMMAND(ID_CONST_RENAME, OnConstRename)
@@ -31,10 +39,17 @@ BEGIN_MESSAGE_MAP(CConStationFrame, CFrameWnd)
 	ON_COMMAND(ID_CONST_SHOWHIDE, OnConstShowHide)
 	ON_COMMAND(ID_CONST_HIDEALL, OnConstHideAll)
 	ON_COMMAND(ID_CONST_SHOWALL, OnConstShowAll)
-	ON_COMMAND(ID_STARF_ROTATE, OnStarfRotate)
-	ON_COMMAND(ID_TERR_NEW, OnTerrainNew)
-	ON_COMMAND(ID_OPTIONS_TERRAIN, OnOptionsTerrain)
+	ON_COMMAND(ID_CONST_TOGGLE, OnConstToggle)
+	ON_COMMAND(ID_TERR_NEW, OnTerrNew)
+	ON_COMMAND(ID_TERR_TOGGLE, OnTerrToggle)
+	ON_COMMAND(ID_OPTIONS_TIME, OnOptionsTime)
 	ON_COMMAND(ID_OPTIONS_LOCATION, OnOptionsLocation)
+	ON_COMMAND(ID_OPTIONS_STAR, OnOptionsStar)
+	ON_COMMAND(ID_OPTIONS_CONST, OnOptionsConst)
+	ON_COMMAND(ID_OPTIONS_TERR, OnOptionsTerr)
+	ON_COMMAND(ID_OPTIONS_GENERAL, OnOptionsGeneral)
+	ON_UPDATE_COMMAND_UI(ID_STARF_ROTATE, OnUpdateStarfRotate)
+	ON_UPDATE_COMMAND_UI(ID_STARS_TOGGLE, OnUpdateStarsToggle)
 	ON_UPDATE_COMMAND_UI(ID_CONST_LIST, OnUpdateConstList)
 	ON_UPDATE_COMMAND_UI(ID_CONST_ADD, OnUpdateConstAdd)
 	ON_UPDATE_COMMAND_UI(ID_CONST_DELETE, OnUpdateConstDelete)
@@ -42,20 +57,17 @@ BEGIN_MESSAGE_MAP(CConStationFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_CONST_HIDE, OnUpdateConstHide)
 	ON_UPDATE_COMMAND_UI(ID_CONST_ALINE, OnUpdateConstAddLine)
 	ON_UPDATE_COMMAND_UI(ID_CONST_DLINE, OnUpdateConstDeleteLine)
-	ON_UPDATE_COMMAND_UI(ID_STARF_ROTATE, OnUpdateStarfRotate)
+	ON_UPDATE_COMMAND_UI(ID_CONST_TOGGLE, OnUpdateConstToggle)
 	ON_UPDATE_COMMAND_UI(ID_CONST_HIDEALL, OnUpdateConstHideAll)
 	ON_UPDATE_COMMAND_UI(ID_CONST_SHOWALL, OnUpdateConstShowAll)
 	ON_UPDATE_COMMAND_UI(ID_CONST_SHOWHIDE, OnUpdateConstShowHide)
-	ON_COMMAND(ID_OPTIONS_TIME, OnOptionsTime)
+	ON_UPDATE_COMMAND_UI(ID_TERR_TOGGLE, OnUpdateTerrToggle)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 static UINT indicators[] =
 {
-	ID_SEPARATOR,           // status line indicator
-//	ID_INDICATOR_CAPS,
-//	ID_INDICATOR_NUM,
-//	ID_INDICATOR_SCRL,
+	ID_SEPARATOR
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -164,6 +176,13 @@ BOOL CConStationFrame::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLE
 	return CFrameWnd::OnCmdMsg(nID, nCode, pExtra, pHandlerInfo);
 }
 
+void CConStationFrame::OnClose() 
+{
+	if( starfieldMgr.CheckModified() == IDCANCEL )
+		return;
+
+	CFrameWnd::OnClose();
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Gets
@@ -187,28 +206,52 @@ CBarStarf* CConStationFrame::GetStarfBar()
 /////////////////////////////////////////////////////////////////////////////
 // CConStationFrame message handlers
 
-// Constellation commands
-void CConStationFrame::OnConstAdd()			{	constMgr.Add();		}
-void CConStationFrame::OnConstDelete()		{	constMgr.Delete();		}
-void CConStationFrame::OnConstRename()		{	constMgr.Rename();		}
-void CConStationFrame::OnConstHide()		{	constMgr.Hide();		}
-void CConStationFrame::OnConstAddLine()		{	constMgr.AddLine();	}
-void CConStationFrame::OnConstDeleteLine()	{	constMgr.DeleteLine();	}
-void CConStationFrame::OnConstShowHide()	{	constMgr.ShowHide();	}
-void CConStationFrame::OnConstHideAll()		{	constMgr.HideAll();	}
-void CConStationFrame::OnConstShowAll()		{	constMgr.ShowAll();	}
-
 // Starfield commands
-void CConStationFrame::OnStarfRotate()		{	starfMgr.Rotate();		}
-void CConStationFrame::OnOptionsLocation()	{	starfMgr.Location();	}
-void CConStationFrame::OnOptionsTime()		{	starfMgr.Time();		}
+void CConStationFrame::OnStarfNewActual()	{	starfieldMgr.NewActual();	}
+void CConStationFrame::OnStarfNewRandom()	{	starfieldMgr.NewRandom();	}
+void CConStationFrame::OnStarfOpen()		{	starfieldMgr.Open();		}
+void CConStationFrame::OnStarfSave()		{	starfieldMgr.Save();		}
+void CConStationFrame::OnStarfSaveAs()		{	starfieldMgr.SaveAs();		}
+void CConStationFrame::OnStarfRotate()		{	starfieldMgr.Rotate();		}
+
+// Star commands
+void CConStationFrame::OnStarsToggle()		{	starsMgr.Toggle();			}
+
+// Constellation commands
+void CConStationFrame::OnConstAdd()			{	constMgr.Add();				}
+void CConStationFrame::OnConstDelete()		{	constMgr.Delete();			}
+void CConStationFrame::OnConstRename()		{	constMgr.Rename();			}
+void CConStationFrame::OnConstHide()		{	constMgr.Hide();			}
+void CConStationFrame::OnConstAddLine()		{	constMgr.AddLine();			}
+void CConStationFrame::OnConstDeleteLine()	{	constMgr.DeleteLine();		}
+void CConStationFrame::OnConstShowHide()	{	constMgr.ShowHide();		}
+void CConStationFrame::OnConstHideAll()		{	constMgr.HideAll();			}
+void CConStationFrame::OnConstShowAll()		{	constMgr.ShowAll();			}
+void CConStationFrame::OnConstToggle()		{	constMgr.Toggle();			}
 
 // Terrain commands
-void CConStationFrame::OnTerrainNew()		{	terrainMgr.New();		}
-void CConStationFrame::OnOptionsTerrain()	{	terrainMgr.Options();	}
+void CConStationFrame::OnTerrNew()			{	terrainMgr.New();			}
+void CConStationFrame::OnTerrToggle()		{	terrainMgr.Toggle();		}
 
+// Options commands
+void CConStationFrame::OnOptionsTime()		{	starfieldMgr.Time();		}
+void CConStationFrame::OnOptionsLocation()	{	starfieldMgr.Location();	}
+void CConStationFrame::OnOptionsStar()		{	starsMgr.Options();		}
+void CConStationFrame::OnOptionsConst()		{	constMgr.Options();			}
+void CConStationFrame::OnOptionsTerr()		{	terrainMgr.Options();		}
+void CConStationFrame::OnOptionsGeneral()	{	optionsMgr.General();		}
 
 // Updates
+void CConStationFrame::OnUpdateStarfRotate(CCmdUI* pCmdUI) 
+{
+	pCmdUI->SetCheck( starfield.IsSpinning() );
+}
+
+void CConStationFrame::OnUpdateStarsToggle(CCmdUI* pCmdUI) 
+{
+	pCmdUI->SetCheck( starfield.AreStarsVisible() );	
+}
+
 void CConStationFrame::OnUpdateConstList(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable( state == state_Viewing );
@@ -291,10 +334,20 @@ void CConStationFrame::OnUpdateConstShowHide(CCmdUI* pCmdUI)
 		starfield.GetNumConstellations() > 0 );
 }
 
-void CConStationFrame::OnUpdateStarfRotate(CCmdUI* pCmdUI) 
+void CConStationFrame::OnUpdateConstToggle(CCmdUI* pCmdUI) 
 {
-	pCmdUI->SetCheck( starfield.IsSpinning() );
+	pCmdUI->SetCheck( starfield.AreConstsVisible() );	
 }
+
+void CConStationFrame::OnUpdateTerrToggle(CCmdUI* pCmdUI) 
+{
+	pCmdUI->SetCheck( terrain.IsVisible() );
+}
+
+
+
+
+
 
 
 

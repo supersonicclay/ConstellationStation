@@ -55,13 +55,3 @@ void CDlgConstName::SetConstName(CString name_)
 /////////////////////////////////////////////////////////////////////////////
 // CDlgConstName message handlers
 
-void CDlgConstName::OnShowWindow(BOOL bShow, UINT nStatus) 
-{
-	CDialog::OnShowWindow(bShow, nStatus);
-
-	// Give focus to edit box
-	CEdit* pNameBox;
-	pNameBox = (CEdit*) GetDlgItem(IDC_CONST_NAME);
-	GotoDlgCtrl(pNameBox);
-}
-

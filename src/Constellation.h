@@ -85,6 +85,8 @@ private:
 	int numLines;
 	line_v lines;
 
+	CConstLine newLine;	// new (proposed) line
+
 // Methods
 public:
 	CString GetName();
@@ -92,12 +94,15 @@ public:
 
 	int GetNumLines();
 	CConstLine* GetLine( int i );
+	CConstLine* GetNewLine();
 
 	BOOL IsVisible();
 	void SwitchVisible();
 	void SetVisible( BOOL visible_ );
 
-	void AddLine( int star1, int star2 );
+	BOOL StarIsActive( int i );
+
+	void AddLine();
 	void DeleteLine( int lineNum );
 	void CheckForDuplicateLines();
 };

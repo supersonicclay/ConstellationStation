@@ -34,8 +34,8 @@ public:
 	GLint  hits;
 
 	// Constellation editor
-	int prevStarNum;
 	int firstStarNum;
+	int secondStarNum;
 
 
 // Operations
@@ -48,7 +48,7 @@ public:
 
 	// Mouse
 
-	// Left button
+	// Mouse left button
 	void MouseLDown( CPoint point );
 	void MouseLDownViewing();
 	void MouseLDownAddingLine();
@@ -58,7 +58,7 @@ public:
 	void MouseLUpAddingLine();
 	void MouseLUpDeletingLine();
 
-	// Right button
+	// Mouse right button
 	void MouseRDown( CPoint point );
 	void MouseRUp( CPoint point );
 	void MouseRDownViewing();
@@ -68,9 +68,14 @@ public:
 	void MouseRUpAddingLine();
 	void MouseRUpDeletingLine();
 
+	// Mouse move
+	void MouseMove( CPoint point );
+	void MouseMoveViewing();
+	void MouseMoveAddingLine();
+	void MouseMoveDeletingLine();
+
 	// Other mouse methods
 	void MouseWheel( short zDelta );
-	void MouseMove( CPoint point );
 	void DetermineCursor();
 	void SetCur( WORD cur );
 

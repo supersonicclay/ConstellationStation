@@ -1,38 +1,35 @@
 //===========================================================================
-// MgrStarf.cpp
+// MgrStars.cpp
 //
-// CMgrStarf
-//   manager class for starfield functions.
+// CMgrStars
+//   manager class for star functions.
 //===========================================================================
 
-#ifndef CS_MGRSTARF_H
-#define CS_MGRSTARF_H 
+#ifndef CS_MGRSTARS_H
+#define CS_MGRSTARS_H 
 
 
-class CMgrStarf
+class CMgrStars
 {
 // Construction
 public:
-	CMgrStarf();
+	CMgrStars();
 
 
 // Attributes
 public:
 
 
-// Operations
+// Methods
 public:
 
-	CBarStarf* GetStarfBar();
-
-	void Rotate();
-	void Location();
-	void Time();
+	void Options();
+	void Toggle();
 
 
 // Destruction
 public:
-	~CMgrStarf();
+	~CMgrStars();
 
 };
 

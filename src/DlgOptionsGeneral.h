@@ -1,56 +1,41 @@
 //===========================================================================
-// DlgShowHide.h
-//
-// CDlgShowHide
-//   show / hide list dialog
+// 
+// 
 //===========================================================================
 
-#ifndef CS_DLGSHOWHIDE_H
-#define CS_DLGSHOWHIDE_H
+#ifndef CS_DLGOPTIONSGENERAL_H
+#define CS_DLGOPTIONSGENERAL_H
 
-
-#include "Starfield.h"
-#include "Constellation.h"
 
 /////////////////////////////////////////////////////////////////////////////
-// CDlgShowHide dialog
+// CDlgOptionsGeneral dialog
 
-class CDlgShowHide : public CDialog
+class CDlgOptionsGeneral : public CDialog
 {
 // Construction
 public:
-	CDlgShowHide( CWnd* pParent = NULL );
-	~CDlgShowHide();
-
-private:
-// Members
-	CListBox list;
+	CDlgOptionsGeneral(CWnd* pParent = NULL);   // standard constructor
 
 // Dialog Data
-	//{{AFX_DATA(CDlgShowHide)
-	enum { IDD = IDD_SHOW_HIDE };
+	//{{AFX_DATA(CDlgOptionsGeneral)
+	enum { IDD = IDD_OPTIONS_GENERAL };
+		// NOTE: the ClassWizard will add data members here
 	//}}AFX_DATA
 
 
 // Overrides
 	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CDlgShowHide)
+	//{{AFX_VIRTUAL(CDlgOptionsGeneral)
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
-
-
 
 // Implementation
 protected:
 
 	// Generated message map functions
-	//{{AFX_MSG(CDlgShowHide)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnSelChange();
-	afx_msg void OnShowAll();
-	afx_msg void OnHideAll();
-	afx_msg void OnInvert();
+	//{{AFX_MSG(CDlgOptionsGeneral)
+		// NOTE: the ClassWizard will add member functions here
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

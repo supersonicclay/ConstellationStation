@@ -54,12 +54,11 @@ public:
 	void PositionTerrain() const;
 	void DrawSky() const;
 	void DrawSun() const;
-	void DrawStarfield() const;
 	void DrawStars() const;
 	void DrawStar (int i) const;
 	void DrawConstellations() const;
 	void DrawConstellation (int i) const;
-	void DrawHeading() const;
+	void DrawCompass() const;
 
 	// View manipulation
 	void Projection  () const;

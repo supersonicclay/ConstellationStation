@@ -57,7 +57,7 @@ public:
 	void SetRA( unsigned short hour,
 				unsigned short minute,
 				float second );
-	void SetDec( bool positive,
+	void SetDec( BOOL positive,
 				 unsigned short degree,
 				 unsigned short minute,
 				 float second );

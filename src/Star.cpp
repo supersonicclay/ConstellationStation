@@ -180,7 +180,7 @@ void CStar::SetRA( unsigned short hour,
 	ra.second = second;
 }
 
-void CStar::SetDec( bool positive,
+void CStar::SetDec( BOOL positive,
 				   unsigned short degree,
 				   unsigned short minute,
 				   float second )
@@ -369,25 +369,3 @@ void CStar::Serialize(CArchive& ar)
 }
 
 
-/*
-void CStar::Serialize(CArchive& ar)///
-{
-	CObject::Serialize(ar);
-
-	if (ar.IsStoring())
-	{
-		ar << mag << color.r << color.g << color.b
-		   << x << y << z
-		   << ra.hour << ra.minute << ra.second
-		   << dec.positive << dec.degree << dec.minute << dec.second;
-	}
-
-	else
-	{
-		ar >> mag >> color.r >> color.g >> color.b
-		   >> x >> y >> z
-		   >> ra.hour >> ra.minute >> ra.second
-		   >> dec.positive >> dec.degree >> dec.minute >> dec.second;
-	}
-}
-*/

@@ -29,6 +29,7 @@ IMPLEMENT_SERIAL( CConstellation, CObject, 1 )
 
 CConstLine::CConstLine()
 {
+	star1 = star2 = -1;
 }
 
 CConstLine::CConstLine( int star1_, int star2_ )
@@ -105,13 +106,13 @@ void CConstLine::Serialize(CArchive& ar)
 CConstellation::CConstellation()
 {
 	numLines = 0;
-	visible = true;
+	visible = TRUE;
 }
 
 CConstellation::CConstellation( CString name_ )
 {
 	numLines = 0;
-	visible = true;
+	visible = TRUE;
 	name = name_;
 }
 
@@ -141,6 +142,7 @@ CString		CConstellation::GetName()		{	return name;		}
 int			CConstellation::GetNumLines()	{	return numLines;	}
 BOOL		CConstellation::IsVisible()		{	return visible;		}
 CConstLine*	CConstellation::GetLine(int i)	{	return &lines[i];	}
+CConstLine*	CConstellation::GetNewLine()	{	return &newLine;	}
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -154,14 +156,36 @@ void CConstellation::SetVisible( BOOL visible_ )	{	visible = visible_;	}
 /////////////////////////////////////////////////////////////////////////////
 // Methods
 
-// Add a line to this constellation between star1 and star2
-void CConstellation::AddLine( int star1, int star2 )
+// Determine whether star number i is part of this constellation
+BOOL CConstellation::StarIsActive( int i )
 {
-	// Sanity check
-	if( star1 > starfield.GetNumStars() || star2 > starfield.GetNumStars() )
-		CSError( "star index(s) out of range", "CConstellation::AddLine" );
+	if( i == newLine.GetStar1() || i == newLine.GetStar2() )
+		return TRUE;
+	for( int lineIndex=0; lineIndex<numLines; ++lineIndex )
+	{
+		if(	i == lines[lineIndex].GetStar1() ||
+			i == lines[lineIndex].GetStar2() )
+			return TRUE;
+	}
+	return FALSE;
+}
 
-	lines.push_back( CConstLine(star1, star2) );
+// Make newLine a real constellation line
+void CConstellation::AddLine()
+{
+	if( newLine.GetStar1() == newLine.GetStar2() )
+	{
+		newLine.SetStar1(-1); newLine.SetStar2(-1);
+		return;
+	}
+
+	if( newLine.GetStar1() == -1 || newLine.GetStar2() == -1 )
+	{
+		newLine.SetStar1(-1); newLine.SetStar2(-1);
+		CSWarn( "One of newLine's stars aren't initialized", "CConstellation::AddLine" );
+	}
+
+	lines.push_back( CConstLine(newLine) );
 	numLines++;
 
 	CheckForDuplicateLines();
@@ -184,9 +208,6 @@ void CConstellation::DeleteLine( int lineNum )
 // Check this constellation for lines with the same endpoints
 void CConstellation::CheckForDuplicateLines()
 {
-	/// Since we check for duplicates every time we add a line,
-	///  there should never be more than 1 duplicate
-
 	for( int i=0; i<numLines; i++ )
 	{
 		for( int j=0; j<numLines; j++ )

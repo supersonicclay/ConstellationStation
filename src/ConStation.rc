@@ -89,24 +89,24 @@ BEGIN
     BUTTON      ID_STARF_SAVE
     SEPARATOR
     BUTTON      ID_OPTIONS_LOCATION
-    BUTTON      ID_OPTIONS_TERRAIN
-    BUTTON      ID_TERR_NEW
-    SEPARATOR
-    BUTTON      ID_STARF_ROTATE
     SEPARATOR
     BUTTON      ID_STARF_DATE
-    BUTTON      ID_STARF_DATE
     SEPARATOR
-    BUTTON      ID_STARF_TIME
     BUTTON      ID_STARF_TIME
     SEPARATOR
     BUTTON      ID_STARF_SPEED
     SEPARATOR
-    BUTTON      ID_BUTTON32857
-    BUTTON      ID_BUTTON32858
-    BUTTON      ID_BUTTON32859
-    BUTTON      ID_BUTTON32860
-    BUTTON      ID_BUTTON32861
+    BUTTON      ID_STARS_TOGGLE
+    BUTTON      ID_CONST_TOGGLE
+    BUTTON      ID_TERR_TOGGLE
+    SEPARATOR
+    BUTTON      ID_OPTIONS_STAR
+    BUTTON      ID_OPTIONS_CONST
+    BUTTON      ID_OPTIONS_TERR
+    SEPARATOR
+    BUTTON      ID_TERR_NEW
+    SEPARATOR
+    BUTTON      ID_STARF_ROTATE
 END
 
 IDR_CONSTELLATION TOOLBAR DISCARDABLE  16, 16
@@ -145,14 +145,14 @@ BEGIN
     END
     POPUP "&Constellation"
     BEGIN
-        MENUITEM "&Add\tCtrl+A",                ID_CONST_ADD
+        MENUITEM "&Add...\tCtrl+A",             ID_CONST_ADD
         MENUITEM "&Delete\tCtrl+D",             ID_CONST_DELETE
         MENUITEM "&Hide",                       ID_CONST_HIDE
         MENUITEM SEPARATOR
         MENUITEM "&Add Line\tA",                ID_CONST_ALINE
         MENUITEM "&Delete Line\tD",             ID_CONST_DLINE
         MENUITEM SEPARATOR
-        MENUITEM "Show / Hide &List",           ID_CONST_SHOWHIDE
+        MENUITEM "Show / Hide &List...",        ID_CONST_SHOWHIDE
         MENUITEM "&Show All",                   ID_CONST_SHOWALL
         MENUITEM "&Hide All",                   ID_CONST_HIDEALL
     END
@@ -160,9 +160,11 @@ BEGIN
     BEGIN
         MENUITEM "&Time...",                    ID_OPTIONS_TIME
         MENUITEM "&Location...",                ID_OPTIONS_LOCATION
-        MENUITEM "Te&rrain...",                 ID_OPTIONS_TERRAIN
+        MENUITEM "&Stars...",                   ID_OPTIONS_STAR
+        MENUITEM "&Constellations...",          ID_OPTIONS_CONST
+        MENUITEM "Te&rrain...",                 ID_OPTIONS_TERR
+        MENUITEM "&General...",                 ID_OPTIONS_GENERAL
     END
-    MENUITEM "&View",                       65535
     POPUP "&Help"
     BEGIN
         MENUITEM "&About ConStation...",        ID_APP_ABOUT
@@ -215,9 +217,9 @@ STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Enter Constellation Name"
 FONT 8, "MS Sans Serif"
 BEGIN
+    EDITTEXT        IDC_CONST_NAME,5,7,154,14,ES_AUTOHSCROLL
     DEFPUSHBUTTON   "OK",IDOK,53,25,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,109,25,50,14
-    EDITTEXT        IDC_CONST_NAME,5,7,154,14,ES_AUTOHSCROLL
 END
 
 IDD_SHOW_HIDE DIALOG DISCARDABLE  0, 0, 186, 175
@@ -234,22 +236,32 @@ BEGIN
     LTEXT           "Constellations to Show:",IDC_STATIC,7,7,74,8
 END
 
-IDD_TERRAIN DIALOG DISCARDABLE  0, 0, 189, 70
+IDD_OPTIONS_TERR DIALOG DISCARDABLE  0, 0, 340, 145
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Terrain Settings"
+CAPTION "Terrain Options"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "&OK",IDOK,131,8,50,14
-    PUSHBUTTON      "&Cancel",IDCANCEL,131,29,50,14
-    PUSHBUTTON      "&New Terrain",IDC_NEW,131,48,50,14
-    CONTROL         "Slider2",IDC_ROUGHNESS,"msctls_trackbar32",
-                    TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,8,20,90,19
-    LTEXT           "Roughness: ",IDC_ROUGHNESS_LBL,8,8,41,8
-    PUSHBUTTON      "Color",IDC_COLOR,8,48,50,14
-    PUSHBUTTON      "",IDC_CUR_COLOR,61,48,16,14,BS_FLAT | WS_DISABLED | NOT 
+    GROUPBOX        "Options",IDC_STATIC,10,10,120,50
+    CONTROL         "Visible",IDC_TERR_VISIBLE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,20,25,36,10
+    CONTROL         "Textured (high quality)",IDC_TERR_TEXTURED,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,20,40,85,10
+    GROUPBOX        "Roughness",IDC_STATIC,10,70,120,65
+    EDITTEXT        IDC_TERR_ROUGHNESS_TXT,20,85,100,12,ES_AUTOHSCROLL | 
+                    WS_DISABLED | NOT WS_TABSTOP
+    CONTROL         "Slider2",IDC_TERR_ROUGHNESS,"msctls_trackbar32",
+                    TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,20,103,100,22
+    GROUPBOX        "Display",IDC_STATIC,145,10,120,95
+    LTEXT           "Texture:",IDC_STATIC,155,33,27,8
+    LISTBOX         IDC_TERR_SEASONS,188,33,67,35,LBS_NOINTEGRALHEIGHT | 
                     WS_TABSTOP
-    EDITTEXT        IDC_ROUGHNESS_TXT,52,8,40,12,ES_AUTOHSCROLL | 
-                    ES_READONLY | NOT WS_BORDER | NOT WS_TABSTOP
+    PUSHBUTTON      "Solid Color",IDC_TERR_COLOR,155,81,59,14
+    EDITTEXT        IDC_TERR_COLOR_PREV,223,81,32,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED | NOT WS_TABSTOP
+    PUSHBUTTON      "Generate &New Terrain",IDC_TERR_NEW,145,115,120,20
+    DEFPUSHBUTTON   "&OK",IDOK,280,10,50,14
+    PUSHBUTTON      "&Cancel",IDCANCEL,280,30,50,14
+    PUSHBUTTON      "Defaults",IDC_TERR_DEFAULTS,280,121,50,14
 END
 
 IDD_LOCATION DIALOG DISCARDABLE  0, 0, 186, 95
@@ -261,6 +273,80 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
     CONTROL         "DateTimePicker2",IDC_DATETIMEPICKER2,"SysDateTimePick32",
                     DTS_RIGHTALIGN | WS_TABSTOP,7,7,100,15
+END
+
+IDD_OPTIONS_GENERAL DIALOG DISCARDABLE  0, 0, 275, 180
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "General Options"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,145,156,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,215,156,50,14
+END
+
+IDD_OPTIONS_STAR DIALOG DISCARDABLE  0, 0, 205, 275
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Star Options"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Options",IDC_STATIC,10,10,120,75
+    CONTROL         "Visible",IDC_STARS_VISIBLE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,20,25,36,10
+    CONTROL         "Labeled",IDC_STARS_LABELED,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,20,38,41,10
+    CONTROL         "Textured (high quality)",IDC_STARS_TEXTURED,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,20,51,85,10
+    CONTROL         "Colored",IDC_STARS_COLORED,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,20,64,40,10
+    GROUPBOX        "Limiting Magnitude",IDC_STATIC,10,95,120,65
+    EDITTEXT        IDC_STARS_LIMMAG_TXT,20,110,25,12,ES_AUTOHSCROLL | 
+                    ES_NUMBER | WS_DISABLED
+    CONTROL         "Slider1",IDC_STARS_LIMMAG,"msctls_trackbar32",
+                    TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,20,127,100,23
+    GROUPBOX        "Brightness / Contrast",IDC_STATIC,10,170,120,95
+    LTEXT           "Brightness",IDC_STATIC,20,185,63,12,SS_CENTERIMAGE
+    CONTROL         "Slider1",IDC_STARS_GAMMA,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,20,201,100,16
+    LTEXT           "Contrast",IDC_STATIC,20,222,27,12,SS_CENTERIMAGE
+    CONTROL         "Slider1",IDC_STARS_CONTRAST,"msctls_trackbar32",
+                    TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,20,239,100,16
+    DEFPUSHBUTTON   "OK",IDOK,145,10,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,145,30,50,14
+    PUSHBUTTON      "Defaults",IDC_STARS_DEFAULTS,145,251,50,14
+END
+
+IDD_OPTIONS_CONST DIALOG DISCARDABLE  0, 0, 205, 160
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Constellation Options"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Options",IDC_STATIC,10,10,120,50
+    CONTROL         "Visible",IDC_CONST_VISIBLE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,20,25,36,10
+    CONTROL         "Labeled",IDC_CONST_LABELED,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,20,40,41,10
+    GROUPBOX        "Line Colors",IDC_STATIC,10,70,120,80
+    PUSHBUTTON      "Normal Color",IDC_CONST_NORMCOLOR,20,85,66,14
+    EDITTEXT        IDC_CONST_NORMCOLOR_PREV,91,85,29,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    PUSHBUTTON      "Selected Color",IDC_CONST_SELCOLOR,20,106,66,14
+    EDITTEXT        IDC_CONST_SELCOLOR_PREV,91,106,29,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    PUSHBUTTON      "Active Color",IDC_CONST_ACTIVECOLOR,20,126,66,14
+    EDITTEXT        IDC_CONST_ACTIVECOLOR_PREV,91,126,29,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    DEFPUSHBUTTON   "OK",IDOK,145,10,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,145,30,50,14
+    PUSHBUTTON      "Defaults",IDC_CONST_DEFAULTS,145,136,50,14
+END
+
+IDD_TIME DIALOG DISCARDABLE  0, 0, 186, 94
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
 END
 
 
@@ -342,12 +428,14 @@ BEGIN
         BOTTOMMARGIN, 168
     END
 
-    IDD_TERRAIN, DIALOG
+    IDD_OPTIONS_TERR, DIALOG
     BEGIN
-        LEFTMARGIN, 8
-        RIGHTMARGIN, 181
-        TOPMARGIN, 8
-        BOTTOMMARGIN, 62
+        LEFTMARGIN, 10
+        RIGHTMARGIN, 330
+        VERTGUIDE, 155
+        VERTGUIDE, 255
+        TOPMARGIN, 10
+        BOTTOMMARGIN, 135
     END
 
     IDD_LOCATION, DIALOG
@@ -356,6 +444,54 @@ BEGIN
         RIGHTMARGIN, 179
         TOPMARGIN, 7
         BOTTOMMARGIN, 88
+    END
+
+    IDD_OPTIONS_GENERAL, DIALOG
+    BEGIN
+        LEFTMARGIN, 10
+        RIGHTMARGIN, 265
+        VERTGUIDE, 20
+        VERTGUIDE, 120
+        VERTGUIDE, 130
+        VERTGUIDE, 145
+        VERTGUIDE, 155
+        VERTGUIDE, 255
+        VERTGUIDE, 265
+        TOPMARGIN, 10
+        BOTTOMMARGIN, 170
+        HORZGUIDE, 20
+        HORZGUIDE, 70
+        HORZGUIDE, 80
+        HORZGUIDE, 95
+        HORZGUIDE, 105
+        HORZGUIDE, 130
+        HORZGUIDE, 140
+        HORZGUIDE, 160
+        HORZGUIDE, 170
+    END
+
+    IDD_OPTIONS_STAR, DIALOG
+    BEGIN
+        LEFTMARGIN, 10
+        RIGHTMARGIN, 195
+        TOPMARGIN, 10
+        BOTTOMMARGIN, 265
+    END
+
+    IDD_OPTIONS_CONST, DIALOG
+    BEGIN
+        LEFTMARGIN, 10
+        RIGHTMARGIN, 195
+        TOPMARGIN, 10
+        BOTTOMMARGIN, 150
+    END
+
+    IDD_TIME, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 87
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -456,16 +592,27 @@ END
 
 STRINGTABLE DISCARDABLE 
 BEGIN
-    ID_TERR_NEW             "Generate a new random terrain\nNewTerrain"
+    ID_TERR_NEW             "Generate a new random terrain\nNew Terrain"
     ID_STARF_TIME           "Adjust the current viewing timee\nAdjust Time"
     ID_STARF_DATE           "Adjust the current viewing date\nAdjust Date"
     ID_OPTIONS_TIME         "Change the viewing date and time\nChange Time"
+    ID_OPTIONS_GENERAL      "Change general options and preferences\nGeneral Options"
 END
 
 STRINGTABLE DISCARDABLE 
 BEGIN
+    ID_OPTIONS_STAR         "Change star options\nStar Options"
+    ID_OPTIONS_CONST        "Change constellation options\nConstellation Options"
+    ID_OPTIONS_TERR         "Change terrain options\nTerrain Options"
+    ID_TERR_TOGGLE          "Toggle terrain on/off\nToggle Terrain"
     ID_OPTIONS_LOCATION     "Change the current viewing location on Earth\nChange Location"
     ID_OPTIONS_TERRAIN      "Change terrain settings\nTerrain Settings"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_CONST_TOGGLE         "Toggle constellations on/off\nToggle Constellations"
+    ID_STARS_TOGGLE         "Toggle stars on/off\nToggle Stars"
 END
 
 #endif    // English (U.S.) resources

@@ -15,10 +15,6 @@
 #include "resource.h"       // main symbols
 
 
-// OpenGL Headers
-#include <gl/gl.h>
-#include <gl/glu.h>
-
 
 /////////////////////////////////////////////////////////////////////////////
 // Globals
@@ -31,7 +27,13 @@ typedef struct
 
 void glColor(CColor c);
 
-extern const CColor WHITE, BLACK, RED, GREEN, BLUE, CONSTGREEN, GROUNDGREEN;
+extern const CColor COLOR_WHITE,
+					COLOR_BLACK,
+					COLOR_CROSS,
+					COLOR_ACTIVESTAR,
+					COLOR_NORTHSTAR,
+					COLOR_CONSTLINE,
+					COLOR_TERRAIN;
 
 enum StateType {Viewing, AddingLine, AddingPoly, DeletingLine};
 

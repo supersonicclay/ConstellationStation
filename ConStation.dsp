@@ -139,6 +139,10 @@ SOURCE=.\Starfield.cpp
 SOURCE=.\StdAfx.cpp
 # ADD CPP /Yc"stdafx.h"
 # End Source File
+# Begin Source File
+
+SOURCE=.\Terrain.cpp
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -190,6 +194,10 @@ SOURCE=.\Starfield.h
 # Begin Source File
 
 SOURCE=.\StdAfx.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Terrain.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
@@ -343,6 +351,10 @@ SOURCE=.\res\Toolbar.bmp
 # Begin Source File
 
 SOURCE=".\Bug Report.txt"
+# End Source File
+# Begin Source File
+
+SOURCE=.\Parenthesis.txt
 # End Source File
 # Begin Source File
 

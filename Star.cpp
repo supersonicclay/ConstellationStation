@@ -5,8 +5,6 @@
 #include "ConStation.h"
 #include "Star.h"
 
-// For star randomization
-#include <math.h>
 
 IMPLEMENT_SERIAL (CStar, CObject, 0)
 
@@ -16,7 +14,7 @@ CStar::CStar()
 	y = 0.0f;
 	z = 0.0f;
 	brightness = 1.0f;
-	color = WHITE;
+	color = COLOR_WHITE;
 }
 
 CStar::CStar(float x_, float y_, float z_, float brightness_)
@@ -134,12 +132,10 @@ void CStar::PickXYZ()
 
 void CStar::PickBrightness()
 {
-
-///	brightness = (float)((rand()%600) * (rand()%600) * (rand()%600))/21600000 + 0;
-///	brightness = (float)((rand()%60) * (rand()%60) * (rand()%60) * (rand()%60))/3000000 + 1;
-///*
-
+	// Pick random number from 0.00 to 100.00
 	float random = (float)(rand()%1000)/10;
+
+	// Pick brightness depending on random
 	if (random < 75)
 	{
 		brightness = (float)(rand()%1000)/1000;
@@ -170,27 +166,6 @@ void CStar::PickBrightness()
 		color.g = brightness-1;
 		color.b = brightness-1;
 	}
-	/*
-	else if (brightness < 3)
-	{
-		color.r = brightness-2;
-		color.g = brightness-2;
-		color.b = brightness-2;
-	}
-	else if (brightness < 4)
-	{
-		color.r = brightness-3;
-		color.g = brightness-3;
-		color.b = brightness-3;
-	}
-
-	else if (brightness < 5)
-	{
-		color.r = brightness-4;
-		color.g = brightness-4;
-		color.b = brightness-4;
-	}
-//*/
 }
 
 void CStar::Serialize(CArchive& ar)

@@ -8,5 +8,6 @@ Fixed		10-23-03		Stars that are part of constellations aren't going active
 
 Fixed		10-23-03		Projection needs called on new document
 	
+Fixed		10-26-03		Position viewer above terrain
 
-
+Fixed		10-26-03		Arrow Down is rotating too far

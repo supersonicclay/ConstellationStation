@@ -12,14 +12,13 @@
 #include "Constellation.h"
 
 
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
 
-// Timer
+// Timer IDs
 #define TIMER_VIEWKEYS	1
 #define TIMER_ROTATE	2
 
@@ -100,6 +99,10 @@ CStarfield* CConStationView::GetStarfield() const
 	return GetDocument()->GetStarfield();
 }
 
+CTerrain* CConStationView::GetTerrain() const
+{
+	return GetDocument()->GetTerrain();
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // CConStationView message handlers
@@ -321,7 +324,7 @@ void CConStationView::OnDraw(CDC* pDC)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	DrawStarfield();
-	DrawGround();
+	DrawTerrain();
 	DrawHeading();
 
 	/// GROGGY ///
@@ -333,23 +336,77 @@ void CConStationView::OnDraw(CDC* pDC)
 
 }
 
-void CConStationView::DrawGround() const
+void CConStationView::DrawTerrain() const
 {
 	glLoadIdentity();
-
 	RotateXY();
+	PositionTerrain();
 
-	glColor(GROUNDGREEN);
+	glColor(COLOR_TERRAIN);
 
-	// Rotate to horizontal
-	glRotatef (90.0f, 1.0f,0.0f,0.0f);
+	int i, j;
+	float x, z;
+	float inc;
 
-	// Move ground down
-	glTranslatef (0.0f,0.0f,0.2f);
+	float* heights = GetTerrain()->GetHeights();
+	int arraySize = GetTerrain()->GetArraySize();
+	int size = GetTerrain()->GetSize();
 
-	// Draw Ground (disk)
-	gluDisk(gluNewQuadric(),0.0f,0.98f,40,40);
+	float scale = GetTerrain()->GetScale();
+	int iterations = GetTerrain()->GetIterations();
+	float roughness = GetTerrain()->GetRoughness();
 
+	x = -scale;
+	z = -scale;
+	inc = (float)pow(2, -iterations+1);
+
+	for (i=0; i<size; i++)
+	{
+		for (j=0; j<size; j++)
+		{
+
+			glBegin(GL_QUADS);
+				glVertex3f( x, heights[ (i*arraySize) + j ], z );
+				glVertex3f( x, heights[ (i*arraySize) + (j+1) ], z+inc );
+				glVertex3f( x+inc, heights[ ((i+1)*arraySize) + (j+1) ], z+inc );
+				glVertex3f( x+inc, heights[ ((i+1)*arraySize) + j ], z );
+			glEnd();
+
+			z += inc;
+		}
+		z = -scale;
+		x += inc;
+	}
+
+}
+
+// Set the viewer on top of the midpoint of the terrain
+void CConStationView::PositionTerrain() const
+{
+	// Get the index of the midpoint
+	int middleIndex = GetTerrain()->GetSize() / 2;
+
+	// Average the heights around the midpoint,
+	//  so the viewer isn't placed in a deep pit.
+
+	// Average of square points directly around middle
+	float avg1 = GetTerrain()->AvgSquare(middleIndex, middleIndex, 1);
+	// Average of diamond points directly around middle
+	float avg2 = GetTerrain()->AvgDiamond(middleIndex, middleIndex, 1);
+
+	// Average the two averages
+	float height = ((avg1 + avg2) / 2);
+
+	// Make sure the new height is not less than the height at the midpoint
+	//  (this would put the viewer under the terrain)
+	// If it is, then switch to the height of the midpoint
+	if (height < GetTerrain()->GetHeight(middleIndex, middleIndex))
+		height = GetTerrain()->GetHeight(middleIndex, middleIndex) + 0.2f;
+
+
+	// Finally move the terrain down the amount that we got for the height
+	//  Move it down a little more than that so the viewer isn't exactly on the surface
+	glTranslatef (0.0f, -height - 0.05f, 0.0f);
 }
 
 void CConStationView::DrawStarfield() const
@@ -364,7 +421,7 @@ void CConStationView::DrawStarfield() const
 void CConStationView::DrawConstellations() const
 {
 	glLineWidth(3);
-	glColor(CONSTGREEN);
+	glColor(COLOR_CONSTLINE);
 
 	// Draw each constellation
 	for (int i=0; i<GetStarfield()->GetNumConstellations(); i++)
@@ -448,7 +505,7 @@ void CConStationView::DrawStar(int i) const
 	}
 
 	if (active)
-		color = RED;
+		color = COLOR_ACTIVESTAR;
 	else
 		color = curStar->GetColor();
 
@@ -497,12 +554,12 @@ void CConStationView::DrawHeading() const
 
 	// Cross
 	glLineWidth(3);
-	glColor (GREEN);
+	glColor (COLOR_CROSS);
 	glBegin(GL_LINES);
 		glVertex3f ( 1.0f, 0.0f, 0.0f);
 		glVertex3f (-1.0f, 0.0f, 0.0f);
-		glVertex3f ( 0.0f, 1.0f, 0.0f);
-		glVertex3f ( 0.0f,-1.0f, 0.0f);
+		//glVertex3f ( 0.0f, 1.0f, 0.0f);
+		//glVertex3f ( 0.0f,-1.0f, 0.0f);
 		glVertex3f ( 0.0f, 0.0f, 1.0f);
 		glVertex3f ( 0.0f, 0.0f,-1.0f);
 	glEnd();
@@ -510,7 +567,7 @@ void CConStationView::DrawHeading() const
 	// North Star Pointer
 	RotateLatitude();
 	RotateSeason();
-	glColor (RED);
+	glColor (COLOR_NORTHSTAR);
 	glBegin(GL_LINES);
 		glVertex3f ( 0.0f, 0.0f, 0.0f);
 		glVertex3f ( 0.0f, 0.0f,-1.0f);
@@ -539,7 +596,7 @@ void CConStationView::DrawActiveLine() const
 	glLoadIdentity();
 
 	// Draw Line
-	glColor(CONSTGREEN);
+	glColor(COLOR_CONSTLINE);
 	glLineWidth(3);
 	glBegin(GL_LINES);
 		glVertex2i(prevStarPoint.x, prevStarPoint.y);
@@ -571,7 +628,7 @@ void CConStationView::Perspective() const
 {
 	float persp = (1 - GetStarfield()->GetZoom()) * 60 + 5;
 
-	gluPerspective(persp,(float)width/(float)height,0.01f,10.0f);
+	gluPerspective(persp,(float)width/(float)height,0.001f,10.0f);
 }
 
 void CConStationView::RotateXY() const
@@ -583,14 +640,13 @@ void CConStationView::RotateXY() const
 // Rotate the view depending on the latitude
 void CConStationView::RotateLatitude() const
 {
-	/// Should be stored in CStarfield
-	glRotatef (30.0f, 1.0f, 0.0f, 0.0f);
+	glRotatef( GetStarfield()->GetLatitude(), 1.0f, 0.0f, 0.0f );
 }
 
 // Rotate the view depending on the season
 void CConStationView::RotateSeason() const
 {
-	/// Should be stored in CStarfield
+	glRotatef( GetStarfield()->GetSeason(), 1.0f, 0.0f, 0.0f );
 }
 
 // Rotate the view depending on the time
@@ -683,11 +739,7 @@ void CConStationView::ProcessKeys()
 	}
 
 	if ( update )
-	{
-		GetDocument()->SetModifiedFlag();
 		InvalidateRect(NULL,FALSE);
-	}
-
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -726,6 +778,7 @@ void CConStationView::OnLButtonDown(UINT nFlags, CPoint point)
 				prevStarNum = selectedStarNum;
 ///				prevStarPoint = point;
 
+				GetDocument()->SetModifiedFlag();
 				InvalidateRect(NULL, FALSE);
 			}
 		}
@@ -738,6 +791,7 @@ void CConStationView::OnLButtonDown(UINT nFlags, CPoint point)
 		if (selectedLineNum != -1)
 		{
 			GetStarfield()->GetCurConstellation()->DeleteLine(selectedLineNum);
+			GetDocument()->SetModifiedFlag();
 			InvalidateRect(NULL, FALSE);
 		}
 	}
@@ -753,7 +807,6 @@ void CConStationView::OnLButtonDown(UINT nFlags, CPoint point)
 		}
 	}
 
-	GetDocument()->SetModifiedFlag();
 }
 
 void CConStationView::OnLButtonUp(UINT nFlags, CPoint point) 
@@ -787,6 +840,8 @@ void CConStationView::OnRButtonDown(UINT nFlags, CPoint point)
 		{
 			GetStarfield()->AddConstLine(firstStarNum, prevStarNum);
 			firstStarNum = -1;
+
+			GetDocument()->SetModifiedFlag();
 			InvalidateRect(NULL, FALSE);
 		}
 		else
@@ -803,7 +858,6 @@ void CConStationView::OnRButtonDown(UINT nFlags, CPoint point)
 			SetCapture();
 	}
 
-	GetDocument()->SetModifiedFlag();
 }
 
 void CConStationView::OnRButtonUp(UINT nFlags, CPoint point) 
@@ -838,8 +892,6 @@ BOOL CConStationView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 	}
 
 	Projection();
-
-	GetDocument()->SetModifiedFlag();
 
 	InvalidateRect(NULL, FALSE);
 
@@ -878,8 +930,9 @@ void CConStationView::OnMouseMove(UINT nFlags, CPoint point)
 		mouseLDownPoint=point;
 		mouseRDownPoint=point;
 		
-		///SetCursorPos(mouseLDownPoint.x, mouseLDownPoint.y);
+	///	SetCursorPos(mouseLDownPoint.x, mouseLDownPoint.y);
 	}
+
 	/// GROGGY ///
 	// Invalidate so it will show line as mouse moves
 ///	if (state == AddingLine && firstStarNum != -1)

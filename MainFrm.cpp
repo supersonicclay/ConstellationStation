@@ -110,11 +110,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	m_wndToolBar.EnableDocking(CBRS_ALIGN_ANY);
 	m_wndConstBar.EnableDocking(CBRS_ALIGN_ANY);
-///	m_wndDlgBar.EnableDocking(CBRS_ALIGN_ANY);
 
 	DockControlBar(&m_wndToolBar);
 	DockControlBar(&m_wndConstBar);
-///	DockControlBar(&m_wndDlgBar);
 
 	return 0;
 }
@@ -154,6 +152,9 @@ CStarfield* CMainFrame::GetStarfield() const
 
 CConStationView* CMainFrame::GetView() const
 {
+#ifdef _DEBUG
+	ASSERT (GetActiveView()->IsKindOf( RUNTIME_CLASS (CConStationView)));
+#endif
 	return (CConStationView *) GetActiveView();
 }
 
@@ -163,22 +164,20 @@ CConStationView* CMainFrame::GetView() const
 ////////////////////////////
 StateType CMainFrame::GetState() const
 {
-	return ((CConStationView *)GetActiveView())->GetState();
+	return GetView()->GetState();
 }
 
 void CMainFrame::SetState(StateType state) const
 {
-	((CConStationView *)GetActiveView())->SetState(state);
+	GetView()->SetState(state);
 }
 
-
+// Make sure ConstList is consistent with the constellation names in Starfield
 void CMainFrame::UpdateList()
 {
-	// Make sure ConstList is consistent with
-	//  the constellation names in Starfield
 	int numConstellations = GetStarfield()->GetNumConstellations();
-	CString* constellationNames = new CString[numConstellations];
 	int numCurrent = GetStarfield()->GetNumCurConstellation();
+	CString* constellationNames = new CString[numConstellations];
 
 	for (int i=0; i<numConstellations; i++)
 	{
@@ -209,8 +208,6 @@ void CMainFrame::OnConstListCloseUp()
 
 void CMainFrame::OnConstAdd() 
 {
-	GetActiveDocument()->SetModifiedFlag();
-
 	CConstNameDlg dialog;
 
 	// Set name initially to "Constellation" prepended to a number
@@ -247,12 +244,12 @@ void CMainFrame::OnConstAdd()
 	GetStarfield()->IncNumNewConstellations();
 	GetStarfield()->SetCurConstellation(dialog.m_Name);
 
+	GetActiveDocument()->SetModifiedFlag();
 	GetView()->InvalidateRect(NULL, FALSE);
 }
 
 void CMainFrame::OnConstDelete() 
 {
-	GetActiveDocument()->SetModifiedFlag();
 
 	int m = MessageBox("Are you sure you want to delete this constellation?",
 		"Delete Constellation?", MB_YESNO | MB_ICONEXCLAMATION);
@@ -267,22 +264,18 @@ void CMainFrame::OnConstDelete()
 			GetStarfield()->SetCurConstellation(m_wndConstBar.GetCurConst());
 
 		SetState(Viewing);
+
+		GetActiveDocument()->SetModifiedFlag();
 		GetView()->InvalidateRect(NULL, FALSE);
 	}
 }
 
 void CMainFrame::OnConstRename() 
 {
-	GetActiveDocument()->SetModifiedFlag();
-
 	CConstNameDlg dialog;
 
-	CString constName = m_wndConstBar.GetCurConst();
-	dialog.SetConstName(constName);
-
-	// Remember original constellation
-	//  if they rename to the same name we don't want it to give an error
-	CConstellation* origConst = GetStarfield()->GetConstellation(constName);
+	CString origConstName = m_wndConstBar.GetCurConst();
+	dialog.SetConstName(origConstName);
 
 	// If they cancel, return
 	if (dialog.DoModal() != IDOK)
@@ -290,7 +283,7 @@ void CMainFrame::OnConstRename()
 
 	// Check for duplicate name
 	while (GetStarfield()->IsDuplicate(dialog.m_Name) &&
-		GetStarfield()->GetConstellation(dialog.m_Name) != origConst)
+		dialog.m_Name != origConstName)
 	{
 		MessageBox("There is already a constellation with this name.",
 			"Error", MB_OK | MB_ICONEXCLAMATION);
@@ -299,33 +292,31 @@ void CMainFrame::OnConstRename()
 			return;
 	}
 
-	// Rename constellation
+	// If it wasn't renamed
+	if (dialog.m_Name == origConstName)
+		return;
 
-	// Add constellation and make it the current constellation
+	// Otherwise Rename constellation
+
+	// Remove old name from the list and add new name
 	m_wndConstBar.DeleteConst();
 	m_wndConstBar.AddConst(dialog.m_Name);
 
 	GetStarfield()->RenameConstellation(dialog.m_Name);
-///	m_wndConstBar.AddConst(dialog.m_Name);
-///	GetStarfield()->AddConstellation(dialog.m_Name);
-///	GetStarfield()->SetCurConstellation(dialog.m_Name);
-///	GetView()->InvalidateRect(NULL, FALSE);
 
+	GetActiveDocument()->SetModifiedFlag();
 }
 
 void CMainFrame::OnConstHide() 
 {
-	GetActiveDocument()->SetModifiedFlag();
-
 	GetStarfield()->GetCurConstellation()->SwitchVisible();
 
+	GetActiveDocument()->SetModifiedFlag();
 	GetActiveView()->InvalidateRect(NULL, FALSE);
 }
 
 void CMainFrame::OnConstAddLine() 
 {
-	GetActiveDocument()->SetModifiedFlag();
-
 	if (GetState() == AddingLine)
 		SetState(Viewing);
 	else
@@ -334,8 +325,6 @@ void CMainFrame::OnConstAddLine()
 
 void CMainFrame::OnConstAddPoly() 
 {
-	GetActiveDocument()->SetModifiedFlag();
-
 	if (GetState() == AddingPoly)
 		SetState(Viewing);
 	else
@@ -344,8 +333,6 @@ void CMainFrame::OnConstAddPoly()
 
 void CMainFrame::OnConstDeleteLine() 
 {
-	GetActiveDocument()->SetModifiedFlag();
-
 	if (GetState() == DeletingLine)
 		SetState(Viewing);
 	else
@@ -359,35 +346,33 @@ void CMainFrame::OnStarfRotate()
 
 void CMainFrame::OnShowHide() 
 {
-	GetActiveDocument()->SetModifiedFlag();
 
 	CShowHideDlg dialog;
 
 	dialog.DoModal();
 
+	GetActiveDocument()->SetModifiedFlag();
 }
 
 void CMainFrame::OnViewHideAll() 
 {
-	GetActiveDocument()->SetModifiedFlag();
-
 	for (int i=0; i<GetStarfield()->GetNumConstellations(); i++)
 	{
 		GetStarfield()->GetConstellation(i)->SetVisible(FALSE);
 	}
 
+	GetActiveDocument()->SetModifiedFlag();
 	GetView()->InvalidateRect(NULL, FALSE);
 }
 
 void CMainFrame::OnViewShowAll() 
 {
-	GetActiveDocument()->SetModifiedFlag();
-
 	for (int i=0; i<GetStarfield()->GetNumConstellations(); i++)
 	{
 		GetStarfield()->GetConstellation(i)->SetVisible(TRUE);
 	}
 
+	GetActiveDocument()->SetModifiedFlag();
 	GetView()->InvalidateRect(NULL, FALSE);
 }
 

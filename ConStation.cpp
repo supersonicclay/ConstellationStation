@@ -31,7 +31,7 @@ END_MESSAGE_MAP()
 
 CConStationApp::CConStationApp()
 {
-
+	srand( (unsigned)::time(NULL) );
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -151,13 +151,13 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // Globals
 
-const CColor WHITE = {1.0f,1.0f,1.0f},
-			 BLACK = {0.0f,0.0f,0.0f},
-			 RED   = {1.0f,0.0f,0.0f},
-			 GREEN = {0.0f,1.0f,0.0f},
-			 BLUE  = {0.0f,0.0f,1.0f},
-			 CONSTGREEN = {0.0f,0.5f,0.5f},
-			 GROUNDGREEN = {0.1f,0.2f,0.1f};
+const CColor COLOR_WHITE = {1.0f,1.0f,1.0f},
+			 COLOR_BLACK = {0.0f,0.0f,0.0f},
+			 COLOR_CROSS  = {0.3f,0.3f,0.8f},
+			 COLOR_ACTIVESTAR   = {1.0f,0.0f,0.0f},
+			 COLOR_NORTHSTAR = {0.0f,1.0f,0.0f},
+			 COLOR_CONSTLINE = {0.0f,0.5f,0.5f},
+			 COLOR_TERRAIN = {0.0f,0.01f,0.06f};
 
 
 // Convinience function for glColor3f

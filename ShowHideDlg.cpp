@@ -59,6 +59,8 @@ BOOL CShowHideDlg::OnInitDialog()
 										GetStarfield()->GetConstellations();
 	numConstellations = ((CMainFrame*)GetParent())->
 										GetStarfield()->GetNumConstellations();
+	numCurConstellation = ((CMainFrame*)GetParent())->
+										GetStarfield()->GetNumCurConstellation();
 
 	CString str;
 
@@ -69,7 +71,7 @@ BOOL CShowHideDlg::OnInitDialog()
 		str = constellations[i].GetName();
 
 		// If this constellation is current
-		if (constellations[i].IsCurrent())
+		if (i == numCurConstellation)
 			str += " <--";
 
 		// Add name to list

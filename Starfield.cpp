@@ -8,8 +8,6 @@
 #include "Star.h"
 #include "Constellation.h"
 
-// For randomization
-#include <time.h>
 
 IMPLEMENT_SERIAL (CStarfield, CObject, 0)
 
@@ -24,14 +22,14 @@ CStarfield::CStarfield()
 	numNewConstellations = 0;
 	numCurConstellation = 0;
 
-	latitude = 30;
-	season = 0;///
-	time = 0;
-	spinning = false;
+	latitude = 30.0f;
+	season = 0.0f;
+	time = 0.0f;
+	spinning = FALSE;
 
-	rotX = 0;
-	rotY = 0;
-	zoom = 0;
+	rotX = 0.0f;
+	rotY = 0.0f;
+	zoom = 0.0f;
 }
 
 CStarfield::~CStarfield()
@@ -104,7 +102,7 @@ float CStarfield::GetLatitude() const
 	return latitude;
 }
 
-int CStarfield::GetSeason() const
+float CStarfield::GetSeason() const
 {
 	return season;
 }
@@ -134,6 +132,7 @@ float CStarfield::GetZoom() const
 	return zoom;
 }
 
+
 //////////
 // Sets //
 //////////
@@ -152,7 +151,7 @@ void CStarfield::SetLatitude(float latitude_)
 	latitude = latitude_;
 }
 
-void CStarfield::SetSeason(int season_)
+void CStarfield::SetSeason(float season_)
 {
 	season = season_;
 }
@@ -184,6 +183,12 @@ void CStarfield::AdjRotX(float deltaRotX)
 void CStarfield::AdjRotY(float deltaRotY)
 {
 	rotY += deltaRotY;
+
+	// Keep rotY between -360 and 360
+	if (rotY < 360.0f)
+		rotY += 360.0f;
+	if (rotY > 360.0f)
+		rotY -= 360.0f;
 }
 
 void CStarfield::AdjZoom(float deltaZoom)
@@ -193,15 +198,67 @@ void CStarfield::AdjZoom(float deltaZoom)
 
 
 ////////////////////
+// View Functions //
+////////////////////
+void CStarfield::RotateUp ()
+{
+	AdjRotX(-0.5f * (-zoom + 1));				// Change is smaller if zoomed out
+}
+
+void CStarfield::RotateDown ()
+{
+	AdjRotX(0.5f * (-zoom + 1));				// Change is smaller if zoomed out
+}
+
+void CStarfield::RotateLeft ()
+{
+	AdjRotY(-0.5f * (-zoom + 1));				// Change is smaller if zoomed out
+}
+
+void CStarfield::RotateRight()
+{
+	AdjRotY(0.5f * (-zoom + 1));					// Change is smaller if zoomed out
+}
+
+void CStarfield::ZoomIn()
+{
+	if (zoom < 0.8f)
+		zoom += 0.01f * (1-zoom);
+}
+
+void CStarfield::ZoomOut()
+{
+	if (zoom > -0.9f)
+		zoom -= 0.01f * (1-zoom);
+}
+
+// View resets
+void CStarfield::ResetView()
+{
+	ResetRot();
+	ResetZoom();
+}
+
+void CStarfield::ResetRot()
+{
+	rotX = 0.0f;
+	rotY = 0.0f;
+}
+
+void CStarfield::ResetZoom()
+{
+	zoom = 0.0f;
+}
+
+
+////////////////////
 // Star functions //
 ////////////////////
 // Creates sphere of random stars with radius of 1
 void CStarfield::SetupStars()
 {
-	srand( (unsigned)::time(NULL) );
-
 	// North Star
-	stars[0].SetColor(GREEN);
+	stars[0].SetColor(COLOR_NORTHSTAR);
 	stars[0].SetBrightness(6.0f);
 	stars[0].SetX(0);
 	stars[0].SetY(0);
@@ -298,11 +355,9 @@ void CStarfield::RenameConstellation(CString &name)
 
 BOOL CStarfield::SetCurConstellation(CString name)
 {
-	/// If current constellation is already set
-//	if (constellations[numCurConstellation].GetName() == name)
-//		return true;
-
-	constellations[numCurConstellation].SetCurrent(false);
+	// If the constellation is already current
+	if (constellations[numCurConstellation].GetName() == name)
+		return TRUE;
 
 	// Search for constellation name
 	for (int i=0; i<numConstellations; i++)
@@ -310,78 +365,17 @@ BOOL CStarfield::SetCurConstellation(CString name)
 		if (constellations[i].GetName() == name)
 		{
 			numCurConstellation = i;
-			constellations[numCurConstellation].SetCurrent();
-			return true;
+			return TRUE;
 		}
 	}
 
 	// Return false if name wasn't found
-	return false;
+	return FALSE;
 }
 
 void CStarfield::AddConstLine(int starNum1, int starNum2)
 {
 	constellations[numCurConstellation].AddLine(&stars[starNum1], &stars[starNum2]);
-}
-
-
-////////////////////
-// View Functions //
-////////////////////
-void CStarfield::RotateUp ()
-{
-	if (rotX > -90.0f)								// Keep rotX between +- 90
-		rotX -= 0.5f * (-zoom + 1);				// Change is smaller if zoomed out
-}
-
-void CStarfield::RotateDown ()
-{
-	if (rotX < 90.0f)								// Keep rotX between +- 90
-		rotX += 0.5f * (-zoom + 1);				// Change is smaller if zoomed out
-}
-
-void CStarfield::RotateLeft ()
-{
-	rotY -= 0.5f * (-zoom + 1);					// Change is smaller if zoomed out
-	if (rotY < -360.0f)							// Keep rotY between +- 360
-		rotY += 360.0f;
-}
-
-void CStarfield::RotateRight()
-{
-	rotY += 0.5f * (-zoom + 1);					// Change is smaller if zoomed out
-	if (rotY > 360.0f)							// Keep rotY between +- 360
-		rotY -= 360.0f;
-}
-
-void CStarfield::ZoomIn()
-{
-	if (zoom < 0.8f)
-		zoom += 0.01f * (1-zoom);
-}
-
-void CStarfield::ZoomOut()
-{
-	if (zoom > -0.9f)
-		zoom -= 0.01f * (1-zoom);
-}
-
-// View resets
-void CStarfield::ResetView()
-{
-	ResetRot();
-	ResetZoom();
-}
-
-void CStarfield::ResetRot()
-{
-	rotX = 0.0f;
-	rotY = 0.0f;
-}
-
-void CStarfield::ResetZoom()
-{
-	zoom = 0.0f;
 }
 
 void CStarfield::Serialize(CArchive& ar)
@@ -393,7 +387,6 @@ void CStarfield::Serialize(CArchive& ar)
 		ar << numStars
 		   << numConstellations << numNewConstellations << numCurConstellation
 		   << latitude << season << time
-		   << spinning
 		   << rotX << rotY << zoom;
 	}
 	else
@@ -401,7 +394,6 @@ void CStarfield::Serialize(CArchive& ar)
 		ar >> numStars
 		   >> numConstellations >> numNewConstellations >> numCurConstellation
 		   >> latitude >> season >> time
-		   >> spinning
 		   >> rotX >> rotY >> zoom;
 	}
 

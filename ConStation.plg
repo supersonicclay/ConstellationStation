@@ -6,77 +6,50 @@
 --------------------Configuration: ConStation - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating command line "rc.exe /l 0x409 /fo"Release/ConStation.res" /d "NDEBUG" /d "_AFXDLL" "D:\CODE\ConStation\ConStation.rc"" 
-Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP267.tmp" with contents
+Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPB3A.tmp" with contents
 [
 /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Release/" /Fp"Release/ConStation.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
-"D:\CODE\ConStation\ConStation.cpp"
-"D:\CODE\ConStation\ConStationDoc.cpp"
-"D:\CODE\ConStation\ConStationView.cpp"
-"D:\CODE\ConStation\ConstBar.cpp"
-"D:\CODE\ConStation\ConstNameDlg.cpp"
-"D:\CODE\ConStation\Costellation.cpp"
-"D:\CODE\ConStation\MainFrm.cpp"
-"D:\CODE\ConStation\ShowHideDlg.cpp"
-"D:\CODE\ConStation\Star.cpp"
-"D:\CODE\ConStation\Starfield.cpp"
+"D:\DOCS\Code\old ConStations\v3.2\Starfield.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP267.tmp" 
-Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP268.tmp" with contents
-[
-/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Release/" /Fp"Release/ConStation.pch" /Yc"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
-"D:\CODE\ConStation\StdAfx.cpp"
-]
-Creating command line "cl.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP268.tmp" 
-Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP269.tmp" with contents
+Creating command line "cl.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPB3A.tmp" 
+Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPB3B.tmp" with contents
 [
 opengl32.lib glu32.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/ConStation.pdb" /machine:I386 /out:"Release/ConStation.exe" 
-.\Release\ConStation.obj
-.\Release\ConStationDoc.obj
-.\Release\ConStationView.obj
-.\Release\ConstBar.obj
-.\Release\ConstNameDlg.obj
-.\Release\Costellation.obj
-.\Release\MainFrm.obj
-.\Release\ShowHideDlg.obj
-.\Release\Star.obj
-.\Release\Starfield.obj
-.\Release\StdAfx.obj
-.\Release\ConStation.res
+".\Release\ConStation.obj"
+".\Release\ConStationDoc.obj"
+".\Release\ConStationView.obj"
+".\Release\ConstBar.obj"
+".\Release\ConstNameDlg.obj"
+".\Release\Costellation.obj"
+".\Release\MainFrm.obj"
+".\Release\ShowHideDlg.obj"
+".\Release\Star.obj"
+".\Release\Starfield.obj"
+".\Release\StdAfx.obj"
+".\Release\Terrain.obj"
+".\Release\ConStation.res"
 ]
-Creating command line "link.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP269.tmp"
+Creating command line "link.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPB3B.tmp"
 <h3>Output Window</h3>
-Compiling resources...
 Compiling...
-StdAfx.cpp
-Compiling...
-ConStation.cpp
-ConStationDoc.cpp
-ConStationView.cpp
-ConstBar.cpp
-ConstNameDlg.cpp
-Costellation.cpp
-MainFrm.cpp
-ShowHideDlg.cpp
-Star.cpp
 Starfield.cpp
-Generating Code...
 Linking...
-Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP26B.tmp" with contents
+Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPB3D.tmp" with contents
 [
 /nologo /o"Release/ConStation.bsc" 
-.\Release\StdAfx.sbr
-.\Release\ConStation.sbr
-.\Release\ConStationDoc.sbr
-.\Release\ConStationView.sbr
-.\Release\ConstBar.sbr
-.\Release\ConstNameDlg.sbr
-.\Release\Costellation.sbr
-.\Release\MainFrm.sbr
-.\Release\ShowHideDlg.sbr
-.\Release\Star.sbr
-.\Release\Starfield.sbr]
-Creating command line "bscmake.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP26B.tmp"
+".\Release\StdAfx.sbr"
+".\Release\ConStation.sbr"
+".\Release\ConStationDoc.sbr"
+".\Release\ConStationView.sbr"
+".\Release\ConstBar.sbr"
+".\Release\ConstNameDlg.sbr"
+".\Release\Costellation.sbr"
+".\Release\MainFrm.sbr"
+".\Release\ShowHideDlg.sbr"
+".\Release\Star.sbr"
+".\Release\Starfield.sbr"
+".\Release\Terrain.sbr"]
+Creating command line "bscmake.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPB3D.tmp"
 Creating browse info file...
 <h3>Output Window</h3>
 

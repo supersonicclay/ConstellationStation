@@ -52,7 +52,6 @@ private:
 	CString name;
 
 	BOOL visible;
-	BOOL current;
 
 	int numLines;
 	CConstLine* lines;
@@ -64,9 +63,6 @@ public:
 	BOOL IsVisible() const;
 	void SwitchVisible();
 	void SetVisible(BOOL visible_);
-
-	BOOL IsCurrent() const;
-	void SetCurrent(BOOL current_=true);
 
 	int GetNumLines() const;
 	CConstLine* GetLine(int i) const;

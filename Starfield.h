@@ -30,7 +30,7 @@ private:
 
 	// Settings
 	float latitude;
-	int   season;
+	float season;
 	float time;
 	BOOL  spinning;
 
@@ -54,7 +54,7 @@ public:
 	int GetNumCurConstellation() const;
 
 	float GetLatitude() const;
-	int   GetSeason() const;
+	float GetSeason() const;
 	float GetTime() const;
 	BOOL  IsSpinning() const;
 
@@ -66,7 +66,7 @@ public:
 	void IncNumNewConstellations();
 	void SetNumCurConstellation(int i);
 	void SetLatitude(float latitude_);
-	void SetSeason(int season_);
+	void SetSeason(float season_);
 	void SetTime(float time_);
 	void SwitchSpinning();
 	// Adjusts

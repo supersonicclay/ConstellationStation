@@ -10,20 +10,25 @@ SELECTION
 
 
 IMPROVING
-1	Implement Saving / Opening
 2	Select ConstLine to select constellation
+5	Print Constellation Name near constellation
 3	Load pictures instead of GL_POINTS for stars
 		compare effeciency
-5	Terrain
-5	Black Terrain, Dark Blue Sky Gradient
+5	Dark Terrain, Dark Blue Sky Gradient
+5	Open, Save should go to starfields folder
+5	Keep Mouse in place while rotating
+5	Undo
+
 
 
 CODE
 5	Comments
 5	const's
+5	Format ()'s
 
 
-FINAL
+
+ACTUAL
 5	Input Actual stars & constellations
 5	Choose location (lattitude)
 5	Choose season

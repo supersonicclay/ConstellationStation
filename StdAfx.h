@@ -21,6 +21,14 @@
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
 
+// OpenGL
+#include <gl/gl.h>
+#include <gl/glu.h>
+
+// For star randomization
+#include <time.h>
+#include <math.h>
+
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 

@@ -83,7 +83,7 @@ END_MESSAGE_MAP()
 
 void CConstBar::AddConst(CString &str)
 {
-	// Add string to list and set to current
+	// Add string to list and select
 	m_List.SetCurSel(m_List.AddString(str));
 }
 
@@ -103,12 +103,16 @@ void CConstBar::DeleteConst()
 
 void CConstBar::UpdateList(CString* names, int numConstellations, int numCurrent)
 {
+	// Clear the list
 	m_List.ResetContent();
+
+	// Cycle through the names
 	for (int i=0; i<numConstellations; i++)
 	{
+		// If this is the current constellation select it after adding it
 		if (i==numCurrent)
 			m_List.SetCurSel(m_List.AddString(names[i]));
-		else
+		else	// Just add it
 			m_List.AddString(names[i]);
 	}
 }

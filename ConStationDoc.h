@@ -10,10 +10,11 @@
 #endif // _MSC_VER > 1000
 
 #include "Starfield.h"
+#include "Terrain.h"
 
 class CConStationDoc : public CDocument
 {
-DECLARE_DYNCREATE(CConStationDoc)
+DECLARE_DYNCREATE( CConStationDoc )
 
 protected: // create from serialization only
 	CConStationDoc();
@@ -21,16 +22,18 @@ protected: // create from serialization only
 // Attributes
 private:
 	CStarfield* starfield;
+	CTerrain* terrain;
 
 // Operations
 public:
-	CStarfield* GetStarfield();
+	CStarfield* GetStarfield() const;
+	CTerrain* GetTerrain() const;
 
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CConStationDoc)
 	public:
-	virtual void Serialize(CArchive& ar);
+	virtual void Serialize( CArchive& ar );
 	virtual BOOL OnNewDocument();
 	//}}AFX_VIRTUAL
 
@@ -39,7 +42,7 @@ public:
 	virtual ~CConStationDoc();
 #ifdef _DEBUG
 	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
+	virtual void Dump( CDumpContext& dc ) const;
 #endif
 
 protected:

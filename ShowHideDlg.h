@@ -7,7 +7,9 @@
 // ShowHideDlg.h : header file
 //
 
+#include "Starfield.h"
 #include "Constellation.h"
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CShowHideDlg dialog
@@ -18,11 +20,14 @@ class CShowHideDlg : public CDialog
 public:
 	CShowHideDlg(CWnd* pParent = NULL);   // standard constructor
 
+	CStarfield* GetStarfield() const;
+
 private:
 // Members
 	CListBox m_List;
 	CConstellation* constellations;
 	int numConstellations;
+	int numCurConstellation;
 
 // Dialog Data
 	//{{AFX_DATA(CShowHideDlg)

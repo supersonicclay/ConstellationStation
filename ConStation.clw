@@ -173,12 +173,13 @@ VirtualFilter=dWC
 [DLG:IDD_SHOW_HIDE]
 Type=1
 Class=CShowHideDlg
-ControlCount=5
+ControlCount=6
 Control1=IDOK,button,1342242817
 Control2=IDC_CONST_LIST,listbox,1352728843
 Control3=IDC_SHOWALL,button,1342242816
 Control4=IDC_HIDEALL,button,1342242816
 Control5=IDC_INVERT,button,1342242816
+Control6=IDC_STATIC,static,1342308352
 
 [CLS:CShowHideDlg]
 Type=0

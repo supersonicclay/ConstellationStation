@@ -87,7 +87,6 @@ CConstellation::CConstellation()
 {
 	numLines = 0;
 	visible = true;
-	current = false;
 }
 
 CConstellation::CConstellation(CString name_)
@@ -125,35 +124,6 @@ void CConstellation::SwitchVisible()
 void CConstellation::SetVisible(BOOL visible_)
 {
 	visible = visible_;
-}
-
-BOOL CConstellation::IsCurrent() const
-{
-	return current;
-}
-
-void CConstellation::SetCurrent(BOOL current_)
-{
-	current = current_;
-
-	/*
-	if (current)
-	{
-		for (int i=0; i<numLines; i++)
-		{
-			lines[i].GetStar1()->SetColor(RED);
-			lines[i].GetStar2()->SetColor(RED);
-		}
-	}
-	else
-	{
-		for (int i=0; i<numLines; i++)
-		{
-			lines[i].GetStar1()->RestoreColor();
-			lines[i].GetStar2()->RestoreColor();
-		}
-	}
-	*/
 }
 
 int CConstellation::GetNumLines() const
@@ -256,7 +226,6 @@ void CConstellation::DeleteLine(int lineNum)
 const CConstellation& CConstellation::operator =(const CConstellation& c)
 {
 	name = c.name;
-	current = c.current;
 	visible = c.visible;
 	numLines = c.numLines;
 
@@ -269,7 +238,6 @@ const CConstellation& CConstellation::operator =(const CConstellation& c)
 	return *this;
 }
 
-///Do you need??
 void CConstellation::Serialize(CArchive& ar)
 {
 	CObject::Serialize(ar);
@@ -277,13 +245,13 @@ void CConstellation::Serialize(CArchive& ar)
 	if (ar.IsStoring())
 	{
 		ar << name
-		   << current << visible
+		   << visible
 		   << numLines;
 	}
 	else
 	{
 		ar >> name
-		   >> current >> visible
+		   >> visible
 		   >> numLines;
 	}
 
@@ -293,10 +261,5 @@ void CConstellation::Serialize(CArchive& ar)
 		lines = new CConstLine[numLines];
 	}
 
-	/*///
-	for (int i=0; i<numLines; i++)
-	{
-		lines[i].Serialize(ar);
-	}
-	*/
+	// NOTE: Serialization for ConstLines is done in CStarfield
 }

@@ -55,6 +55,7 @@ private:
 public:
 	CConStationDoc* GetDocument() const;
 	CStarfield* GetStarfield() const;
+	CTerrain* GetTerrain() const;
 
 	BOOL InitializeOpenGL();
 	BOOL SetupPixelFormat();
@@ -67,7 +68,8 @@ public:
 	BOOL IsRotating() const;
 
 // Drawing functions
-	void DrawGround() const;
+	void DrawTerrain() const;
+	void PositionTerrain() const;
 	void DrawStarfield() const;
 	void DrawStars() const;
 	void DrawStar (int i) const;

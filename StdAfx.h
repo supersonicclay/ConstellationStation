@@ -3,8 +3,8 @@
 //      are changed infrequently
 //
 
-#if !defined(AFX_STDAFX_H__1B094889_FEDF_41B7_A44F_7FFDD8E7BE46__INCLUDED_)
-#define AFX_STDAFX_H__1B094889_FEDF_41B7_A44F_7FFDD8E7BE46__INCLUDED_
+#if !defined(AFX_STDAFX_H__BF273791_C3DA_477B_BEEF_9E50B5903349__INCLUDED_)
+#define AFX_STDAFX_H__BF273791_C3DA_477B_BEEF_9E50B5903349__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -25,7 +25,8 @@
 #include <gl\glu.h>
 #include <gl\glut.h>
 #include <gl\glaux.h>
+
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_STDAFX_H__1B094889_FEDF_41B7_A44F_7FFDD8E7BE46__INCLUDED_)
+#endif // !defined(AFX_STDAFX_H__BF273791_C3DA_477B_BEEF_9E50B5903349__INCLUDED_)

@@ -2,8 +2,8 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_MAINFRM_H__BBDD9AAC_8DFE_4EB2_B6EC_A5027B43EDF3__INCLUDED_)
-#define AFX_MAINFRM_H__BBDD9AAC_8DFE_4EB2_B6EC_A5027B43EDF3__INCLUDED_
+#if !defined(AFX_MAINFRM_H__EF73967D_9D13_458C_96D6_CBBF66AF483A__INCLUDED_)
+#define AFX_MAINFRM_H__EF73967D_9D13_458C_96D6_CBBF66AF483A__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -28,6 +28,7 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CMainFrame)
+	public:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 	virtual BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo);
 	//}}AFX_VIRTUAL
@@ -43,6 +44,8 @@ public:
 protected:  // control bar embedded members
 	CStatusBar  m_wndStatusBar;
 	CToolBar    m_wndToolBar;
+	CReBar      m_wndReBar;
+	CDialogBar      m_wndDlgBar;
 	CChildView    m_wndView;
 
 // Generated message map functions
@@ -61,4 +64,4 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_MAINFRM_H__BBDD9AAC_8DFE_4EB2_B6EC_A5027B43EDF3__INCLUDED_)
+#endif // !defined(AFX_MAINFRM_H__EF73967D_9D13_458C_96D6_CBBF66AF483A__INCLUDED_)

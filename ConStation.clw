@@ -5,30 +5,33 @@ Version=1
 LastClass=CChildView
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
-NewFileInclude2=#include "sdindv.h"
+NewFileInclude2=#include "ConStation.h"
 LastPage=0
 
 ClassCount=4
-Class1=CSdindvApp
+Class1=CConStationApp
 Class3=CMainFrame
 Class4=CAboutDlg
 
 ResourceCount=2
-Resource1=IDR_MAINFRAME
+Resource1=IDD_ABOUTBOX
 Class2=CChildView
-Resource2=IDD_ABOUTBOX
+Resource2=IDR_MAINFRAME
 
-[CLS:CSdindvApp]
+[CLS:CConStationApp]
 Type=0
-HeaderFile=sdindv.h
-ImplementationFile=sdindv.cpp
+HeaderFile=ConStation.h
+ImplementationFile=ConStation.cpp
 Filter=N
+LastObject=CConStationApp
 
 [CLS:CChildView]
 Type=0
 HeaderFile=ChildView.h
 ImplementationFile=ChildView.cpp
 Filter=N
+BaseClass=CWnd 
+VirtualFilter=WC
 LastObject=CChildView
 
 [CLS:CMainFrame]
@@ -42,8 +45,8 @@ Filter=T
 
 [CLS:CAboutDlg]
 Type=0
-HeaderFile=sdindv.cpp
-ImplementationFile=sdindv.cpp
+HeaderFile=ConStation.cpp
+ImplementationFile=ConStation.cpp
 Filter=D
 
 [DLG:IDD_ABOUTBOX]
@@ -92,4 +95,10 @@ Command3=ID_EDIT_PASTE
 Command4=ID_FILE_PRINT
 Command5=ID_APP_ABOUT
 CommandCount=5
+
+[DLG:IDR_MAINFRAME]
+Type=1
+Class=?
+ControlCount=1
+Control1=IDC_STATIC,static,1342308352
 

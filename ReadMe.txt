@@ -1,46 +1,46 @@
 ========================================================================
-       MICROSOFT FOUNDATION CLASS LIBRARY : sdindv
+       MICROSOFT FOUNDATION CLASS LIBRARY : ConStation
 ========================================================================
 
 
-AppWizard has created this sdindv application for you.  This application
+AppWizard has created this ConStation application for you.  This application
 not only demonstrates the basics of using the Microsoft Foundation classes
 but is also a starting point for writing your application.
 
 This file contains a summary of what you will find in each of the files that
-make up your sdindv application.
+make up your ConStation application.
 
-sdindv.dsp
+ConStation.dsp
     This file (the project file) contains information at the project level and
     is used to build a single project or subproject. Other users can share the
     project (.dsp) file, but they should export the makefiles locally.
 
-sdindv.h
+ConStation.h
     This is the main header file for the application.  It includes other
     project specific headers (including Resource.h) and declares the
-    CSdindvApp application class.
+    CConStationApp application class.
 
-sdindv.cpp
+ConStation.cpp
     This is the main application source file that contains the application
-    class CSdindvApp.
+    class CConStationApp.
 
-sdindv.rc
+ConStation.rc
     This is a listing of all of the Microsoft Windows resources that the
     program uses.  It includes the icons, bitmaps, and cursors that are stored
     in the RES subdirectory.  This file can be directly edited in Microsoft
 	Visual C++.
 
-sdindv.clw
+ConStation.clw
     This file contains information used by ClassWizard to edit existing
     classes or add new classes.  ClassWizard also uses this file to store
     information needed to create and edit message maps and dialog data
     maps and to create prototype member functions.
 
-res\sdindv.ico
+res\ConStation.ico
     This is an icon file, which is used as the application's icon.  This
-    icon is included by the main resource file sdindv.rc.
+    icon is included by the main resource file ConStation.rc.
 
-res\sdindv.rc2
+res\ConStation.rc2
     This file contains resources that are not edited by Microsoft 
 	Visual C++.  You should place all resources not editable by
 	the resource editor in this file.
@@ -59,7 +59,7 @@ res\Toolbar.bmp
     This bitmap file is used to create tiled images for the toolbar.
     The initial toolbar and status bar are constructed in the CMainFrame
     class. Edit this toolbar bitmap using the resource editor, and
-    update the IDR_MAINFRAME TOOLBAR array in sdindv.rc to add
+    update the IDR_MAINFRAME TOOLBAR array in ConStation.rc to add
     toolbar buttons.
 /////////////////////////////////////////////////////////////////////////////
 
@@ -70,7 +70,7 @@ Other standard files:
 
 StdAfx.h, StdAfx.cpp
     These files are used to build a precompiled header (PCH) file
-    named sdindv.pch and a precompiled types file named StdAfx.obj.
+    named ConStation.pch and a precompiled types file named StdAfx.obj.
 
 Resource.h
     This is the standard header file, which defines new resource IDs.

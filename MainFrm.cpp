@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "sdindv.h"
+#include "ConStation.h"
 
 #include "MainFrm.h"
 
@@ -59,11 +59,24 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	}
 	
-	if (!m_wndToolBar.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP
-		| CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC) ||
+	if (!m_wndToolBar.CreateEx(this) ||
 		!m_wndToolBar.LoadToolBar(IDR_MAINFRAME))
 	{
 		TRACE0("Failed to create toolbar\n");
+		return -1;      // fail to create
+	}
+	if (!m_wndDlgBar.Create(this, IDR_MAINFRAME, 
+		CBRS_ALIGN_TOP, AFX_IDW_DIALOGBAR))
+	{
+		TRACE0("Failed to create dialogbar\n");
+		return -1;		// fail to create
+	}
+
+	if (!m_wndReBar.Create(this) ||
+		!m_wndReBar.AddBar(&m_wndToolBar) ||
+		!m_wndReBar.AddBar(&m_wndDlgBar))
+	{
+		TRACE0("Failed to create rebar\n");
 		return -1;      // fail to create
 	}
 
@@ -75,11 +88,11 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;      // fail to create
 	}
 
-	// TODO: Delete these three lines if you don't want the toolbar to
-	//  be dockable
-	m_wndToolBar.EnableDocking(CBRS_ALIGN_ANY);
-	EnableDocking(CBRS_ALIGN_ANY);
-	DockControlBar(&m_wndToolBar);
+	// TODO: Remove this if you don't want tool tips
+	m_wndToolBar.SetBarStyle(m_wndToolBar.GetBarStyle() |
+		CBRS_TOOLTIPS | CBRS_FLYBY);
+
+	
 
 	return 0;
 }
@@ -90,6 +103,9 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 		return FALSE;
 	// TODO: Modify the Window class or styles here by modifying
 	//  the CREATESTRUCT cs
+
+//	cs.style = WS_OVERLAPPED | WS_CAPTION | FWS_ADDTOTITLE
+//		| WS_THICKFRAME | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_MAXIMIZE;
 
 	cs.dwExStyle &= ~WS_EX_CLIENTEDGE;
 	cs.lpszClass = AfxRegisterWndClass(0);

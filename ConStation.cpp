@@ -1,8 +1,9 @@
-// sdindv.cpp : Defines the class behaviors for the application.
+// ConStation.cpp : Defines the class behaviors for the application.
 //
 
 #include "stdafx.h"
-#include "sdindv.h"
+#include "ConStation.h"
+#include "Starfield.h"
 
 #include "MainFrm.h"
 
@@ -12,11 +13,29 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/////////////////////////////////////////////////////////////////////////////
-// CSdindvApp
 
-BEGIN_MESSAGE_MAP(CSdindvApp, CWinApp)
-	//{{AFX_MSG_MAP(CSdindvApp)
+
+/////////////////////////////////////////////////////////////////////////////
+// Globals
+
+const CColor WHITE = {1.0f,1.0f,1.0f},
+			 BLACK = {0.0f,0.0f,0.0f},
+			 RED   = {1.0f,0.0f,0.0f},
+			 GREEN = {0.0f,1.0f,0.0f},
+			 BLUE  = {0.0f,0.0f,1.0f};
+
+// Convinience function for glColor3f
+void glColor(CColor c)
+{
+	glColor3f(c.r, c.g, c.b);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// CConStationApp
+
+BEGIN_MESSAGE_MAP(CConStationApp, CWinApp)
+	//{{AFX_MSG_MAP(CConStationApp)
 	ON_COMMAND(ID_APP_ABOUT, OnAppAbout)
 		// NOTE - the ClassWizard will add and remove mapping macros here.
 		//    DO NOT EDIT what you see in these blocks of generated code!
@@ -24,23 +43,25 @@ BEGIN_MESSAGE_MAP(CSdindvApp, CWinApp)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// CSdindvApp construction
+// CConStationApp construction
 
-CSdindvApp::CSdindvApp()
+CConStationApp::CConStationApp()
 {
 	// TODO: add construction code here,
 	// Place all significant initialization in InitInstance
+
+	starfield = new CStarfield;
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// The one and only CSdindvApp object
+// The one and only CConStationApp object
 
-CSdindvApp theApp;
+CConStationApp theApp;
 
 /////////////////////////////////////////////////////////////////////////////
-// CSdindvApp initialization
+// CConStationApp initialization
 
-BOOL CSdindvApp::InitInstance()
+BOOL CConStationApp::InitInstance()
 {
 	AfxEnableControlContainer();
 
@@ -73,18 +94,23 @@ BOOL CSdindvApp::InitInstance()
 		WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, NULL,
 		NULL);
 
-
-
+	// Set the frame's icon
+	pFrame->SetIcon(LoadIcon(IDR_MAINFRAME), TRUE);
 
 	// The one and only window has been initialized, so show and update it.
-	pFrame->ShowWindow(SW_SHOW);
+	pFrame->ShowWindow(SW_SHOWMAXIMIZED);
 	pFrame->UpdateWindow();
 
 	return TRUE;
 }
 
+CStarfield* CConStationApp::GetStarfield()
+{
+	return starfield;
+}
+
 /////////////////////////////////////////////////////////////////////////////
-// CSdindvApp message handlers
+// CConStationApp message handlers
 
 
 
@@ -137,12 +163,12 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 // App command to run the dialog
-void CSdindvApp::OnAppAbout()
+void CConStationApp::OnAppAbout()
 {
 	CAboutDlg aboutDlg;
 	aboutDlg.DoModal();
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// CSdindvApp message handlers
+// CConStationApp message handlers
 

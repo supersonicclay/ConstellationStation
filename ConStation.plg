@@ -1,0 +1,58 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: ConStation - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\CLaY\LOCALS~1\Temp\RSP150.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/ConStation.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"D:\CODE\old ConStation\v1.1\ChildView.cpp"
+"D:\CODE\old ConStation\v1.1\ConStation.cpp"
+"D:\CODE\old ConStation\v1.1\MainFrm.cpp"
+"D:\CODE\old ConStation\v1.1\Starfield.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\CLaY\LOCALS~1\Temp\RSP150.tmp" 
+Creating temporary file "C:\DOCUME~1\CLaY\LOCALS~1\Temp\RSP151.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/ConStation.pch" /Yc"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"D:\CODE\old ConStation\v1.1\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\CLaY\LOCALS~1\Temp\RSP151.tmp" 
+Creating temporary file "C:\DOCUME~1\CLaY\LOCALS~1\Temp\RSP152.tmp" with contents
+[
+opengl32.lib glu32.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/ConStation.pdb" /machine:I386 /out:"Release/ConStation.exe" 
+".\Release\ChildView.obj"
+".\Release\ConStation.obj"
+".\Release\MainFrm.obj"
+".\Release\Starfield.obj"
+".\Release\StdAfx.obj"
+".\Release\ConStation.res"
+]
+Creating command line "link.exe @C:\DOCUME~1\CLaY\LOCALS~1\Temp\RSP152.tmp"
+<h3>Output Window</h3>
+Compiling...
+StdAfx.cpp
+Compiling...
+ChildView.cpp
+Generating Code...
+Compiling...
+ConStation.cpp
+Generating Code...
+Compiling...
+MainFrm.cpp
+Generating Code...
+Compiling...
+Starfield.cpp
+Generating Code...
+Linking...
+
+
+
+<h3>Results</h3>
+ConStation.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

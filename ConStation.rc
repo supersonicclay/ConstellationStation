@@ -50,7 +50,7 @@ BEGIN
     "LANGUAGE 9, 1\r\n"
     "#pragma code_page(1252)\r\n"
     "#endif //_WIN32\r\n"
-    "#include ""res\\sdindv.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""res\\ConStation.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
     "#include ""afxres.rc""         // Standard components\r\n"
     "#endif\r\n"
     "\0"
@@ -66,7 +66,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\sdindv.ico"
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\ConStation.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -118,7 +118,7 @@ BEGIN
     END
     POPUP "&Help"
     BEGIN
-        MENUITEM "&About sdindv...",            ID_APP_ABOUT
+        MENUITEM "&About ConStation...",        ID_APP_ABOUT
     END
 END
 
@@ -150,13 +150,21 @@ END
 
 IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "About sdindv"
+CAPTION "About ConStation"
 FONT 8, "MS Sans Serif"
 BEGIN
-    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,21,20
-    LTEXT           "sdindv Version 1.0",IDC_STATIC,40,14,119,8,SS_NOPREFIX
-    LTEXT           "Copyright (C) 2001",IDC_STATIC,40,25,119,8
-    DEFPUSHBUTTON   "OK",IDOK,166,7,50,14,WS_GROUP
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "ConStation Version 1.0",IDC_STATIC,40,10,119,8,
+                    SS_NOPREFIX
+    LTEXT           "Copyright (C) 2003",IDC_STATIC,40,25,119,8
+    DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
+END
+
+IDR_MAINFRAME DIALOG DISCARDABLE  0, 0, 330, 16
+STYLE WS_CHILD
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "TODO: layout dialog bar ",IDC_STATIC,12,4,300,8
 END
 
 
@@ -184,13 +192,13 @@ BEGIN
         BLOCK "040904B0"
         BEGIN
             VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "sdindv MFC Application\0"
+            VALUE "FileDescription", "ConStation MFC Application\0"
             VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "sdindv\0"
-            VALUE "LegalCopyright", "Copyright (C) 2001\0"
+            VALUE "InternalName", "ConStation\0"
+            VALUE "LegalCopyright", "Copyright (C) 2003\0"
             VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "sdindv.EXE\0"
-            VALUE "ProductName", "sdindv Application\0"
+            VALUE "OriginalFilename", "ConStation.EXE\0"
+            VALUE "ProductName", "ConStation Application\0"
             VALUE "ProductVersion", "1, 0, 0, 1\0"
         END
     END
@@ -214,9 +222,9 @@ BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 216
+        RIGHTMARGIN, 228
         TOPMARGIN, 7
-        BOTTOMMARGIN, 43
+        BOTTOMMARGIN, 48
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -229,12 +237,12 @@ END
 
 STRINGTABLE PRELOAD DISCARDABLE 
 BEGIN
-    IDR_MAINFRAME           "sdindv"
+    IDR_MAINFRAME           "ConStation"
 END
 
 STRINGTABLE PRELOAD DISCARDABLE 
 BEGIN
-    AFX_IDS_APP_TITLE       "sdindv"
+    AFX_IDS_APP_TITLE       "ConStation"
     AFX_IDS_IDLEMESSAGE     "Ready"
 END
 
@@ -252,12 +260,6 @@ STRINGTABLE DISCARDABLE
 BEGIN
     ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
     ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
-END
-
-STRINGTABLE DISCARDABLE 
-BEGIN
-    ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
-    ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
 END
 
 STRINGTABLE DISCARDABLE 
@@ -323,7 +325,7 @@ END
 LANGUAGE 9, 1
 #pragma code_page(1252)
 #endif //_WIN32
-#include "res\sdindv.rc2"  // non-Microsoft Visual C++ edited resources
+#include "res\ConStation.rc2"  // non-Microsoft Visual C++ edited resources
 #include "afxres.rc"         // Standard components
 #endif
 

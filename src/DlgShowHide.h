@@ -2,18 +2,12 @@
 // DlgShowHide.h
 //
 // CDlgShowHide
-//   show / hide list dialog
+//   show / hide constellation list dialog.
 //===========================================================================
 
 #ifndef CS_DLGSHOWHIDE_H
 #define CS_DLGSHOWHIDE_H
 
-
-#include "Starfield.h"
-#include "Constellation.h"
-
-/////////////////////////////////////////////////////////////////////////////
-// CDlgShowHide dialog
 
 class CDlgShowHide : public CDialog
 {
@@ -22,14 +16,15 @@ public:
 	CDlgShowHide( CWnd* pParent = NULL );
 	~CDlgShowHide();
 
-private:
-// Members
-	CListBox list;
 
 // Dialog Data
 	//{{AFX_DATA(CDlgShowHide)
 	enum { IDD = IDD_SHOW_HIDE };
+	CListBox list;
 	//}}AFX_DATA
+
+
+// Methods
 
 
 // Overrides
@@ -38,8 +33,6 @@ private:
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
-
-
 
 // Implementation
 protected:

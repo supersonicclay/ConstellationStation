@@ -2,17 +2,12 @@
 // BarStarf.h
 //
 // CBarStarf
-//   starfield toolbar
+//   starfield toolbar.
 //===========================================================================
 
 #ifndef CS_BARSTARF_H
 #define CS_BARSTARF_H
 
-
-#include "Starfield.h"
-
-/////////////////////////////////////////////////////////////////////////////
-// CBarStarf window
 
 class CBarStarf : public CToolBar
 {
@@ -24,13 +19,15 @@ public:
 	BOOL InitTimeCtrl();
 	BOOL InitSpeedCtrl();
 
+
 // Attributes
 public:
 	CDateTimeCtrl date;
 	CDateTimeCtrl time;
 	CComboBox speed;
 
-// Operations
+
+// Methods
 public:
 
 

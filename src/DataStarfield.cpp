@@ -1,39 +1,37 @@
 //===========================================================================
-// Starfield.cpp
+// DataStarfield.cpp
 //
-// CStarfield
+// CDataStarfield
+//   starfield data.
 //   a starfield contains stars, constellations, information about time and
-//   location on Earth, as well as certain settings. A CStarfield and 
-//   everything in a CStarfield can be saved and opened.
+//   location on Earth, as well as certain options. A CDataStarfield and 
+//   everything in a CDataStarfield can be saved and opened.
 //===========================================================================
 
 
 #include "stdafx.h"
 #include "ConStation.h"
-#include "Starfield.h"
+#include "DataStarfield.h"
 
-#include "Star.h"
-#include "Constellation.h"
+#include "DataStar.h"
+#include "DataConst.h"
 
-IMPLEMENT_SERIAL( CStarfield, CObject, 1 )
-
-
-const int MAX_STARS = 15000;/// Make changeable
+IMPLEMENT_SERIAL( CDataStarfield, CObject, 1 )
 
 
 /////////////////////////////////////////////////////////////////////////////
 // Construction / Destruction
 
-CStarfield::CStarfield()
+CDataStarfield::CDataStarfield()
 {
 	Clear();
 }
 
-CStarfield::~CStarfield()
+CDataStarfield::~CDataStarfield()
 {
 }
 
-void CStarfield::Clear()
+void CDataStarfield::Clear()
 {
 	modified = FALSE;
 
@@ -50,12 +48,9 @@ void CStarfield::Clear()
 	zoom = 0.0f;
 	spinning = FALSE;
 
-	starsVisible = TRUE;
-	starsLabeled = FALSE;
-	limitingMag = 5.0f;
-
-	constsVisible = TRUE;
-	constsLabeled = TRUE;
+	LoadStarDefaults();
+	LoadConstDefaults();
+	LoadSunDefaults();
 
 	// Time
 	time_t seconds = time(NULL);
@@ -68,7 +63,7 @@ void CStarfield::Clear()
 	rotLatitude = 50.0f;
 }
 
-void CStarfield::New( BOOL actual )
+void CDataStarfield::New( BOOL actual )
 {
 	Clear();
 
@@ -84,10 +79,10 @@ void CStarfield::New( BOOL actual )
 }
 
 // Creates sphere of random stars with radius of 1
-void CStarfield::InitRandomStars()
+void CDataStarfield::InitRandomStars()
 {
 	numStars = 8000;
-	CStar newStar;
+	CDataStar newStar;
 
 	/* /// North Star
 	newStar.SetColor( COLOR_NORTHSTAR );
@@ -97,7 +92,7 @@ void CStarfield::InitRandomStars()
 	newStar.SetX( 0.0f );
 	newStar.SetY( 1.0f );
 	newStar.SetZ( 0.0f );
-	stars.push_back( CStar(newStar) );
+	stars.push_back( CDataStar(newStar) );
 	*/
 
 	// Sun Corona
@@ -108,20 +103,20 @@ void CStarfield::InitRandomStars()
 	newStar.SetX( 0.0f );
 	newStar.SetY( 0.0f );
 	newStar.SetZ(-1.0f );
-	stars.push_back( CStar(newStar) );
+	stars.push_back( CDataStar(newStar) );
 
 	// Randomize the rest
 	for (int i=1; i<numStars; i++)
 	{
 		newStar.Randomize();
-		stars.push_back( CStar(newStar) );
+		stars.push_back( CDataStar(newStar) );
 	}
 }
 
 // Load the actual stars from the magnitude-sorted hipparcos catalog
-void CStarfield::InitActualStars()
+void CDataStarfield::InitActualStars()
 {
-	CStar newStar;
+	CDataStar newStar;
 
 	numStars = MAX_STARS;///
 	stars.reserve( numStars );
@@ -185,7 +180,7 @@ void CStarfield::InitActualStars()
 		newStar.SetColorFromMag();
 		newStar.SetRadiusFromMag();
 
-		stars.push_back( CStar(newStar) );
+		stars.push_back( CDataStar(newStar) );
 	}
 
 	file.Close();
@@ -193,7 +188,7 @@ void CStarfield::InitActualStars()
 }
 
 /// Load actual constellations somehow
-void CStarfield::InitActualConstellations()
+void CDataStarfield::InitActualConstellations()
 {
 }
 
@@ -201,28 +196,30 @@ void CStarfield::InitActualConstellations()
 /////////////////////////////////////////////////////////////////////////////
 // Gets
 
-CStar*			CStarfield::GetStar(int i)				{	return &stars[i];								}
-int				CStarfield::GetNumStars()				{	return numStars;								}
-CConstellation*	CStarfield::GetConstellation(int i)		{	return &constellations[i];						}
-CConstellation*	CStarfield::GetCurConstellation()		{	return &constellations[numCurConstellation];	}
-int				CStarfield::GetNumConstellations()		{	return numConstellations;						}
-int				CStarfield::GetNumCurConstellation()	{	return numCurConstellation;						}
-int				CStarfield::GetNumNewConstellations()	{	return numNewConstellations;					}
-BOOL			CStarfield::AreStarsVisible()			{	return starsVisible;							}
-BOOL			CStarfield::AreStarsLabeled()			{	return starsLabeled;							}
-float			CStarfield::GetLimitingMag()			{	return limitingMag;								}
-BOOL			CStarfield::AreConstsVisible()			{	return constsVisible;							}
-BOOL			CStarfield::AreConstsLabeled()			{	return constsLabeled;							}
-BOOL			CStarfield::IsModified()				{	return modified;								}
-float			CStarfield::GetRotLatitude()			{	return rotLatitude;								}
-float			CStarfield::GetRotTime()				{	return rotTime;									}
-BOOL			CStarfield::IsSpinning()				{	return spinning;								}
-float			CStarfield::GetRotX()					{	return rotX;									}
-float			CStarfield::GetRotY()					{	return rotY;									}
-float			CStarfield::GetZoom()					{	return zoom;									}
+CDataStar*	CDataStarfield::GetStar(int i)				{	return &stars[i];								}
+int			CDataStarfield::GetNumStars()				{	return numStars;								}
+CDataConst*	CDataStarfield::GetConstellation(int i)		{	return &constellations[i];						}
+CDataConst*	CDataStarfield::GetCurConstellation()		{	return &constellations[numCurConstellation];	}
+int			CDataStarfield::GetNumConstellations()		{	return numConstellations;						}
+int			CDataStarfield::GetNumCurConstellation()	{	return numCurConstellation;						}
+int			CDataStarfield::GetNumNewConstellations()	{	return numNewConstellations;					}
+BOOL		CDataStarfield::AreStarsVisible()			{	return starsVisible;							}
+BOOL		CDataStarfield::AreStarsLabeled()			{	return starsLabeled;							}
+float		CDataStarfield::GetLimitingMag()			{	return limitingMag;								}
+BOOL		CDataStarfield::AreConstsVisible()			{	return constsVisible;							}
+BOOL		CDataStarfield::AreConstsLabeled()			{	return constsLabeled;							}
+BOOL		CDataStarfield::IsSunVisible()				{	return sunVisible;								}
+BOOL		CDataStarfield::IsSunShining()				{	return sunShine;								}
+BOOL		CDataStarfield::IsModified()				{	return modified;								}
+float		CDataStarfield::GetRotLatitude()			{	return rotLatitude;								}
+float		CDataStarfield::GetRotTime()				{	return rotTime;									}
+BOOL		CDataStarfield::IsSpinning()				{	return spinning;								}
+float		CDataStarfield::GetRotX()					{	return rotX;									}
+float		CDataStarfield::GetRotY()					{	return rotY;									}
+float		CDataStarfield::GetZoom()					{	return zoom;									}
 
 // Find the constellation with the given name
-CConstellation*	CStarfield::GetConstellation( CString& name )
+CDataConst*	CDataStarfield::GetConstellation( CString& name )
 {
 	for (int i=0; i<numConstellations; i++)
 	{
@@ -236,27 +233,31 @@ CConstellation*	CStarfield::GetConstellation( CString& name )
 /////////////////////////////////////////////////////////////////////////////
 // Sets
 
-void CStarfield::IncNumNewConstellations()				{	numNewConstellations++;			}
-void CStarfield::SetNumCurConstellation( int i )		{	numCurConstellation = i;		}
-void CStarfield::SwitchStarsVisible()					{	starsVisible = !starsVisible;	}
-void CStarfield::SetStarsVisible( BOOL x )				{	starsVisible = x;				}
-void CStarfield::SwitchStarsLabeled()					{	starsLabeled = !starsLabeled;	}
-void CStarfield::SetStarsLabeled( BOOL x )				{	starsLabeled = x;				}
-void CStarfield::SetLimitingMag( float m )				{	limitingMag = m;				}
-void CStarfield::SwitchConstsVisible()					{	constsVisible = !constsVisible;	}
-void CStarfield::SetConstsVisible( BOOL x )				{	constsVisible = x;				}
-void CStarfield::SwitchConstsLabeled()					{	constsLabeled = !constsLabeled;	}
-void CStarfield::SetConstsLabeled( BOOL x )				{	constsLabeled = x;				}
-void CStarfield::SetRotLatitude( float rotLatitude_ )	{	rotLatitude = rotLatitude_;		}
-void CStarfield::SetRotTime( float rotTime_ )			{	rotTime = rotTime_;				}
-void CStarfield::SwitchSpinning()						{	spinning = !spinning;			}
+void CDataStarfield::IncNumNewConstellations()				{	numNewConstellations++;			}
+void CDataStarfield::SetNumCurConstellation( int i )		{	numCurConstellation = i;		}
+void CDataStarfield::SwitchStarsVisible()					{	starsVisible = !starsVisible;	}
+void CDataStarfield::SetStarsVisible( BOOL x )				{	starsVisible = x;				}
+void CDataStarfield::SwitchStarsLabeled()					{	starsLabeled = !starsLabeled;	}
+void CDataStarfield::SetStarsLabeled( BOOL x )				{	starsLabeled = x;				}
+void CDataStarfield::SetLimitingMag( float m )				{	limitingMag = m;				}
+void CDataStarfield::SwitchConstsVisible()					{	constsVisible = !constsVisible;	}
+void CDataStarfield::SetConstsVisible( BOOL x )				{	constsVisible = x;				}
+void CDataStarfield::SwitchConstsLabeled()					{	constsLabeled = !constsLabeled;	}
+void CDataStarfield::SetConstsLabeled( BOOL x )				{	constsLabeled = x;				}
+void CDataStarfield::SwitchSunVisible()						{	sunVisible = !sunVisible;		}
+void CDataStarfield::SetSunVisible( BOOL x )				{	sunVisible = x;					}
+void CDataStarfield::SwitchSunShine()						{	sunShine = !sunShine;			}
+void CDataStarfield::SetSunShine( BOOL x )					{	sunShine = x;					}
+void CDataStarfield::SetRotLatitude( float rotLatitude_ )	{	rotLatitude = rotLatitude_;		}
+void CDataStarfield::SetRotTime( float rotTime_ )			{	rotTime = rotTime_;				}
+void CDataStarfield::SwitchSpinning()						{	spinning = !spinning;			}
 
-void CStarfield::SetModified( BOOL m )
+void CDataStarfield::SetModified( BOOL m )
 {
-	modified = m; starfieldMgr.UpdateTitle();
+	modified = m; documentMgr.UpdateTitle();
 }
 
-void CStarfield::AdjRotX( float deltaRotX )
+void CDataStarfield::AdjRotX( float deltaRotX )
 {	
 	// Restrict up and down rotation
 	float newRotX = rotX + deltaRotX;
@@ -265,7 +266,7 @@ void CStarfield::AdjRotX( float deltaRotX )
 		rotX = newRotX;
 }
 
-void CStarfield::AdjRotY(float deltaRotY)
+void CDataStarfield::AdjRotY(float deltaRotY)
 {
 	rotY += deltaRotY;
 
@@ -276,12 +277,12 @@ void CStarfield::AdjRotY(float deltaRotY)
 		rotY -= 360.0f;
 }
 
-void CStarfield::AdjRotTime( float deltaTime )
+void CDataStarfield::AdjRotTime( float deltaTime )
 {
 	rotTime += deltaTime;
 }
 
-void CStarfield::AdjZoom( float deltaZoom )
+void CDataStarfield::AdjZoom( float deltaZoom )
 {
 	zoom += deltaZoom;
 }
@@ -294,49 +295,86 @@ void CStarfield::AdjZoom( float deltaZoom )
 /////////////////////////////////////////////////////////////////////////////
 // View Methods
 
-void CStarfield::RotateUp()		{	AdjRotX(-0.5f);	}
-void CStarfield::RotateDown()	{	AdjRotX( 0.5f);	}
-void CStarfield::RotateLeft()	{	AdjRotY(-0.5f);	}
-void CStarfield::RotateRight()	{	AdjRotY(0.5f);	}
+void CDataStarfield::RotateUp()		{	AdjRotX(-0.5f);	}
+void CDataStarfield::RotateDown()	{	AdjRotX( 0.5f);	}
+void CDataStarfield::RotateLeft()	{	AdjRotY(-0.5f);	}
+void CDataStarfield::RotateRight()	{	AdjRotY(0.5f);	}
 
-void CStarfield::ZoomIn()
+void CDataStarfield::ZoomIn()
 {
 	if (zoom < 0.9f)
 		zoom += 0.01f;
 }
 
-void CStarfield::ZoomOut()
+void CDataStarfield::ZoomOut()
 {
 	if (zoom > -0.8f)
 		zoom -= 0.01f;
 }
 
 // Reset viewing rotation and zoom
-void CStarfield::ResetView()
+void CDataStarfield::ResetView()
 {
 	ResetRot();
 	ResetZoom();
 }
 
 // Reset rotation
-void CStarfield::ResetRot()
+void CDataStarfield::ResetRot()
 {
 	rotX = 0.0f;
 	rotY = 0.0f;
 }
 
 // Reset zoom
-void CStarfield::ResetZoom()
+void CDataStarfield::ResetZoom()
 {
 	zoom = 0.0f;
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
+// Star Methods
+
+// Load default star options
+void CDataStarfield::LoadStarDefaults()
+{
+	starsVisible = DEF_STARS_VISIBLE;
+	starsLabeled = DEF_STARS_LABELED;
+	limitingMag = DEF_STARS_LIMMAG;
+}
+
+// Check if the given star number belongs to a hidden constellation
+BOOL CDataStarfield::IsStarInHiddenConst( int i )
+{
+	for( int ci=0; ci<numConstellations; ++ci )
+	{
+		// Continue if this constellation isn't hidden
+		if( constellations[ci].IsVisible() )
+			continue;
+		// Otherwise search through lines
+		for( int li=0; li<constellations[ci].GetNumLines(); ++li )
+		{
+			if( i == constellations[ci].GetLine(li)->GetStar1() ||
+				i == constellations[ci].GetLine(li)->GetStar2() )
+				return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+/////////////////////////////////////////////////////////////////////////////
 // Constellation Methods
 
+// Load default constellation options
+void CDataStarfield::LoadConstDefaults()
+{
+	constsVisible = DEF_CONST_VISIBLE;
+	constsLabeled = DEF_CONST_LABELED;
+}
+
 // Check if the given name is already in use
-BOOL CStarfield::IsDuplicate( CString& name )
+BOOL CDataStarfield::IsDuplicate( CString& name )
 {
 	for (int i=0; i<numConstellations; i++)
 	{
@@ -348,14 +386,14 @@ BOOL CStarfield::IsDuplicate( CString& name )
 }
 
 // Add a new constellation with the given name
-void CStarfield::AddConstellation(CString& name)
+void CDataStarfield::AddConstellation(CString& name)
 {
-	constellations.push_back( CConstellation(name) );
+	constellations.push_back( CDataConst(name) );
 	++numConstellations;
 }
 
 // Delete the current constellation
-void CStarfield::DeleteConstellation()
+void CDataStarfield::DeleteConstellation()
 {
 	// Use an iterator to find the current constellation
 	constellationsItor = constellations.begin();
@@ -369,13 +407,13 @@ void CStarfield::DeleteConstellation()
 }
 
 // Rename the current constellation
-void CStarfield::RenameConstellation( CString& name )
+void CDataStarfield::RenameConstellation( CString& name )
 {
 	GetCurConstellation()->SetName(name);
 }
 
 // Set the current constellation to the one with the given name
-BOOL CStarfield::SetCurConstellation( CString& name )
+BOOL CDataStarfield::SetCurConstellation( CString& name )
 {
 	// Search for constellation name
 	for (int i=0; i<numConstellations; i++)
@@ -393,16 +431,27 @@ BOOL CStarfield::SetCurConstellation( CString& name )
 
 
 /////////////////////////////////////////////////////////////////////////////
+// Sun methods
+
+// Load default sun options
+void CDataStarfield::LoadSunDefaults()
+{
+	sunVisible = DEF_SUN_VISIBLE;
+	sunShine = DEF_SUN_SHINE;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
 // Serialization
 
-void CStarfield::Serialize(CArchive& ar)
+void CDataStarfield::Serialize(CArchive& ar)
 {
 	CObject::Serialize(ar);
 	int i;
 
 	modified = FALSE;
 
-	// Serialize CStarfield attributes
+	// Serialize CDataStarfield attributes
 	if( ar.IsLoading() )
 	{
 		ar >> numStars
@@ -423,11 +472,11 @@ void CStarfield::Serialize(CArchive& ar)
 	{
 		stars.clear();
 		for( i=0; i<numStars; ++i )
-			stars.push_back( CStar() );
+			stars.push_back( CDataStar() );
 
 		constellations.clear();
 		for( i=0; i<numConstellations; ++i )
-			constellations.push_back( CConstellation() );
+			constellations.push_back( CDataConst() );
 	}
 
 	// Serialize stars
@@ -441,11 +490,11 @@ void CStarfield::Serialize(CArchive& ar)
 
 
 /*
-void CStarfield::Serialize(CArchive& ar)///
+void CDataStarfield::Serialize(CArchive& ar)///
 {
 	CObject::Serialize(ar);
 
-	// Serialize CStarfield attributes
+	// Serialize CDataStarfield attributes
 	if (ar.IsStoring())
 	{
 		ar << numStars
@@ -464,8 +513,8 @@ void CStarfield::Serialize(CArchive& ar)///
 	// If were loading we need to allocate space for stars and constellations
 	if (ar.IsLoading())
 	{
-		stars = new CStar[numStars];
-		constellations = new CConstellation[numConstellations];
+		stars = new CDataStar[numStars];
+		constellations = new CDataConst[numConstellations];
 	}
 
 	// Serialize stars and constellations
@@ -484,7 +533,7 @@ void CStarfield::Serialize(CArchive& ar)///
 	SerializeConstLines(ar);
 }
 
-void CStarfield::SerializeConstLines(CArchive& ar)
+void CDataStarfield::SerializeConstLines(CArchive& ar)
 {
 	// Serialization for each constellation line must be done here since
 	//  they reference stars

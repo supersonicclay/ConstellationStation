@@ -123,6 +123,10 @@ SOURCE=.\Global.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\Matrix.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\StdAfx.cpp
 # ADD CPP /Yc"stdafx.h"
 # End Source File
@@ -152,6 +156,10 @@ SOURCE=.\DlgOptionsStar.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\DlgOptionsSun.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\DlgOptionsTerr.cpp
 # End Source File
 # Begin Source File
@@ -168,23 +176,19 @@ SOURCE=.\DlgTime.cpp
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\Constellation.cpp
+SOURCE=.\DataConst.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\Matrix.cpp
+SOURCE=.\DataStar.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\Star.cpp
+SOURCE=.\DataStarfield.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\Starfield.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\Terrain.cpp
+SOURCE=.\DataTerrain.cpp
 # End Source File
 # End Group
 # Begin Group "Mgr Source Files"
@@ -201,6 +205,10 @@ SOURCE=.\MgrConst.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\MgrDocument.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\MgrGraphics.cpp
 # End Source File
 # Begin Source File
@@ -214,10 +222,6 @@ SOURCE=.\MgrOptions.cpp
 # Begin Source File
 
 SOURCE=.\MgrStarfield.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\MgrStars.cpp
 # End Source File
 # Begin Source File
 
@@ -261,6 +265,10 @@ SOURCE=.\Global.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\Matrix.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\resource.h
 # End Source File
 # Begin Source File
@@ -293,6 +301,10 @@ SOURCE=.\DlgOptionsStar.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\DlgOptionsSun.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\DlgOptionsTerr.h
 # End Source File
 # Begin Source File
@@ -309,23 +321,19 @@ SOURCE=.\DlgTime.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\Constellation.h
+SOURCE=.\DataConst.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Matrix.h
+SOURCE=.\DataStar.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Star.h
+SOURCE=.\DataStarfield.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Starfield.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\Terrain.h
+SOURCE=.\DataTerrain.h
 # End Source File
 # End Group
 # Begin Group "Mgr Header Files"
@@ -342,6 +350,10 @@ SOURCE=.\MgrConst.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\MgrDocument.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\MgrGraphics.h
 # End Source File
 # Begin Source File
@@ -355,10 +367,6 @@ SOURCE=.\MgrOptions.h
 # Begin Source File
 
 SOURCE=.\MgrStarfield.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\MgrStars.h
 # End Source File
 # Begin Source File
 
@@ -521,10 +529,6 @@ SOURCE=.\res\Toolbar.bmp
 # Begin Source File
 
 SOURCE=".\Bug Report.txt"
-# End Source File
-# Begin Source File
-
-SOURCE=.\Read.txt
 # End Source File
 # Begin Source File
 

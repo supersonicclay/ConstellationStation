@@ -1,5 +1,9 @@
-// DlgOptionsConst.cpp : implementation file
+//===========================================================================
+// DlgOptionsConst.cpp
 //
+// CDlgOptionsConst
+//   constellation options dialog.
+//===========================================================================
 
 #include "stdafx.h"
 #include "ConStation.h"
@@ -11,9 +15,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/////////////////////////////////////////////////////////////////////////////
-// CDlgOptionsConst dialog
-
 
 CDlgOptionsConst::CDlgOptionsConst(CWnd* pParent /*=NULL*/)
 	: CDialog(CDlgOptionsConst::IDD, pParent)
@@ -21,6 +22,7 @@ CDlgOptionsConst::CDlgOptionsConst(CWnd* pParent /*=NULL*/)
 	//{{AFX_DATA_INIT(CDlgOptionsConst)
 	visible = FALSE;
 	labeled = FALSE;
+	starsColored = FALSE;
 	//}}AFX_DATA_INIT
 }
 
@@ -31,37 +33,74 @@ void CDlgOptionsConst::DoDataExchange(CDataExchange* pDX)
 	//{{AFX_DATA_MAP(CDlgOptionsConst)
 	DDX_Check(pDX, IDC_CONST_VISIBLE, visible);
 	DDX_Check(pDX, IDC_CONST_LABELED, labeled);
+	DDX_Check(pDX, IDC_CONST_STARSCOLORED, starsColored);
 	//}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CDlgOptionsConst, CDialog)
 	//{{AFX_MSG_MAP(CDlgOptionsConst)
+	ON_WM_CTLCOLOR()
 	ON_BN_CLICKED(IDC_CONST_NORMCOLOR, OnConstNormColor)
 	ON_BN_CLICKED(IDC_CONST_SELCOLOR, OnConstSelColor)
 	ON_BN_CLICKED(IDC_CONST_ACTIVECOLOR, OnConstActiveColor)
-	ON_WM_CTLCOLOR()
+	ON_BN_CLICKED(IDC_CONST_STARCOLOR, OnConstStarColor)
+	ON_BN_CLICKED(IDC_CONST_STARSCOLORED, OnConstStarsColored)
+	ON_BN_CLICKED(IDC_CONST_DEFAULTS, OnConstDefaults)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
+
 /////////////////////////////////////////////////////////////////////////////
 // CDlgOptionsConst message handlers
-
 
 BOOL CDlgOptionsConst::OnInitDialog() 
 {
 	CDialog::OnInitDialog();
 
-	// Initialize controls
+	InitOptions();
+
+	return TRUE;
+}
+
+void CDlgOptionsConst::InitOptions()
+{
 	CheckDlgButton( IDC_CONST_VISIBLE, starfield.AreConstsVisible() );
 	CheckDlgButton( IDC_CONST_LABELED, starfield.AreConstsLabeled() );
+	CheckDlgButton( IDC_CONST_STARSCOLORED, optionsMgr.AreConstStarsColored() );
 
 	// Initialize data that are updated realtime (in case of cancel button)
 	origNormColor = normColor = optionsMgr.GetConstNormColor();
 	origSelColor = selColor = optionsMgr.GetConstSelColor();
 	origActiveColor = activeColor = optionsMgr.GetConstActiveColor();
+	origStarColor = starColor = optionsMgr.GetConstStarColor();
 
-	return TRUE;
+	OnConstStarsColored();	// Update Star Color button
+}
+
+void CDlgOptionsConst::OnConstDefaults() 
+{
+	if( CSQuestion( GetSafeHwnd(),
+		"Are you sure you want to load\ndefault constellation options?" ) == IDYES )
+	{
+		optionsMgr.LoadConstDefaults();
+
+		InitOptions();
+
+		Redraw();
+		InvalidateRect( NULL ); // redraw dialog for color preview
+	}
+	SetFocus();
+}
+
+void CDlgOptionsConst::OnConstStarsColored()
+{
+	if( IsDlgButtonChecked(IDC_CONST_STARSCOLORED) )
+		GetDlgItem(IDC_CONST_STARCOLOR)->EnableWindow();
+	else
+		GetDlgItem(IDC_CONST_STARCOLOR)->EnableWindow( FALSE );
+
+	InvalidateRect( NULL ); // Redraw dialog for color preview
 }
 
 void CDlgOptionsConst::OnConstNormColor() 
@@ -82,7 +121,7 @@ void CDlgOptionsConst::OnConstNormColor()
 		optionsMgr.SetConstNormColor( normColor );
 
 		Redraw();
-		InvalidateRect( NULL, FALSE ); // Redraw dialog for color preview
+		InvalidateRect( NULL ); // Redraw dialog for color preview
 	}
 }
 
@@ -104,7 +143,7 @@ void CDlgOptionsConst::OnConstSelColor()
 		optionsMgr.SetConstSelColor( selColor );
 
 		Redraw();
-		InvalidateRect( NULL, FALSE ); // Redraw dialog for color preview
+		InvalidateRect( NULL ); // Redraw dialog for color preview
 	}
 }
 
@@ -126,7 +165,29 @@ void CDlgOptionsConst::OnConstActiveColor()
 		optionsMgr.SetConstActiveColor( activeColor );
 
 		Redraw();
-		InvalidateRect( NULL, FALSE ); // Redraw dialog for color preview
+		InvalidateRect( NULL ); // Redraw dialog for color preview
+	}
+}
+
+void CDlgOptionsConst::OnConstStarColor() 
+{
+	CColorDialog dialog;
+
+	dialog.m_cc.Flags = CC_FULLOPEN | CC_ENABLEHOOK | CC_RGBINIT;
+	dialog.m_cc.rgbResult = RGB( starColor.r * 255, starColor.g * 255, starColor.b * 255 );
+
+	if( dialog.DoModal() == IDOK )
+	{
+		COLORREF c = dialog.GetColor();
+
+		starColor.r = (float) GetRValue(c) / 255;
+		starColor.g = (float) GetGValue(c) / 255;
+		starColor.b = (float) GetBValue(c) / 255;
+
+		optionsMgr.SetConstStarColor( starColor );
+
+		Redraw();
+		InvalidateRect( NULL ); // Redraw dialog for color preview
 	}
 }
 
@@ -144,6 +205,13 @@ HBRUSH CDlgOptionsConst::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	else if( pWnd->GetDlgCtrlID() == IDC_CONST_ACTIVECOLOR_PREV )
 		c = RGB( activeColor.r * 255, activeColor.g * 255, activeColor.b * 255 );
 
+	else if( pWnd->GetDlgCtrlID() == IDC_CONST_STARCOLOR_PREV )
+	{
+		if( !GetDlgItem(IDC_CONST_STARCOLOR)->IsWindowEnabled() ) // not interested
+			return CDialog::OnCtlColor( pDC, pWnd, nCtlColor );
+		else
+			c = RGB( starColor.r * 255, starColor.g * 255, starColor.b * 255 );
+	}
 	else // not interested
 		return CDialog::OnCtlColor( pDC, pWnd, nCtlColor );
 
@@ -155,3 +223,4 @@ HBRUSH CDlgOptionsConst::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	// Return color preview brush
 	return (HBRUSH)colorBrush.GetSafeHandle();
 }
+

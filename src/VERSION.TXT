@@ -12,7 +12,7 @@
 
 
 -------------------------------------------------
-0.1 - Code cleanup
+0.1 - Cleanup
 -------------------------------------------------
 
 0.1.0
@@ -32,15 +32,26 @@
 	Working color options
 	Revised terrain options (stored in CMgrOptions)
 
+0.2.1
+	Stars colored for hidden constellations
+	Seasonal colors for terrain
+	Defaults options
+	Changing terrain roughness doesn't generate all new terrain
+	Sun options
+
+0.2.2
+-	Options remembered
+-	Double click to select constellation
+-	Cursor stays in place while rotating
 
 -------------------------------------------------
-0.3 - Graphics optimization / Math
+0.3 - Math
 -------------------------------------------------
 
 
 
 -------------------------------------------------
-0.4 - Pretty Graphics
+0.4 - Graphics
 -------------------------------------------------
 
 

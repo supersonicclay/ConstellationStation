@@ -3,33 +3,35 @@ CONSTELLATION STATION - YOU Make the Night Sky!
 ------------------------------------------------
 
 PHASES
-1	Bugs, Code organization, cleanup, saving
-2	Options, UI, terrain cleaning
-3	Graphics optimization, selecting, random starfield
-4	Pretty graphics, text
-5	Features (tests, actual)
+1	Cleanup - Bugs, organization, saving
+2	Options - UI, dialogs
+3	Math - graphics optimization, terrain, selecting, random
+4	Graphics - effects, text
+5	Features - tests, actual
 
 
 BUGS
 -	2	Roundoff error with sliders
 	3	Random starfield is blank
 	3	select line isn't checking for terrain hits
-	5	Program Icon  (WM_SETICON)
+	5	Program Icon
+		- frame.GetIcon()
+		- frame.SetIcon()
+		- create structure
+		- (WM_SETICON)
 
 GENERAL
 -	1	Read-through cleaning
 		- terrain
 -	1	Sanity checks
 -	2	Splash Screen
--	2	Need star colors again
+-	2	About dialog
+-	2	CS prefix
 	3	Spin sun separately
 	5	Undo
 	5	Print
 
 OPTIONS
--	2	sun options
--	2	compass options
--	2	colors (terrain seasons)
 -	2	Load on startup
 	3	number of stars
 	3	textured stars
@@ -40,6 +42,12 @@ OPTIONS
 
 INPUT MGR
 -	2	Double click to select constellation
+		- Names for selection are as follows:
+			0											Terrain
+			1											Star number 0
+			MAX_STARS									Star number (MAX_STARS-1)
+			MAX_STARS+1									Constellation number 0 lines
+			MAX_STARS+1 + (MAX_CONSTS*MAX_CONSTLINES)	Constellation number (MAX_CONSTS-1) Lines
 -	2	Keep Mouse in place while rotating
 
 GRAPHICS MGR
@@ -58,6 +66,7 @@ GRAPHICS MGR
 	5	Celestial Grid
 
 CONSTELLATION MGR
+-	2	show hide revision
 	5	Input actual constellations
 	5	Constellation details
 
@@ -76,14 +85,19 @@ STARFIELD MGR
 	5	Precession?
 
 TERRAIN MGR
--	2	Same seed for all roughnesses until generate new
--	2?	vectors
+	3	viewheight is choppy
+	3	Generate first few so you're sitting in a valley
+	3?	More circular
+	3?	vectors
 	4	Textured terrain
 
+DOCUMENT MGR
+	5	Import/Export constellations (must check seed if random starf)
+
 TEACHER MGR
-CONSTELLATION TESTS
-	5	TYPES
-		- Show constlines. Pick a line
-		- Don't show constlines. Pick a star 
-		- Draw constellation
-	5	Choose constellations in test
+	5	CONSTELLATION TESTS
+		- Types
+			- Show constlines. Pick a line
+			- Don't show constlines. Pick a star 
+			- Draw constellation
+		- Choose constellations in test

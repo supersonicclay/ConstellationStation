@@ -2,7 +2,7 @@
 // ConStationView.cpp
 //
 // CConStationView
-//   forwards input events to CInput and directs CGraphics
+//   forwards input events to CInput and directs CGraphics.
 //===========================================================================
 
 #include "stdafx.h"
@@ -10,20 +10,12 @@
 
 #include "ConStationView.h"
 
-#include "Starfield.h"
-#include "Star.h"
-#include "Constellation.h"
-
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
 
-
-/////////////////////////////////////////////////////////////////////////////
-// CConStationView
 
 BEGIN_MESSAGE_MAP(CConStationView, CWnd)
 	//{{AFX_MSG_MAP(CConStationView)
@@ -47,7 +39,7 @@ END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CConStationView construction/destruction
+// Construction / Destruction
 
 CConStationView::CConStationView()
 {

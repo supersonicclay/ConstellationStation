@@ -2,15 +2,12 @@
 // DlgLocation.h
 //
 // CDlgLocation
-//   location dialog
+//   location dialog.
 //===========================================================================
 
 #ifndef CS_DLGLOCATION_H
 #define CS_DLGLOCATION_H
 
-
-/////////////////////////////////////////////////////////////////////////////
-// CDlgLocation dialog
 
 class CDlgLocation : public CDialog
 {
@@ -23,6 +20,9 @@ public:
 	enum { IDD = IDD_LOCATION };
 		// NOTE: the ClassWizard will add data members here
 	//}}AFX_DATA
+
+
+// Methods
 
 
 // Overrides

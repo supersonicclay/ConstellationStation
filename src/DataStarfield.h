@@ -1,27 +1,28 @@
 //===========================================================================
-// Starfield.h
+// DataStarfield.h
 //
-// CStarfield
+// CDataStarfield
+//   starfield data.
 //   a starfield contains stars, constellations, information about time and
-//   location on Earth, as well as certain settings. A CStarfield and 
-//   everything in a CStarfield can be saved and opened.
+//   location on Earth, as well as certain options. A CDataStarfield and 
+//   everything in a CDataStarfield can be saved and opened.
 //===========================================================================
 
-#ifndef CS_STARFIELD_H
-#define CS_STARFIELD_H
+#ifndef CS_DATASTARFIELD_H
+#define CS_DATASTARFIELD_H
+
+#include "DataStar.h"
+#include "DataConst.h"
 
 
-#include "Star.h"
-#include "Constellation.h"
-
-class CStarfield : public CObject
+class CDataStarfield : public CObject
 {
-DECLARE_SERIAL( CStarfield )
+DECLARE_SERIAL( CDataStarfield )
 
 // Construction / Destruction
 public:
-	CStarfield();
-	~CStarfield();
+	CDataStarfield();
+	~CDataStarfield();
 
 	void Clear();
 	void New( BOOL actual );
@@ -54,6 +55,10 @@ private:
 	BOOL constsVisible;
 	BOOL constsLabeled;
 
+	// Sun options
+	BOOL sunVisible;
+	BOOL sunShine;
+
 	// Document
 	BOOL modified;
 
@@ -73,16 +78,17 @@ private:
 	// Zoom
 	float zoom;
 
+
 // Methods
 public:
 
-	// Gets
-	CStar* GetStar( int i );
+// Gets
+	CDataStar* GetStar( int i );
 	int GetNumStars();
 
-	CConstellation* GetConstellation( int i );
-	CConstellation* GetConstellation( CString &name );
-	CConstellation* GetCurConstellation();
+	CDataConst* GetConstellation( int i );
+	CDataConst* GetConstellation( CString &name );
+	CDataConst* GetCurConstellation();
 	int GetNumConstellations();
 	int GetNumNewConstellations();
 	int GetNumCurConstellation();
@@ -94,6 +100,9 @@ public:
 	BOOL AreConstsVisible();
 	BOOL AreConstsLabeled();
 
+	BOOL IsSunVisible();
+	BOOL IsSunShining();
+
 	BOOL IsModified();
 
 	float GetRotLatitude();
@@ -104,7 +113,7 @@ public:
 	float GetRotY();
 	float GetZoom();
 
-	// Sets
+// Sets
 	void IncNumNewConstellations();
 	void SetNumCurConstellation( int i );
 
@@ -119,6 +128,11 @@ public:
 	void SwitchConstsLabeled();
 	void SetConstsLabeled( BOOL x );
 
+	void SwitchSunVisible();
+	void SetSunVisible( BOOL x );
+	void SwitchSunShine();
+	void SetSunShine( BOOL x );
+
 	void SetModified( BOOL m=TRUE );
 
 	void SetRotLatitude( float rotLatitude_ );
@@ -129,7 +143,12 @@ public:
 	void AdjRotY( float deltaRotY );
 	void AdjZoom( float deltaZoom );
 
-	// Constellation methods
+// Star methods
+	void LoadStarDefaults();
+	BOOL IsStarInHiddenConst( int i );
+
+// Constellation methods
+	void LoadConstDefaults();
 	BOOL IsDuplicate( CString& name );
 	void AddConstellation( CString& name );
 	void DeleteConstellation();
@@ -137,7 +156,10 @@ public:
 	BOOL SetCurConstellation( CString& name );
 	void AddConstLine( int starNum1, int starNum2 );
 
-	// View methods
+// Sun methods
+	void LoadSunDefaults();
+
+// View methods
 	void RotateUp   ();
 	void RotateDown ();
 	void RotateLeft ();

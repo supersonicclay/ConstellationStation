@@ -1,5 +1,9 @@
-// DlgOptionsTerr.cpp : implementation file
+//===========================================================================
+// DlgOptionsTerr.cpp
 //
+// CDlgOptionsTerr
+//   terrain options dialog.
+//===========================================================================
 
 #include "stdafx.h"
 #include "ConStation.h"
@@ -10,9 +14,6 @@
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
-
-/////////////////////////////////////////////////////////////////////////////
-// CDlgOptionsTerr dialog
 
 
 CDlgOptionsTerr::CDlgOptionsTerr( CWnd* pParent /*=NULL*/)
@@ -47,6 +48,7 @@ BEGIN_MESSAGE_MAP(CDlgOptionsTerr, CDialog)
 	ON_LBN_SELCHANGE(IDC_TERR_SEASONS, OnSeasonChange)
 	ON_WM_CTLCOLOR()
 	ON_BN_CLICKED(IDC_TERR_TEXTURED, OnTerrTextured)
+	ON_BN_CLICKED(IDC_TERR_DEFAULTS, OnTerrDefaults)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -58,52 +60,54 @@ BOOL CDlgOptionsTerr::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// Initialize controls
-	CheckDlgButton( IDC_TERR_VISIBLE, terrain.IsVisible() );
-	CheckDlgButton( IDC_TERR_TEXTURED, optionsMgr.IsTerrTextured() );
-	SetDlgItemInt( IDC_TERR_ROUGHNESS, (int)(optionsMgr.GetTerrRoughness()*100) );
-	if( IsDlgButtonChecked(IDC_TERR_TEXTURED) )
-		GetDlgItem(IDC_TERR_COLOR)->EnableWindow( FALSE );
-
 	// Initialize slider
-	roughnessSlider.SetRange( 0, 30 );
+	roughnessSlider.SetRange( 0, 40 );
 	roughnessSlider.SetTicFreq( 10 );
-	roughnessSlider.SetPos( GetDlgItemInt(IDC_TERR_ROUGHNESS) );
 
 	// Initialize list box
 	seasonsListBox.AddString( "Winter" );
 	seasonsListBox.AddString( "Spring" );
 	seasonsListBox.AddString( "Summer" );
 	seasonsListBox.AddString( "Fall"   );
+
+	InitOptions();
+
+	return TRUE;
+}
+
+// Set dialog controls to the current options
+void CDlgOptionsTerr::InitOptions()
+{
+	CheckDlgButton( IDC_TERR_VISIBLE, terrain.IsVisible() );
+	CheckDlgButton( IDC_TERR_TEXTURED, optionsMgr.IsTerrTextured() );
+	SetDlgItemInt( IDC_TERR_ROUGHNESS, (int)(optionsMgr.GetTerrRoughness()*100) );
+	roughnessSlider.SetPos( GetDlgItemInt(IDC_TERR_ROUGHNESS) );
 	seasonsListBox.SetCurSel( optionsMgr.GetTerrSeason() );
 
 	// Initialize data that are updated realtime (in case of cancel button)
 	origRoughness = roughness = (int)(optionsMgr.GetTerrRoughness()*100);
 	origSeason = season = optionsMgr.GetTerrSeason();
-	origColor = color = optionsMgr.GetTerrColor();
+	origWinColor = winColor = optionsMgr.GetTerrWinColor();
+	origSprColor = sprColor = optionsMgr.GetTerrSprColor();
+	origSumColor = sumColor = optionsMgr.GetTerrSumColor();
+	origFalColor = falColor = optionsMgr.GetTerrFalColor();
 
 	UpdateRoughnessTxt();
-
-	return TRUE;
+	OnTerrTextured();
 }
 
-void CDlgOptionsTerr::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
+void CDlgOptionsTerr::OnTerrDefaults() 
 {
-	// Check if changed
-	if( roughness != roughnessSlider.GetPos() )
+	if( CSQuestion( GetSafeHwnd(),
+		"Are you sure you want to load\ndefault terrain options?" ) == IDYES )
 	{
-		needsUpdate = TRUE;
-		roughness = roughnessSlider.GetPos();
-		optionsMgr.SetTerrRoughness( roughness / 100.0f );
-
-		terrain.New();
-
-		UpdateRoughnessTxt();
+		optionsMgr.LoadTerrDefaults();
+		InitOptions();
 
 		Redraw();
+		InvalidateRect( NULL ); // redraw dialog for color preview
 	}
-
-	CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
+	SetFocus();
 }
 
 void CDlgOptionsTerr::UpdateRoughnessTxt()
@@ -121,24 +125,56 @@ void CDlgOptionsTerr::UpdateRoughnessTxt()
 
 void CDlgOptionsTerr::OnTerrNew() 
 {
-	optionsMgr.SetTerrTextured( GetDlgItemInt(IDC_TERR_TEXTURED) );
-
 	terrain.New();
 
 	starfield.SetModified();
 	Redraw();
-
-	needsUpdate = FALSE;
 }
 
 void CDlgOptionsTerr::OnSeasonChange() 
 {
 	season = (season_e)seasonsListBox.GetCurSel();
+
+	optionsMgr.SetTerrSeason( season );
+
+	Redraw();
+	InvalidateRect( NULL ); // Redraw dialog for color preview
+}
+
+void CDlgOptionsTerr::OnTerrTextured() 
+{
+	if( IsDlgButtonChecked(IDC_TERR_TEXTURED) )
+		GetDlgItem(IDC_TERR_COLOR)->EnableWindow( FALSE );
+	else
+		GetDlgItem(IDC_TERR_COLOR)->EnableWindow();
+
+	InvalidateRect( NULL ); // Redraw dialog for color preview
+}
+
+// User is or is about to move slider
+void CDlgOptionsTerr::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
+{
+	// Check if changed
+	if( roughness != roughnessSlider.GetPos() )
+	{
+		roughness = roughnessSlider.GetPos();
+		optionsMgr.SetTerrRoughness( roughness / 100.0f );
+
+		// Pick terrain with specified roughness without generating new seed
+		terrain.MakeTerrain();
+
+		UpdateRoughnessTxt();
+		Redraw();
+	}
+
+	CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
 void CDlgOptionsTerr::OnTerrColor() 
 {
 	CColorDialog dialog;
+
+	color_s color = optionsMgr.GetTerrColor();
 
 	dialog.m_cc.Flags = CC_FULLOPEN | CC_ENABLEHOOK | CC_RGBINIT;
 	dialog.m_cc.rgbResult = RGB( color.r * 255, color.g * 255, color.b * 255 );
@@ -154,16 +190,19 @@ void CDlgOptionsTerr::OnTerrColor()
 		optionsMgr.SetTerrColor( color );
 
 		Redraw();
-		InvalidateRect( NULL, FALSE ); // Redraw dialog for color preview
+		InvalidateRect( NULL ); // Redraw dialog for color preview
 	}
 }
 
 // Overridden for color previews
 HBRUSH CDlgOptionsTerr::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
 {
-	// Call parent if not color preview control
-	if( pWnd->GetDlgCtrlID() != IDC_TERR_COLOR_PREV )
+	// Call parent if not color preview control or if button is disabled
+	if( pWnd->GetDlgCtrlID() != IDC_TERR_COLOR_PREV ||
+		!GetDlgItem(IDC_TERR_COLOR)->IsWindowEnabled() )
 		return CDialog::OnCtlColor( pDC, pWnd, nCtlColor);
+
+	color_s color = optionsMgr.GetTerrColor();
 
 	COLORREF c = RGB( color.r*255, color.g*255, color.b*255 );
 
@@ -176,12 +215,4 @@ HBRUSH CDlgOptionsTerr::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	return (HBRUSH)colorBrush.GetSafeHandle();
 }
 
-
-void CDlgOptionsTerr::OnTerrTextured() 
-{
-	if( IsDlgButtonChecked(IDC_TERR_TEXTURED) )
-		GetDlgItem(IDC_TERR_COLOR)->EnableWindow( FALSE );
-	else
-		GetDlgItem(IDC_TERR_COLOR)->EnableWindow();
-}
 

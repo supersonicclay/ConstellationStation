@@ -20,7 +20,7 @@ public:
 public:
 
 
-// Operations
+// Methods
 public:
 
 	void New();

@@ -1,27 +1,27 @@
 //===========================================================================
-// Star.h
+// DataStar.h
 //
-// CStar
-//   star class
+// CDataStar
+//   star data.
 //===========================================================================
 
-#ifndef CS_STAR_H
-#define CS_STAR_H
+#ifndef CS_DATASTAR_H
+#define CS_DATASTAR_H
 
 
-class CStar : public CObject
+class CDataStar : public CObject
 {
-DECLARE_SERIAL( CStar )
+DECLARE_SERIAL( CDataStar )
 
 // Construction / Destruction
 public:
-	CStar();
-	CStar( const CStar& s );
-	~CStar();
+	CDataStar();
+	CDataStar( const CDataStar& s );
+	~CDataStar();
 
 	void Init();
 
-	const CStar& operator=( const CStar& s );
+	const CDataStar& operator=( const CDataStar& s );
 	void Serialize( CArchive& ar );
 
 
@@ -34,8 +34,11 @@ private:
 	color_s color;
 	float radius;
 
+
 // Methods
 public:
+
+// Gets
 	float GetMag() const;
 	color_s GetColor() const;
 	float GetRadius() const;
@@ -45,6 +48,7 @@ public:
 	float GetTheta() const;
 	float GetPhi() const;
 
+// Sets
 	void SetMag( float mag_ );
 	void SetColor( color_s color_ );
 	void SetColorFromMag();
@@ -64,14 +68,15 @@ public:
 	void SetRADecFromXYZ();
 	void SetXYZFromRADec();
 
+// Methods
 	void Randomize();
 	void PickXYZ();
 	void PickLocation();
 	void PickMag();
 };
 
-// CStar vector
-typedef std::vector<CStar> star_v;
+// CDataStar vector
+typedef std::vector<CDataStar> star_v;
 typedef star_v::iterator star_vi;
 
 #endif

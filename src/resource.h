@@ -23,6 +23,8 @@
 #define IDD_OPTIONS_CONST               161
 #define IDD_OPTIONS_TERR                162
 #define IDD_TIME                        163
+#define IDD_OPTIONS_COLORS              164
+#define IDD_OPTIONS_SUN                 165
 #define IDC_CONST_NAME                  1014
 #define IDC_CONST_LIST                  1021
 #define IDC_SHOWALL                     1027
@@ -35,18 +37,22 @@
 #define IDC_ROUGHNESS_TXT               1041
 #define IDC_TERR_ROUGHNESS_TXT          1041
 #define IDC_DATETIMEPICKER2             1045
+#define IDC_DATETIMEPICKER              1045
 #define IDC_CONST_LINECOLOR             1074
 #define IDC_CONST_NORMCOLOR             1074
-#define IDC_CONST_STARCOLOR             1075
 #define IDC_CONST_ACTIVECOLOR           1075
 #define IDC_CONST_LINECOLORPREV         1076
 #define IDC_CONST_SELCOLOR              1076
-#define IDC_CONST_STARCOLORPREV         1077
+#define IDC_CONST_STARCOLOR             1077
+#define IDC_TERR_WINCOLOR               1078
 #define IDC_TERR_TEXTURED               1079
+#define IDC_COLOR_TERRSPR               1079
 #define ID_CONST_TOGGLE                 1080
 #define IDC_CONST_VISIBLE               1080
 #define IDC_CONST_LABELED               1081
+#define IDC_COLOR_TERRSUM               1081
 #define ID_STARS_TOGGLE                 1082
+#define IDC_COLOR_TERRFAL               1082
 #define IDC_STARS_LABELED               1083
 #define IDC_TERR_VISIBLE                1084
 #define IDC_TERR_SEASONS                1086
@@ -64,6 +70,21 @@
 #define IDC_CONST_NORMCOLOR_PREV        1106
 #define IDC_CONST_SELCOLOR_PREV         1107
 #define IDC_CONST_ACTIVECOLOR_PREV      1108
+#define IDC_CONST_STARCOLOR_PREV        1109
+#define IDC_TERR_WINCOLOR_PREV          1110
+#define IDC_CONST_STARSCOLORED          1111
+#define IDC_TERR_SPRCOLOR_PREV          1113
+#define IDC_TERR_SUMCOLOR_PREV          1115
+#define IDC_TERR_FALCOLOR_PREV          1116
+#define IDC_COLOR_DEFAULTS              1117
+#define IDC_COLOR_STARCOLORED           1118
+#define IDC_COLOR_CONSTNORM             1119
+#define IDC_COLOR_CONSTSEL              1120
+#define IDC_COLOR_CONSTACTIVE           1121
+#define IDC_COLOR_CONSTSTAR             1122
+#define IDC_SUN_VISIBLE                 1124
+#define IDC_SUN_SHINE                   1125
+#define IDC_SUN_DEFAULTS                1126
 #define ID_STARF_NEWRANDOM              32772
 #define ID_STARF_NEWACTUAL              32773
 #define ID_STARF_OPEN                   32774
@@ -92,15 +113,16 @@
 #define ID_TERR_TOGGLE                  32869
 #define ID_OPTIONS_LOCATION             32870
 #define ID_OPTIONS_TERRAIN              32871
+#define ID_OPTIONS_SUN                  32872
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        164
-#define _APS_NEXT_COMMAND_VALUE         32872
-#define _APS_NEXT_CONTROL_VALUE         1107
+#define _APS_NEXT_RESOURCE_VALUE        166
+#define _APS_NEXT_COMMAND_VALUE         32874
+#define _APS_NEXT_CONTROL_VALUE         1127
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

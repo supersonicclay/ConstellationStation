@@ -1,22 +1,23 @@
 //===========================================================================
-// Terrain.cpp
+// DataTerrain.cpp
 //
-// CTerrain
-//   contains heights and surface texture.
+// CDataTerrain
+//   terrain data.
+//   Contains height information, roughness settings, and surface texture.
 //===========================================================================
 
 
 #include "stdafx.h"
 #include "ConStation.h"
-#include "Terrain.h"
+#include "DataTerrain.h"
 
-IMPLEMENT_SERIAL( CTerrain, CObject, 1 )
+IMPLEMENT_SERIAL( CDataTerrain, CObject, 1 )
 
 
 /////////////////////////////////////////////////////////////////////////////
 // Construction / Destruction
 
-CTerrain::CTerrain()
+CDataTerrain::CDataTerrain()
 {
 	heights = upperNormals = lowerNormals = NULL;	/// UGLY!
 
@@ -26,7 +27,7 @@ CTerrain::CTerrain()
 	Clear();
 }
 
-CTerrain::~CTerrain()
+CDataTerrain::~CDataTerrain()
 {
 	/// UGLY!
 	delete[] heights;
@@ -34,7 +35,7 @@ CTerrain::~CTerrain()
 	delete[] lowerNormals;
 }
 
-void CTerrain::Clear()
+void CDataTerrain::Clear()
 {
 	/// UGLY!
 	delete[] heights;
@@ -43,19 +44,21 @@ void CTerrain::Clear()
 
 	size = arraySize = 0;
 
-	visible = TRUE;
+	LoadDefaults();
 
 	viewHeight = 0.0f;
 }
 
-void CTerrain::New()
+void CDataTerrain::New()
 {
 	Clear();
+
+	// Generate new seed
+	seed = (unsigned)clock();
 
 	size = (int)pow(2, iterations);
 
 	arraySize = size + 1;
-
 
 	heights = new float[arraySize * arraySize];
 	upperNormals = new float[ size*size*3 ];
@@ -68,25 +71,25 @@ void CTerrain::New()
 /////////////////////////////////////////////////////////////////////////////
 // Gets
 
-float*		CTerrain::GetHeights()		{	return heights;		}
-int			CTerrain::GetArraySize()	{	return arraySize;	}
-int			CTerrain::GetSize()			{	return size;		}
-BOOL		CTerrain::IsVisible()		{	return visible;		}
-float		CTerrain::GetScale()		{	return scale;		}
-int			CTerrain::GetIterations()	{	return iterations;	}
-float		CTerrain::GetViewHeight()	{	return viewHeight;	}
+float*		CDataTerrain::GetHeights()		{	return heights;		}
+int			CDataTerrain::GetArraySize()	{	return arraySize;	}
+int			CDataTerrain::GetSize()			{	return size;		}
+BOOL		CDataTerrain::IsVisible()		{	return visible;		}
+float		CDataTerrain::GetScale()		{	return scale;		}
+int			CDataTerrain::GetIterations()	{	return iterations;	}
+float		CDataTerrain::GetViewHeight()	{	return viewHeight;	}
 
-float CTerrain::GetHeight( int i, int j )
+float CDataTerrain::GetHeight( int i, int j )
 {
 	return heights[ i*arraySize + j ];
 }
 
-float* CTerrain::GetUpperNormal( int i, int j )
+float* CDataTerrain::GetUpperNormal( int i, int j )
 {
 	return &upperNormals [ (size*j*3 + i*3) ];
 }
 
-float* CTerrain::GetLowerNormal( int i, int j )
+float* CDataTerrain::GetLowerNormal( int i, int j )
 {
 	return &lowerNormals [ (size*j*3 + i*3) ];
 }
@@ -95,17 +98,17 @@ float* CTerrain::GetLowerNormal( int i, int j )
 /////////////////////////////////////////////////////////////////////////////
 // Sets
 
-void CTerrain::SwitchVisible()			{	visible = !visible;	}
-void CTerrain::SetVisible( BOOL x )		{	visible = x;		}
+void CDataTerrain::SwitchVisible()			{	visible = !visible;	}
+void CDataTerrain::SetVisible( BOOL x )		{	visible = x;		}
 
-void CTerrain::SetUpperNormal( int i, int j, float* n )
+void CDataTerrain::SetUpperNormal( int i, int j, float* n )
 {
 	upperNormals[ (size*j*3 + i*3 + 0) ] = n[0];
 	upperNormals[ (size*j*3 + i*3 + 1) ] = n[1];
 	upperNormals[ (size*j*3 + i*3 + 2) ] = n[2];
 }
 
-void CTerrain::SetLowerNormal( int i, int j, float* n )
+void CDataTerrain::SetLowerNormal( int i, int j, float* n )
 {
 	lowerNormals[ (size*j*3 + i*3 + 0) ] = n[0];
 	lowerNormals[ (size*j*3 + i*3 + 1) ] = n[1];
@@ -116,8 +119,16 @@ void CTerrain::SetLowerNormal( int i, int j, float* n )
 /////////////////////////////////////////////////////////////////////////////
 // Methods
 
-void CTerrain::MakeTerrain()
+void CDataTerrain::LoadDefaults()
 {
+	visible = DEF_TERR_VISIBLE;
+}
+
+void CDataTerrain::MakeTerrain()
+{
+	// Set seed so terrain is predictable
+	srand( seed );
+
 	float roughness = optionsMgr.GetTerrRoughness();
 
 	int i, j;
@@ -185,7 +196,7 @@ void CTerrain::MakeTerrain()
 	CalculateViewHeight();
 }
 
-float CTerrain::AvgSquare(int i, int j, int midSize)
+float CDataTerrain::AvgSquare(int i, int j, int midSize)
 {
 	float total = 
 		heights[ ((i + midSize) * arraySize) + (j + midSize) ] +
@@ -196,7 +207,7 @@ float CTerrain::AvgSquare(int i, int j, int midSize)
 	return total / 4;
 }
 
-float CTerrain::AvgDiamond(int i, int j, int midSize)
+float CDataTerrain::AvgDiamond(int i, int j, int midSize)
 {
 	float total;
     if (i == 0)
@@ -227,8 +238,8 @@ float CTerrain::AvgDiamond(int i, int j, int midSize)
 	return total / 4;
 }
 
-// Pick random offset preferrably negative (valleys]
-float CTerrain::RandomOffset( float range )
+// Pick random offset preferrably negative (valleys)
+float CDataTerrain::RandomOffset( float range )
 {
 	float ratio = (float)(rand()%10000)/10000;
 
@@ -236,7 +247,7 @@ float CTerrain::RandomOffset( float range )
 }
 
 
-void CTerrain::CalculateNormals()
+void CDataTerrain::CalculateNormals()
 {
 	float vec1[3];
 	float vec2[3];
@@ -273,7 +284,7 @@ void CTerrain::CalculateNormals()
 	}
 }
 
-void CTerrain::CalculateNormal( float* vec1, float* vec2, float* normal )
+void CDataTerrain::CalculateNormal( float* vec1, float* vec2, float* normal )
 {
 	normal[0] = vec1[1]*vec2[2] - vec1[2]*vec2[1];
 	normal[1] = vec1[2]*vec2[0] - vec1[0]*vec2[2];
@@ -297,7 +308,7 @@ void CTerrain::CalculateNormal( float* vec1, float* vec2, float* normal )
 	}
 }
 
-void CTerrain::CalculateViewHeight()
+void CDataTerrain::CalculateViewHeight()
 {
 	// Get the index of the midpoint
 	int middleIndex = size / 2;
@@ -328,7 +339,7 @@ void CTerrain::CalculateViewHeight()
 /////////////////////////////////////////////////////////////////////////////
 // Serialization
 
-void CTerrain::Serialize(CArchive& ar)///
+void CDataTerrain::Serialize(CArchive& ar)///
 {
 	CObject::Serialize(ar);
 }

@@ -8,6 +8,8 @@
 #ifndef CS_MGRGRAPHICS_H
 #define CS_MGRGRAPHICS_H
 
+#include "Matrix.h"
+
 
 class CMgrGraphics
 {
@@ -41,7 +43,7 @@ public:
 	float sunPos[3];
 
 
-// Operations
+// Methods
 public:
 
 	// Initialization
@@ -61,8 +63,8 @@ public:
 	void DrawCompass() const;
 
 	// View manipulation
-	void Projection  () const;
-	void Perspective () const;
+	void Projection() const;
+	void Perspective() const;
 	void RotateXY() const;
 	void RotateLatitude() const;
 	void RotateTime() const;

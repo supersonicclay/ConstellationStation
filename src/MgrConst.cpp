@@ -60,7 +60,7 @@ void CMgrConst::Add()
 	itoa (numNewConstellations+1, numString, 10);
 	constName += numString;
 
-	dialog.SetConstName( constName );
+	dialog.name = constName;
 
 	// If they cancel, return
 	if( dialog.DoModal() != IDOK )
@@ -116,7 +116,7 @@ void CMgrConst::Rename()
 	CDlgConstName dialog;
 
 	CString origConstName = GetConstBar()->GetCurConst();
-	dialog.SetConstName(origConstName);
+	dialog.name = origConstName;
 
 	// If they cancel, return
 	if (dialog.DoModal() != IDOK)
@@ -210,35 +210,6 @@ void CMgrConst::ShowHide()
 
 	starfield.SetModified();
 	SetState( state_Viewing );
-}
-
-// Opens the constellation options dialog
-void CMgrConst::Options()
-{
-	if( starfield.IsSpinning() )
-		starfield.SwitchSpinning();
-
-	CDlgOptionsConst dialog;
-	if( dialog.DoModal() == IDOK )
-	{
-		// Change constellation settings
-		starfield.SetConstsVisible( dialog.visible );
-		starfield.SetConstsLabeled( dialog.labeled );
-	}
-	else
-	{
-		// Reset colors (they are updated in realtime)
-		optionsMgr.SetConstNormColor( dialog.origNormColor );
-		optionsMgr.SetConstSelColor( dialog.origSelColor );
-		optionsMgr.SetConstActiveColor( dialog.origActiveColor );
-	}
-	Redraw();
-}
-
-// Toggles constellations on and off
-void CMgrConst::Toggle()
-{
-	starfield.SwitchConstsVisible(); Redraw();
 }
 
 

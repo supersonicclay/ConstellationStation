@@ -1,36 +1,36 @@
 //===========================================================================
-// Star.h
+// DataStar.h
 //
-// CStar
-//   star class
+// CDataStar
+//   star data.
 //===========================================================================
 
 
 #include "stdafx.h"
 #include "ConStation.h"
-#include "Star.h"
+#include "DataStar.h"
 
-IMPLEMENT_SERIAL( CStar, CObject, 1 )
+IMPLEMENT_SERIAL( CDataStar, CObject, 1 )
 
 
 /////////////////////////////////////////////////////////////////////////////
 // Construction / Destruction
 
-CStar::CStar()
+CDataStar::CDataStar()
 {
 	Init();
 }
 
-CStar::CStar( const CStar& s )
+CDataStar::CDataStar( const CDataStar& s )
 {
 	*this = s;
 }
 
-CStar::~CStar()
+CDataStar::~CDataStar()
 {
 }
 
-const CStar& CStar::operator=( const CStar& s )
+const CDataStar& CDataStar::operator=( const CDataStar& s )
 {
 	ra = s.ra;
 	dec = s.dec;
@@ -41,7 +41,7 @@ const CStar& CStar::operator=( const CStar& s )
 	return *this;
 }
 
-void CStar::Init()
+void CDataStar::Init()
 {
 	x = 0.0f;
 	y = 1.0f;
@@ -62,38 +62,38 @@ void CStar::Init()
 /////////////////////////////////////////////////////////////////////////////
 // Gets
 
-float CStar::GetMag() const
+float CDataStar::GetMag() const
 {
 	return mag;
 }
 
-color_s CStar::GetColor() const
+color_s CDataStar::GetColor() const
 {
 	return color;
 }
 
-float CStar::GetRadius() const
+float CDataStar::GetRadius() const
 {
 	return radius;
 }
 
-float CStar::GetX() const
+float CDataStar::GetX() const
 {
 	return x;
 }
 
-float CStar::GetY() const
+float CDataStar::GetY() const
 {
 	return y;
 }
 
-float CStar::GetZ() const
+float CDataStar::GetZ() const
 {
 	return z;
 }
 
 // Spherical coordinate theta
-float CStar::GetTheta() const
+float CDataStar::GetTheta() const
 {
 	float degrees;
 	degrees = 360 * (ra.hour+(ra.minute+ra.second/60)/60)/24;
@@ -101,7 +101,7 @@ float CStar::GetTheta() const
 }
 
 // Spherical coordinate phi
-float CStar::GetPhi() const
+float CDataStar::GetPhi() const
 {
 	float degrees;
 
@@ -117,17 +117,17 @@ float CStar::GetPhi() const
 /////////////////////////////////////////////////////////////////////////////
 // Sets
 
-void CStar::SetMag( float mag_ )
+void CDataStar::SetMag( float mag_ )
 {
 	mag = mag_;
 }
 
-void CStar::SetColor( color_s color_ )
+void CDataStar::SetColor( color_s color_ )
 {
 	color = color_;
 }
 
-void CStar::SetColorFromMag()
+void CDataStar::SetColorFromMag()
 {
 	if( mag > 2.0f )
 	{
@@ -141,37 +141,37 @@ void CStar::SetColorFromMag()
 	}
 }
 
-void CStar::SetRadiusFromMag()
+void CDataStar::SetRadiusFromMag()
 {
 	radius = (6-mag) / 500.0f;///
 }
 
-void CStar::SetX( float x_ )
+void CDataStar::SetX( float x_ )
 {
 	x = x_;
 }
 
-void CStar::SetY( float y_ )
+void CDataStar::SetY( float y_ )
 {
 	y = y_;
 }
 
-void CStar::SetZ( float z_ )
+void CDataStar::SetZ( float z_ )
 {
 	z = z_;
 }
 
-void CStar::SetRA( ra_s ra_ )
+void CDataStar::SetRA( ra_s ra_ )
 {
 	ra = ra_;
 }
 
-void CStar::SetDec( dec_s dec_ )
+void CDataStar::SetDec( dec_s dec_ )
 {
 	dec = dec_;
 }
 
-void CStar::SetRA( unsigned short hour,
+void CDataStar::SetRA( unsigned short hour,
 				  unsigned short minute,
 				  float second )
 {
@@ -180,7 +180,7 @@ void CStar::SetRA( unsigned short hour,
 	ra.second = second;
 }
 
-void CStar::SetDec( BOOL positive,
+void CDataStar::SetDec( BOOL positive,
 				   unsigned short degree,
 				   unsigned short minute,
 				   float second )
@@ -198,7 +198,7 @@ void CStar::SetDec( BOOL positive,
 // Set Right Ascension and Declination from the x, y, and z coords.
 //   First calculates spherical coordinates for x, y, z.
 //   Then converts the coordinates to right ascension, declination form.
-void CStar::SetRADecFromXYZ()
+void CDataStar::SetRADecFromXYZ()
 {
 	// Theta is measured from 0 to 360 degrees
 	// Phi is measured from 0 (north) to 180 (south) degrees
@@ -244,7 +244,7 @@ void CStar::SetRADecFromXYZ()
 // Set the x, y, and z coords from the right ascension and declination
 //   First converts right ascension and declination to spherical coordinates
 //   Then calculates x, y, and z from those coordinates
-void CStar::SetXYZFromRADec()
+void CDataStar::SetXYZFromRADec()
 {
 	double theta = (double)GetTheta();
 	double phi = (double)GetPhi();
@@ -260,21 +260,21 @@ void CStar::SetXYZFromRADec()
 
 // Pick random x then a random y and z so that x,y,z has length of 1
 //   and pick random brightess with higher chance of being dim
-void CStar::Randomize()
+void CDataStar::Randomize()
 {
 	PickLocation();
 	PickMag();
 }
 
 // Pick a random location in the sky
-void CStar::PickLocation()
+void CDataStar::PickLocation()
 {
 	PickXYZ();
 	SetRADecFromXYZ();
 }
 
 // Pick random x, y, and z values such that <x,y,z> is normalized
-void CStar::PickXYZ()
+void CDataStar::PickXYZ()
 {
 	x = (float)(rand()%2000)/1000-1;	// +1.0 to -1.0
 
@@ -318,7 +318,7 @@ void CStar::PickXYZ()
 }
 
 // Pick a random magnitude
-void CStar::PickMag()
+void CDataStar::PickMag()
 {
 	// Pick random number from 0.00 to 100.00
 	float random = (float)(rand()%1000)/10;
@@ -346,7 +346,7 @@ void CStar::PickMag()
 /////////////////////////////////////////////////////////////////////////////
 // Serialization
 
-void CStar::Serialize(CArchive& ar)
+void CDataStar::Serialize(CArchive& ar)
 {
 	CObject::Serialize(ar);
 

@@ -2,17 +2,12 @@
 // BarConst.h
 //
 // CBarConst
-//   constellation toolbar
+//   constellation toolbar.
 //===========================================================================
 
 #ifndef CS_BARCONST_H
 #define CS_BARCONST_H
 
-
-#include "Starfield.h"
-
-/////////////////////////////////////////////////////////////////////////////
-// CBarConst window
 
 class CBarConst : public CToolBar
 {
@@ -26,7 +21,7 @@ public:
 public:
 	CComboBox constList;
 
-// Operations
+// Methods
 public:
 
 	void AddConst( CString &str );

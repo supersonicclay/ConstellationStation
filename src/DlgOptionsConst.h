@@ -1,14 +1,13 @@
 //===========================================================================
+// DlgOptionsConst.h
 //
-//
+// CDlgOptionsCosnt
+//   constellation options dialog.
 //===========================================================================
 
 #ifndef CS_DLGOPTIONSCONST_H
 #define CS_DLGOPTIONSCONST_H
 
-
-/////////////////////////////////////////////////////////////////////////////
-// CDlgOptionsConst dialog
 
 class CDlgOptionsConst : public CDialog
 {
@@ -21,17 +20,25 @@ public:
 	enum { IDD = IDD_OPTIONS_CONST };
 	BOOL	visible;
 	BOOL	labeled;
+	BOOL	starsColored;
 	//}}AFX_DATA
 
 	color_s normColor;
 	color_s selColor;
 	color_s activeColor;
+	color_s starColor;
 	color_s origNormColor;
 	color_s origSelColor;
 	color_s origActiveColor;
+	color_s origStarColor;
 
 	// Color preview brush
 	CBrush colorBrush;
+
+
+// Methods
+	void InitOptions();
+
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -46,10 +53,13 @@ protected:
 	// Generated message map functions
 	//{{AFX_MSG(CDlgOptionsConst)
 	virtual BOOL OnInitDialog();
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg void OnConstNormColor();
 	afx_msg void OnConstSelColor();
 	afx_msg void OnConstActiveColor();
-	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	afx_msg void OnConstStarColor();
+	afx_msg void OnConstStarsColored();
+	afx_msg void OnConstDefaults();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

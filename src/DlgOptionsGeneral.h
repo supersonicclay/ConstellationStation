@@ -1,14 +1,13 @@
 //===========================================================================
-// 
-// 
+// DlgOptionsGeneral.h
+//
+// CDlgOptionsGeneral
+//   general options dialog.
 //===========================================================================
 
 #ifndef CS_DLGOPTIONSGENERAL_H
 #define CS_DLGOPTIONSGENERAL_H
 
-
-/////////////////////////////////////////////////////////////////////////////
-// CDlgOptionsGeneral dialog
 
 class CDlgOptionsGeneral : public CDialog
 {
@@ -19,8 +18,10 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CDlgOptionsGeneral)
 	enum { IDD = IDD_OPTIONS_GENERAL };
-		// NOTE: the ClassWizard will add data members here
 	//}}AFX_DATA
+
+
+// Methods
 
 
 // Overrides
@@ -35,7 +36,6 @@ protected:
 
 	// Generated message map functions
 	//{{AFX_MSG(CDlgOptionsGeneral)
-		// NOTE: the ClassWizard will add member functions here
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

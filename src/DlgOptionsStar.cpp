@@ -1,5 +1,9 @@
-// DlgOptionsStar.cpp : implementation file
+//===========================================================================
+// DlgOptionsStar.cpp
 //
+// CDlgOptionsStar
+//   star options dialog.
+//===========================================================================
 
 #include "stdafx.h"
 #include "ConStation.h"
@@ -10,9 +14,6 @@
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
-
-/////////////////////////////////////////////////////////////////////////////
-// CDlgOptionsStar dialog
 
 
 CDlgOptionsStar::CDlgOptionsStar(CWnd* pParent /*=NULL*/)
@@ -51,8 +52,10 @@ void CDlgOptionsStar::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CDlgOptionsStar, CDialog)
 	//{{AFX_MSG_MAP(CDlgOptionsStar)
 	ON_WM_HSCROLL()
+	ON_BN_CLICKED(IDC_STARS_DEFAULTS, OnStarsDefaults)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CDlgOptionsStar message handlers
@@ -61,8 +64,24 @@ BOOL CDlgOptionsStar::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
+	/// HOW IMPORTANT IS ROUNDOFF ERROR?
+	float f = 5.1f;
+	float fX10 = f*10;
+	int i = fX10;
 
-	// Initialize controls
+	// Initialize sliders
+	gammaSlider.SetRange( 0, 100 );
+	contrastSlider.SetRange( 0, 100 );
+	limMagSlider.SetRange( 30, 90 );
+	limMagSlider.SetTicFreq( 10 );
+
+	InitOptions();
+
+	return TRUE;
+}
+
+void CDlgOptionsStar::InitOptions()
+{
 	CheckDlgButton( IDC_STARS_VISIBLE, starfield.AreStarsVisible() );
 	CheckDlgButton( IDC_STARS_LABELED, starfield.AreStarsLabeled() );
 	CheckDlgButton( IDC_STARS_TEXTURED, optionsMgr.AreStarsTextured() );
@@ -71,18 +90,8 @@ BOOL CDlgOptionsStar::OnInitDialog()
 	SetDlgItemInt( IDC_STARS_CONTRAST, optionsMgr.GetStarsContrast() );
 	SetDlgItemInt( IDC_STARS_LIMMAG, (int)(starfield.GetLimitingMag()*10) );
 
-	/// HOW IMPORTANT IS ROUNDOFF ERROR?
-	float f = 5.1f;
-	float fX10 = f*10;
-	int i = fX10;
-
-	// Initialize sliders
-	gammaSlider.SetRange( 0, 100 );
 	gammaSlider.SetPos( GetDlgItemInt(IDC_STARS_GAMMA) );
-	contrastSlider.SetRange( 0, 100 );
 	contrastSlider.SetPos( GetDlgItemInt(IDC_STARS_CONTRAST) );
-	limMagSlider.SetRange( 30, 90 );
-	limMagSlider.SetTicFreq( 10 );
 	limMagSlider.SetPos( GetDlgItemInt(IDC_STARS_LIMMAG) );
 
 	// Initialize data that are updated realtime (in case of cancel button)
@@ -90,29 +99,24 @@ BOOL CDlgOptionsStar::OnInitDialog()
 	origContrast = contrast = optionsMgr.GetStarsContrast();
 
 	UpdateLimMagTxt();
-
-	return TRUE;
 }
 
-// User changed a slider
-void CDlgOptionsStar::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
+void CDlgOptionsStar::OnStarsDefaults() 
 {
-	// Update brightness
-	optionsMgr.SetStarsGamma( gammaSlider.GetPos() );
+	if( CSQuestion( GetSafeHwnd(),
+		"Are you sure you want to load\ndefault star options?" ) == IDYES )
+	{
+		optionsMgr.LoadStarDefaults();
+		InitOptions();
 
-	// Update contrast
-	optionsMgr.SetStarsContrast( contrastSlider.GetPos() );
-
-	UpdateLimMagTxt();
-
-	CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
+		Redraw();
+	}
+	SetFocus();
 }
-
 
 void CDlgOptionsStar::UpdateLimMagTxt()
 {
 	char buffer[10];
-
 	itoa( limMagSlider.GetPos(), buffer, 10 );
 
 	// Divide the 2 digit number string by 10
@@ -121,5 +125,29 @@ void CDlgOptionsStar::UpdateLimMagTxt()
 	buffer[1] = '.';
 
 	SetDlgItemText( IDC_STARS_LIMMAG_TXT, buffer );
+}
+
+// User is or is about to move slider
+void CDlgOptionsStar::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
+{
+	// Update brightness
+	if( gamma != gammaSlider.GetPos() )
+	{
+		gamma = gammaSlider.GetPos();
+		optionsMgr.SetStarsGamma( gammaSlider.GetPos() );
+		Redraw();
+	}
+
+	// Update contrast
+	if( contrast != contrastSlider.GetPos() )
+	{
+		contrast = contrastSlider.GetPos();
+		optionsMgr.SetStarsContrast( contrastSlider.GetPos() );
+		Redraw();
+	}
+
+	UpdateLimMagTxt();
+
+	CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 

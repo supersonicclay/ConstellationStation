@@ -2,7 +2,7 @@
 // BarConst.cpp
 //
 // CBarConst
-//   constellation toolbar
+//   constellation toolbar.
 //===========================================================================
 
 #include "stdafx.h"
@@ -17,13 +17,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-// ConstList dimensions
-#define CONSTLIST_INDEX		0
-#define CONSTLIST_WIDTH		200
-#define CONSTLIST_HEIGHT	200
-
-/////////////////////////////////////////////////////////////////////////////
-// CBarConst
 
 BEGIN_MESSAGE_MAP( CBarConst, CToolBar )
 	//{{AFX_MSG_MAP(CBarConst)
@@ -32,8 +25,14 @@ BEGIN_MESSAGE_MAP( CBarConst, CToolBar )
 END_MESSAGE_MAP()
 
 
+// Constellation list control dimensions
+#define CONSTLIST_INDEX		0
+#define CONSTLIST_WIDTH		200
+#define CONSTLIST_HEIGHT	200
+
+
 /////////////////////////////////////////////////////////////////////////////
-// CBarConst construction/destruction
+// Construction / Destruction
 
 CBarConst::CBarConst()
 {
@@ -84,7 +83,6 @@ BOOL CBarConst::InitList()
 
 	return TRUE;
 }
-
 
 
 /////////////////////////////////////////////////////////////////////////////

@@ -1,23 +1,24 @@
 //===========================================================================
-// Terrain.h
+// DataTerrain.h
 //
-// CTerrain
-//   contains height information, roughness settings, and surface texture.
+// CDataTerrain
+//   terrain data.
+//   Contains height information, roughness settings, and surface texture.
 //===========================================================================
 
-#ifndef CS_TERRAIN_H
-#define CS_TERRAIN_H
+#ifndef CS_DATATERRAIN_H
+#define CS_DATATERRAIN_H
 
 
-class CTerrain : public CObject
+class CDataTerrain : public CObject
 {
-DECLARE_SERIAL( CTerrain )
+DECLARE_SERIAL( CDataTerrain )
 
 // Construction / Destruction
 public:
 
-	CTerrain();
-	~CTerrain();
+	CDataTerrain();
+	~CDataTerrain();
 
 	void Clear();
 	void New();
@@ -27,6 +28,7 @@ public:
 
 // Attributes
 private:
+	unsigned int seed; // Used for predictable terrain
 
 	float* heights;
 	int arraySize;
@@ -46,7 +48,8 @@ private:
 
 // Methods
 public:
-	// Gets
+
+// Gets
 	float* GetHeights();
 	float GetHeight( int i, int j );
 
@@ -61,14 +64,16 @@ public:
 
 	BOOL IsVisible();
 
-	// Sets
+// Sets
 	void SetUpperNormal( int i, int j, float* n );
 	void SetLowerNormal( int i, int j, float* n );
 
 	void SwitchVisible();
 	void SetVisible( BOOL x );
 
-	// Methods
+// Methods
+	void LoadDefaults();
+
 	void MakeTerrain();
 
 	float AvgSquare( int i, int j, int midSize );

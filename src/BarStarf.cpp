@@ -2,7 +2,7 @@
 // BarStarf.cpp
 //
 // CBarStarf
-//   starfield toolbar
+//   starfield toolbar.
 //===========================================================================
 
 #include "stdafx.h"
@@ -17,7 +17,15 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-// Time, Date, and Speed dimensions
+
+BEGIN_MESSAGE_MAP( CBarStarf, CToolBar )
+	//{{AFX_MSG_MAP(CBarStarf)
+	ON_WM_TIMER()
+	//}}AFX_MSG_MAP
+END_MESSAGE_MAP()
+
+
+// Time, Date, and Speed control dimensions
 #define STARFDATE_INDEX		7
 #define STARFTIME_INDEX		9
 #define STARFSPEED_INDEX	11
@@ -30,7 +38,7 @@ static char THIS_FILE[] = __FILE__;
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CBarStarf
+// Construction / Destruction
 
 CBarStarf::CBarStarf()
 {
@@ -159,16 +167,8 @@ BOOL CBarStarf::InitSpeedCtrl()
 }
 
 
-BEGIN_MESSAGE_MAP( CBarStarf, CToolBar )
-	//{{AFX_MSG_MAP(CBarStarf)
-	ON_WM_TIMER()
-	//}}AFX_MSG_MAP
-END_MESSAGE_MAP()
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CBarStarf message handlers
-
 
 void CBarStarf::OnTimer(UINT nIDEvent) 
 {

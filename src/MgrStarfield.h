@@ -8,8 +8,6 @@
 #ifndef CS_MGRSTARFIELD_H
 #define CS_MGRSTARFIELD_H 
 
-#define MAX_DOCNAMELENGTH 50
-
 
 class CMgrStarfield
 {
@@ -20,29 +18,20 @@ public:
 
 // Attributes
 public:
-	char title[MAX_DOCNAMELENGTH];	// Document's title
-
-	// Saving / Opening
-	OPENFILENAME ofn;
-	char filename[MAX_PATH];		// Current open document's filename
-	char cwd[MAX_PATH];				// Current working directory
-	char starfieldDir[MAX_PATH];	// Starfield directory
 
 
-// Operations
+// Methods
 public:
 
 	CBarStarf* GetStarfBar();
 
-	void NewActual();
-	void NewRandom();
-	void Open();
-	void Save();
-	void SaveAs();
+	void StarOptions();
+	void ConstOptions();
+	void SunOptions();
 
-	void InitOFN( BOOL saving );
-	int  CheckModified();
-	void UpdateTitle();
+	void ToggleStars();
+	void ToggleConsts();
+	void ToggleSun();
 
 	void Rotate();
 	void Location();

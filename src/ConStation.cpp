@@ -2,9 +2,8 @@
 // ConStation.cpp
 //
 // CConStationApp
-//   main source file for Constellation Station
+//   main source file for Constellation Station application.
 //===========================================================================
-
 
 #include "stdafx.h"
 #include "ConStation.h"
@@ -17,8 +16,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/////////////////////////////////////////////////////////////////////////////
-// CConStationApp
 
 BEGIN_MESSAGE_MAP( CConStationApp, CWinApp )
 	//{{AFX_MSG_MAP(CConStationApp)
@@ -26,18 +23,15 @@ BEGIN_MESSAGE_MAP( CConStationApp, CWinApp )
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
+
 /////////////////////////////////////////////////////////////////////////////
-// CConStationApp construction
+// Construction
 
 CConStationApp::CConStationApp()
 {
 	srand( (unsigned)::time(NULL) );
 }
 
-/////////////////////////////////////////////////////////////////////////////
-// The one and only CConStationApp object
-
-CConStationApp theApp;
 
 /////////////////////////////////////////////////////////////////////////////
 // CConStationApp initialization
@@ -54,14 +48,6 @@ BOOL CConStationApp::InitInstance()
 
 	LoadStdProfileSettings(0);  // Load standard INI file options (including MRU)
 
-	/*
-	/// Splash screen
-
-	// Init data
-	terrain.New();
-	starfield.New( TRUE );
-	*/
-
 	// Init Frame
 	CConStationFrame* pFrame = new CConStationFrame;
 	m_pMainWnd = pFrame;
@@ -73,13 +59,16 @@ BOOL CConStationApp::InitInstance()
 	m_pMainWnd->ShowWindow( SW_MAXIMIZE );
 	m_pMainWnd->UpdateWindow();
 
-	starfieldMgr.NewActual();
-	starfieldMgr.UpdateTitle();
-
 	return TRUE;
 }
 
-CConStationFrame* CConStationApp::GetFrame() const
+/////////////////////////////////////////////////////////////////////////////
+// The one and only CConStationApp object
+
+CConStationApp theApp;
+
+
+CConStationFrame* CConStationApp::GetFrame()
 {
 	return (CConStationFrame *)m_pMainWnd;
 }
@@ -133,12 +122,12 @@ END_MESSAGE_MAP()
 
 
 /////////////////////////////////////////////////////////////////////////////
-// Methods
+// CConStationApp message handlers
 
 // Open the about dialog
 void CConStationApp::OnAppAbout()
 {
-	CDlgAbout aboutDlg;
-	aboutDlg.DoModal();
+	CDlgAbout dialog;
+	dialog.DoModal();
 }
 

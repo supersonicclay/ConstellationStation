@@ -15,11 +15,12 @@ class CMgrTeacher
 public:
 	CMgrTeacher();
 
+
 // Attributes
 public:
 
 
-// Operations
+// Methods
 public:
 
 

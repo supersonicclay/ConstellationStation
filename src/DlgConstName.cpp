@@ -2,7 +2,7 @@
 // DlgConstName.cpp
 //
 // CDlgConstName
-//   constellation name dialog
+//   constellation name dialog.
 //===========================================================================
 
 #include "stdafx.h"
@@ -14,9 +14,6 @@
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
-
-/////////////////////////////////////////////////////////////////////////////
-// CDlgConstName dialog
 
 
 CDlgConstName::CDlgConstName(CWnd* pParent /*=NULL*/)
@@ -39,19 +36,9 @@ void CDlgConstName::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CDlgConstName, CDialog)
 	//{{AFX_MSG_MAP(CDlgConstName)
-	ON_WM_SHOWWINDOW()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
-
-/////////////////////////////////////////////////////////////////////////////
-// CDlgConstName operations
-
-void CDlgConstName::SetConstName(CString name_)
-{
-	name = name_;
-}
 
 
 /////////////////////////////////////////////////////////////////////////////
 // CDlgConstName message handlers
-

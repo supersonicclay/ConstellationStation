@@ -2,15 +2,12 @@
 // DlgConstName.h
 //
 // CDlgConstName
-//   constellation name dialog
+//   constellation name dialog.
 //===========================================================================
 
 #ifndef CS_DLGCONSTNAME_H
 #define CS_DLGCONSTNAME_H
 
-
-/////////////////////////////////////////////////////////////////////////////
-// CDlgConstName dialog
 
 class CDlgConstName : public CDialog
 {
@@ -25,16 +22,15 @@ public:
 	//}}AFX_DATA
 
 
+// Methods
+
+
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CDlgConstName)
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
-
-// Operations
-public:
-	void SetConstName( CString name );
 
 // Implementation
 protected:

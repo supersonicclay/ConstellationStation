@@ -2,34 +2,27 @@
 // ConStation.h
 //
 // CConStationApp
-//   main header file for Constellation Station
+//   main header file for Constellation Station application.
 //===========================================================================
 
 #ifndef CS_CONSTATION_H
 #define CS_CONSTATION_H
 
-
 #ifndef __AFXWIN_H__
 	#error include 'stdafx.h' before including this file for PCH
 #endif
 
-#include "resource.h"       // main symbols
-
+#include "resource.h"
 
 #include "ConStationFrame.h"
 
-/////////////////////////////////////////////////////////////////////////////
-// CConStationApp:
-// See ConStation.cpp for the implementation of this class
-//
+
 
 class CConStationApp : public CWinApp
 {
 // Construction / Destruction
 public:
 	CConStationApp();
-
-	CConStationFrame* GetFrame() const;
 
 
 // Attributes
@@ -38,6 +31,7 @@ protected:
 
 // Methods
 public:
+	CConStationFrame* GetFrame();
 
 
 // Overrides

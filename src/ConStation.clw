@@ -2,13 +2,13 @@
 
 [General Info]
 Version=1
-LastClass=CDlgOptionsStar
+LastClass=CConStationFrame
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "ConStation.h"
 LastPage=0
 
-ClassCount=12
+ClassCount=14
 Class1=CConStationApp
 Class2=CDlgLocation
 Class3=CConStationView
@@ -20,22 +20,26 @@ Class8=CDlgConstName
 Class9=CDlgShowHide
 Class10=CDlgOptionsStar
 
-ResourceCount=13
+ResourceCount=15
 Resource1="IDR_TOOLBAR1"
-Resource2=IDR_STARFIELD
-Resource3=IDD_OPTIONS_TERR
-Resource4=IDR_MAINFRAME
-Resource5=IDD_OPTIONS_GENERAL
-Resource6=IDD_ABOUTBOX
+Resource2=IDD_OPTIONS_TERR
+Resource3=IDD_OPTIONS_STAR
+Resource4=IDD_CONST_NAME
+Resource5=IDR_MAINFRAME
+Resource6=IDD_LOCATION
 Resource7=IDD_SHOW_HIDE
-Resource8=IDD_LOCATION
-Resource9=IDD_OPTIONS_CONST
+Resource8=IDD_OPTIONS_COLORS
+Resource9=IDD_TIME
 Class11=CDlgOptionsConst
-Resource10=IDD_CONST_NAME
+Resource10=IDD_OPTIONS_GENERAL
 Resource11=IDR_CONSTELLATION
-Resource12=IDD_TIME
+Resource12=IDR_STARFIELD
 Class12=CDlgTime
-Resource13=IDD_OPTIONS_STAR
+Resource13=IDD_ABOUTBOX
+Class13=CDlgColors
+Resource14=IDD_OPTIONS_CONST
+Class14=CDlgOptionsSun
+Resource15=IDD_OPTIONS_SUN
 
 [CLS:CConStationApp]
 Type=0
@@ -51,7 +55,7 @@ Type=0
 HeaderFile=ConStationFrame.h
 ImplementationFile=ConStationFrame.cpp
 Filter=T
-LastObject=ID_TERR_TOGGLE
+LastObject=CConStationFrame
 BaseClass=CFrameWnd
 VirtualFilter=fWC
 
@@ -89,14 +93,18 @@ Command11=ID_CONST_DLINE
 Command12=ID_CONST_SHOWHIDE
 Command13=ID_CONST_SHOWALL
 Command14=ID_CONST_HIDEALL
-Command15=ID_OPTIONS_TIME
-Command16=ID_OPTIONS_LOCATION
-Command17=ID_OPTIONS_STAR
-Command18=ID_OPTIONS_CONST
-Command19=ID_OPTIONS_TERR
-Command20=ID_OPTIONS_GENERAL
-Command21=ID_APP_ABOUT
-CommandCount=21
+Command15=ID_OPTIONS_GENERAL
+Command16=ID_OPTIONS_TIME
+Command17=ID_OPTIONS_LOCATION
+Command18=ID_OPTIONS_STAR
+Command19=ID_OPTIONS_CONST
+Command20=ID_OPTIONS_SUN
+Command21=ID_OPTIONS_TERR
+Command22=ID_STARS_TOGGLE
+Command23=ID_CONST_TOGGLE
+Command24=ID_TERR_TOGGLE
+Command25=ID_APP_ABOUT
+CommandCount=25
 
 [ACL:IDR_MAINFRAME]
 Type=1
@@ -161,16 +169,15 @@ HeaderFile=DlgShowHide.h
 ImplementationFile=DlgShowHide.cpp
 BaseClass=CDialog
 Filter=D
-LastObject=CDlgShowHide
+LastObject=IDC_CONST_LIST
 VirtualFilter=dWC
 
 [DLG:IDD_LOCATION]
 Type=1
 Class=CDlgLocation
-ControlCount=3
+ControlCount=2
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
-Control3=IDC_DATETIMEPICKER2,SysDateTimePick32,1342242848
 
 [TB:IDR_STARFIELD]
 Type=1
@@ -225,7 +232,7 @@ Control16=IDC_STARS_DEFAULTS,button,1342242816
 [DLG:IDD_OPTIONS_CONST]
 Type=1
 Class=CDlgOptionsConst
-ControlCount=13
+ControlCount=17
 Control1=IDC_STATIC,button,1342177287
 Control2=IDC_CONST_VISIBLE,button,1342242819
 Control3=IDC_CONST_LABELED,button,1342242819
@@ -239,13 +246,18 @@ Control10=IDC_CONST_ACTIVECOLOR_PREV,edit,1484849280
 Control11=IDOK,button,1342242817
 Control12=IDCANCEL,button,1342242816
 Control13=IDC_CONST_DEFAULTS,button,1342242816
+Control14=IDC_STATIC,button,1342177287
+Control15=IDC_CONST_STARCOLOR,button,1342242816
+Control16=IDC_CONST_STARCOLOR_PREV,edit,1484849280
+Control17=IDC_CONST_STARSCOLORED,button,1342242819
 
 [DLG:IDD_TIME]
 Type=1
 Class=CDlgTime
-ControlCount=2
+ControlCount=3
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
+Control3=IDC_DATETIMEPICKER,SysDateTimePick32,1342242848
 
 [CLS:CDlgTime]
 Type=0
@@ -322,4 +334,62 @@ HeaderFile=dlgconstname.h
 ImplementationFile=dlgconstname.cpp
 BaseClass=CDialog
 LastObject=CDlgConstName
+
+[DLG:IDD_OPTIONS_COLORS]
+Type=1
+Class=CDlgColors
+ControlCount=25
+Control1=IDOK,button,1342242817
+Control2=IDCANCEL,button,1342242816
+Control3=IDC_STATIC,button,1342177287
+Control4=IDC_COLOR_CONSTNORM,button,1342242816
+Control5=IDC_CONST_NORMCOLOR_PREV,edit,1484849280
+Control6=IDC_COLOR_CONSTSEL,button,1342242816
+Control7=IDC_CONST_SELCOLOR_PREV,edit,1484849280
+Control8=IDC_COLOR_CONSTACTIVE,button,1342242816
+Control9=IDC_CONST_ACTIVECOLOR_PREV,edit,1484849280
+Control10=IDC_COLOR_CONSTSTAR,button,1342242816
+Control11=IDC_CONST_STARCOLOR_PREV,edit,1484849280
+Control12=IDC_CONST_STARSCOLORED,button,1342242819
+Control13=IDC_COLOR_STARCOLORED,button,1342242819
+Control14=IDC_STATIC,button,1342177287
+Control15=IDC_STATIC,button,1342177287
+Control16=IDC_STATIC,button,1342177287
+Control17=IDC_TERR_WINCOLOR,button,1342242816
+Control18=IDC_TERR_WINCOLOR_PREV,edit,1484849280
+Control19=IDC_COLOR_TERRSPR,button,1342242816
+Control20=IDC_TERR_SPRCOLOR_PREV,edit,1484849280
+Control21=IDC_COLOR_TERRSUM,button,1342242816
+Control22=IDC_TERR_SUMCOLOR_PREV,edit,1484849280
+Control23=IDC_COLOR_TERRFAL,button,1342242816
+Control24=IDC_TERR_FALCOLOR_PREV,edit,1484849280
+Control25=IDC_COLOR_DEFAULTS,button,1342242816
+
+[CLS:CDlgColors]
+Type=0
+HeaderFile=DlgColors.h
+ImplementationFile=DlgColors.cpp
+BaseClass=CDialog
+Filter=D
+LastObject=CDlgColors
+
+[DLG:IDD_OPTIONS_SUN]
+Type=1
+Class=CDlgOptionsSun
+ControlCount=6
+Control1=IDOK,button,1342242817
+Control2=IDCANCEL,button,1342242816
+Control3=IDC_STATIC,button,1342177287
+Control4=IDC_SUN_VISIBLE,button,1342242819
+Control5=IDC_SUN_SHINE,button,1342242819
+Control6=IDC_SUN_DEFAULTS,button,1342242816
+
+[CLS:CDlgOptionsSun]
+Type=0
+HeaderFile=DlgOptionsSun.h
+ImplementationFile=DlgOptionsSun.cpp
+BaseClass=CDialog
+Filter=D
+VirtualFilter=dWC
+LastObject=CDlgOptionsSun
 

@@ -2,15 +2,11 @@
 // ConStationView.h
 //
 // CConStationView
-//   forwards input events to CInput and directs CGraphics
+//   forwards input events to CInput and directs CGraphics.
 //===========================================================================
 
 #ifndef CS_CONSTATIONVIEW_H
 #define CS_CONSTATIONVIEW_H
-
-
-#include "Starfield.h"
-#include "Matrix.h"
 
 
 class CConStationView : public CWnd
@@ -19,11 +15,12 @@ class CConStationView : public CWnd
 public:
 	CConStationView();
 
+
 // Attributes
 private:
 
 
-// Operations
+// Methods
 public:
 
 

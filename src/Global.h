@@ -68,8 +68,8 @@ typedef struct
 /////////////////////////////////////////////////////////////////////////////
 // VARIABLES
 
-#include "Starfield.h"
-#include "Terrain.h"
+#include "DataStarfield.h"
+#include "DataTerrain.h"
 
 
 extern state_e state;
@@ -82,8 +82,7 @@ extern const color_s COLOR_WHITE,
 					 COLOR_DARKBLUE,
 					 COLOR_YELLOW,
 					 COLOR_TEAL,
-					 COLOR_DARKTEAL,
-					 COLOR_NORTHSTAR;
+					 COLOR_DARKTEAL;
 
 #define PI      3.14159265358979323846f
 
@@ -91,18 +90,41 @@ extern const color_s COLOR_WHITE,
 /////////////////////////////////////////////////////////////////////////////
 // ABSOLUTE DEFAULTS
 
-extern const int		DEF_STARS_GAMMA;
-extern const int		DEF_STARS_CONTRAST;
+extern const BOOL		DEF_STARS_VISIBLE;
+extern const BOOL		DEF_STARS_LABELED;
 extern const BOOL		DEF_STARS_TEXTURED;
 extern const BOOL		DEF_STARS_COLORED;
+extern const float		DEF_STARS_LIMMAG;
+extern const int		DEF_STARS_GAMMA;
+extern const int		DEF_STARS_CONTRAST;
+extern const BOOL		DEF_CONST_VISIBLE;
+extern const BOOL		DEF_CONST_LABELED;
 extern const color_s	DEF_CONST_NORMCOLOR;
 extern const color_s	DEF_CONST_SELCOLOR;
 extern const color_s	DEF_CONST_ACTIVECOLOR;
+extern const color_s	DEF_CONST_STARCOLOR;
+extern const BOOL		DEF_CONST_STARSCOLORED;
+extern const BOOL		DEF_SUN_VISIBLE;
+extern const BOOL		DEF_SUN_SHINE;
+extern const BOOL		DEF_TERR_VISIBLE;
 extern const float		DEF_TERR_ROUGHNESS;
 extern const BOOL		DEF_TERR_TEXTURED;
 extern const season_e	DEF_TERR_SEASON;
-extern const color_s	DEF_TERR_COLOR;
-extern const color_s	DEF_COMPASS_COLOR;
+extern const color_s	DEF_TERR_WINCOLOR;
+extern const color_s	DEF_TERR_SPRCOLOR;
+extern const color_s	DEF_TERR_SUMCOLOR;
+extern const color_s	DEF_TERR_FALCOLOR;
+extern const color_s	DEF_COMPASS_CROSSCOLOR;
+extern const color_s	DEF_COMPASS_NEEDLECOLOR;
+
+
+/////////////////////////////////////////////////////////////////////////////
+// MAXIMUMS
+
+#define	MAX_STARS			15000///100000
+#define	MAX_CONSTS			200
+#define MAX_CONSTLINES		100
+#define	MAX_DOC_NAME		32
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -114,8 +136,8 @@ extern const color_s	DEF_COMPASS_COLOR;
 #include "MgrInput.h"
 #include "MgrGraphics.h"
 #include "MgrOptions.h"
+#include "MgrDocument.h"
 #include "MgrStarfield.h"
-#include "MgrStars.h"
 #include "MgrConst.h"
 #include "MgrTerrain.h"
 #include "MgrTeacher.h"
@@ -123,14 +145,14 @@ extern const color_s	DEF_COMPASS_COLOR;
 extern CMgrInput		inputMgr;
 extern CMgrGraphics		graphicsMgr;
 extern CMgrOptions		optionsMgr;
+extern CMgrDocument		documentMgr;
 extern CMgrStarfield	starfieldMgr;
-extern CMgrStars		starsMgr;
 extern CMgrConst		constMgr;
 extern CMgrTerrain		terrainMgr;
 extern CMgrTeacher		teacherMgr;
 
-extern CStarfield	starfield;
-extern CTerrain		terrain;
+extern CDataStarfield	starfield;
+extern CDataTerrain		terrain;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -146,11 +168,20 @@ CConStationView* GetView();
 
 void SetState( state_e s );
 void Redraw();
+
+// Message boxes (handle not specified)
 void CSInfo( char* msg, char* title="Information" );
-int  CSQuestion( char* msg, char* title="Question" );
+int  CSQuestion(  char* msg, char* title="Question" );
 int  CSYesNoCancel( char* msg, char* title="Question" );
 void CSWarn( char* msg, char* title="Warning" );
 void CSError( char* msg, char* title );
+
+// Message boxes (handle specified)
+void CSInfo( HWND parent, char* msg, char* title="Information" );
+int  CSQuestion(  HWND parent, char* msg, char* title="Question" );
+int  CSYesNoCancel( HWND parent, char* msg, char* title="Question" );
+void CSWarn( HWND parent, char* msg, char* title="Warning" );
+void CSError( HWND parent, char* msg, char* title );
 
 
 #endif

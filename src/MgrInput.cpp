@@ -2,8 +2,7 @@
 // MgrInput.cpp
 //
 // CMgrInput
-//   user interface class. Handles all user input including mouse, keyboard,
-//   and commands.
+//   handles all user input and selection (not including frame commands).
 //===========================================================================
 
 
@@ -485,6 +484,12 @@ void CMgrInput::ClearSelection()
 }
 
 // Try selecting a star or line
+//   Names for selection are as follows:
+//		0											Terrain
+//		1											Star number 0
+//		MAX_STARS									Star number (MAX_STARS-1)
+//		MAX_STARS+1									Constellation number 0 lines
+//		MAX_STARS+1 + (MAX_CONSTS*MAX_CONSTLINES)	Constellation number (MAX_CONSTS-1) Lines
 BOOL CMgrInput::Select( select_e selection )
 {
 	// The Size Of The Viewport. [0] Is <x>, [1] Is <y>, [2] Is <width>, [3] Is <height>

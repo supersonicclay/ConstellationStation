@@ -469,13 +469,14 @@ void CMgrGraphics::Draw()
 	RotateTime();
 	CalculateFrustum();
 
-	// Draw sky objects
-///	DrawSky();
+	// Draw starfield objects
+///	if( starfield.IsSunShining() )
+///		DrawSky();
 	if( starfield.AreConstsVisible() )
 		DrawConstellations();
 	if( starfield.AreStarsVisible() )
 		DrawStars();
-///	if( starfield.IsSunVisible() )
+	if( starfield.IsSunVisible() )
 		DrawSun();
 
 	if( terrain.IsVisible() )
@@ -498,7 +499,8 @@ void CMgrGraphics::Draw()
 // Draw terrain
 void CMgrGraphics::DrawTerrain() const
 {
-	glEnable( GL_LIGHTING );
+	if( starfield.IsSunShining() )
+		glEnable( GL_LIGHTING );
 
 	SetColor( optionsMgr.GetTerrColor() );
 
@@ -635,7 +637,7 @@ void CMgrGraphics::DrawConstellations() const
 // Draw constellation i
 void CMgrGraphics::DrawConstellation( int i ) const
 {
-	CConstellation* curConstellation = starfield.GetConstellation(i);
+	CDataConst* curConstellation = starfield.GetConstellation(i);
 	int numLines = curConstellation->GetNumLines();
 
 	float x1, y1, z1, x2, y2, z2;
@@ -691,7 +693,7 @@ void CMgrGraphics::DrawStars() const
 	// Go in reverse order so north star (star 0) is drawn last
 	for (int i=starfield.GetNumStars()-1; i>=0; i--)
 	{
-		CStar* star = starfield.GetStar(i);
+		CDataStar* star = starfield.GetStar(i);
 		// Check if in frustum
 		if( SphereInFrustum( star->GetX(), star->GetY(), star->GetZ(), star->GetRadius() ) )
 		{
@@ -708,13 +710,17 @@ void CMgrGraphics::DrawStars() const
 // Draw star i
 void CMgrGraphics::DrawStar( int i ) const
 {
-	CStar* curStar = starfield.GetStar(i);
+	CDataStar* curStar = starfield.GetStar(i);
 
 	// Push matrix so quad rotation doesn't affect anything
 	glPushMatrix();
 
-	// Get ready to draw the star
-	SetColor( curStar->GetColor() );
+	// Find color for this star
+	if( optionsMgr.AreConstStarsColored() &&
+		starfield.IsStarInHiddenConst(i) )
+		SetColor( optionsMgr.GetConstStarColor() );
+	else
+		SetColor( curStar->GetColor() );
 
 	glRotatef( curStar->GetTheta(),  0.0f, 1.0f, 0.0f );
 	glRotatef( curStar->GetPhi(), 1.0f, 0.0f, 0.0f );
@@ -758,7 +764,7 @@ void CMgrGraphics::DrawCompass() const
 
 	// Cross
 	glLineWidth(3);
-	SetColor( optionsMgr.GetCompassColor() );
+	SetColor( DEF_COMPASS_CROSSCOLOR );
 	glBegin(GL_LINES);
 		glVertex3f ( 1.0f, 0.0f, 0.0f);
 		glVertex3f (-1.0f, 0.0f, 0.0f);
@@ -770,7 +776,7 @@ void CMgrGraphics::DrawCompass() const
 
 	// North Star Pointer
 	RotateLatitude();
-	SetColor(COLOR_NORTHSTAR);
+	SetColor( DEF_COMPASS_NEEDLECOLOR );
 	glBegin(GL_LINES);
 		glVertex3f( 0.0f, 0.0f, 0.0f );
 		glVertex3f( 0.0f, 1.0f, 0.0f );

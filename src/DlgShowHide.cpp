@@ -2,24 +2,18 @@
 // DlgShowHide.cpp
 //
 // CDlgShowHide
-//   show / hide list dialog
+//   show / hide constellation list dialog.
 //===========================================================================
 
 #include "stdafx.h"
 #include "ConStation.h"
 #include "DlgShowHide.h"
 
-#include "Constellation.h"
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
-
-
-/////////////////////////////////////////////////////////////////////////////
-// CDlgShowHide dialog
 
 
 CDlgShowHide::CDlgShowHide(CWnd* pParent /*=NULL*/)
@@ -38,6 +32,7 @@ void CDlgShowHide::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CDlgShowHide)
+	DDX_Control(pDX, IDC_CONST_LIST, list);
 	//}}AFX_DATA_MAP
 }
 
@@ -59,28 +54,16 @@ BOOL CDlgShowHide::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 	
-	VERIFY(list.SubclassDlgItem(IDC_CONST_LIST, this));
-
-	CString str;
-
 	// Add strings to list box
 	for (int i=0; i<starfield.GetNumConstellations(); i++)
 	{
-		// Get name
-		str = starfield.GetConstellation(i)->GetName();
-
-		// If this constellation is current
-		if (i == starfield.GetNumCurConstellation())
-			str += " <--";
-
 		// Add name to list
 		list.SetSel(
-			list.AddString(str),
-			starfield.GetConstellation(i)->IsVisible());
+			list.AddString( starfield.GetConstellation(i)->GetName() ),
+			starfield.GetConstellation(i)->IsVisible() );
 	}
 
-	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX Property Pages should return FALSE
+	return TRUE;
 }
 
 void CDlgShowHide::OnSelChange() 
@@ -92,7 +75,6 @@ void CDlgShowHide::OnSelChange()
 
 	Redraw();
 }
-
 
 void CDlgShowHide::OnShowAll() 
 {

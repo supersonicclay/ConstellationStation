@@ -2,8 +2,7 @@
 // MgrInput.h
 //
 // CMgrInput
-//   user interface class. Handles all user input including mouse, keyboard,
-//   and commands.
+//   handles all user input and selection (not including frame commands).
 //===========================================================================
 
 #ifndef CS_MGRINPUT_H
@@ -38,15 +37,16 @@ public:
 	int secondStarNum;
 
 
-// Operations
+// Methods
 public:
 
-	// Keyboard
+// Keyboard
 	void ProcessKeys();
 	void KeyDown( UINT nChar );
 	void KeyUp( UINT nChar );
 
-	// Mouse
+
+// Mouse
 
 	// Mouse left button
 	void MouseLDown( CPoint point );
@@ -79,11 +79,13 @@ public:
 	void DetermineCursor();
 	void SetCur( WORD cur );
 
-	// Selecting
+
+// Selecting
 	void ClearSelection();
 	int SelectStar();
 	int SelectConstLine();
 	BOOL Select( select_e selection );
+
 
 // Destruction
 public:

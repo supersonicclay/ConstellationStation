@@ -61,12 +61,12 @@ void CMgrTerrain::Options()
 	{
 		// Reset options
 		optionsMgr.SetTerrSeason( dialog.origSeason );
-		optionsMgr.SetTerrColor( dialog.origColor );
-		if( dialog.roughness != dialog.origRoughness )
-		{
-			optionsMgr.SetTerrRoughness( dialog.origRoughness / 100.0f );
-			terrain.New();
-		}
+		optionsMgr.SetTerrWinColor( dialog.origWinColor );
+		optionsMgr.SetTerrSprColor( dialog.origSprColor );
+		optionsMgr.SetTerrSumColor( dialog.origSumColor );
+		optionsMgr.SetTerrFalColor( dialog.origFalColor );
+		optionsMgr.SetTerrRoughness( dialog.origRoughness / 100.0f );
+		terrain.MakeTerrain(); // In case roughness was changed
 	}
 
 	Redraw();

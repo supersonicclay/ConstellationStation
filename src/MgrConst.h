@@ -10,6 +10,7 @@
 
 #include "BarConst.h"
 
+
 class CMgrConst
 {
 // Construction
@@ -20,7 +21,7 @@ public:
 public:
 
 
-// Operations
+// Methods
 public:
 	CBarConst* GetConstBar();
 

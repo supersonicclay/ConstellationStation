@@ -1,14 +1,13 @@
 //===========================================================================
-// 
-// 
+// DlgOptionsTerr.h
+//
+// CDlgOptionsTerr
+//   terrain options dialog.
 //===========================================================================
 
 #ifndef CS_DLGOPTIONSTERR_H
 #define CS_DLGOPTIONSTERR_H
 
-
-/////////////////////////////////////////////////////////////////////////////
-// CDlgOptionsTerr dialog
 
 class CDlgOptionsTerr : public CDialog
 {
@@ -27,20 +26,27 @@ public:
 	CListBox	seasonsListBox;
 	//}}AFX_DATA
 
-	color_s color;
 	season_e season;
+	color_s winColor;
+	color_s sprColor;
+	color_s sumColor;
+	color_s falColor;
 
 	int origRoughness;
 	season_e origSeason;
-	color_s origColor;
-
-	BOOL needsUpdate;
+	color_s origWinColor;
+	color_s origSprColor;
+	color_s origSumColor;
+	color_s origFalColor;
 
 	// Brush for color preview
 	CBrush colorBrush;
 
+
 // Methods
+	void InitOptions();
 	void UpdateRoughnessTxt();
+
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -61,6 +67,7 @@ protected:
 	afx_msg void OnSeasonChange();
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg void OnTerrTextured();
+	afx_msg void OnTerrDefaults();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

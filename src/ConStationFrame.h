@@ -2,25 +2,24 @@
 // ConStationFrame.h
 //
 // CConStationFrame
-//   handles (forwards) most non-view related commands and messages
+//   handles (forwards) most non-view related commands and messages.
 //===========================================================================
 
 #ifndef CS_CONSTATIONFRAME_H
 #define CS_CONSTATIONFRAME_H
 
-
-#include "Starfield.h"
-#include "Terrain.h"
 #include "ConStationView.h"
 
 #include "BarStarf.h"
 #include "BarConst.h"
+
 
 class CConStationFrame : public CFrameWnd
 {
 // Construction	
 public:
 	CConStationFrame();
+
 
 // Attributes
 protected:
@@ -33,12 +32,14 @@ protected:
 	CBarStarf       starfBar;
 	CBarConst       constBar;
 
-// Operations
+
+// Methods
 public:
 	CConStationView* GetView();
 
 	CBarConst* GetConstBar();
 	CBarStarf* GetStarfBar();
+
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -82,12 +83,13 @@ protected:
 	afx_msg void OnConstToggle();
 	afx_msg void OnTerrNew();
 	afx_msg void OnTerrToggle();
+	afx_msg void OnOptionsGeneral();
 	afx_msg void OnOptionsTime();
 	afx_msg void OnOptionsLocation();
 	afx_msg void OnOptionsStar();
 	afx_msg void OnOptionsConst();
+	afx_msg void OnOptionsSun();
 	afx_msg void OnOptionsTerr();
-	afx_msg void OnOptionsGeneral();
 	afx_msg void OnUpdateStarfRotate(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateStarsToggle(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateConstList(CCmdUI* pCmdUI);
@@ -102,6 +104,7 @@ protected:
 	afx_msg void OnUpdateConstShowHide(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateConstToggle(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateTerrToggle(CCmdUI* pCmdUI);
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

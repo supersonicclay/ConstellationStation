@@ -158,12 +158,19 @@ BEGIN
     END
     POPUP "&Options"
     BEGIN
+        MENUITEM "&General...",                 ID_OPTIONS_GENERAL
         MENUITEM "&Time...",                    ID_OPTIONS_TIME
         MENUITEM "&Location...",                ID_OPTIONS_LOCATION
         MENUITEM "&Stars...",                   ID_OPTIONS_STAR
         MENUITEM "&Constellations...",          ID_OPTIONS_CONST
+        MENUITEM "S&un",                        ID_OPTIONS_SUN
         MENUITEM "Te&rrain...",                 ID_OPTIONS_TERR
-        MENUITEM "&General...",                 ID_OPTIONS_GENERAL
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "&Stars",                      ID_STARS_TOGGLE
+        MENUITEM "&Constellations",             ID_CONST_TOGGLE
+        MENUITEM "&Terrain",                    ID_TERR_TOGGLE
     END
     POPUP "&Help"
     BEGIN
@@ -252,7 +259,7 @@ BEGIN
     CONTROL         "Slider2",IDC_TERR_ROUGHNESS,"msctls_trackbar32",
                     TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,20,103,100,22
     GROUPBOX        "Display",IDC_STATIC,145,10,120,95
-    LTEXT           "Texture:",IDC_STATIC,155,33,27,8
+    LTEXT           "Season:",IDC_STATIC,155,33,27,8
     LISTBOX         IDC_TERR_SEASONS,188,33,67,35,LBS_NOINTEGRALHEIGHT | 
                     WS_TABSTOP
     PUSHBUTTON      "Solid Color",IDC_TERR_COLOR,155,81,59,14
@@ -271,8 +278,6 @@ FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
-    CONTROL         "DateTimePicker2",IDC_DATETIMEPICKER2,"SysDateTimePick32",
-                    DTS_RIGHTALIGN | WS_TABSTOP,7,7,100,15
 END
 
 IDD_OPTIONS_GENERAL DIALOG DISCARDABLE  0, 0, 275, 180
@@ -296,8 +301,8 @@ BEGIN
                     WS_TABSTOP,20,38,41,10
     CONTROL         "Textured (high quality)",IDC_STARS_TEXTURED,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,20,51,85,10
-    CONTROL         "Colored",IDC_STARS_COLORED,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,20,64,40,10
+    CONTROL         "Spectral Type Coloring",IDC_STARS_COLORED,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,20,64,87,10
     GROUPBOX        "Limiting Magnitude",IDC_STATIC,10,95,120,65
     EDITTEXT        IDC_STARS_LIMMAG_TXT,20,110,25,12,ES_AUTOHSCROLL | 
                     ES_NUMBER | WS_DISABLED
@@ -315,7 +320,7 @@ BEGIN
     PUSHBUTTON      "Defaults",IDC_STARS_DEFAULTS,145,251,50,14
 END
 
-IDD_OPTIONS_CONST DIALOG DISCARDABLE  0, 0, 205, 160
+IDD_OPTIONS_CONST DIALOG DISCARDABLE  0, 0, 205, 225
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Constellation Options"
 FONT 8, "MS Sans Serif"
@@ -337,7 +342,13 @@ BEGIN
                     WS_DISABLED
     DEFPUSHBUTTON   "OK",IDOK,145,10,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,145,30,50,14
-    PUSHBUTTON      "Defaults",IDC_CONST_DEFAULTS,145,136,50,14
+    PUSHBUTTON      "Defaults",IDC_CONST_DEFAULTS,145,201,50,14
+    GROUPBOX        "Hidden Constellations",IDC_STATIC,10,160,120,55
+    PUSHBUTTON      "Star Color",IDC_CONST_STARCOLOR,20,191,66,14
+    EDITTEXT        IDC_CONST_STARCOLOR_PREV,91,191,29,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    CONTROL         "Color stars while hidden",IDC_CONST_STARSCOLORED,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,20,175,90,10
 END
 
 IDD_TIME DIALOG DISCARDABLE  0, 0, 186, 94
@@ -347,6 +358,65 @@ FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+    CONTROL         "DateTimePicker2",IDC_DATETIMEPICKER,"SysDateTimePick32",
+                    DTS_RIGHTALIGN | WS_TABSTOP,7,7,100,15
+END
+
+IDD_OPTIONS_COLORS DIALOG DISCARDABLE  0, 0, 335, 182
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Color Options"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,275,10,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,275,30,50,14
+    GROUPBOX        "Constellation Lines",IDC_STATIC,140,10,120,81
+    PUSHBUTTON      "Normal",IDC_COLOR_CONSTNORM,150,25,66,14
+    EDITTEXT        IDC_CONST_NORMCOLOR_PREV,221,25,29,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    PUSHBUTTON      "Selected",IDC_COLOR_CONSTSEL,150,45,66,14
+    EDITTEXT        IDC_CONST_SELCOLOR_PREV,221,45,29,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    PUSHBUTTON      "Active",IDC_COLOR_CONSTACTIVE,150,65,66,14
+    EDITTEXT        IDC_CONST_ACTIVECOLOR_PREV,221,65,29,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    PUSHBUTTON      "Star Color",IDC_COLOR_CONSTSTAR,149,132,66,14
+    EDITTEXT        IDC_CONST_STARCOLOR_PREV,221,132,29,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    CONTROL         "Color stars while hidden",IDC_CONST_STARSCOLORED,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,150,116,90,10
+    CONTROL         "Spectral Type Coloring",IDC_COLOR_STARCOLORED,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,20,25,87,10
+    GROUPBOX        "Stars",IDC_STATIC,10,10,120,33
+    GROUPBOX        "Hidden Constellaions",IDC_STATIC,140,100,120,55
+    GROUPBOX        "Terrain",IDC_STATIC,10,57,120,98
+    PUSHBUTTON      "Winter",IDC_TERR_WINCOLOR,20,70,66,14
+    EDITTEXT        IDC_TERR_WINCOLOR_PREV,91,70,29,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    PUSHBUTTON      "Spring",IDC_COLOR_TERRSPR,20,90,66,14
+    EDITTEXT        IDC_TERR_SPRCOLOR_PREV,91,90,29,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    PUSHBUTTON      "Summer",IDC_COLOR_TERRSUM,19,110,66,14
+    EDITTEXT        IDC_TERR_SUMCOLOR_PREV,91,110,29,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    PUSHBUTTON      "Fall",IDC_COLOR_TERRFAL,20,130,66,14
+    EDITTEXT        IDC_TERR_FALCOLOR_PREV,91,130,29,14,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    PUSHBUTTON      "Defaults",IDC_COLOR_DEFAULTS,275,158,50,14
+END
+
+IDD_OPTIONS_SUN DIALOG DISCARDABLE  0, 0, 205, 70
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Sun Options"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,145,10,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,145,28,50,14
+    GROUPBOX        "Options",IDC_STATIC,10,10,120,50
+    CONTROL         "Visible",IDC_SUN_VISIBLE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,20,25,36,10
+    CONTROL         "Sunshine",IDC_SUN_SHINE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,20,40,45,10
+    PUSHBUTTON      "Defaults",IDC_SUN_DEFAULTS,145,46,50,14
 END
 
 
@@ -483,7 +553,6 @@ BEGIN
         LEFTMARGIN, 10
         RIGHTMARGIN, 195
         TOPMARGIN, 10
-        BOTTOMMARGIN, 150
     END
 
     IDD_TIME, DIALOG
@@ -492,6 +561,40 @@ BEGIN
         RIGHTMARGIN, 179
         TOPMARGIN, 7
         BOTTOMMARGIN, 87
+    END
+
+    IDD_OPTIONS_COLORS, DIALOG
+    BEGIN
+        LEFTMARGIN, 10
+        RIGHTMARGIN, 325
+        VERTGUIDE, 20
+        VERTGUIDE, 120
+        VERTGUIDE, 130
+        VERTGUIDE, 140
+        VERTGUIDE, 260
+        VERTGUIDE, 275
+        TOPMARGIN, 10
+        BOTTOMMARGIN, 172
+        HORZGUIDE, 35
+        HORZGUIDE, 55
+        HORZGUIDE, 70
+        HORZGUIDE, 145
+        HORZGUIDE, 155
+    END
+
+    IDD_OPTIONS_SUN, DIALOG
+    BEGIN
+        LEFTMARGIN, 10
+        RIGHTMARGIN, 195
+        VERTGUIDE, 20
+        VERTGUIDE, 120
+        VERTGUIDE, 130
+        VERTGUIDE, 145
+        TOPMARGIN, 10
+        BOTTOMMARGIN, 60
+        HORZGUIDE, 25
+        HORZGUIDE, 50
+        HORZGUIDE, 60
     END
 END
 #endif    // APSTUDIO_INVOKED

@@ -150,7 +150,10 @@ void CMgrInput::ProcessKeys()
 // Main handler for left mouse button double click
 void CMgrInput::MouseLDbl( CPoint point )
 {
-	mouseClientPoint = point;
+	mousePoint.x = point.x;
+	mousePoint.y = graphicsMgr.height - point.y;
+
+	GetCursorPos( &mouseScreenPoint );
 
 	int constNum = SelectConst();
 
@@ -168,15 +171,19 @@ void CMgrInput::MouseLDown( CPoint point )
 	// Give view the focus
 	GetView()->SetFocus();
 
-	GetCursorPos( &mousePoint );
 	mouseLPoint = mousePoint;
-	mouseClientPoint = point;
+	mousePoint.x = point.x;
+	mousePoint.y = graphicsMgr.height - point.y;
+
+	GetCursorPos( &mouseScreenPoint );
+	mouseScreenLPoint = mouseScreenPoint;
 
 	// Call appropriate function based on state
 	switch( state )
 	{
 	case state_Viewing:
 		MouseLDownViewing();
+//		MouseLDownTest();
 		break;
 	case state_AddingLine:
 		MouseLDownAddingLine();
@@ -192,9 +199,12 @@ void CMgrInput::MouseLDown( CPoint point )
 // Main handler for left mouse button up
 void CMgrInput::MouseLUp( CPoint point ) 
 {
-	GetCursorPos( &mousePoint );
 	mouseLPoint = CPoint(0,0);
-	mouseClientPoint = point;
+	mousePoint.x = point.x;
+	mousePoint.y = graphicsMgr.height - point.y;
+
+	GetCursorPos( &mouseScreenPoint );
+	mouseScreenLPoint = CPoint(0,0);
 
 	switch( state )
 	{
@@ -218,9 +228,12 @@ void CMgrInput::MouseRDown( CPoint point )
 	// Give view the focus
 	GetView()->SetFocus();
 
-	GetCursorPos( &mousePoint );
 	mouseRPoint = mousePoint;
-	mouseClientPoint = point;
+	mousePoint.x = point.x;
+	mousePoint.y = graphicsMgr.height - point.y;
+
+	GetCursorPos( &mouseScreenPoint );
+	mouseScreenRPoint = mouseScreenPoint;
 
 	switch( state )
 	{
@@ -241,9 +254,12 @@ void CMgrInput::MouseRDown( CPoint point )
 // Main handler for right mouse button up
 void CMgrInput::MouseRUp( CPoint point ) 
 {
-	GetCursorPos( &mousePoint );
 	mouseRPoint = CPoint(0,0);
-	mouseClientPoint = point;
+	mousePoint.x = point.x;
+	mousePoint.y = graphicsMgr.height - point.y;
+
+	GetCursorPos( &mouseScreenPoint );
+	mouseScreenRPoint = CPoint(0,0);
 
 	switch( state )
 	{
@@ -264,13 +280,15 @@ void CMgrInput::MouseRUp( CPoint point )
 // Main handler for mouse move
 void CMgrInput::MouseMove( CPoint point ) 
 {
-	GetCursorPos( &mousePoint );
-	mouseClientPoint = point;
+	mousePoint.x = point.x;
+	mousePoint.y = graphicsMgr.height - point.y;
+
+	GetCursorPos( &mouseScreenPoint );
 
 	switch( state )
 	{
 	case state_Viewing:
-		MouseMoveViewing2();/// PICK ONE
+		MouseMoveViewing3();/// PICK ONE
 		break;
 	case state_AddingLine:
 		MouseMoveAddingLine();
@@ -289,11 +307,13 @@ void CMgrInput::MouseMove( CPoint point )
 
 void CMgrInput::MouseLDownTest()///
 {
-	int selectedStarNum = SelectStar();
-	if( selectedStarNum == -1 )
-		return;
+	// Find coordinates on celestial sphere
+	vector3 coord = GetMouseSphereCoord();
 
-	starfMgr.Find( starfield.GetStar(selectedStarNum) );
+	int selectedStarNum = SelectStar();
+	if( selectedStarNum != -1 )
+		starfield.GetStar( selectedStarNum )->SetColor( COLOR_GREEN );
+
 	Redraw();
 }
 
@@ -301,6 +321,8 @@ void CMgrInput::MouseLDownViewing()
 {
 	// Start rotating XY
 	mouseRotatingXY = TRUE;
+
+	mouseLDownCoord = GetMouseSphereCoord();
 
 	if( !mouseRotatingZ )
 	{
@@ -346,6 +368,12 @@ void CMgrInput::MouseLDownDeletingLine()
 void CMgrInput::MouseLUpViewing()
 {
 	mouseRotatingXY = FALSE;
+
+	// Add and clear the temporary rotation
+	starfield.AdjRotX( starfield.GetTempRotX() );
+	starfield.AdjRotY( starfield.GetTempRotY() );
+	starfield.SetTempRotX( 0.0f );
+	starfield.SetTempRotY( 0.0f );
 
 	if( !mouseRotatingZ )
 	{
@@ -454,25 +482,78 @@ void CMgrInput::MouseWheel( short zDelta )
 /////////////////////////////////////////////////////////////////////////////
 // Mouse Move
 
-void CMgrInput::MouseMoveViewing()
+void CMgrInput::MouseMoveViewing3()  // Trackball
 {
 	if( !mouseRotatingXY && !mouseRotatingZ )
 		return;
 
 	if( mouseRotatingZ )
 	{
-		float deltaTime = (mousePoint.y-mouseRPoint.y) / 10.0f;
+		// If shift is down, it only rotates sun
+		if( keyDown[VK_SHIFT] )
+			starfield.GetSun()->AdjRotTime( (mousePoint.y-mouseRPoint.y) / 10.0f );
+		else
+			starfield.AdjRotTime( (mousePoint.y-mouseRPoint.y) / 10.0f );// * (1-zoom);
+		mouseRPoint = mousePoint;
+	}
 
-		SetCursorPos( mouseRPoint.x, mouseRPoint.y );
+	else if( mouseRotatingXY )
+	{
+		// Find coordinates on outside sphere
+		mouseCoord = GetMouseSphereCoord();
+
+		// Intermediate coordinate
+		vector3 c;
+		c.x = mouseCoord.x;
+		c.y = mouseLDownCoord.y;
+		c.z = -(float)sqrt(1.0f-c.x*c.x-c.y*c.y);
+
+		/// Calculate y-axis rotation necessary (mouseLDownCoord -> intermediate)
+		float cosY = DotProduct( mouseLDownCoord, c );
+		if( cosY > 1.0f )
+			cosY = 1.0f;
+		float rotY = (float)acos( cosY );
+
+		/// Calculate x-axis rotation necessary (intermediate -> mouseCoord)
+		float cosX = DotProduct( c, mouseCoord );
+		if( cosX > 1.0f )
+			cosX = 1.0f;
+		float rotX = (float)acos( cosX );
+
+		// Since dot product doesn't give use direction info
+		if( mouseCoord.x > mouseLDownCoord.x )
+			starfield.SetTempRotY( -rotY );
+		else
+			starfield.SetTempRotY( rotY );
+		if( mouseCoord.y < mouseLDownCoord.y )
+			starfield.SetTempRotX( -rotX );
+		else
+			starfield.SetTempRotX( rotX );
+	}
+
+	Redraw();
+}
+
+void CMgrInput::MouseMoveViewing2()  // Mouse stays in place
+{
+	if( !mouseRotatingXY && !mouseRotatingZ )
+		return;
+
+	if( mouseRotatingZ )
+	{
+		float deltaTime = (mouseScreenPoint.y-mouseScreenRPoint.y) / 10.0f;
+
+		SetCursorPos( mouseScreenRPoint.x, mouseScreenRPoint.y );
 
 		starfield.AdjRotTime( deltaTime );
 	}
+
 	else if( mouseRotatingXY )
 	{
-		float deltaX = (mousePoint.y-mouseLPoint.y) / 20.0f;
-		float deltaY = (mousePoint.x-mouseLPoint.x) / 20.0f;
+		float deltaX = (mouseScreenPoint.y-mouseScreenLPoint.y) / 200.0f;
+		float deltaY = (mouseScreenPoint.x-mouseScreenLPoint.x) / 200.0f;
 
-		SetCursorPos( mouseLPoint.x, mouseLPoint.y );
+		SetCursorPos( mouseScreenLPoint.x, mouseScreenLPoint.y );
 
 		starfield.AdjRotX( deltaX, FALSE ); // Prevent matrix update;
 		starfield.AdjRotY( deltaY );        // it's done here.
@@ -481,20 +562,19 @@ void CMgrInput::MouseMoveViewing()
 	GetView()->RedrawWindow();  // Force a redraw
 }
 
-void CMgrInput::MouseMoveViewing2()
+void CMgrInput::MouseMoveViewing()  // Original
 {
 	if( !mouseRotatingXY && !mouseRotatingZ )
 		return;
 
-	float rotX = starfield.GetRotX();
-
-	if( mouseRotatingXY && !mouseRotatingZ )
-	{
-		starfield.AdjRotX( (mousePoint.y-mouseLPoint.y) / 20.0f, FALSE );// * (1-zoom);
-		starfield.AdjRotY( (mousePoint.x-mouseLPoint.x) / 20.0f );// * (1-zoom);
-	}
 	if( mouseRotatingZ )
 		starfield.AdjRotTime( (mousePoint.y-mouseRPoint.y) / 10.0f );// * (1-zoom);
+
+	else if( mouseRotatingXY && !mouseRotatingZ )
+	{
+		starfield.AdjRotX( (mousePoint.y-mouseLPoint.y) / 20.0f, FALSE );// * (1-zoom);
+		starfield.AdjRotY( -(mousePoint.x-mouseLPoint.x) / 20.0f );// * (1-zoom);
+	}
 
 	Redraw();
 
@@ -528,6 +608,17 @@ void CMgrInput::MouseMoveDeletingLine()
 	starfield.GetCurConst()->SetActiveLineNum( SelectConstLine() );
 	Redraw();
 }
+
+// Find the coordinate on the outside sphere based on mouse's position
+vector3 CMgrInput::GetMouseSphereCoord()
+{
+	float  spread = (float)tan( DegToRad(graphicsMgr.fov/2.0f) );
+	return vector3(
+		spread * (mousePoint.x-graphicsMgr.width/2.0f)  /(graphicsMgr.height/2.0f),
+		spread * (mousePoint.y-graphicsMgr.height/2.0f) /(graphicsMgr.height/2.0f),
+		-1.0f ).normalize();
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // Cursor
@@ -611,11 +702,11 @@ BOOL CMgrInput::Select( select_e selection )
 
 	// This Creates A Matrix That Will Zoom Up To A Small Portion Of The Screen, Where The Mouse Is.
 	if( selection == select_Star )
-		gluPickMatrix( (GLdouble) mouseClientPoint.x, (GLdouble) (viewport[3]-mouseClientPoint.y), 5.0f, 5.0f, viewport );
+		gluPickMatrix( (GLdouble) mousePoint.x, (GLdouble) mousePoint.y, 5.0f, 5.0f, viewport );
 	else if( selection == select_Line )
-		gluPickMatrix( (GLdouble) mouseClientPoint.x, (GLdouble) (viewport[3]-mouseClientPoint.y), 15.0f, 15.0f, viewport );
+		gluPickMatrix( (GLdouble) mousePoint.x, (GLdouble) mousePoint.y, 15.0f, 15.0f, viewport );
 	else if( selection == select_Const )
-		gluPickMatrix( (GLdouble) mouseClientPoint.x, (GLdouble) (viewport[3]-mouseClientPoint.y), 100.0f, 100.0f, viewport );
+		gluPickMatrix( (GLdouble) mousePoint.x, (GLdouble) mousePoint.y, 100.0f, 100.0f, viewport );
 
 	// Apply The Perspective Matrix
 	graphicsMgr.Perspective();

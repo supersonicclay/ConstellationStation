@@ -40,7 +40,6 @@ void CDataStarf::Clear( BOOL clearStars )
 		seed = 0;
 		starCount = 0;
 		stars.clear();
-		stars.push_back( CDataStar() );
 	}
 
 	// Constellations
@@ -56,6 +55,8 @@ void CDataStarf::Clear( BOOL clearStars )
 
 	rotX = 0.0f;
 	rotY = 0.0f;
+	tempRotX = 0.0f;
+	tempRotY = 0.0f;
 	rotTime = 0.0f;
 	zoom = 0.0f;
 
@@ -236,6 +237,7 @@ void CDataStarf::InitActualConsts()
 
 CDataStar*	CDataStarf::GetStar(int i)			{	return &stars[i];				}
 int			CDataStarf::GetStarCount()			{	return starCount;				}
+CDataSun*	CDataStarf::GetSun()				{	return &sun;					}
 CDataConst*	CDataStarf::GetConst(int i)			{	return &consts[i];				}
 CDataConst*	CDataStarf::GetCurConst()			{	return &consts[curConstNum];	}
 int			CDataStarf::GetConstCount()			{	return constCount;				}
@@ -252,6 +254,8 @@ matrix44*	CDataStarf::GetTimeMat()			{	return &timeMat;				}
 matrix44*	CDataStarf::GetLatMat()				{	return &latMat;					}
 float		CDataStarf::GetRotX()				{	return rotX;					}
 float		CDataStarf::GetRotY()				{	return rotY;					}
+float		CDataStarf::GetTempRotX()			{	return tempRotX;				}
+float		CDataStarf::GetTempRotY()			{	return tempRotY;				}
 float		CDataStarf::GetRotTime()			{	return rotTime;					}
 float		CDataStarf::GetZoom()				{	return zoom;					}
 BOOL		CDataStarf::IsSpinning()			{	return spinning;				}
@@ -287,6 +291,35 @@ void CDataStarf::SwitchSunShine()				{	sunShine = !sunShine;			}
 void CDataStarf::SetSunShine( BOOL x )			{	sunShine = x;					}
 void CDataStarf::SwitchSpinning()				{	spinning = !spinning;			}
 
+void CDataStarf::SetRotX( float r, BOOL updateMat )
+{
+	rotX = r;
+	if( updateMat )
+		UpdateViewMat();
+}
+void CDataStarf::SetRotY( float r, BOOL updateMat )
+{
+	rotY = r;
+	if( updateMat )
+		UpdateViewMat();
+}
+void CDataStarf::SetTempRotX( float r, BOOL updateMat )
+{
+	if( rotX+r > PIHALF )
+		tempRotX = PIHALF-rotX;
+	else if( rotX+r < -PIHALF )
+		tempRotX = -PIHALF-rotX;
+	else
+		tempRotX = r;
+	if( updateMat )
+		UpdateViewMat();
+}
+void CDataStarf::SetTempRotY( float r, BOOL updateMat )
+{
+	tempRotY = r;
+	if( updateMat )
+		UpdateViewMat();
+}
 void CDataStarf::SetRotTime( float r, BOOL updateMat )
 {
 	rotTime = r;
@@ -299,7 +332,11 @@ void CDataStarf::AdjRotX( float delta, BOOL updateMat )
 	// Restrict up and down rotation
 	float newRotX = rotX + delta;
 
-	if( newRotX > -90 && newRotX < 90 )
+	if( newRotX < -PIHALF )
+		rotX = -PIHALF;
+	else if( newRotX > PIHALF )
+		rotX = PIHALF;
+	else
 		rotX = newRotX;
 
 	if( updateMat )
@@ -310,11 +347,11 @@ void CDataStarf::AdjRotY( float delta, BOOL updateMat )
 {
 	rotY += delta;
 
-	// Keep rotY between -360 and 360
-	if( rotY < -360.0f )
-		rotY += 360.0f;
-	if( rotY > 360.0f )
-		rotY -= 360.0f;
+	// Keep rotY between 0 and PI2
+	if( rotY < 0.0f )
+		rotY += PI2;
+	if( rotY > PI2 )
+		rotY -= PI2;
 
 	if( updateMat )
 		UpdateViewMat();
@@ -481,8 +518,8 @@ void CDataStarf::UpdateMats()
 void CDataStarf::UpdateViewMat()
 {
 	viewMat.identity();
-	viewMat = RotateRadMatrix44( 'x', DegToRad( rotX ) );
-	viewMat *= RotateRadMatrix44( 'y', DegToRad( rotY ) );
+	viewMat = RotateRadMatrix44( 'x', rotX+tempRotX );
+	viewMat *= RotateRadMatrix44( 'y', rotY+tempRotY );
 }
 
 // Update time matrix
@@ -507,10 +544,10 @@ void CDataStarf::UpdateLongMat()
 }
 
 // Rotate methods (for keyboard)
-void CDataStarf::RotateUp()		{	AdjRotX(-0.5f);	}
-void CDataStarf::RotateDown()	{	AdjRotX( 0.5f);	}
-void CDataStarf::RotateLeft()	{	AdjRotY(-0.5f);	}
-void CDataStarf::RotateRight()	{	AdjRotY( 0.5f);	}
+void CDataStarf::RotateUp()		{	AdjRotX( -0.005f*(1-zoom) );	}
+void CDataStarf::RotateDown()	{	AdjRotX(  0.005f*(1-zoom) );	}
+void CDataStarf::RotateLeft()	{	AdjRotY( -0.005f*(1-zoom) );	}
+void CDataStarf::RotateRight()	{	AdjRotY(  0.005f*(1-zoom) );	}
 
 // Zoom methods (for keyboard and mousewheel)
 void CDataStarf::ZoomIn()
@@ -579,8 +616,8 @@ void CDataStarf::Track()
 	fakeStar.SetCenter( vector3(worldVec.x, worldVec.y, worldVec.z) );
 	fakeStar.UpdatePosFromXYZ();
 
-	rotX = fakeStar.GetPhi() - 90.0f;
-	rotY = 180.0f - fakeStar.GetTheta();
+	rotX = fakeStar.GetPhi() - PIHALF;
+	rotY = PI - fakeStar.GetTheta();
 
 	UpdateViewMat();
 }

@@ -192,6 +192,10 @@ SOURCE=.\DataStarf.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\DataSun.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\DataTerrain.cpp
 # End Source File
 # End Group
@@ -338,6 +342,10 @@ SOURCE=.\DataStar.h
 # Begin Source File
 
 SOURCE=.\DataStarf.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\DataSun.h
 # End Source File
 # Begin Source File
 

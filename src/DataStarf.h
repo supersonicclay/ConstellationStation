@@ -12,6 +12,7 @@
 #define CS_DATASTARF_H
 
 #include "DataStar.h"
+#include "DataSun.h"
 #include "DataConst.h"
 
 
@@ -57,6 +58,8 @@ private:
 	// Viewing
 	float rotX;
 	float rotY;
+	float tempRotX;
+	float tempRotY;
 	float rotTime;
 	float zoom;
 	BOOL  spinning;
@@ -69,6 +72,9 @@ private:
 // Stars
 	star_v stars;
 	int starCount;
+
+// Sun
+	CDataSun sun;
 
 // Constellations
 	const_v  consts;
@@ -96,6 +102,8 @@ public:
 	CDataStar* GetStar( int i );
 	int GetStarCount();
 
+	CDataSun* GetSun();
+
 	CDataConst* GetConst( int i );
 	CDataConst* GetConst( CString &name );
 	CDataConst* GetCurConst();
@@ -118,6 +126,8 @@ public:
 
 	float GetRotX();
 	float GetRotY();
+	float GetTempRotX();
+	float GetTempRotY();
 	float GetRotTime();
 	float GetZoom();
 
@@ -143,6 +153,10 @@ public:
 	void SwitchSunShine();
 	void SetSunShine( BOOL x );
 
+	void SetRotX( float r, BOOL updateMat=TRUE );
+	void SetRotY( float r, BOOL updateMat=TRUE );
+	void SetTempRotX( float r, BOOL updateMat=TRUE );
+	void SetTempRotY( float r, BOOL updateMat=TRUE );
 	void SetRotTime( float r, BOOL updateMat=TRUE );
 	void AdjRotX( float delta, BOOL updateMat=TRUE );
 	void AdjRotY( float delta, BOOL updateMat=TRUE );

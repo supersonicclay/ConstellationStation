@@ -31,6 +31,9 @@ public:
 	// Frustum
 	vector4 frustum[6];
 
+	// Fov angle
+	float fov;
+
 	// Textures
 	UINT starTex;
 	UINT skyTex;
@@ -45,9 +48,7 @@ public:
 
 // Methods
 public:
-
 // Initialization
-	// OpenGL
 	BOOL InitializeOpenGL();
 	BOOL SetupPixelFormat();
 
@@ -57,6 +58,7 @@ public:
 	void DrawTerrain();
 	void DrawSky();
 	void DrawSun();
+	void DrawSunlight();
 	void DrawStars();
 	void DrawStarQuad( int i );
 	void DrawStarPoint( int i );

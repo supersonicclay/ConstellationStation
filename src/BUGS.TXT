@@ -65,3 +65,8 @@ Fixed		08-24-04		Shouldn't draw terrain when selecting with terrain off
 
 Fixed		08-26-04		Front facing stars are being culled
 
+Fixed		08-30-04		SetTempRot should check if it will go to far (poles)
+
+Disappeared	08-30-04		Random starfield has circles around E and W poles
+
+Fixed		08-30-04		First star is a blank InitActualStars

@@ -12,11 +12,11 @@
 0.3 - Math
 -------------------------------------------------
 
-0.3.1
+0.3.0
 	Limiting magnitude option
 	Brightness / Contrast options
 
-0.3.2
+0.3.1
 	Non-textured stars
 	Smoother zoom (dependent on zoom)
 	Active constellation lines (moused over)
@@ -27,11 +27,15 @@
 	Starfield matrices (view, time, latitude, longitude)
 	Tracking methods
 
--0.3.3
+0.3.2
 	Accurate magnitudes for random starfield
 	2d Dynamic arrays for terrain
 	Stores star vertices instead of matrix
+
+0.3.3
+	"Trackball" mouse user interface
 	Stars now use radians instead of degrees
+	Spin sun separately
 
 
 -------------------------------------------------

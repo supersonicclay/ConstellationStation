@@ -8,6 +8,7 @@
 #ifndef CS_MGRINPUT_H
 #define CS_MGRINPUT_H 
 
+#include "Matrix.h"
 
 class CMgrInput
 {
@@ -22,12 +23,16 @@ public:
 	BOOL keyDown[256];
 
 	// Mouse
-	BOOL   mouseRotatingXY;
-	BOOL   mouseRotatingZ;
-	CPoint mouseClientPoint;  // mouse point in client coordinates
-	CPoint mousePoint;
-	CPoint mouseLPoint;
-	CPoint mouseRPoint;
+	BOOL    mouseRotatingXY;
+	BOOL    mouseRotatingZ;
+	CPoint  mousePoint;
+	CPoint  mouseLPoint;
+	CPoint  mouseRPoint;
+	CPoint  mouseScreenPoint;  // mouse point in screen coordinates
+	CPoint  mouseScreenLPoint;
+	CPoint  mouseScreenRPoint;
+	vector3 mouseCoord;       // mouse coordinate on outside sphere
+	vector3 mouseLDownCoord;  // mouse coordinate when L button clicked
 
 	// Selecting
 	GLuint selectBuffer[100];
@@ -74,11 +79,13 @@ public:
 	// Mouse move
 	void MouseMove( CPoint point );
 	void MouseMoveViewing();
-	void MouseMoveViewing2();
+	void MouseMoveViewing2();///
+	void MouseMoveViewing3();///
 	void MouseMoveAddingLine();
 	void MouseMoveDeletingLine();
 
 	// Other mouse methods
+	vector3 GetMouseSphereCoord();
 	void MouseWheel( short zDelta );
 	void DetermineCursor();
 	void SetCur( WORD cur );

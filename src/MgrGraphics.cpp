@@ -456,10 +456,15 @@ void CMgrGraphics::Draw()
 {
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-	LoadSkyMat();
 
 	if( starfield.IsSunShining() )
+	{
+		LoadSkyMat();
 		DrawSky();
+
+		LoadSunMat();
+		DrawSunlight();
+	}
 
 	LoadStarfMat();
 
@@ -586,11 +591,36 @@ void CMgrGraphics::DrawSky()
 // Draw sun
 void CMgrGraphics::DrawSun()
 {
-	// Sun Sphere
-	SetColor( COLOR_WHITE );
-	gluSphere( sunSphere, 0.02f, 15, 2 );
+	glEnable( GL_TEXTURE_2D );
+	glEnable( GL_BLEND );
+	glBindTexture( GL_TEXTURE_2D, starTex );
 
-	/// LIGHTING NEEDS WORK
+	CDataSun* sun = starfield.GetSun();
+
+	SetColor( sun->GetColor() );
+
+	// Get vertices
+	vector3 trVert = sun->GetTRVert();
+	vector3 tlVert = sun->GetTLVert();
+	vector3 blVert = sun->GetBLVert();
+	vector3 brVert = sun->GetBRVert();
+
+	// Draw a star quad counterclockwise
+	glBegin( GL_QUADS );
+		glTexCoord2i( 1, 1 ); glVertex3f( trVert.x, trVert.y, trVert.z );
+		glTexCoord2i( 0, 1 ); glVertex3f( tlVert.x, tlVert.y, tlVert.z );
+		glTexCoord2i( 0, 0 ); glVertex3f( blVert.x, blVert.y, blVert.z );
+		glTexCoord2i( 1, 0 ); glVertex3f( brVert.x, brVert.y, brVert.z );
+	glEnd();
+
+	glDisable( GL_TEXTURE_2D );
+	glDisable( GL_BLEND );
+}
+
+/// LIGHTING NEEDS WORK
+void CMgrGraphics::DrawSunlight()
+{
+	// Update sunlight (GL_LIGHT0)
 	float light[4];
 	light[0] = 1.0f;
 	light[1] = 1.0f;
@@ -598,11 +628,8 @@ void CMgrGraphics::DrawSun()
 	light[3] = 1.0f;
 	glLightfv( GL_LIGHT0, GL_DIFFUSE, light );
 
-	float pos[3];
-	pos[0] = 0.0f;
-	pos[1] = 1.0f;
-	pos[2] = 0.0f;
-	glLightfv( GL_LIGHT0, GL_POSITION, pos );
+	vector3 pos = starfield.GetSun()->GetCenter();
+	glLightfv( GL_LIGHT0, GL_POSITION, pos.getFloats() );
 }
 
 // Draw all constellations
@@ -785,30 +812,6 @@ void CMgrGraphics::DrawStarQuad( int i )
 	vector3 blVert = curStar->GetBLVert();
 	vector3 brVert = curStar->GetBRVert();
 
-	/* Draw normals for star 8 ///
-	if( i == 8 )
-	{
-		vector3 center = curStar->GetCenter();
-		glDisable( GL_TEXTURE_2D );
-		glDisable( GL_BLEND );
-		SetColor( COLOR_GREEN );
-		glLineWidth( 1 );
-		glBegin( GL_LINES );
-			glVertex3f( center.x, center.y, center.z );
-			glVertex3f( center.x+normal.x, center.y+normal.y, center.z+normal.z );
-		glEnd();
-		glEnable( GL_BLEND );
-		glEnable( GL_TEXTURE_2D );
-
-		/// Find color for this star
-		if( starfield.AreConstsVisible() && optionsMgr.AreConstStarsColored() &&
-			starfield.IsStarInHiddenConst(i) )
-			SetColor( optionsMgr.GetConstStarColor() );
-		else
-			SetColor( curStar->GetColor() );
-	}
-///	*/
-
 	// Draw a star quad counterclockwise
 	glBegin( GL_QUADS );
 		glTexCoord2i( 1, 1 ); glVertex3f( trVert.x, trVert.y, trVert.z );
@@ -922,9 +925,9 @@ void CMgrGraphics::Projection()
 // Apply perspective matrix
 void CMgrGraphics::Perspective()
 {
-	float persp = ( 1 - starfield.GetZoom() ) * 45;
+	fov = ( 1 - starfield.GetZoom() ) * 45;
 
-	gluPerspective( persp, (float)width / (float)height, 0.001f, 10.0f );
+	gluPerspective( fov, (float)width / (float)height, 0.001f, 10.0f );
 }
 
 // Load matrix for sky
@@ -939,7 +942,7 @@ void CMgrGraphics::LoadSkyMat()
 void CMgrGraphics::LoadStarfMat()
 {
 	glLoadIdentity();
-///	glTranslatef( 0, 0, -3 );///
+//	glTranslatef( 0, 0, -3 );///
 	glMultMatrixf( starfield.GetViewMat()->getFloats() );
 	glMultMatrixf( starfield.GetLatMat()->getFloats() );
 	glMultMatrixf( starfield.GetTimeMat()->getFloats() );
@@ -948,19 +951,21 @@ void CMgrGraphics::LoadStarfMat()
 // Load matrix for sun
 void CMgrGraphics::LoadSunMat()
 {
-	/// Some needs to be in CDataSun
 	glLoadIdentity();
+//	glTranslatef( 0, 0, -3 );///
 	glMultMatrixf( starfield.GetViewMat()->getFloats() );
 	glMultMatrixf( starfield.GetLatMat()->getFloats() );
 	glMultMatrixf( starfield.GetTimeMat()->getFloats() );
+	glRotatef( starfield.GetSun()->GetRotTime(), 0.0f, 1.0f, 0.0f );
 
-	glTranslatef( 0.0f, 0.0f,-1.0f );
+///	glTranslatef( 0.0f, 0.0f,-1.0f );///
 }
 
 // Load matrix for terrain
 void CMgrGraphics::LoadTerrainMat()
 {
 	glLoadIdentity();
+//	glTranslatef( 0, 0, -3 );///
 	glMultMatrixf( starfield.GetViewMat()->getFloats() );
 	glTranslatef( 0.0f, -terrain.GetViewHeight(), 0.0f );
 }

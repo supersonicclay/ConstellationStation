@@ -71,7 +71,6 @@ void CDataTerrain::New()
 
 	// Generate new seed
 	seed = (unsigned)clock();
-	seed = 10;///
 
 	size = 1<<optionsMgr.GetTerrIters();
 

@@ -11,10 +11,7 @@ PHASES
 
 
 BUGS
--	3	Random starfield has circles around E and W poles
--	3	first star is a blank
--	3	cursor doesn't hide after open
-	4	Sunshine without sun isn't calculating light position
+	4	Isn't calculating correct light position
 	5	Program Icon
 		- frame.GetIcon()
 		- frame.SetIcon()
@@ -24,8 +21,7 @@ BUGS
 GENERAL
 -	1	Read-through cleaning / Sanity checks
 		- DataTerrain
--	3	CDataSun
-	5	Spin sun separately
+	5	Right click menu to track/center/magnify
 	5	Don't maximize on startup
 	5	Redraw starfield toolbar buttons
 	5	Splash Screen
@@ -42,9 +38,7 @@ OPTIONS
 	5	home location
 
 INPUT
--	3	Trackball
--	3	Keep Mouse in place while rotating
--	3	Rotate / Zoom speed
+	5	More accurate trackball
 
 GRAPHICS
 	4	Lighting is shining through
@@ -78,10 +72,10 @@ STARS
 
 
 TERRAIN
--	3	Generate first few so you're sitting in a valley
--	3	Iterations / scale
--	3?	More circular
 	4	Textured terrain
+	4?	Generate first few so you're sitting in a valley
+	4?	Iterations / scale
+	4?	More circular
 
 DOCUMENT
 	5	Import/Export constellations (must check seed)

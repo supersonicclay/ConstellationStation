@@ -82,7 +82,9 @@ extern const color_s COLOR_WHITE,
 					 COLOR_TEAL,
 					 COLOR_DARKTEAL;
 
-#define PI	  3.14159265358979323846f
+#define PI	    3.1415926535898f
+#define PIHALF  1.5707963267949f
+#define PI2     6.2831853071796f
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -107,6 +109,8 @@ extern const color_s	DEF_CONST_SELCOLOR;
 extern const color_s	DEF_CONST_ACTIVECOLOR;
 extern const color_s	DEF_CONST_STARCOLOR;
 extern const BOOL		DEF_CONST_STARSCOLORED;
+extern const float		DEF_SUN_RADIUS;
+extern const color_s	DEF_SUN_COLOR;
 extern const BOOL		DEF_SUN_VISIBLE;
 extern const BOOL		DEF_SUN_SHINE;
 extern const BOOL		DEF_TERR_VISIBLE;

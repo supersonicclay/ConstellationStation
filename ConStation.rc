@@ -76,8 +76,6 @@ IDR_MAINFRAME           ICON    DISCARDABLE     "res\\ConStation.ico"
 
 IDR_MAINFRAME           BITMAP  MOVEABLE PURE   "res\\Toolbar.bmp"
 IDR_CONSTELLATION       BITMAP  DISCARDABLE     "res\\Constell.bmp"
-IDR_CONSTELLATION1      BITMAP  DISCARDABLE     "res\\bmp00001.bmp"
-IDR_MAINFRAME1          BITMAP  MOVEABLE PURE   "res\\mainfram.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -109,28 +107,6 @@ BEGIN
     BUTTON      ID_CONST_DLINE
 END
 
-IDR_CONSTELLATION1 TOOLBAR DISCARDABLE  24, 24
-BEGIN
-    BUTTON      ID_CONST_LIST
-    SEPARATOR
-    BUTTON      ID_CONST_ALINE
-    BUTTON      ID_CONST_DLINE
-    SEPARATOR
-    BUTTON      ID_CONST_ADD
-    BUTTON      ID_CONST_DELETE
-END
-
-IDR_MAINFRAME1 TOOLBAR DISCARDABLE  24, 24
-BEGIN
-    BUTTON      ID_STARF_NEWRANDOM
-    BUTTON      ID_STARF_OPEN
-    BUTTON      ID_STARF_SAVE
-    SEPARATOR
-    BUTTON      ID_APP_ABOUT
-    SEPARATOR
-    BUTTON      ID_APP_ABOUT
-END
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -144,8 +120,11 @@ BEGIN
         MENUITEM "New &Random\tCtrl+N",         ID_STARF_NEWRANDOM
         MENUITEM "New Actual\tCtrl+Shift+N",    ID_STARF_NEWACTUAL
         MENUITEM "&Open...\tCtrl+O",            ID_STARF_OPEN
+        MENUITEM SEPARATOR
         MENUITEM "&Save\tCtrl+S",               ID_STARF_SAVE
         MENUITEM "Save &As...\tCtrl+A",         ID_STARF_SAVEAS
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
     END
     POPUP "Constellation"
     BEGIN
@@ -155,6 +134,8 @@ BEGIN
         MENUITEM "Add &Line\tL",                ID_CONST_ALINE
         MENUITEM "Add &Polygon\tP",             ID_CONST_APOLY
         MENUITEM "&Delete Line\tD",             ID_CONST_DLINE
+        MENUITEM SEPARATOR
+        MENUITEM "&Hide",                       ID_CONST_HIDE
     END
     POPUP "&Edit"
     BEGIN
@@ -162,14 +143,15 @@ BEGIN
     END
     POPUP "&View"
     BEGIN
-        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
-        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+        MENUITEM "&Show All",                   ID_VIEW_SHOWALL
+        MENUITEM "&Hide All",                   ID_VIEW_HIDEALL
+        MENUITEM SEPARATOR
+        MENUITEM "Status &Bar",                 ID_VIEW_STATUS_BAR
     END
     POPUP "&Help"
     BEGIN
         MENUITEM "&About ConStation...",        ID_APP_ABOUT
     END
-    MENUITEM "E&xit",                       ID_APP_EXIT
 END
 
 
@@ -224,15 +206,17 @@ BEGIN
     EDITTEXT        IDC_CONST_NAME,5,7,154,14,ES_AUTOHSCROLL
 END
 
-IDD_SHOW_HIDE DIALOG DISCARDABLE  0, 0, 186, 146
+IDD_SHOW_HIDE DIALOG DISCARDABLE  0, 0, 186, 164
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Show / Hide Constellations"
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
-    LISTBOX         IDC_CONST_LIST,7,7,110,132,LBS_SORT | LBS_MULTIPLESEL | 
+    LISTBOX         IDC_CONST_LIST,7,7,110,129,LBS_SORT | LBS_MULTIPLESEL | 
                     LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "&Show All",IDC_SHOWALL,7,143,50,14
+    PUSHBUTTON      "&Hide All",IDC_HIDEALL,67,143,50,14
+    PUSHBUTTON      "Invert",IDC_INVERT,129,143,50,14
 END
 
 
@@ -311,7 +295,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 179
         TOPMARGIN, 7
-        BOTTOMMARGIN, 139
+        BOTTOMMARGIN, 157
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -346,8 +330,8 @@ END
 
 STRINGTABLE PRELOAD DISCARDABLE 
 BEGIN
-    AFX_IDS_APP_TITLE       "ConStation"
-    AFX_IDS_IDLEMESSAGE     "Ready"
+    AFX_IDS_APP_TITLE       "Constellation Station"
+    AFX_IDS_IDLEMESSAGE     "Constellation Station"
 END
 
 STRINGTABLE DISCARDABLE 
@@ -363,8 +347,7 @@ END
 
 STRINGTABLE DISCARDABLE 
 BEGIN
-    ID_VIEW_TOOLBAR         "Show or hide the toolbar\nToggle ToolBar"
-    ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle StatusBar"
+    ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle Status Bar"
 END
 
 STRINGTABLE DISCARDABLE 
@@ -405,6 +388,12 @@ BEGIN
     ID_CONST_DELETE         "Delete this constellation\nDelete Constellation"
     ID_CONST_RENAME         "Rename this constellation\nRename Constellation"
     ID_CONST_HIDE           "Hide the current constellation\nHide Constellation"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_VIEW_SHOWALL         "Show all the constellations\nShow All"
+    ID_VIEW_HIDEALL         "Hide all the constellations\nHide All"
 END
 
 #endif    // English (U.S.) resources

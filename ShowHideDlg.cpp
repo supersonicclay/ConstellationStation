@@ -38,6 +38,9 @@ void CShowHideDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CShowHideDlg, CDialog)
 	//{{AFX_MSG_MAP(CShowHideDlg)
 	ON_LBN_SELCHANGE(IDC_CONST_LIST, OnSelchangeConstList)
+	ON_BN_CLICKED(IDC_SHOWALL, OnShowAll)
+	ON_BN_CLICKED(IDC_HIDEALL, OnHideAll)
+	ON_BN_CLICKED(IDC_INVERT, OnInvert)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -57,11 +60,21 @@ BOOL CShowHideDlg::OnInitDialog()
 	numConstellations = ((CMainFrame*)GetParent())->
 										GetStarfield()->GetNumConstellations();
 
+	CString str;
+
 	// Add strings to list box
 	for (int i=0; i<numConstellations; i++)
 	{
+		// Get name
+		str = constellations[i].GetName();
+
+		// If this constellation is current
+		if (constellations[i].IsCurrent())
+			str += " <--";
+
+		// Add name to list
 		m_List.SetSel(
-			m_List.AddString(constellations[i].GetName()),
+			m_List.AddString(str),
 			constellations[i].IsVisible());
 	}
 
@@ -78,4 +91,41 @@ void CShowHideDlg::OnSelchangeConstList()
 
 	// Redraw view
 	((CMainFrame*)GetParent())->GetView()->InvalidateRect(NULL, FALSE);
+}
+
+
+void CShowHideDlg::OnShowAll() 
+{
+	for (int i=0; i<m_List.GetCount(); i++)
+	{
+		m_List.SetSel(i, TRUE);
+	}
+
+	// Update
+	OnSelchangeConstList();
+}
+
+void CShowHideDlg::OnHideAll() 
+{
+	for (int i=0; i<m_List.GetCount(); i++)
+	{
+		m_List.SetSel(i, FALSE);
+	}
+
+	// Update
+	OnSelchangeConstList();
+}
+
+void CShowHideDlg::OnInvert() 
+{
+	for (int i=0; i<m_List.GetCount(); i++)
+	{
+		if (m_List.GetSel(i) == TRUE)
+			m_List.SetSel(i, FALSE);
+		else
+			m_List.SetSel(i, TRUE);
+	}
+
+	// Update
+	OnSelchangeConstList();
 }

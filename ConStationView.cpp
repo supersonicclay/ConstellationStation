@@ -95,6 +95,11 @@ CConStationDoc* CConStationView::GetDocument() const // non-debug version is inl
 }
 #endif //_DEBUG
 
+CStarfield* CConStationView::GetStarfield() const
+{
+	return GetDocument()->GetStarfield();
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CConStationView message handlers
@@ -109,8 +114,6 @@ int CConStationView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		MessageBox("Error initializing OpneGL", "ERROR");
 
 //	GetGLInfo();
-
-	pStarfield = GetDocument()->GetStarfield();
 
 	SetTimer(TIMER_VIEWKEYS, 20, 0);
 	SetTimer(TIMER_ROTATE, 50, 0);
@@ -278,12 +281,6 @@ void CConStationView::OnSize(UINT nType, int cx, int cy)
 	Projection ();
 }
 
-void CConStationView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint) 
-{
-	pStarfield = GetDocument()->GetStarfield();
-
-	InvalidateRect(NULL, FALSE);
-}
 
 /////////////////////////////////////////////////////////////////////////////
 // States
@@ -370,9 +367,9 @@ void CConStationView::DrawConstellations() const
 	glColor(CONSTGREEN);
 
 	// Draw each constellation
-	for (int i=0; i<pStarfield->GetNumConstellations(); i++)
+	for (int i=0; i<GetStarfield()->GetNumConstellations(); i++)
 	{
-		if (pStarfield->GetConstellation(i)->IsVisible())
+		if (GetStarfield()->GetConstellation(i)->IsVisible())
 			DrawConstellation(i);
 	}
 }
@@ -386,7 +383,7 @@ void CConStationView::DrawConstellation(int i) const
 	RotateSeason();
 	RotateTime();
 
-	CConstellation* curConstellation = pStarfield->GetConstellation(i);
+	CConstellation* curConstellation = GetStarfield()->GetConstellation(i);
 	int numLines = curConstellation->GetNumLines();
 
 	float x1, y1, z1, x2, y2, z2;
@@ -417,7 +414,7 @@ void CConStationView::DrawStars() const
 	RotateSeason();
 	RotateTime();
 
-	for (int i=0; i<pStarfield->GetNumStars(); i++)
+	for (int i=0; i<GetStarfield()->GetNumStars(); i++)
 	{
 		glPushName(i);
 		DrawStar(i);
@@ -427,19 +424,40 @@ void CConStationView::DrawStars() const
 
 void CConStationView::DrawStar(int i) const
 {
-	CStar* curStar = pStarfield->GetStar(i);
+	CStar* curStar = GetStarfield()->GetStar(i);
 	float x = curStar->GetX();
 	float y = curStar->GetY();
 	float z = curStar->GetZ();
 	float brightness = curStar->GetBrightness();
-	CColor color = curStar->GetColor();
+	CColor color;
+
+	// Determine if this star is active (part of the current constellation)
+	bool active = false;
+
+	if (GetStarfield()->GetNumConstellations() > 0)
+	{
+		for (int lineIndex=0; lineIndex < GetStarfield()->GetCurConstellation()->GetNumLines(); lineIndex++)
+		{
+			if (curStar == GetStarfield()->GetCurConstellation()->GetLine(lineIndex)->GetStar1() ||
+				curStar == GetStarfield()->GetCurConstellation()->GetLine(lineIndex)->GetStar2())
+			{
+				active = true;
+				break;
+			}
+		}
+	}
+
+	if (active)
+		color = RED;
+	else
+		color = curStar->GetColor();
 
 	glColor (color);
 
 	/// Brightness depending on zoom
-	if (pStarfield->GetZoom() > 0)
-		 brightness *= (pStarfield->GetZoom() + 1);
-	else brightness *= (pStarfield->GetZoom() + 3) * 0.3f;
+	if (GetStarfield()->GetZoom() > 0)
+		 brightness *= (GetStarfield()->GetZoom() + 1);
+	else brightness *= (GetStarfield()->GetZoom() + 3) * 0.3f;
 
 	//	Don't show if too dim
 	if (brightness > 0.2f)
@@ -551,15 +569,15 @@ void CConStationView::Projection() const
 
 void CConStationView::Perspective() const
 {
-	float persp = (1 - pStarfield->GetZoom()) * 60 + 5;
+	float persp = (1 - GetStarfield()->GetZoom()) * 60 + 5;
 
 	gluPerspective(persp,(float)width/(float)height,0.01f,10.0f);
 }
 
 void CConStationView::RotateXY() const
 {
-	glRotatef (pStarfield->GetRotX(), 1.0f, 0.0f, 0.0f);
-	glRotatef (pStarfield->GetRotY(), 0.0f, 1.0f, 0.0f);
+	glRotatef (GetStarfield()->GetRotX(), 1.0f, 0.0f, 0.0f);
+	glRotatef (GetStarfield()->GetRotY(), 0.0f, 1.0f, 0.0f);
 }
 
 // Rotate the view depending on the latitude
@@ -578,7 +596,7 @@ void CConStationView::RotateSeason() const
 // Rotate the view depending on the time
 void CConStationView::RotateTime() const
 {
-	glRotatef (pStarfield->GetTime(), 0.0f, 0.0f, 1.0f);
+	glRotatef (GetStarfield()->GetTime(), 0.0f, 0.0f, 1.0f);
 }
 
 
@@ -599,9 +617,9 @@ void CConStationView::OnTimer(UINT nIDEvent)
 {
 	if (nIDEvent == TIMER_VIEWKEYS)
 		ProcessKeys();
-	if (nIDEvent == TIMER_ROTATE && pStarfield->IsSpinning() && state == Viewing)
+	if (nIDEvent == TIMER_ROTATE && GetStarfield()->IsSpinning() && state == Viewing)
 	{
-		pStarfield->AdjTime(0.1f);
+		GetStarfield()->AdjTime(0.1f);
 		InvalidateRect(NULL, FALSE);
 	}
 }
@@ -617,35 +635,35 @@ void CConStationView::ProcessKeys()
 	// Rotating
 	if ( keyDown[VK_UP] )
 	{
-		pStarfield->RotateUp();
+		GetStarfield()->RotateUp();
 		update = true;
 	}
 	if ( keyDown[VK_DOWN] )
 	{
-		pStarfield->RotateDown();
+		GetStarfield()->RotateDown();
 		update = true;
 	}
 	if ( keyDown[VK_RIGHT] )
 	{
-		pStarfield->RotateRight();
+		GetStarfield()->RotateRight();
 		update = true;
 	}
 	if ( keyDown[VK_LEFT] )
 	{
-		pStarfield->RotateLeft();
+		GetStarfield()->RotateLeft();
 		update = true;
 	}
 
 	// Zooming
 	if ( keyDown['X'] )
 	{
-		pStarfield->ZoomIn();
+		GetStarfield()->ZoomIn();
 		Projection();
 		update = true;
 	}
 	if ( keyDown['Z'] )
 	{
-		pStarfield->ZoomOut();
+		GetStarfield()->ZoomOut();
 		Projection();
 		update = true;
 	}
@@ -653,19 +671,22 @@ void CConStationView::ProcessKeys()
 	// Resets
 	if ( keyDown[' '] )
 	{
-		pStarfield->ResetZoom();
+		GetStarfield()->ResetZoom();
 		Projection();
 		update = true;
 	}
 	if ( keyDown[VK_RETURN] )
 	{
-		pStarfield->ResetView();
+		GetStarfield()->ResetView();
 		Projection();
 		update = true;
 	}
 
 	if ( update )
+	{
+		GetDocument()->SetModifiedFlag();
 		InvalidateRect(NULL,FALSE);
+	}
 
 }
 
@@ -700,7 +721,7 @@ void CConStationView::OnLButtonDown(UINT nFlags, CPoint point)
 					return;
 
 				// Make a new line
-				pStarfield->AddConstLine(prevStarNum, selectedStarNum);
+				GetStarfield()->AddConstLine(prevStarNum, selectedStarNum);
 
 				prevStarNum = selectedStarNum;
 ///				prevStarPoint = point;
@@ -716,7 +737,7 @@ void CConStationView::OnLButtonDown(UINT nFlags, CPoint point)
 		// If a line was selected
 		if (selectedLineNum != -1)
 		{
-			pStarfield->GetCurConstellation()->DeleteLine(selectedLineNum);
+			GetStarfield()->GetCurConstellation()->DeleteLine(selectedLineNum);
 			InvalidateRect(NULL, FALSE);
 		}
 	}
@@ -732,6 +753,7 @@ void CConStationView::OnLButtonDown(UINT nFlags, CPoint point)
 		}
 	}
 
+	GetDocument()->SetModifiedFlag();
 }
 
 void CConStationView::OnLButtonUp(UINT nFlags, CPoint point) 
@@ -763,7 +785,7 @@ void CConStationView::OnRButtonDown(UINT nFlags, CPoint point)
 		// Complete Line
 		if (firstStarNum != -1)
 		{
-			pStarfield->AddConstLine(firstStarNum, prevStarNum);
+			GetStarfield()->AddConstLine(firstStarNum, prevStarNum);
 			firstStarNum = -1;
 			InvalidateRect(NULL, FALSE);
 		}
@@ -780,6 +802,8 @@ void CConStationView::OnRButtonDown(UINT nFlags, CPoint point)
 		if (!mouseRotatingXY)
 			SetCapture();
 	}
+
+	GetDocument()->SetModifiedFlag();
 }
 
 void CConStationView::OnRButtonUp(UINT nFlags, CPoint point) 
@@ -800,20 +824,22 @@ BOOL CConStationView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 	// Zoom faster than with keys
 	if (zDelta < 0)
 	{
-		pStarfield->ZoomOut();
-		pStarfield->ZoomOut();
-		pStarfield->ZoomOut();
-		pStarfield->ZoomOut();
+		GetStarfield()->ZoomOut();
+		GetStarfield()->ZoomOut();
+		GetStarfield()->ZoomOut();
+		GetStarfield()->ZoomOut();
 	}
 	if (zDelta > 0)
 	{
-		pStarfield->ZoomIn();
-		pStarfield->ZoomIn();
-		pStarfield->ZoomIn();
-		pStarfield->ZoomIn();
+		GetStarfield()->ZoomIn();
+		GetStarfield()->ZoomIn();
+		GetStarfield()->ZoomIn();
+		GetStarfield()->ZoomIn();
 	}
 
 	Projection();
+
+	GetDocument()->SetModifiedFlag();
 
 	InvalidateRect(NULL, FALSE);
 
@@ -836,15 +862,15 @@ void CConStationView::OnMouseMove(UINT nFlags, CPoint point)
 			return;
 		}
 
-		float rotX = pStarfield->GetRotX();
+		float rotX = GetStarfield()->GetRotX();
 
 		if (mouseRotatingXY && !mouseRotatingZ)
 		{
-			pStarfield->AdjRotX((point.y-mouseLDownPoint.y) / 20.0f);// * (1-zoom);
-			pStarfield->AdjRotY((point.x-mouseLDownPoint.x) / 20.0f);// * (1-zoom);
+			GetStarfield()->AdjRotX((point.y-mouseLDownPoint.y) / 20.0f);// * (1-zoom);
+			GetStarfield()->AdjRotY((point.x-mouseLDownPoint.x) / 20.0f);// * (1-zoom);
 		}
 		if (mouseRotatingZ)
-			pStarfield->AdjTime((point.y-mouseRDownPoint.y) / 10.0f);// * (1-zoom);
+			GetStarfield()->AdjTime((point.y-mouseRDownPoint.y) / 10.0f);// * (1-zoom);
 
 		InvalidateRect(NULL,FALSE);
 
@@ -950,7 +976,7 @@ BOOL CConStationView::Select(SelectType selection)
 	if (selection == Star)
 		DrawStars();
 	else if (selection == Line)
-		DrawConstellation(pStarfield->GetNumCurConstellation());
+		DrawConstellation(GetStarfield()->GetNumCurConstellation());
 
 	glMatrixMode(GL_PROJECTION);								// Select The Projection Matrix
 	glPopMatrix();												// Pop The Projection Matrix
@@ -971,23 +997,19 @@ int CConStationView::SelectStar()
 	if (Select(Star))	// If a hit occured in starfield
 	{
 		int numStar = selectBuffer[3];
-		CStar* selectedStar = pStarfield->GetStar(numStar);
+		CStar* selectedStar = GetStarfield()->GetStar(numStar);
 
 		// If there was more than one hit
 		for (int i=1; i<hits; i++)
 		{
 			// Get the brightest
-			if (pStarfield->GetStar(selectBuffer[i*4+3])->GetBrightness() >
+			if (GetStarfield()->GetStar(selectBuffer[i*4+3])->GetBrightness() >
 						selectedStar->GetBrightness())
 			{
 				numStar = selectBuffer[i*4+3];
-				selectedStar = pStarfield->GetStar(numStar);
+				selectedStar = GetStarfield()->GetStar(numStar);
 			}
 		}
-
-		/// LUCKY ///
-		if (numStar == 11)
-			MessageBox("You picked my star you lucky dog!");
 
 		return numStar;
 	}

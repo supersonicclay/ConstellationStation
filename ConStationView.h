@@ -28,7 +28,6 @@ private:
 	int width;
 	int height;
 
-	CStarfield* pStarfield;
 
 // Input
 	// Keys
@@ -55,6 +54,7 @@ private:
 // Operations
 public:
 	CConStationDoc* GetDocument() const;
+	CStarfield* GetStarfield() const;
 
 	BOOL InitializeOpenGL();
 	BOOL SetupPixelFormat();
@@ -102,8 +102,6 @@ public:
 	public:
 	virtual void OnDraw(CDC* pDC);  // overridden to draw this view
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-	protected:
-	virtual void OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint);
 	//}}AFX_VIRTUAL
 
 // Implementation

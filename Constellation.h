@@ -10,16 +10,19 @@
 
 class CConstLine
 {
-private:
-	CStar* star1;
-	CStar* star2;
 
 public:
 	CConstLine();
 	CConstLine(CStar* star1_, CStar* star2_);
 	~CConstLine();
 
-	void SetStars(CStar* star1_, CStar* star2_);
+private:
+	CStar* star1;
+	CStar* star2;
+
+public:
+	void SetStar1(CStar* star1_);
+	void SetStar2(CStar* star2_);
 
 	CStar* GetStar1() const;
 	CStar* GetStar2() const;
@@ -32,22 +35,29 @@ public:
 
 };
 
-class CConstellation
+class CConstellation : public CObject
 {
-private:
-	CString name;
-
-	BOOL visible;
-	BOOL active;
-
-	int numLines;
-	CConstLine* lines;
+DECLARE_SERIAL (CConstellation)
 
 public:
 	CConstellation();
 	CConstellation(CString name_);
 	~CConstellation();
 
+	const CConstellation& operator=(const CConstellation& c);
+
+	void Serialize(CArchive& ar);
+
+private:
+	CString name;
+
+	BOOL visible;
+	BOOL current;
+
+	int numLines;
+	CConstLine* lines;
+
+public:
 	CString GetName() const;
 	void SetName(CString name_);
 
@@ -55,8 +65,8 @@ public:
 	void SwitchVisible();
 	void SetVisible(BOOL visible_);
 
-	BOOL GetActive() const;
-	void SetActive(BOOL active_=true);
+	BOOL IsCurrent() const;
+	void SetCurrent(BOOL current_=true);
 
 	int GetNumLines() const;
 	CConstLine* GetLine(int i) const;

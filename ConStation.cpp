@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "ConStation.h"
 
-#include "MainFrm.h"
 #include "ConStationDoc.h"
 #include "ConStationView.h"
 
@@ -20,7 +19,9 @@ static char THIS_FILE[] = __FILE__;
 BEGIN_MESSAGE_MAP(CConStationApp, CWinApp)
 	//{{AFX_MSG_MAP(CConStationApp)
 	ON_COMMAND(ID_APP_ABOUT, OnAppAbout)
+	ON_COMMAND(ID_STARF_NEWACTUAL, OnStarfNewActual)
 	ON_COMMAND(ID_STARF_NEWRANDOM, OnStarfNewRandom)
+	ON_COMMAND(ID_STARF_OPEN, OnStarfOpen)
 	//}}AFX_MSG_MAP
 	ON_COMMAND(ID_STARF_OPEN, CWinApp::OnFileOpen)
 END_MESSAGE_MAP()
@@ -88,6 +89,14 @@ BOOL CConStationApp::InitInstance()
 	m_pMainWnd->UpdateWindow();
 
 	return TRUE;
+}
+
+CMainFrame* CConStationApp::GetMainFrame() const
+{
+#ifdef _DEBUG
+	ASSERT(m_pMainWnd->IsKindOf(RUNTIME_CLASS(CMainFrame)));
+#endif
+	return (CMainFrame *)m_pMainWnd;
 }
 
 
@@ -168,13 +177,27 @@ void CConStationApp::OnAppAbout()
 	aboutDlg.DoModal();
 }
 
-void CConStationApp::OnStarfNewRandom()
+
+void CConStationApp::OnStarfNewActual() 
 {
 	CWinApp::OnFileNew();
 
-	/*
-	(CConStationView*) (((CFrameWnd *)m_pMainWnd)->GetActiveView());
-	GetActiveWindow
-	*/
+	GetMainFrame()->UpdateList();
+	GetMainFrame()->GetView()->Projection();
+}
 
+void CConStationApp::OnStarfNewRandom() 
+{
+	CWinApp::OnFileNew();
+
+	GetMainFrame()->UpdateList();
+	GetMainFrame()->GetView()->Projection();
+}
+
+void CConStationApp::OnStarfOpen() 
+{
+	CWinApp::OnFileOpen();
+
+	GetMainFrame()->UpdateList();
+	GetMainFrame()->GetView()->Projection();
 }

@@ -342,6 +342,10 @@ SOURCE=.\res\Toolbar.bmp
 # End Group
 # Begin Source File
 
+SOURCE=".\Bug Report.txt"
+# End Source File
+# Begin Source File
+
 SOURCE=.\ReadMe.txt
 # End Source File
 # Begin Source File

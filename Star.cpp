@@ -8,6 +8,8 @@
 // For star randomization
 #include <math.h>
 
+IMPLEMENT_SERIAL (CStar, CObject, 0)
+
 CStar::CStar()
 {
 	x = 0.0f;
@@ -15,7 +17,6 @@ CStar::CStar()
 	z = 0.0f;
 	brightness = 1.0f;
 	color = WHITE;
-	origColor = WHITE;
 }
 
 CStar::CStar(float x_, float y_, float z_, float brightness_)
@@ -78,16 +79,6 @@ void CStar::SetBrightness(float brightness_)
 void CStar::SetColor(CColor color_)
 {
 	color = color_;
-}
-
-void CStar::SetOrigColor(CColor origColor_)
-{
-	origColor = origColor_;
-}
-
-void CStar::RestoreColor()
-{
-	color = origColor;
 }
 
 // Pick random x then a random y and z so that x,y,z has length of 1
@@ -200,6 +191,23 @@ void CStar::PickBrightness()
 		color.b = brightness-4;
 	}
 //*/
-	origColor = color;
 }
 
+void CStar::Serialize(CArchive& ar)
+{
+	CObject::Serialize(ar);
+
+	if (ar.IsStoring())
+	{
+		ar << x << y << z
+		   << brightness
+		   << color.r << color.g << color.b;
+	}
+
+	else
+	{
+		ar >> x >> y >> z
+		   >> brightness
+		   >> color.r >> color.g >> color.b;
+	}
+}

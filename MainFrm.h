@@ -34,6 +34,8 @@ public:
 	StateType GetState() const;
 	void SetState(StateType state) const;
 
+	void UpdateList();
+
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -53,8 +55,6 @@ protected:  // control bar embedded members
 	CStatusBar  m_wndStatusBar;
 	CToolBar    m_wndToolBar;
 	CConstBar	m_wndConstBar;
-
-///	CDialogBar  m_wndDlgBar;
 
 // Generated message map functions
 protected:
@@ -79,6 +79,8 @@ protected:
 	afx_msg void OnUpdateConstDeleteLine(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateStarfRotate(CCmdUI* pCmdUI);
 	afx_msg void OnShowHide();
+	afx_msg void OnViewHideAll();
+	afx_msg void OnViewShowAll();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

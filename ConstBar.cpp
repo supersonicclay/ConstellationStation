@@ -69,7 +69,6 @@ BOOL CConstBar::InitList()
 		m_List.ShowWindow(SW_SHOW);
 	}
 
-
 	return TRUE;
 }
 
@@ -100,10 +99,23 @@ void CConstBar::DeleteConst()
 		m_List.SetCurSel(0);
 	else
 		m_List.SetCurSel(sel-1);
-	
-	// Set newly selected constellation as the current one
-///	GetParent is not returning the right one
-///	((CMainFrame *)GetParent())->GetStarfield()->SetCurConstellation(GetCurConst());
+}
+
+void CConstBar::UpdateList(CString* names, int numConstellations, int numCurrent)
+{
+	m_List.ResetContent();
+	for (int i=0; i<numConstellations; i++)
+	{
+		if (i==numCurrent)
+			m_List.SetCurSel(m_List.AddString(names[i]));
+		else
+			m_List.AddString(names[i]);
+	}
+}
+
+void CConstBar::ClearList()
+{
+	m_List.ResetContent();
 }
 
 CString CConstBar::GetCurConst() const

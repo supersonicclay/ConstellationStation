@@ -14,6 +14,7 @@
 
 #include "resource.h"       // main symbols
 
+
 // OpenGL Headers
 #include <gl/gl.h>
 #include <gl/glu.h>
@@ -34,6 +35,7 @@ extern const CColor WHITE, BLACK, RED, GREEN, BLUE, CONSTGREEN, GROUNDGREEN;
 
 enum StateType {Viewing, AddingLine, AddingPoly, DeletingLine};
 
+#include "MainFrm.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CConStationApp:
@@ -45,6 +47,7 @@ class CConStationApp : public CWinApp
 public:
 	CConStationApp();
 
+	CMainFrame* GetMainFrame() const;
 
 // Attributes
 	CSingleDocTemplate* pDocTemplate;

@@ -37,7 +37,7 @@ CConStationDoc::CConStationDoc()
 
 CConStationDoc::~CConStationDoc()
 {
-	delete starfield;
+//	delete starfield;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -45,18 +45,21 @@ CConStationDoc::~CConStationDoc()
 
 void CConStationDoc::Serialize(CArchive& ar)
 {
-	CDocument::Serialize( ar );    // Always call base class Serialize.
+	CDocument::Serialize(ar);    // Always call base class Serialize.
 
+	GetStarfield()->Serialize(ar);
+
+	/*
+///	SAVING / OPENING
 	if (ar.IsStoring())
 	{
-		// TODO: add storing code here
-		//ar.WriteObject(this);
+		ar.WriteObject(this);
 	}
 	else
 	{
-		// TODO: add loading code here
-		//ar.ReadObject(this);
+		ar.ReadObject(this);
 	}
+	*/
 
 	/* ///
 	CFile myFile("myfile.dat", CFile::modeCreate | CFile::modeReadWrite);
@@ -102,13 +105,7 @@ void CConStationDoc::Dump(CDumpContext& dc) const
 
 BOOL CConStationDoc::OnNewDocument() 
 {
-///	MessageBox(NULL, "New Document", "", MB_OK);
-
-	delete starfield;
-
 	starfield = new CStarfield;
-	
-//	return TRUE;
 	
 	return CDocument::OnNewDocument();
 }

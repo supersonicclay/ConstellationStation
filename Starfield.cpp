@@ -11,6 +11,8 @@
 // For randomization
 #include <time.h>
 
+IMPLEMENT_SERIAL (CStarfield, CObject, 0)
+
 CStarfield::CStarfield()
 {
 	numStars = 5000;
@@ -19,6 +21,7 @@ CStarfield::CStarfield()
 
 	numConstellations = 0;
 	constellations = new CConstellation[numConstellations];
+	numNewConstellations = 0;
 	numCurConstellation = 0;
 
 	latitude = 30;
@@ -61,6 +64,16 @@ CConstellation* CStarfield::GetConstellation(int i) const
 	return &constellations[i];
 }
 
+CConstellation* CStarfield::GetConstellation(CString &name) const
+{
+	for (int i=0; i<numConstellations; i++)
+	{
+		if (constellations[i].GetName() == name)
+			return &constellations[i];
+	}
+	return 0;
+}
+
 CConstellation* CStarfield::GetCurConstellation() const
 {
 	return &constellations[numCurConstellation];
@@ -79,6 +92,11 @@ int CStarfield::GetNumConstellations() const
 int CStarfield::GetNumCurConstellation() const
 {
 	return numCurConstellation;
+}
+
+int CStarfield::GetNumNewConstellations() const
+{
+	return numNewConstellations;
 }
 
 float CStarfield::GetLatitude() const
@@ -119,6 +137,11 @@ float CStarfield::GetZoom() const
 //////////
 // Sets //
 //////////
+void CStarfield::IncNumNewConstellations()
+{
+	numNewConstellations++;
+}
+
 void CStarfield::SetNumCurConstellation(int i)
 {
 	numCurConstellation = i;
@@ -154,7 +177,7 @@ void CStarfield::AdjRotX(float deltaRotX)
 	// Restrict up and down rotation
 	float newRotX = rotX + deltaRotX;
 
-	if ( newRotX > -90 && newRotX < 10)
+	if (newRotX > -90 && newRotX < 10)
 		rotX = newRotX;
 }
 
@@ -179,7 +202,6 @@ void CStarfield::SetupStars()
 
 	// North Star
 	stars[0].SetColor(GREEN);
-	stars[0].SetOrigColor(GREEN);
 	stars[0].SetBrightness(6.0f);
 	stars[0].SetX(0);
 	stars[0].SetY(0);
@@ -234,6 +256,7 @@ void CStarfield::DeleteConstellation()
 
 	CConstellation* curConstellation = &constellations[numCurConstellation];
 
+	/*
 	///////////////////////////////
 	// Restore the stars' colors //
 	///////////////////////////////
@@ -242,6 +265,7 @@ void CStarfield::DeleteConstellation()
 		curConstellation->GetLine(i)->GetStar1()->RestoreColor();
 		curConstellation->GetLine(i)->GetStar2()->RestoreColor();
 	}
+	*/
 
 	// new temporary constellation list
 	CConstellation* newList = new CConstellation[numConstellations-1];
@@ -274,11 +298,11 @@ void CStarfield::RenameConstellation(CString &name)
 
 BOOL CStarfield::SetCurConstellation(CString name)
 {
-	// If current constellation is already set
-	if (constellations[numCurConstellation].GetName() == name)
-		return true;
+	/// If current constellation is already set
+//	if (constellations[numCurConstellation].GetName() == name)
+//		return true;
 
-	constellations[numCurConstellation].SetActive(false);
+	constellations[numCurConstellation].SetCurrent(false);
 
 	// Search for constellation name
 	for (int i=0; i<numConstellations; i++)
@@ -286,11 +310,12 @@ BOOL CStarfield::SetCurConstellation(CString name)
 		if (constellations[i].GetName() == name)
 		{
 			numCurConstellation = i;
-			constellations[numCurConstellation].SetActive();
+			constellations[numCurConstellation].SetCurrent();
 			return true;
 		}
 	}
 
+	// Return false if name wasn't found
 	return false;
 }
 
@@ -359,67 +384,121 @@ void CStarfield::ResetZoom()
 	zoom = 0.0f;
 }
 
-
-/////////////////
-// Save / Load //
-/////////////////
-/*
-void CStarfield::Save()
+void CStarfield::Serialize(CArchive& ar)
 {
-	FILE *file;
-	char oneline[255];
-	file = fopen("data/starfield.txt", "wt");
+	CObject::Serialize(ar);
 
-///	NUMSTARS = 10000;
-///	star = new CStar[NUMSTARS];
-///	SetupStars();
-
-	fputs ("----------------------------------------\n", file);
-	fputs ("WARNING: Modify at your own risk!\n", file);
-	fputs ("Constellations may not display correctly.\n", file);
-	fputs ("----------------------------------------\n\n", file);
-	sprintf (oneline, "NUMSTARS\t%i\n\n", NUMSTARS);
-	fputs (oneline, file);
-	fputs ("X\t\tY\t\tZ\t\tBRIGHTNESS\n", file);
-	for (int i=0; i<NUMSTARS; i++)
+	if (ar.IsStoring())
 	{
-		sprintf (oneline, "%f\t%f\t%f\t%f\n",
-			star[i].GetX(), star[i].GetY(), star[i].GetZ(), star[i].GetBrightness());
-		fputs (oneline, file);
+		ar << numStars
+		   << numConstellations << numNewConstellations << numCurConstellation
+		   << latitude << season << time
+		   << spinning
+		   << rotX << rotY << zoom;
+	}
+	else
+	{
+		ar >> numStars
+		   >> numConstellations >> numNewConstellations >> numCurConstellation
+		   >> latitude >> season >> time
+		   >> spinning
+		   >> rotX >> rotY >> zoom;
 	}
 
-	fclose(file);
-}
-
-void CStarfield::Load()
-{
-	float x, y, z, b;
-	FILE *file;
-	char oneline[255];
-	file = fopen("data/starfield.txt", "rt");				// File To Load World Data From
-
-	ReadLine(file,oneline);
-	sscanf(oneline, "NUMSTARS %d\n", &NUMSTARS);
-	star = new CStar[NUMSTARS];
-
-	for (int i = 0; i < NUMSTARS; i++)
+	// If were loading we need to allocate space for stars and constellations
+	if (ar.IsLoading())
 	{
-		ReadLine(file,oneline);
-		sscanf(oneline, "%f %f %f %f", &x, &y, &z, &b);
-		star[i].SetX(x);
-		star[i].SetY(y);
-		star[i].SetZ(z);
-		star[i].SetBrightness(b);
+		stars = new CStar[numStars];
+		constellations = new CConstellation[numConstellations];
 	}
-	fclose(file);
+
+	// Serialize stars and constellations
+	int i;
+	for (i=0; i<numStars; i++)
+	{
+		stars[i].Serialize(ar);
+	}
+
+	for (i=0; i<numConstellations; i++)
+	{
+		constellations[i].Serialize(ar);
+	}
+
+	
+	SerializeConstLines(ar);
 }
 
-void CStarfield::ReadLine(FILE *file,char *string) const
+void CStarfield::SerializeConstLines(CArchive& ar)
 {
-	do
+	// Serialization for each constellation line must be done here since
+	//  they reference stars
+	int starIndex, constIndex, lineIndex;
+
+	BOOL starFound;
+
+	// Archive is storing
+	if (ar.IsStoring())
 	{
-		fgets(string, 255, file);
-	} while ((string[0] == 'X') || (string[0] == '\n'));
-	return;
+		// Cycle through constellations
+		for (constIndex=0; constIndex < numConstellations; constIndex++)
+		{
+			// Cycle through lines
+			for (lineIndex=0; lineIndex < constellations[constIndex].GetNumLines(); lineIndex++)
+			{
+				// For each star find it's corresponding star number 
+				
+				// Star 1
+				starFound = FALSE;
+				// Cycle through stars
+				for (starIndex=0; starIndex < numStars; starIndex++)
+				{
+					// Is this the star we're looking for 
+					if (constellations[constIndex].GetLine(lineIndex)->GetStar1() == &stars[starIndex])
+					{
+						// Store this star's number
+						ar << starIndex;
+						starFound = TRUE;
+						break;
+					}
+				}
+				if (!starFound)
+					AfxMessageBox("A star was not found while saving.", MB_ICONEXCLAMATION);
+
+				// Star 2
+				starFound = FALSE;
+				// Cycle through stars
+				for (starIndex=0; starIndex < numStars; starIndex++)
+				{
+					// Is this the star we're looking for 
+					if (constellations[constIndex].GetLine(lineIndex)->GetStar2() == &stars[starIndex])
+					{
+						// Store this star's number
+						ar << starIndex;
+						starFound = TRUE;
+						break;
+					}
+				}
+				if (!starFound)
+					AfxMessageBox("A star was not found while saving.", MB_ICONEXCLAMATION);
+			}
+		}
+	}
+	else	// Archive is loading
+	{
+		int starNum1, starNum2;
+		// Cycle through constellations
+		for (constIndex=0; constIndex < numConstellations; constIndex++)
+		{
+			// Cycle through lines
+			for (lineIndex=0; lineIndex < constellations[constIndex].GetNumLines(); lineIndex++)
+			{
+				// Archive has the star numbers.
+				//  We need to make the line reference these stars
+				ar >> starNum1 >> starNum2;
+
+				constellations[constIndex].GetLine(lineIndex)->SetStar1(&stars[starNum1]);
+				constellations[constIndex].GetLine(lineIndex)->SetStar2(&stars[starNum2]);
+			}
+		}
+	}
 }
-*/

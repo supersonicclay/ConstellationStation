@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CShowHideDlg
+LastClass=CConStationView
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "ConStation.h"
@@ -14,19 +14,17 @@ Class2=CConStationDoc
 Class3=CConStationView
 Class4=CMainFrame
 
-ResourceCount=8
+ResourceCount=6
 Resource1="IDR_TOOLBAR1"
 Class5=CAboutDlg
-Resource2=IDR_CONSTELLATION
-Resource3=IDR_CONSTELLATION1
+Resource2=IDD_CONST_NAME
+Resource3=IDR_CONSTELLATION
 Class6=CConstBar
-Resource4=IDR_MAINFRAME
-Resource5=IDD_CONST_NAME
+Resource4=IDD_ABOUTBOX
+Resource5=IDR_MAINFRAME
 Class7=CConstNameDlg
-Resource6=IDR_MAINFRAME1
-Resource7=IDD_ABOUTBOX
 Class8=CShowHideDlg
-Resource8=IDD_SHOW_HIDE
+Resource6=IDD_SHOW_HIDE
 
 [CLS:CConStationApp]
 Type=0
@@ -42,7 +40,7 @@ Type=0
 HeaderFile=MainFrm.h
 ImplementationFile=MainFrm.cpp
 Filter=T
-LastObject=CMainFrame
+LastObject=ID_STARF_ROTATE
 BaseClass=CFrameWnd
 VirtualFilter=fWC
 
@@ -74,17 +72,19 @@ Command2=ID_STARF_NEWACTUAL
 Command3=ID_STARF_OPEN
 Command4=ID_STARF_SAVE
 Command5=ID_STARF_SAVEAS
-Command6=ID_CONST_ADD
-Command7=ID_CONST_DELETE
-Command8=ID_CONST_ALINE
-Command9=ID_CONST_APOLY
-Command10=ID_CONST_DLINE
-Command11=ID_EDIT_UNDO
-Command12=ID_VIEW_TOOLBAR
-Command13=ID_VIEW_STATUS_BAR
-Command14=ID_APP_ABOUT
-Command15=ID_APP_EXIT
-CommandCount=15
+Command6=ID_APP_EXIT
+Command7=ID_CONST_ADD
+Command8=ID_CONST_DELETE
+Command9=ID_CONST_ALINE
+Command10=ID_CONST_APOLY
+Command11=ID_CONST_DLINE
+Command12=ID_CONST_HIDE
+Command13=ID_EDIT_UNDO
+Command14=ID_VIEW_SHOWALL
+Command15=ID_VIEW_HIDEALL
+Command16=ID_VIEW_STATUS_BAR
+Command17=ID_APP_ABOUT
+CommandCount=17
 
 [ACL:IDR_MAINFRAME]
 Type=1
@@ -153,26 +153,6 @@ VirtualFilter=WC
 LastObject=ID_CONST_DELETE
 BaseClass=CToolBar
 
-[TB:IDR_CONSTELLATION1]
-Type=1
-Class=?
-Command1=ID_CONST_LIST
-Command2=ID_CONST_ALINE
-Command3=ID_CONST_DLINE
-Command4=ID_CONST_ADD
-Command5=ID_CONST_DELETE
-CommandCount=5
-
-[TB:IDR_MAINFRAME1]
-Type=1
-Class=?
-Command1=ID_STARF_NEWRANDOM
-Command2=ID_STARF_OPEN
-Command3=ID_STARF_SAVE
-Command4=ID_APP_ABOUT
-Command5=ID_APP_ABOUT
-CommandCount=5
-
 [DLG:IDD_CONST_NAME]
 Type=1
 Class=CConstNameDlg
@@ -193,10 +173,12 @@ VirtualFilter=dWC
 [DLG:IDD_SHOW_HIDE]
 Type=1
 Class=CShowHideDlg
-ControlCount=3
+ControlCount=5
 Control1=IDOK,button,1342242817
-Control2=IDCANCEL,button,1342242816
-Control3=IDC_CONST_LIST,listbox,1352728843
+Control2=IDC_CONST_LIST,listbox,1352728843
+Control3=IDC_SHOWALL,button,1342242816
+Control4=IDC_HIDEALL,button,1342242816
+Control5=IDC_INVERT,button,1342242816
 
 [CLS:CShowHideDlg]
 Type=0
@@ -204,6 +186,6 @@ HeaderFile=ShowHideDlg.h
 ImplementationFile=ShowHideDlg.cpp
 BaseClass=CDialog
 Filter=D
-LastObject=IDC_CONST_LIST
+LastObject=ID_VIEW_HIDEALL
 VirtualFilter=dWC
 

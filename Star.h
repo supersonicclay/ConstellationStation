@@ -5,18 +5,23 @@
 #ifndef STAR_H
 #define STAR_H
 
-class CStar
+class CStar : public CObject
 {
-private:
-	float x, y, z;
-	float brightness;
-	CColor color;
-	CColor origColor;
+DECLARE_SERIAL (CStar)
 
 public:
 	CStar ();
 	CStar (float x_, float y_, float z_, float brightness_=1);
 	~CStar();
+
+	void Serialize (CArchive& ar);
+
+private:
+	float x, y, z;
+	float brightness;
+	CColor color;
+
+public:
 
 	float GetX(), GetY(), GetZ();
 	float GetBrightness();
@@ -27,8 +32,6 @@ public:
 	void SetZ (float z_);
 	void SetBrightness (float brightness_);
 	void SetColor (CColor color_);
-	void SetOrigColor (CColor origColor_);
-	void RestoreColor ();
 
 	void Randomize();
 	void PickXYZ();

@@ -46,6 +46,9 @@ protected:
 	//{{AFX_MSG(CShowHideDlg)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSelchangeConstList();
+	afx_msg void OnShowAll();
+	afx_msg void OnHideAll();
+	afx_msg void OnInvert();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

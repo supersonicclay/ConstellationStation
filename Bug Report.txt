@@ -1,0 +1,12 @@
+
+STATUS	|	DATE		|	DESCRIP
+------------------------------------------------------------------------------------------
+Pending		long time ago	Select(LINE) is returning the wrong number
+
+Fixed		10-23-03		Stars that are part of constellations aren't going active
+							-Stars being copied when serialized from ConstLine?
+
+Fixed		10-23-03		Projection needs called on new document
+	
+
+

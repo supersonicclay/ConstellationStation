@@ -9,12 +9,15 @@
 
 class CStarfield : public CObject
 {
+DECLARE_SERIAL(CStarfield)
 
 public:
 	CStarfield();
 	~CStarfield();
 
-// Attributes
+	void Serialize(CArchive& ar);
+	void SerializeConstLines(CArchive& ar);
+
 private:
 	CStar* stars;
 	CConstellation* constellations;
@@ -22,6 +25,7 @@ private:
 	int numStars;
 
 	int numConstellations;
+	int numNewConstellations;
 	int numCurConstellation;
 
 	// Settings
@@ -41,10 +45,12 @@ public:
 	CConstellation* GetConstellations() const;
 	CStar* GetStar(int i) const;
 	CConstellation* GetConstellation(int i) const;
+	CConstellation* GetConstellation(CString &name) const;
 	CConstellation* GetCurConstellation() const;
 
 	int GetNumStars() const;
 	int GetNumConstellations() const;
+	int GetNumNewConstellations() const;
 	int GetNumCurConstellation() const;
 
 	float GetLatitude() const;
@@ -57,6 +63,7 @@ public:
 	float GetZoom() const;
 
 // Sets
+	void IncNumNewConstellations();
 	void SetNumCurConstellation(int i);
 	void SetLatitude(float latitude_);
 	void SetSeason(int season_);

@@ -17,8 +17,8 @@ class CConstBar : public CToolBar
 // Construction
 public:
 	CConstBar();
-	BOOL Init (CWnd* pParentWnd);
-	BOOL InitList ();
+	BOOL Init(CWnd* pParentWnd);
+	BOOL InitList();
 
 // Attributes
 public:
@@ -29,6 +29,10 @@ public:
 
 	void AddConst(CString &str);
 	void DeleteConst();
+
+	void UpdateList(CString* names, int numConstellations, int numCurrent);
+	void ClearList();
+
 
 	CString GetCurConst() const;
 

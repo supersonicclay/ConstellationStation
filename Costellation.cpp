@@ -8,6 +8,9 @@
 #include "Starfield.h"
 
 
+IMPLEMENT_SERIAL (CConstellation, CObject, 0)
+
+
 ////////////////
 // CConstLine //
 ////////////////
@@ -25,9 +28,13 @@ CConstLine::~CConstLine()
 {
 }
 
-void CConstLine::SetStars(CStar* star1_, CStar* star2_)
+void CConstLine::SetStar1(CStar* star1_)
 {
 	star1 = star1_;
+}
+
+void CConstLine::SetStar2(CStar* star2_)
+{
 	star2 = star2_;
 }
 
@@ -72,6 +79,7 @@ float CConstLine::GetZ2() const
 }
 
 
+
 ////////////////////
 // CConstellation //
 ////////////////////
@@ -79,7 +87,7 @@ CConstellation::CConstellation()
 {
 	numLines = 0;
 	visible = true;
-	active = false;
+	current = false;
 }
 
 CConstellation::CConstellation(CString name_)
@@ -91,6 +99,7 @@ CConstellation::CConstellation(CString name_)
 
 CConstellation::~CConstellation()
 {
+	delete lines;
 }
 
 CString CConstellation::GetName() const
@@ -118,16 +127,17 @@ void CConstellation::SetVisible(BOOL visible_)
 	visible = visible_;
 }
 
-BOOL CConstellation::GetActive() const
+BOOL CConstellation::IsCurrent() const
 {
-	return active;
+	return current;
 }
 
-void CConstellation::SetActive(BOOL active_)
+void CConstellation::SetCurrent(BOOL current_)
 {
-	active = active_;
+	current = current_;
 
-	if (active)
+	/*
+	if (current)
 	{
 		for (int i=0; i<numLines; i++)
 		{
@@ -143,6 +153,7 @@ void CConstellation::SetActive(BOOL active_)
 			lines[i].GetStar2()->RestoreColor();
 		}
 	}
+	*/
 }
 
 int CConstellation::GetNumLines() const
@@ -157,9 +168,6 @@ CConstLine* CConstellation::GetLine(int i) const
 
 void CConstellation::AddLine(CStar* star1, CStar* star2)
 {
-	star1->SetColor(RED);
-	star2->SetColor(RED);
-
 	int i;
 	CConstLine* copy = new CConstLine[numLines];
 
@@ -175,13 +183,15 @@ void CConstellation::AddLine(CStar* star1, CStar* star2)
 		lines[i] = copy[i];
 
 	// Make the newest line
-	lines[i].SetStars(star1, star2);
+	lines[i].SetStar1(star1);
+	lines[i].SetStar2(star2);
 }
 
 void CConstellation::DeleteLine(int lineNum)
 {
 	int i;
 
+	/*
 	/////////////////////////////
 	// Check for isolated star //
 	/////////////////////////////
@@ -212,6 +222,7 @@ void CConstellation::DeleteLine(int lineNum)
 		lines[lineNum].GetStar1()->RestoreColor();
 	if (!star2used)
 		lines[lineNum].GetStar2()->RestoreColor();
+*/
 
 
 	//////////////////////////////
@@ -240,4 +251,52 @@ void CConstellation::DeleteLine(int lineNum)
 		lines[i] = newList[i];
 	}
 
+}
+
+const CConstellation& CConstellation::operator =(const CConstellation& c)
+{
+	name = c.name;
+	current = c.current;
+	visible = c.visible;
+	numLines = c.numLines;
+
+	lines = new CConstLine[numLines];
+	for (int i=0; i<numLines; i++)
+	{
+		lines[i] = c.lines[i];
+	}
+
+	return *this;
+}
+
+///Do you need??
+void CConstellation::Serialize(CArchive& ar)
+{
+	CObject::Serialize(ar);
+
+	if (ar.IsStoring())
+	{
+		ar << name
+		   << current << visible
+		   << numLines;
+	}
+	else
+	{
+		ar >> name
+		   >> current >> visible
+		   >> numLines;
+	}
+
+	// If were loading we need to allocate space for lines
+	if (ar.IsLoading())
+	{
+		lines = new CConstLine[numLines];
+	}
+
+	/*///
+	for (int i=0; i<numLines; i++)
+	{
+		lines[i].Serialize(ar);
+	}
+	*/
 }

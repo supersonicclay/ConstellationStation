@@ -13,9 +13,10 @@
 
 class CConStationDoc : public CDocument
 {
+DECLARE_DYNCREATE(CConStationDoc)
+
 protected: // create from serialization only
 	CConStationDoc();
-	DECLARE_DYNCREATE(CConStationDoc)
 
 // Attributes
 private:

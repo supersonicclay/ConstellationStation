@@ -31,6 +31,9 @@
 	No independent constellation show/hide. Just const and const lines toggle
 	Take out ConstStarsColored
 
+0.4.3
+	Revised compass
+
 
 
 -------------------------------------------------

@@ -130,8 +130,10 @@ const color_s	DEF_TEXT_CONSTSELCOLOR	= {1.0f, 1.0f, 0.5f};
 const color_s	DEF_TEXT_STARCOLOR		= {1.0f, 0.0f, 0.0f};
 const color_s	DEF_TEXT_DIRCOLOR		= {1.0f, 0.5f, 0.0f};
 
-const color_s	DEF_COMPASS_CROSSCOLOR	= {0.3f, 0.3f, 0.8f};
-const color_s	DEF_COMPASS_NEEDLECOLOR	= {0.7f, 1.0f, 0.7f};
+const color_s	DEF_COMPASS_CROSSCOLOR	= {0.4f, 0.8f, 0.5f};
+const color_s	DEF_COMPASS_FRUSTUMCOLOR	= {1.0f, 1.0f, 0.7f};
+///const color_s	DEF_COMPASS_CROSSCOLOR	= {0.4f, 0.25f, 0.1f};//{0.3f, 0.3f, 0.8f};
+///const color_s	DEF_COMPASS_FRUSTUMCOLOR	= {0.7f, 1.0f, 0.7f};
 
 
 const LOGFONT	DEF_TEXT_CONSTFONT = 
@@ -324,6 +326,22 @@ color_s operator* ( const color_s c1, const color_s c2 )
 BOOL operator< ( CDataStar& s1, CDataStar& s2 )
 {
 	return s1.GetMag() < s2.GetMag();
+}
+
+// OpenGL convenience functions
+void glColor( const color_s c )
+{
+	glColor3f( c.r, c.g, c.b );
+}
+
+void glColor4( const color_s c, float alpha )
+{
+	glColor4f( c.r, c.g, c.b, alpha );
+}
+
+void glVertex( vector3 v )
+{
+	glVertex3f( v.x, v.y, v.z );
 }
 
 // Message boxes (handle not specified)

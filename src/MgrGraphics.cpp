@@ -723,6 +723,122 @@ void CMgrGraphics::DrawStarPoint( int i )
 void CMgrGraphics::DrawCompass()
 {
 	glDisable( GL_TEXTURE_2D );
+	glDisable( GL_CULL_FACE );
+	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+	glEnable( GL_DEPTH_TEST );
+	glClear( GL_DEPTH_BUFFER_BIT );
+	glLineWidth(3);
+
+	// Set up perspective matrix
+	glMatrixMode( GL_PROJECTION );
+	glPushMatrix();
+	glLoadIdentity();
+	gluPerspective( 45.0f, (float)width/height, 0.1f, 20.0f );
+
+	// Translate to center bottom of screen
+	glMatrixMode( GL_MODELVIEW );
+	glLoadIdentity();
+	glTranslatef( 0.0f, -1.75f, -5.0f );
+	glScalef( 0.3f, 0.3f, 0.3f );
+
+	SelectColor4( DEF_COMPASS_CROSSCOLOR, 0.75f );
+
+	// Disk
+	glPushMatrix();
+	glTranslatef( 0.0f, -0.001f, 0.0f );
+	glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
+	gluDisk( gluNewQuadric(), 0.0f, 0.95f, 25, 10 );
+	glPopMatrix();
+	glPushMatrix();
+	glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
+	SelectColor4( DEF_COMPASS_CROSSCOLOR*0.2f, 0.75f );
+	gluDisk( gluNewQuadric(), 0.9f, 1.0f, 25, 1 );
+	glPopMatrix();
+
+	// Cross
+	glTranslatef( 0.0f, 0.001f, 0.0f );
+	glBegin( GL_LINES );
+		glVertex3f ( 1.0f, 0.0f, 0.0f);
+		glVertex3f (-1.0f, 0.0f, 0.0f);
+		glVertex3f ( 0.0f, 0.0f, 1.0f);
+		glVertex3f ( 0.0f, 0.0f,-1.0f);
+	glEnd();
+
+
+	// Rotate for frustum pyramid
+	glPushMatrix();
+	matrix44 viewMat;
+	viewMat  = RotateRadMatrix44( 'y', -starfield.GetRotY()-starfield.GetTempRotY() );
+	viewMat *= RotateRadMatrix44( 'x', -starfield.GetRotX()-starfield.GetTempRotX() );
+	glMultMatrixf( viewMat.getFloats() );
+
+	// Frustum pyramid
+	float baseWidth = 1.0f;
+	float baseHeight = 0.5f;
+	vector3 tr = vector3(  sin(DegToRad(fov))*baseWidth,  sin(DegToRad(fov))*baseHeight, -1.0f );
+	vector3 tl = vector3( -sin(DegToRad(fov))*baseWidth,  sin(DegToRad(fov))*baseHeight, -1.0f );
+	vector3 bl = vector3( -sin(DegToRad(fov))*baseWidth, -sin(DegToRad(fov))*baseHeight, -1.0f );
+	vector3 br = vector3(  sin(DegToRad(fov))*baseWidth, -sin(DegToRad(fov))*baseHeight, -1.0f );
+	SelectColor4( DEF_COMPASS_FRUSTUMCOLOR, 0.8f );
+	glBegin( GL_LINE_LOOP );
+		glVertex( tr );
+		glVertex( tl );
+		glVertex( bl );
+		glVertex( br );
+	glEnd();
+	glBegin( GL_LINES );
+		glVertex3f( 0.0f, 0.0f, 0.0f );
+		glVertex( tr );
+		glVertex3f( 0.0f, 0.0f, 0.0f );
+		glVertex( tl );
+		glVertex3f( 0.0f, 0.0f, 0.0f );
+		glVertex( bl );
+		glVertex3f( 0.0f, 0.0f, 0.0f );
+		glVertex( br );
+	glEnd();
+	glColor4( DEF_COMPASS_FRUSTUMCOLOR, 0.4f );
+	glBegin( GL_QUADS );
+		glVertex( tr );
+		glVertex( tl );
+		glVertex( bl );
+		glVertex( br );
+	glEnd();
+	/*/// frustum pyramid sides
+	glBegin( GL_TRIANGLES );
+		glVertex( tr );
+		glVertex( tl );
+		glVertex3f( 0.0f, 0.0f, 0.0f );
+		glVertex( tl );
+		glVertex( bl );
+		glVertex3f( 0.0f, 0.0f, 0.0f );
+		glVertex( bl );
+		glVertex( br );
+		glVertex3f( 0.0f, 0.0f, 0.0f );
+		glVertex( br );
+		glVertex( tr );
+		glVertex3f( 0.0f, 0.0f, 0.0f );
+	glEnd();
+	*/
+	glPopMatrix();
+
+	// Pop Projection Matrix
+	glMatrixMode( GL_PROJECTION );
+	glPopMatrix();
+
+	// Switch back to Model View
+	glMatrixMode( GL_MODELVIEW );
+
+	glDisable( GL_DEPTH_TEST );
+	glBlendFunc( GL_SRC_ALPHA, GL_ONE );
+	glEnable( GL_CULL_FACE );
+	glEnable( GL_TEXTURE_2D );
+}
+
+/*
+// Draw the compass
+void CMgrGraphics::DrawCompass()
+{
+	glDisable( GL_TEXTURE_2D );
 	glDisable( GL_BLEND );
 	glEnable( GL_DEPTH_TEST );
 
@@ -771,6 +887,7 @@ void CMgrGraphics::DrawCompass()
 	glEnable( GL_BLEND );
 	glEnable( GL_TEXTURE_2D );
 }
+*/
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -810,14 +927,12 @@ void CMgrGraphics::UpdateMats()
 void CMgrGraphics::UpdatePerspMat()
 {
 	fov = ( 1 - starfield.GetZoom() ) * 45;
-	perspMat = PerspectiveMatrix44( fov, (float)width/height, 0.001f, 10.0f );
+	perspMat = PerspectiveMatrix44( fov, (float)width/height, 0.001f, 20.0f );
 
 	// Load the perspective matrix
 	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity();
-	gluPerspective( fov, (float)width / (float)height, 0.001f, 10.0f );
+	glLoadMatrixf( perspMat.getFloats() );
 	glMatrixMode( GL_MODELVIEW );
-
 }
 
 // Update matrix for sky

@@ -43,7 +43,7 @@ OPTIONS
 	6	Prompt for seed with random stars
 
 INPUT
--	4	Radius parameter for Select()
+	5	Radius parameter for Select()
 	5	Shift + Left	rotTime
 	5	Ctrl  + Left	rotLatitude
 	5	Right			context menu
@@ -51,7 +51,6 @@ INPUT
 	6	Select const label
 
 GRAPHICS
--	4	Compass needs improvement.
 	6	Lighting normals
 	6	Shadows
 	6	Lens flare

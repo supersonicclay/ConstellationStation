@@ -157,7 +157,7 @@ extern const color_s	DEF_TEXT_STARCOLOR;
 extern const color_s	DEF_TEXT_DIRCOLOR;
 
 extern const color_s	DEF_COMPASS_CROSSCOLOR;
-extern const color_s	DEF_COMPASS_NEEDLECOLOR;
+extern const color_s	DEF_COMPASS_FRUSTUMCOLOR;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -257,6 +257,12 @@ color_s operator* ( const color_s c1, const color_s c2 );
 
 // Star comparison (for sorting by magnitude)
 BOOL operator< ( CDataStar& s1, CDataStar& s2 );
+
+// OpenGL convenience functions
+void glColor( const color_s c );
+void glColor4( const color_s c, float alpha );
+void glVertex( const vector3 v );
+
 
 // Message boxes (handle not specified)
 void CSInfo( const char* msg, const char* title="Information" );

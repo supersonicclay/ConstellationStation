@@ -6,7 +6,7 @@
 //===========================================================================
 
 #include "stdafx.h"
-#include "ConStation.h"
+#include "CSApp.h"
 #include "DlgShowHide.h"
 
 #ifdef _DEBUG
@@ -55,12 +55,12 @@ BOOL CDlgShowHide::OnInitDialog()
 	CDialog::OnInitDialog();
 	
 	// Add strings to list box
-	for (int i=0; i<starfield.GetNumConstellations(); i++)
+	for (int i=0; i<starfield.GetConstCount(); i++)
 	{
 		// Add name to list
 		list.SetSel(
-			list.AddString( starfield.GetConstellation(i)->GetName() ),
-			starfield.GetConstellation(i)->IsVisible() );
+			list.AddString( starfield.GetConst(i)->GetName() ),
+			starfield.GetConst(i)->IsVisible() );
 	}
 
 	return TRUE;
@@ -68,9 +68,15 @@ BOOL CDlgShowHide::OnInitDialog()
 
 void CDlgShowHide::OnSelChange() 
 {
-	for (int i=0; i<starfield.GetNumConstellations(); i++)
+	CString name;
+
+	for (int i=0; i<starfield.GetConstCount(); i++)
 	{
-		starfield.GetConstellation(i)->SetVisible(list.GetSel(i));
+		// Get name of constellation
+		list.GetText( i, name );
+
+		// Set visibility of constellation
+		starfield.GetConst( name )->SetVisible( list.GetSel(i) );
 	}
 
 	Redraw();

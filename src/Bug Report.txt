@@ -33,7 +33,7 @@ Fixed		01-10-04		Restructured; Globals ( terrain, starfield, RedrawView() )
 
 Fixed		01-24-04		Shouldn't hide while editing a constellation
 
-Fixed		7-18-04			RedrawView() isn't finding correct CConStationView
+Fixed		7-18-04			RedrawView() isn't finding correct CCSView
 
 Disappeared	7-18-04			Bugs occasionally on exit
 
@@ -48,5 +48,10 @@ Fixed		7-25-04			New after save or open (save/open dlg was changing working dir)
 Fixed		7-30-04			Frustum culling
 
 Fixed		7-31-04			Color components were multiplied by 256 instead of 255
+
+Fixed		08-05-04		Select line isn't checking for terrain hits
+
+Fixed		08-12-04		Show / Hide list is using number index instead of name index
+
 
 

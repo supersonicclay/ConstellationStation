@@ -24,9 +24,10 @@ public:
 	// Mouse
 	BOOL   mouseRotatingXY;
 	BOOL   mouseRotatingZ;
+	CPoint mouseClientPoint;  // mouse point in client coordinates
 	CPoint mousePoint;
-	CPoint mouseLDownPoint;
-	CPoint mouseRDownPoint;
+	CPoint mouseLPoint;
+	CPoint mouseRPoint;
 
 	// Selecting
 	GLuint selectBuffer[100];
@@ -49,6 +50,7 @@ public:
 // Mouse
 
 	// Mouse left button
+	void MouseLDbl( CPoint point );
 	void MouseLDown( CPoint point );
 	void MouseLDownViewing();
 	void MouseLDownAddingLine();
@@ -71,6 +73,7 @@ public:
 	// Mouse move
 	void MouseMove( CPoint point );
 	void MouseMoveViewing();
+	void MouseMoveViewing2();
 	void MouseMoveAddingLine();
 	void MouseMoveDeletingLine();
 
@@ -83,6 +86,7 @@ public:
 // Selecting
 	void ClearSelection();
 	int SelectStar();
+	int SelectConst();
 	int SelectConstLine();
 	BOOL Select( select_e selection );
 

@@ -7,7 +7,7 @@
 
 
 #include "stdafx.h"
-#include "ConStation.h"
+#include "CSApp.h"
 #include "MgrTerrain.h"
 
 #include "DlgOptionsTerr.h"
@@ -53,7 +53,7 @@ void CMgrTerrain::Options()
 	if( dialog.DoModal() == IDOK )
 	{
 		// Change terrain settings
-		terrain.SetVisible( dialog.visible );
+		optionsMgr.SetTerrVisible( dialog.visible );
 		optionsMgr.SetTerrTextured( dialog.textured );
 		starfield.SetModified();
 	}
@@ -75,5 +75,5 @@ void CMgrTerrain::Options()
 // Toggles the terrain on and off
 void CMgrTerrain::Toggle()
 {
-	terrain.SwitchVisible(); Redraw();
+	optionsMgr.SwitchTerrVisible(); Redraw();
 }

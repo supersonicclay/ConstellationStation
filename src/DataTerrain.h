@@ -31,17 +31,11 @@ private:
 	unsigned int seed; // Used for predictable terrain
 
 	float* heights;
-	int arraySize;
-	int size;	// arraySize - 1
+	int size;
+	int arraySize;  // size + 1
 
 	float* upperNormals;
 	float* lowerNormals;
-
-	BOOL visible;
-
-	// Settings
-	float scale;
-	int iterations;
 
 	float viewHeight;
 
@@ -55,25 +49,16 @@ public:
 
 	int GetArraySize();
 	int GetSize();
-	float GetScale();
-	int GetIterations();
 	float GetViewHeight();
 
 	float* GetUpperNormal( int i, int j );
 	float* GetLowerNormal( int i, int j );
 
-	BOOL IsVisible();
-
 // Sets
 	void SetUpperNormal( int i, int j, float* n );
 	void SetLowerNormal( int i, int j, float* n );
 
-	void SwitchVisible();
-	void SetVisible( BOOL x );
-
 // Methods
-	void LoadDefaults();
-
 	void MakeTerrain();
 
 	float AvgSquare( int i, int j, int midSize );

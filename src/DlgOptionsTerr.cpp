@@ -6,7 +6,7 @@
 //===========================================================================
 
 #include "stdafx.h"
-#include "ConStation.h"
+#include "CSApp.h"
 #include "DlgOptionsTerr.h"
 
 #ifdef _DEBUG
@@ -78,7 +78,7 @@ BOOL CDlgOptionsTerr::OnInitDialog()
 // Set dialog controls to the current options
 void CDlgOptionsTerr::InitOptions()
 {
-	CheckDlgButton( IDC_TERR_VISIBLE, terrain.IsVisible() );
+	CheckDlgButton( IDC_TERR_VISIBLE, optionsMgr.IsTerrVisible() );
 	CheckDlgButton( IDC_TERR_TEXTURED, optionsMgr.IsTerrTextured() );
 	SetDlgItemInt( IDC_TERR_ROUGHNESS, (int)(optionsMgr.GetTerrRoughness()*100) );
 	roughnessSlider.SetPos( GetDlgItemInt(IDC_TERR_ROUGHNESS) );

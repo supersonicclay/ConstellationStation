@@ -1,31 +1,31 @@
 //===========================================================================
-// ConStationFrame.h
+// CSFrame.h
 //
-// CConStationFrame
+// CCSFrame
 //   handles (forwards) most non-view related commands and messages.
 //===========================================================================
 
-#ifndef CS_CONSTATIONFRAME_H
-#define CS_CONSTATIONFRAME_H
+#ifndef CS_CSFRAME_H
+#define CS_CSFRAME_H
 
-#include "ConStationView.h"
+#include "CSView.h"
 
 #include "BarStarf.h"
 #include "BarConst.h"
 
 
-class CConStationFrame : public CFrameWnd
+class CCSFrame : public CFrameWnd
 {
 // Construction	
 public:
-	CConStationFrame();
+	CCSFrame();
 
 
 // Attributes
 protected:
 
 	// Child view
-	CConStationView view;
+	CCSView view;
 
 	// Toolbars
 	CStatusBar      statusBar;
@@ -35,7 +35,7 @@ protected:
 
 // Methods
 public:
-	CConStationView* GetView();
+	CCSView* GetView();
 
 	CBarConst* GetConstBar();
 	CBarStarf* GetStarfBar();
@@ -43,7 +43,7 @@ public:
 
 // Overrides
 	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CConStationFrame)
+	//{{AFX_VIRTUAL(CCSFrame)
 	public:
 	virtual BOOL PreCreateWindow( CREATESTRUCT& cs );
 	virtual BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo);
@@ -51,7 +51,7 @@ public:
 
 // Implementation
 public:
-	virtual ~CConStationFrame();
+	virtual ~CCSFrame();
 #ifdef _DEBUG
 	virtual void AssertValid() const;
 	virtual void Dump( CDumpContext& dc ) const;
@@ -60,10 +60,11 @@ public:
 
 // Generated message map functions
 protected:
-	//{{AFX_MSG(CConStationFrame)
+	//{{AFX_MSG(CCSFrame)
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	afx_msg void OnClose();
+	afx_msg void OnAppAbout();
 	afx_msg void OnStarfNewActual();
 	afx_msg void OnStarfNewRandom();
 	afx_msg void OnStarfOpen();
@@ -82,6 +83,8 @@ protected:
 	afx_msg void OnConstShowAll();
 	afx_msg void OnConstToggle();
 	afx_msg void OnTerrNew();
+	afx_msg void OnSunToggle();
+	afx_msg void OnSunshineToggle();
 	afx_msg void OnTerrToggle();
 	afx_msg void OnOptionsGeneral();
 	afx_msg void OnOptionsTime();
@@ -104,7 +107,8 @@ protected:
 	afx_msg void OnUpdateConstShowHide(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateConstToggle(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateTerrToggle(CCmdUI* pCmdUI);
-	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+	afx_msg void OnUpdateSunToggle(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateSunshineToggle(CCmdUI* pCmdUI);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

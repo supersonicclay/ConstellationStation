@@ -7,7 +7,7 @@
 
 
 #include "stdafx.h"
-#include "ConStation.h"
+#include "CSApp.h"
 #include "MgrGraphics.h"
 
 #ifdef _DEBUG
@@ -38,13 +38,15 @@ void CMgrGraphics::Destroy()
 	//Make the RC non-current
 	if( wglMakeCurrent(0,0) == FALSE )
 	{
-		CSError( "Could not make RC non-current", "CMgrGraphics::Destroy" );
+		CSDebug( "Could not make RC non-current", "CMgrGraphics::Destroy" );
+		exit(0);
 	}
 	
 	//Delete the RC
 	if( wglDeleteContext(hRC)==FALSE )
 	{
-		CSError("Could not delete RC", "CMgrGraphics::Destroy" );
+		CSDebug("Could not delete RC", "CMgrGraphics::Destroy" );
+		exit(0);
 	}
 }
 
@@ -52,9 +54,7 @@ void CMgrGraphics::Destroy()
 void CMgrGraphics::Size( int cx, int cy ) 
 {
 	if( cx <= 0 || cy <= 0 )
-	{
 		return;
-	}
 
 	width = cx;
 	height = cy;
@@ -75,13 +75,14 @@ BOOL CMgrGraphics::InitializeOpenGL()
 	hDC = GetView()->GetDC()->GetSafeHdc();
 	if( hDC == NULL )
 	{
-		CSError( "Error Obtaining DC", "CMgrGraphics::InitializeOpenGL" );
+		CSDebug( "Error Obtaining DC", "CMgrGraphics::InitializeOpenGL" );
 		return FALSE;
 	}
 
-	// Failure to set the pixel format
+	// Try setting up pixel format
 	if( !SetupPixelFormat() )
 	{
+		CSDebug( "Error setting up pixel format", "CMgrGraphics::InitializeOpenGL" );
 		return FALSE;
 	}
 
@@ -89,14 +90,14 @@ BOOL CMgrGraphics::InitializeOpenGL()
 	hRC = wglCreateContext( hDC );
 	if( hRC == 0 )
 	{
-		CSError( "Error Creating RC", "CMgrGraphics::InitializeOpenGL" );
+		CSDebug( "Error Creating RC", "CMgrGraphics::InitializeOpenGL" );
 		return FALSE;
 	}
 
 	// Make the RC Current
 	if( wglMakeCurrent( hDC, hRC ) == FALSE )
 	{
-		CSError( "Error making RC Current", "CMgrGraphics::InitializeOpenGL" );
+		CSDebug( "Error making RC Current", "CMgrGraphics::InitializeOpenGL" );
 		return FALSE;
 	}
 
@@ -106,14 +107,14 @@ BOOL CMgrGraphics::InitializeOpenGL()
 	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
 	glEnable( GL_LINE_SMOOTH );
 	glShadeModel( GL_SMOOTH );
+	glBlendFunc( GL_SRC_ALPHA, GL_ONE );
 
-	// Textures
+	// Try loading textures
 	if( !LoadTextures() )
 	{
-		CSError( "Error loading textures", "CMgrGraphics::InitializeOpenGL" );
+		CSDebug( "Error loading textures", "CMgrGraphics::InitializeOpenGL" );
 		return FALSE;
 	}
-	glBlendFunc( GL_SRC_ALPHA, GL_ONE );
 
 	// Sky
 	skySphere = gluNewQuadric();
@@ -160,13 +161,13 @@ BOOL CMgrGraphics::SetupPixelFormat()
 
 	if ( pixelFormat == 0 )
 	{
-		CSError( "Couldn't Choose Pixel Format", "CMgrGraphics::SetupPixelFormat" );
+		CSDebug( "Couldn't Choose Pixel Format", "CMgrGraphics::SetupPixelFormat" );
 		return FALSE;
 	}
 
 	if ( SetPixelFormat(hDC, pixelFormat, &pfd) == FALSE)
 	{
-		CSError( "Couldn't Set Pixel Format", "CMgrGraphics::SetupPixelFormat" );
+		CSDebug( "Couldn't Set Pixel Format", "CMgrGraphics::SetupPixelFormat" );
 		return FALSE;
 	}
 
@@ -279,9 +280,7 @@ BOOL CMgrGraphics::LoadTGA( UINT &texID, char* filename )
 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	
 	if( bitsPerPixel==24 )
-	{
 		type=GL_RGB;
-	}
 
 	glTexImage2D( GL_TEXTURE_2D, 0, type, texture.width, texture.height, 0, type, GL_UNSIGNED_BYTE, texture.data );
 
@@ -296,10 +295,16 @@ BOOL CMgrGraphics::LoadTGA( UINT &texID, char* filename )
 BOOL CMgrGraphics::LoadTextures()
 {
 	if( !LoadTGA(starTex, "data/star.tga") )
+	{
+		CSDebug( "Unable to load star texture", "CMgrGraphics::LoadTextures" );
 		return FALSE;
+	}
 
 	if( !LoadTGA(skyTex, "data/sky.tga") )
+	{
+		CSDebug( "Unable to load sky texture", "CMgrGraphics::LoadTextures" );
 		return FALSE;
+	}
 
 	glTexGeni( GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP );
 	glTexGeni( GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP );
@@ -462,6 +467,13 @@ void CMgrGraphics::Draw()
 {
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
+	glLoadIdentity();
+	RotateXY();
+	glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
+
+	if( starfield.IsSunShining() )
+		DrawSky();
+
 	// Get ready to draw sky objects
 	glLoadIdentity();
 	RotateXY();
@@ -470,8 +482,6 @@ void CMgrGraphics::Draw()
 	CalculateFrustum();
 
 	// Draw starfield objects
-///	if( starfield.IsSunShining() )
-///		DrawSky();
 	if( starfield.AreConstsVisible() )
 		DrawConstellations();
 	if( starfield.AreStarsVisible() )
@@ -479,7 +489,7 @@ void CMgrGraphics::Draw()
 	if( starfield.IsSunVisible() )
 		DrawSun();
 
-	if( terrain.IsVisible() )
+	if( optionsMgr.IsTerrVisible() )
 	{
 		// Get ready to draw terrain
 		glLoadIdentity();
@@ -514,8 +524,8 @@ void CMgrGraphics::DrawTerrain() const
 
 	float* n;
 
-	float scale = terrain.GetScale();
-	int iterations = terrain.GetIterations();
+	float scale = optionsMgr.GetTerrScale();
+	int iterations = optionsMgr.GetTerrIters();
 
 	x = -scale;
 	z = -scale;
@@ -574,18 +584,12 @@ void CMgrGraphics::PositionTerrain() const
 // Draw sky (not including stars, sun, ///and moon)
 void CMgrGraphics::DrawSky() const
 {
-	glLoadIdentity();
-//	glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
-	RotateXY();
-	RotateLatitude();
-	RotateTime();
-
 	// Enable texture
 	glEnable( GL_TEXTURE_2D );
 	glBindTexture( GL_TEXTURE_2D, skyTex );
 
 	// Draw sky background
-	SetColor( COLOR_DARKBLUE );
+	SetColor( COLOR_BLUE );
 	gluSphere( skySphere, 1.0f, 20, 5 );
 
 	glDisable( GL_TEXTURE_2D );
@@ -611,7 +615,7 @@ void CMgrGraphics::DrawSun() const
 	light[1] = 1.0f;
 	light[2] = 1.0f;
 	light[3] = 1.0f;
-	glLightfv( GL_LIGHT0, GL_SPECULAR, light );
+	glLightfv( GL_LIGHT0, GL_DIFFUSE, light );
 
 	float pos[3];
 	pos[0] = 0.0f;
@@ -627,18 +631,20 @@ void CMgrGraphics::DrawConstellations() const
 	glLineWidth(3);
 
 	// Draw each constellation
-	for( int i=0; i<starfield.GetNumConstellations(); i++ )
+	for( int i=0; i<starfield.GetConstCount(); i++ )
 	{
-		if( starfield.GetConstellation(i)->IsVisible() )
+		if( starfield.GetConst(i)->IsVisible() )
+		{
 			DrawConstellation(i);
+		}
 	}
 }
 
 // Draw constellation i
 void CMgrGraphics::DrawConstellation( int i ) const
 {
-	CDataConst* curConstellation = starfield.GetConstellation(i);
-	int numLines = curConstellation->GetNumLines();
+	CDataConst* curConstellation = starfield.GetConst(i);
+	int lineCount = curConstellation->GetLineCount();
 
 	float x1, y1, z1, x2, y2, z2;
 
@@ -659,21 +665,21 @@ void CMgrGraphics::DrawConstellation( int i ) const
 	}
 
 	// Set color for the rest of the lines
-	if( i == starfield.GetNumCurConstellation() )
+	if( i == starfield.GetCurConstNum() )
 		SetColor( optionsMgr.GetConstSelColor() );
 	else
 		SetColor( optionsMgr.GetConstNormColor() );
 
 	// Draw constellation lines
-	for( int lineIndex=0; lineIndex<numLines; lineIndex++ )
+	for( int lineIndex=0; lineIndex<lineCount; lineIndex++ )
 	{
-		glPushName(lineIndex);
-		x1 = curConstellation->GetLine(lineIndex)->GetX1();
-		y1 = curConstellation->GetLine(lineIndex)->GetY1();
-		z1 = curConstellation->GetLine(lineIndex)->GetZ1();
-		x2 = curConstellation->GetLine(lineIndex)->GetX2();
-		y2 = curConstellation->GetLine(lineIndex)->GetY2();
-		z2 = curConstellation->GetLine(lineIndex)->GetZ2();
+		glPushName( 1 + MAX_STARS + (i*MAX_CONSTLINES) + lineIndex );
+		x1 = curConstellation->GetLine( lineIndex )->GetX1();
+		y1 = curConstellation->GetLine( lineIndex )->GetY1();
+		z1 = curConstellation->GetLine( lineIndex )->GetZ1();
+		x2 = curConstellation->GetLine( lineIndex )->GetX2();
+		y2 = curConstellation->GetLine( lineIndex )->GetY2();
+		z2 = curConstellation->GetLine( lineIndex )->GetZ2();
 		glBegin(GL_LINES);
 			glVertex3f (x1, y1, z1);
 			glVertex3f (x2, y2, z2);
@@ -691,13 +697,13 @@ void CMgrGraphics::DrawStars() const
 	glBindTexture( GL_TEXTURE_2D, starTex );
 
 	// Go in reverse order so north star (star 0) is drawn last
-	for (int i=starfield.GetNumStars()-1; i>=0; i--)
+	for (int i=starfield.GetStarCount()-1; i>=0; i--)
 	{
 		CDataStar* star = starfield.GetStar(i);
 		// Check if in frustum
 		if( SphereInFrustum( star->GetX(), star->GetY(), star->GetZ(), star->GetRadius() ) )
 		{
-			glPushName( i+1 );
+			glPushName( 1 + i );
 			DrawStar( i );
 			glPopName();
 		}
@@ -716,7 +722,7 @@ void CMgrGraphics::DrawStar( int i ) const
 	glPushMatrix();
 
 	// Find color for this star
-	if( optionsMgr.AreConstStarsColored() &&
+	if( starfield.AreConstsVisible() && optionsMgr.AreConstStarsColored() &&
 		starfield.IsStarInHiddenConst(i) )
 		SetColor( optionsMgr.GetConstStarColor() );
 	else

@@ -2,17 +2,17 @@
 
 [General Info]
 Version=1
-LastClass=CConStationFrame
+LastClass=CCSFrame
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "ConStation.h"
 LastPage=0
 
 ClassCount=14
-Class1=CConStationApp
+Class1=CCSApp
 Class2=CDlgLocation
-Class3=CConStationView
-Class4=CConStationFrame
+Class3=CCSView
+Class4=CCSFrame
 Class5=CDlgAbout
 Class6=CDlgOptionsTerr
 Class7=CBarStarf
@@ -22,42 +22,24 @@ Class10=CDlgOptionsStar
 
 ResourceCount=15
 Resource1="IDR_TOOLBAR1"
-Resource2=IDD_OPTIONS_TERR
-Resource3=IDD_OPTIONS_STAR
-Resource4=IDD_CONST_NAME
-Resource5=IDR_MAINFRAME
-Resource6=IDD_LOCATION
-Resource7=IDD_SHOW_HIDE
-Resource8=IDD_OPTIONS_COLORS
-Resource9=IDD_TIME
+Resource2=IDD_SHOW_HIDE
+Resource3=IDR_STARFIELD
+Resource4=IDR_MAINFRAME
+Resource5=IDR_CONSTELLATION
+Resource6=IDD_OPTIONS_TERR
+Resource7=IDD_CONST_NAME
+Resource8=IDD_TIME
+Resource9=IDD_OPTIONS_CONST
 Class11=CDlgOptionsConst
-Resource10=IDD_OPTIONS_GENERAL
-Resource11=IDR_CONSTELLATION
-Resource12=IDR_STARFIELD
+Resource10=IDD_ABOUTBOX
+Resource11=IDD_OPTIONS_GENERAL
+Resource12=IDD_OPTIONS_COLORS
 Class12=CDlgTime
-Resource13=IDD_ABOUTBOX
+Resource13=IDD_LOCATION
 Class13=CDlgColors
-Resource14=IDD_OPTIONS_CONST
+Resource14=IDD_OPTIONS_STAR
 Class14=CDlgOptionsSun
 Resource15=IDD_OPTIONS_SUN
-
-[CLS:CConStationApp]
-Type=0
-HeaderFile=ConStation.h
-ImplementationFile=ConStation.cpp
-Filter=N
-LastObject=CConStationApp
-BaseClass=CWinApp 
-VirtualFilter=AC
-
-[CLS:CConStationFrame]
-Type=0
-HeaderFile=ConStationFrame.h
-ImplementationFile=ConStationFrame.cpp
-Filter=T
-LastObject=CConStationFrame
-BaseClass=CFrameWnd
-VirtualFilter=fWC
 
 [CLS:CDlgAbout]
 Type=0
@@ -78,7 +60,7 @@ Control5=IDC_STATIC,static,1342308352
 
 [MNU:IDR_MAINFRAME]
 Type=1
-Class=CConStationFrame
+Class=CCSFrame
 Command1=ID_STARF_NEWRANDOM
 Command2=ID_STARF_NEWACTUAL
 Command3=ID_STARF_OPEN
@@ -122,27 +104,17 @@ Command10=ID_STARF_SAVE
 Command11=ID_EDIT_UNDO
 CommandCount=11
 
-[CLS:CConStationView]
-Type=0
-HeaderFile=ConStationView.h
-ImplementationFile=ConStationView.cpp
-BaseClass=CWnd
-LastObject=CConStationView
-Filter=C
-VirtualFilter=VWC
-
 [TB:IDR_CONSTELLATION]
 Type=1
-Class=CConStationView
+Class=CCSView
 Command1=ID_CONST_LIST
 Command2=ID_CONST_ADD
 Command3=ID_CONST_DELETE
 Command4=ID_CONST_RENAME
-Command5=ID_CONST_SHOWHIDE
-Command6=ID_CONST_HIDE
-Command7=ID_CONST_ALINE
-Command8=ID_CONST_DLINE
-CommandCount=8
+Command5=ID_CONST_HIDE
+Command6=ID_CONST_ALINE
+Command7=ID_CONST_DLINE
+CommandCount=7
 
 [DLG:IDD_CONST_NAME]
 Type=1
@@ -181,7 +153,7 @@ Control2=IDCANCEL,button,1342242816
 
 [TB:IDR_STARFIELD]
 Type=1
-Class=CConStationFrame
+Class=CCSFrame
 Command1=ID_STARF_NEWACTUAL
 Command2=ID_STARF_NEWRANDOM
 Command3=ID_STARF_OPEN
@@ -192,13 +164,16 @@ Command7=ID_STARF_TIME
 Command8=ID_STARF_SPEED
 Command9=ID_STARS_TOGGLE
 Command10=ID_CONST_TOGGLE
-Command11=ID_TERR_TOGGLE
-Command12=ID_OPTIONS_STAR
-Command13=ID_OPTIONS_CONST
-Command14=ID_OPTIONS_TERR
-Command15=ID_TERR_NEW
-Command16=ID_STARF_ROTATE
-CommandCount=16
+Command11=ID_SUN_TOGGLE
+Command12=ID_SUNSHINE_TOGGLE
+Command13=ID_TERR_TOGGLE
+Command14=ID_OPTIONS_STAR
+Command15=ID_OPTIONS_CONST
+Command16=ID_OPTIONS_SUN
+Command17=ID_OPTIONS_TERR
+Command18=ID_TERR_NEW
+Command19=ID_STARF_ROTATE
+CommandCount=19
 
 [CLS:CDlgLocation]
 Type=0
@@ -392,4 +367,25 @@ BaseClass=CDialog
 Filter=D
 VirtualFilter=dWC
 LastObject=CDlgOptionsSun
+
+[CLS:CCSFrame]
+Type=0
+HeaderFile=csframe.h
+ImplementationFile=csframe.cpp
+BaseClass=CFrameWnd
+LastObject=ID_SUNSHINE_TOGGLE
+Filter=T
+VirtualFilter=fWC
+
+[CLS:CCSView]
+Type=0
+HeaderFile=csview.h
+ImplementationFile=csview.cpp
+BaseClass=CWnd
+
+[CLS:CCSApp]
+Type=0
+HeaderFile=csapp.h
+ImplementationFile=csapp.cpp
+BaseClass=CWinApp 
 

@@ -7,7 +7,7 @@
 
 
 #include "stdafx.h"
-#include "ConStation.h"
+#include "CSApp.h"
 #include "MgrDocument.h"
 
 #ifdef _DEBUG
@@ -32,6 +32,35 @@ CMgrDocument::~CMgrDocument()
 /////////////////////////////////////////////////////////////////////////////
 // Methods
 
+// Initialize an OPENFILENAME struct for saving or opening
+void CMgrDocument::InitOFN( BOOL saving )
+{
+	// Get the current directory
+	GetCurrentDirectory( MAX_PATH, cwd );
+	// Get the starfield directory
+	strncpy( starfieldDir, cwd, MAX_PATH );
+	strncat( starfieldDir, "\\starfields", MAX_PATH );
+
+	// Zero the structure
+	ZeroMemory( &ofn, sizeof(ofn) );
+
+	// Fill the structure
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = GetFrame()->GetSafeHwnd();
+	ofn.lpstrFile = filename;
+	ofn.nMaxFile = MAX_PATH;
+	ofn.lpstrFileTitle = title;
+	ofn.nMaxFileTitle = MAX_DOC_NAME;
+	ofn.lpstrInitialDir = starfieldDir;
+	ofn.lpstrFilter = "Starfields (*.str)\0*.str\0";
+	ofn.lpstrDefExt = "str";
+
+	if( saving )
+		ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
+	else
+		ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+}
+
 // User selected to make a new actual starfield
 void CMgrDocument::NewActual()
 {
@@ -45,8 +74,8 @@ void CMgrDocument::NewActual()
 	starfield.New( true );
 
 	/// Add test constellation on startup
-	starfield.AddConstellation( CString("TEST") );
-	starfield.SetCurConstellation( CString("TEST") );
+	starfield.AddConst( CString("TEST") );
+	starfield.SelectConst( CString("TEST") );
 
 	// Reset UI and refresh screen
 	UpdateTitle();
@@ -94,7 +123,10 @@ void CMgrDocument::Open()
 	// Open file for reading
 	CFile file;
 	if( !file.Open( filename, CFile::modeRead ) )
-		CSError( "Unable to open file", "CMgrDocument::Open" );
+	{
+		CSDebug( "Unable to open file", "CMgrDocument::Open" );
+		return;
+	}
 
 	// Create an archive for loading
 	CArchive ar( &file, CArchive::load );
@@ -125,12 +157,16 @@ void CMgrDocument::Save()
 		SaveAs();
 		return;
 	}
+
 	// Otherwise just save the file
 
 	// Open file for writing
 	CFile file;
 	if( !file.Open( filename, CFile::modeCreate | CFile::modeWrite ) )
-		CSError( "Unable to open file", "CMgrDocument::Save" );
+	{
+		CSDebug( "Unable to open file", "CMgrDocument::Save" );
+		return;
+	}
 
 	// Create an archive for storing
 	CArchive ar( &file, CArchive::store );
@@ -165,7 +201,10 @@ void CMgrDocument::SaveAs()
 	// Open file for writing
 	CFile file;
 	if( !file.Open( filename, CFile::modeCreate | CFile::modeWrite ) )
-		CSError( "Unable to open file", "CMgrDocument::SaveAs" );
+	{
+		CSDebug( "Unable to open file", "CMgrDocument::SaveAs" );
+		return;
+	}
 
 	// Create an archive for storing
 	CArchive ar( &file, CArchive::store );
@@ -187,35 +226,6 @@ void CMgrDocument::SaveAs()
 	Redraw();
 }
 
-// Initialize an OPENFILENAME struct for saving or opening
-void CMgrDocument::InitOFN( BOOL saving )
-{
-	// Get the current directory
-	GetCurrentDirectory( MAX_PATH, cwd );
-	// Get the starfield directory
-	strncpy( starfieldDir, cwd, MAX_PATH );
-	strncat( starfieldDir, "\\starfields", MAX_PATH );
-
-	// Zero the structure
-	ZeroMemory( &ofn, sizeof(ofn) );
-
-	// Fill the structure
-	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.hwndOwner = GetFrame()->GetSafeHwnd();
-	ofn.lpstrFile = filename;
-	ofn.nMaxFile = MAX_PATH;
-	ofn.lpstrFileTitle = title;
-	ofn.nMaxFileTitle = MAX_DOC_NAME;
-	ofn.lpstrInitialDir = starfieldDir;
-	ofn.lpstrFilter = "Starfields (*.str)\0*.str\0";
-	ofn.lpstrDefExt = "str";
-
-	if( saving )
-		ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
-	else
-		ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-}
-
 // Checks to see if the starfield needs to be saved
 //  returns answer to dialog or IDNO if starfield isn't modified
 int CMgrDocument::CheckModified()
@@ -233,7 +243,7 @@ int CMgrDocument::CheckModified()
 	return IDNO;
 }
 
-// Sets the title of the window to "Constellation Station - DocumentName"
+// Sets the title of the window to "Constellation Station - [DocumentName.str]"
 void CMgrDocument::UpdateTitle()
 {
 	char windowTitle[100];

@@ -6,10 +6,10 @@
 //===========================================================================
 
 #include "stdafx.h"
-#include "ConStation.h"
+#include "CSApp.h"
 #include "BarConst.h"
 
-#include "ConStationFrame.h"
+#include "CSFrame.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -92,7 +92,7 @@ void CBarConst::OnConstSelChange()
 {
 	if (constList.GetCurSel() != CB_ERR)
 	{
-		starfield.SetCurConstellation( GetCurConst() );
+		starfield.SelectConst( GetCurConst() );
 		Redraw();
 	}
 }
@@ -108,7 +108,11 @@ void CBarConst::DeleteConst()
 	int sel = constList.GetCurSel();
 
 	if( constList.DeleteString( sel ) == CB_ERR)
-		CSError( "Can't Delete Constellation", "CBarConst::DeleteConst" );
+	{
+		CSDebug( "Can't Delete Constellation", "CBarConst::DeleteConst" );
+		PostQuitMessage(0);
+		return;
+	}
 
 	// Select previous constellation
 	if( sel-1 < 0 )
@@ -123,14 +127,14 @@ void CBarConst::UpdateList()
 	constList.ResetContent();
 
 	// Cycle through the names
-	for( int i=0; i<starfield.GetNumConstellations(); i++ )
+	for( int i=0; i<starfield.GetConstCount(); i++ )
 	{
 		// If this is the current constellation select it after adding it
-		if( i == starfield.GetNumCurConstellation() )
+		if( i == starfield.GetCurConstNum() )
 			constList.SetCurSel( constList.AddString
-				( starfield.GetConstellation(i)->GetName() ) );
+				( starfield.GetConst(i)->GetName() ) );
 		else	// Just add it
-			constList.AddString( starfield.GetConstellation(i)->GetName() );
+			constList.AddString( starfield.GetConst(i)->GetName() );
 	}
 }
 

@@ -11,10 +11,8 @@
 
 
 #include "stdafx.h"
-#include "ConStation.h"
+#include "CSApp.h"
 #include "DataConst.h"
-
-#include "DataStarfield.h"
 
 IMPLEMENT_SERIAL( CDataConstLine, CObject, 1 )
 IMPLEMENT_SERIAL( CDataConst, CObject, 1 )
@@ -59,14 +57,14 @@ const CDataConstLine& CDataConstLine::operator=( const CDataConstLine& c )
 /////////////////////////////////////////////////////////////////////////////
 // Gets
 
-int		CDataConstLine::GetStar1()	{	return star1;			}
-int		CDataConstLine::GetStar2()	{	return star2;			}
-float	CDataConstLine::GetX1()	{	return starfield.GetStar(star1)->GetX();	}
-float	CDataConstLine::GetY1()	{	return starfield.GetStar(star1)->GetY();	}
-float	CDataConstLine::GetZ1()	{	return starfield.GetStar(star1)->GetZ();	}
-float	CDataConstLine::GetX2()	{	return starfield.GetStar(star2)->GetX();	}
-float	CDataConstLine::GetY2()	{	return starfield.GetStar(star2)->GetY();	}
-float	CDataConstLine::GetZ2()	{	return starfield.GetStar(star2)->GetZ();	}
+int		CDataConstLine::GetStar1()	{	return star1;								}
+int		CDataConstLine::GetStar2()	{	return star2;								}
+float	CDataConstLine::GetX1()		{	return starfield.GetStar(star1)->GetX();	}
+float	CDataConstLine::GetY1()		{	return starfield.GetStar(star1)->GetY();	}
+float	CDataConstLine::GetZ1()		{	return starfield.GetStar(star1)->GetZ();	}
+float	CDataConstLine::GetX2()		{	return starfield.GetStar(star2)->GetX();	}
+float	CDataConstLine::GetY2()		{	return starfield.GetStar(star2)->GetY();	}
+float	CDataConstLine::GetZ2()		{	return starfield.GetStar(star2)->GetZ();	}
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -106,13 +104,13 @@ void CDataConstLine::Serialize(CArchive& ar)
 
 CDataConst::CDataConst()
 {
-	numLines = 0;
+	lineCount = 0;
 	visible = TRUE;
 }
 
 CDataConst::CDataConst( CString name_ )
 {
-	numLines = 0;
+	lineCount = 0;
 	visible = TRUE;
 	name = name_;
 }
@@ -129,7 +127,7 @@ CDataConst::~CDataConst()
 const CDataConst& CDataConst::operator=( const CDataConst& c )
 {
 	name = c.name;
-	numLines = c.numLines;
+	lineCount = c.lineCount;
 	lines = c.lines;
 	visible = c.visible;
 	return *this;
@@ -139,9 +137,9 @@ const CDataConst& CDataConst::operator=( const CDataConst& c )
 /////////////////////////////////////////////////////////////////////////////
 // Gets
 
-CString		CDataConst::GetName()		{	return name;		}
-int			CDataConst::GetNumLines()	{	return numLines;	}
-BOOL		CDataConst::IsVisible()		{	return visible;		}
+CString			CDataConst::GetName()		{	return name;		}
+int				CDataConst::GetLineCount()	{	return lineCount;	}
+BOOL			CDataConst::IsVisible()		{	return visible;		}
 CDataConstLine*	CDataConst::GetLine(int i)	{	return &lines[i];	}
 CDataConstLine*	CDataConst::GetNewLine()	{	return &newLine;	}
 
@@ -169,11 +167,12 @@ void CDataConst::AddLine()
 	if( newLine.GetStar1() == -1 || newLine.GetStar2() == -1 )
 	{
 		newLine.SetStar1(-1); newLine.SetStar2(-1);
-		CSWarn( "One of newLine's stars aren't initialized", "CDataConst::AddLine" );
+		CSDebug( "A newLine's star isn't initialized", "CDataConst::AddLine" );
+		return;
 	}
 
 	lines.push_back( CDataConstLine(newLine) );
-	numLines++;
+	lineCount++;
 
 	CheckForDuplicateLines();
 }
@@ -182,22 +181,25 @@ void CDataConst::AddLine()
 void CDataConst::DeleteLine( int lineNum )
 {
 	// Sanity check
-	if( lineNum > numLines )
-		CSError( "lineNum out of range", "CDataConst::DeleteLine" );
+	if( lineNum > lineCount )
+	{
+		CSDebug( "lineNum out of range", "CDataConst::DeleteLine" );
+		return;
+	}
 
 	line_vi li = lines.begin();
 	for( int i=0; i<lineNum; ++i )
 		++li;
 	lines.erase( li );
-	--numLines;
+	--lineCount;
 }
 
 // Check this constellation for lines with the same endpoints
 void CDataConst::CheckForDuplicateLines()
 {
-	for( int i=0; i<numLines; i++ )
+	for( int i=0; i<lineCount; i++ )
 	{
-		for( int j=0; j<numLines; j++ )
+		for( int j=0; j<lineCount; j++ )
 		{
 			// we don't check for duplicate against itself
 			if( i != j )
@@ -229,24 +231,24 @@ void CDataConst::Serialize(CArchive& ar)
 	{
 		ar >> name
 		   >> visible
-		   >> numLines;
+		   >> lineCount;
 	}
 	else
 	{
 		ar << name
 		   << visible
-		   << numLines;
+		   << lineCount;
 	}
 
 	// If we're loading, get the lines vector ready
 	if( ar.IsLoading() )
 	{
 		lines.clear();
-		for( int i=0; i<numLines; ++i )
+		for( int i=0; i<lineCount; ++i )
 			lines.push_back( CDataConstLine() );
 	}
 
 	// Serialize lines
-	for( i=0; i<numLines; ++i )
+	for( i=0; i<lineCount; ++i )
 		lines[i].Serialize(ar);
 }

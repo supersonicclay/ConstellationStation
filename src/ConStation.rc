@@ -98,10 +98,13 @@ BEGIN
     SEPARATOR
     BUTTON      ID_STARS_TOGGLE
     BUTTON      ID_CONST_TOGGLE
+    BUTTON      ID_SUN_TOGGLE
+    BUTTON      ID_SUNSHINE_TOGGLE
     BUTTON      ID_TERR_TOGGLE
     SEPARATOR
     BUTTON      ID_OPTIONS_STAR
     BUTTON      ID_OPTIONS_CONST
+    BUTTON      ID_OPTIONS_SUN
     BUTTON      ID_OPTIONS_TERR
     SEPARATOR
     BUTTON      ID_TERR_NEW
@@ -117,7 +120,6 @@ BEGIN
     BUTTON      ID_CONST_DELETE
     BUTTON      ID_CONST_RENAME
     SEPARATOR
-    BUTTON      ID_CONST_SHOWHIDE
     BUTTON      ID_CONST_HIDE
     SEPARATOR
     BUTTON      ID_CONST_ALINE
@@ -445,14 +447,14 @@ BEGIN
         BEGIN
             VALUE "Comments", "\0"
             VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "ConStation MFC Application\0"
+            VALUE "FileDescription", "Constellation Station Application\0"
             VALUE "FileVersion", "1, 0, 0, 1\0"
             VALUE "InternalName", "ConStation\0"
             VALUE "LegalCopyright", "Copyright (C) 2003\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "ConStation.EXE\0"
             VALUE "PrivateBuild", "\0"
-            VALUE "ProductName", "ConStation Application\0"
+            VALUE "ProductName", "Constellation Station Application\0"
             VALUE "ProductVersion", "1, 0, 0, 1\0"
             VALUE "SpecialBuild", "\0"
         END
@@ -710,6 +712,9 @@ BEGIN
     ID_TERR_TOGGLE          "Toggle terrain on/off\nToggle Terrain"
     ID_OPTIONS_LOCATION     "Change the current viewing location on Earth\nChange Location"
     ID_OPTIONS_TERRAIN      "Change terrain settings\nTerrain Settings"
+    ID_OPTIONS_SUN          "Change sun options\nSun Options"
+    ID_SUN_TOGGLE           "Toggle sun on/off\nToggle Sun"
+    ID_SUNSHINE_TOGGLE      "Toggle sunshine on/off\nToggle Sunshine"
 END
 
 STRINGTABLE DISCARDABLE 

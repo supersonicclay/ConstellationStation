@@ -103,19 +103,19 @@ SOURCE=.\BarStarf.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ConStation.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\ConStation.rc
 # End Source File
 # Begin Source File
 
-SOURCE=.\ConStationFrame.cpp
+SOURCE=.\CSApp.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ConStationView.cpp
+SOURCE=.\CSFrame.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\CSView.cpp
 # End Source File
 # Begin Source File
 
@@ -134,6 +134,10 @@ SOURCE=.\StdAfx.cpp
 # Begin Group "Dialog Source Files"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\DlgAbout.cpp
+# End Source File
 # Begin Source File
 
 SOURCE=.\DlgConstName.cpp
@@ -184,7 +188,7 @@ SOURCE=.\DataStar.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\DataStarfield.cpp
+SOURCE=.\DataStarf.cpp
 # End Source File
 # Begin Source File
 
@@ -221,7 +225,7 @@ SOURCE=.\MgrOptions.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\MgrStarfield.cpp
+SOURCE=.\MgrStarf.cpp
 # End Source File
 # Begin Source File
 
@@ -249,15 +253,15 @@ SOURCE=.\BarStarf.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\ConStation.h
+SOURCE=.\CSApp.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\ConStationFrame.h
+SOURCE=.\CSFrame.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\ConStationView.h
+SOURCE=.\CSView.h
 # End Source File
 # Begin Source File
 
@@ -279,6 +283,10 @@ SOURCE=.\StdAfx.h
 # Begin Group "Dialog Header Files"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\DlgAbout.h
+# End Source File
 # Begin Source File
 
 SOURCE=.\DlgConstName.h
@@ -329,7 +337,7 @@ SOURCE=.\DataStar.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\DataStarfield.h
+SOURCE=.\DataStarf.h
 # End Source File
 # Begin Source File
 
@@ -366,7 +374,7 @@ SOURCE=.\MgrOptions.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\MgrStarfield.h
+SOURCE=.\MgrStarf.h
 # End Source File
 # Begin Source File
 

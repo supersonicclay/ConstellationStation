@@ -44,8 +44,11 @@ private:
 	BOOL constStarsColored;
 
 	// Terrain options
-	float terrRoughness;
+	BOOL terrVisible;
 	BOOL terrTextured;
+	float terrRoughness;
+	int terrScale;
+	int terrIters;
 	season_e terrSeason;
 	color_s terrWinColor;
 	color_s terrSprColor;
@@ -71,8 +74,11 @@ public:
 	color_s GetConstStarColor();
 	BOOL AreConstStarsColored();
 
-	float GetTerrRoughness();
+	BOOL IsTerrVisible();
 	BOOL IsTerrTextured();
+	float GetTerrRoughness();
+	int GetTerrScale();
+	int GetTerrIters();
 	season_e GetTerrSeason();
 	color_s GetTerrWinColor();
 	color_s GetTerrSprColor();
@@ -92,8 +98,12 @@ public:
 	void SetConstStarColor( color_s c );
 	void SetConstStarsColored( BOOL x );
 
-	void SetTerrRoughness( float r );
+	void SwitchTerrVisible();
+	void SetTerrVisible( BOOL x );
 	void SetTerrTextured( BOOL t );
+	void SetTerrRoughness( float r );
+	void SetTerrScale( int s );
+	void SetTerrIters( int i );
 	void SetTerrSeason( season_e s );
 	void SetTerrWinColor( color_s c );
 	void SetTerrSprColor( color_s c );

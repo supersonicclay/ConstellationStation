@@ -1,68 +1,114 @@
 
+// Sort routine for star catalog
 
-#include <iostream.h>
-#include <stdio.h>
-#include <fstream.h>
-#include "sort.h"
+#include "main.h"
 
+lineVec_t lines;
 
-entry_t catalog[120000];
-
-// READ
-void ReadLine( int index, ifstream& file )
+int main()
 {
-	file.getline( catalog[index].line, 600 );
+	ReadFile();
 
-	sscanf( catalog[index].line, "%*41c%f", &(catalog[index].mag) );
+//	sort( lines.begin(), lines.end() );
 
-	cout << "Read magnitude: " << catalog[index].mag << endl;
+	MagDist();
+
+//	WriteFile();
+
+	return 0;
 }
 
-void ReadFile( int& size )
+void MagDist()
 {
-	ifstream file( "..\\new.txt" );
+	int i;
+	int mags[16];
+	int totalMags = 0;
 
-	size = 0;
+	for( i=0; i<16; ++i )
+		mags[i] = 0;
+
+	for( lineVecItor_t line = lines.begin(); line != lines.end(); ++line )
+	{
+		if( (*line).mag < 0 )
+			++mags[0];
+		else if( (*line).mag < 1 )
+			++mags[1];
+		else if( (*line).mag < 2 )
+			++mags[2];
+		else if( (*line).mag < 3 )
+			++mags[3];
+		else if( (*line).mag < 4 )
+			++mags[4];
+		else if( (*line).mag < 5 )
+			++mags[5];
+		else if( (*line).mag < 6 )
+			++mags[6];
+		else if( (*line).mag < 7 )
+			++mags[7];
+		else if( (*line).mag < 8 )
+			++mags[8];
+		else if( (*line).mag < 9 )
+			++mags[9];
+		else if( (*line).mag < 10 )
+			++mags[10];
+		else if( (*line).mag < 11 )
+			++mags[11];
+		else if( (*line).mag < 12 )
+			++mags[12];
+		else if( (*line).mag < 13 )
+			++mags[13];
+		else if( (*line).mag < 14 )
+			++mags[14];
+		else if( (*line).mag < 15 )
+			++mags[15];
+	}
+
+	for( i = 0; i<16; ++i )
+		cout << "Mag: " << i << "\t\tCount: " << mags[i] << endl;
+}
+
+void ReadFile()
+{
+	fstream file;
+	file.open( "hip_main.txt", fstream::in );
+
 	while( file.peek() != EOF )
 	{
-		ReadLine( size, file );
-		++size;
+		ReadLine( file );
 	}
 
 	file.close();
 }
 
-// WRITE
-void WriteLine( int index, ofstream& file )
+void ReadLine( fstream& file )
 {
-	file << catalog[index].line << endl;
+	line_t line;
+	char buffer[500];
+
+	file.getline( buffer, 500 );
+
+	sscanf( buffer, "%*41c%f", &line.mag );
+
+	strncpy( line.text, buffer, 500 );
+
+	lines.push_back(line);
 }
 
-void WriteFile( int size )
-{
-	ofstream file( "..\\new.txt" );
 
-	for( int i=0; i<size; ++i )
-		WriteLine( i, file );
+void WriteFile()
+{
+	fstream file;
+	file.open( "new.txt", fstream::out );
+
+	for( lineVecItor_t i = lines.begin(); i != lines.end(); ++i )
+	{
+		WriteLine( file, i );
+	}
 
 	file.close();
 }
 
-// SORT
-void SortFile( int size )
+void WriteLine( fstream& file, lineVecItor_t itor )
 {
-	sort( size, catalog );
-}
-
-// MAIN
-int main()
-{
-	int size = sizeof( entry_t );
-
-	ReadFile( size );
-	cout << "size = " << size << endl;
-//	SortFile( size );
-//	WriteFile( size );
-
-	return 0;
+	file << (*itor).text << endl;
 }

@@ -8,7 +8,7 @@
 
 
 #include "stdafx.h"
-#include "ConStation.h"
+#include "CSApp.h"
 #include "MgrOptions.h"
 
 #include "DlgOptionsGeneral.h"
@@ -68,9 +68,11 @@ void CMgrOptions::LoadSunDefaults()
 
 void CMgrOptions::LoadTerrDefaults()
 {
-	terrain.LoadDefaults();
-	terrRoughness = DEF_TERR_ROUGHNESS;
+	terrVisible = DEF_TERR_VISIBLE;
 	terrTextured = DEF_TERR_TEXTURED;
+	terrRoughness = DEF_TERR_ROUGHNESS;
+	terrScale = DEF_TERR_SCALE;
+	terrIters = DEF_TERR_ITERS;
 	terrSeason = DEF_TERR_SEASON;
 	terrWinColor = DEF_TERR_WINCOLOR;
 	terrSprColor = DEF_TERR_SPRCOLOR;
@@ -90,8 +92,11 @@ color_s		CMgrOptions::GetConstSelColor()			{	return constSelColor;		}
 color_s		CMgrOptions::GetConstActiveColor()		{	return constActiveColor;	}
 color_s		CMgrOptions::GetConstStarColor()		{	return constStarColor;		}
 BOOL		CMgrOptions::AreConstStarsColored()		{	return constStarsColored;	}
-float		CMgrOptions::GetTerrRoughness()			{	return terrRoughness;		}
+BOOL		CMgrOptions::IsTerrVisible()			{	return terrVisible;			}
 BOOL		CMgrOptions::IsTerrTextured()			{	return terrTextured;		}
+float		CMgrOptions::GetTerrRoughness()			{	return terrRoughness;		}
+int			CMgrOptions::GetTerrScale()				{	return terrScale;			}
+int			CMgrOptions::GetTerrIters()				{	return terrIters;			}
 season_e	CMgrOptions::GetTerrSeason()			{	return terrSeason;			}
 color_s		CMgrOptions::GetTerrWinColor()			{	return terrWinColor;		}
 color_s		CMgrOptions::GetTerrSprColor()			{	return terrSprColor;		}
@@ -115,22 +120,26 @@ color_s CMgrOptions::GetTerrColor()
 /////////////////////////////////////////////////////////////////////////////
 // Sets
 
-void CMgrOptions::SetStarsGamma( int g )			{	starsGamma = g;			}
-void CMgrOptions::SetStarsContrast( int c )			{	starsContrast = c;		}
-void CMgrOptions::SetStarsTextured( BOOL t )		{	starsTextured = t;		}
-void CMgrOptions::SetStarsColored( BOOL c )			{	starsColored = c;		}
-void CMgrOptions::SetConstNormColor( color_s c )	{	constNormColor = c;		}
-void CMgrOptions::SetConstSelColor( color_s c )		{	constSelColor = c;		}
-void CMgrOptions::SetConstActiveColor( color_s c )	{	constActiveColor = c;	}
-void CMgrOptions::SetConstStarColor( color_s c )	{	constStarColor = c;		}
-void CMgrOptions::SetConstStarsColored( BOOL x )	{	constStarsColored = x;	}
-void CMgrOptions::SetTerrRoughness( float r )		{	terrRoughness = r;		}
-void CMgrOptions::SetTerrTextured( BOOL t )			{	terrTextured = t;		}
-void CMgrOptions::SetTerrSeason( season_e s )		{	terrSeason = s;			}
-void CMgrOptions::SetTerrWinColor( color_s c )		{	terrWinColor = c;		}
-void CMgrOptions::SetTerrSprColor( color_s c )		{	terrSprColor = c;		}
-void CMgrOptions::SetTerrSumColor( color_s c )		{	terrSumColor = c;		}
-void CMgrOptions::SetTerrFalColor( color_s c )		{	terrFalColor = c;		}
+void CMgrOptions::SetStarsGamma( int g )			{	starsGamma = g;				}
+void CMgrOptions::SetStarsContrast( int c )			{	starsContrast = c;			}
+void CMgrOptions::SetStarsTextured( BOOL t )		{	starsTextured = t;			}
+void CMgrOptions::SetStarsColored( BOOL c )			{	starsColored = c;			}
+void CMgrOptions::SetConstNormColor( color_s c )	{	constNormColor = c;			}
+void CMgrOptions::SetConstSelColor( color_s c )		{	constSelColor = c;			}
+void CMgrOptions::SetConstActiveColor( color_s c )	{	constActiveColor = c;		}
+void CMgrOptions::SetConstStarColor( color_s c )	{	constStarColor = c;			}
+void CMgrOptions::SetConstStarsColored( BOOL x )	{	constStarsColored = x;		}
+void CMgrOptions::SwitchTerrVisible()				{	terrVisible = !terrVisible;	}
+void CMgrOptions::SetTerrVisible( BOOL x )			{	terrVisible = x;			}
+void CMgrOptions::SetTerrTextured( BOOL t )			{	terrTextured = t;			}
+void CMgrOptions::SetTerrRoughness( float r )		{	terrRoughness = r;			}
+void CMgrOptions::SetTerrScale( int s )				{	terrScale = s;				}
+void CMgrOptions::SetTerrIters( int i )				{	terrIters = i;				}
+void CMgrOptions::SetTerrSeason( season_e s )		{	terrSeason = s;				}
+void CMgrOptions::SetTerrWinColor( color_s c )		{	terrWinColor = c;			}
+void CMgrOptions::SetTerrSprColor( color_s c )		{	terrSprColor = c;			}
+void CMgrOptions::SetTerrSumColor( color_s c )		{	terrSumColor = c;			}
+void CMgrOptions::SetTerrFalColor( color_s c )		{	terrFalColor = c;			}
 
 // Set terrain color for the current season
 void CMgrOptions::SetTerrColor( color_s c )
@@ -159,31 +168,111 @@ void CMgrOptions::General()
 /// Load options from storage
 void CMgrOptions::Load()
 {
+	CFile file;
+	if( !file.Open( "ConStation.opt", CFile::modeRead ) )
+	{
+		CSError( "Unable to open options file.\nLoading default options." );
+		LoadDefaults();
+		return;
+	}
+
+	CArchive ar( &file, CArchive::load );
+	Serialize( ar );
+
+	ar.Close();
+	file.Close();
 }
 
 /// Save options to storage
 void CMgrOptions::Save()
 {
+	CFile file;
+	if( !file.Open( "ConStation.opt", CFile::modeCreate | CFile::modeWrite ) )
+	{
+		CSDebug( "Unable to open options file for writing", "CMgrOptions::Save" );
+		return;
+	}
+
+	CArchive ar( &file, CArchive::store );
+	Serialize( ar );
+
+	ar.Close();
+	file.Close();
 }
 
 void CMgrOptions::Serialize( CArchive& ar )
 {
-	/* ///Wait until everythings done
 	if( ar.IsLoading() )
-		ar >> starsGamma >> starsContrast >> starsTextured >> starsColored
-		   >> constNormColor.r >> constNormColor.g >> constNormColor.b
-		   >> constSelColor.r >> constSelColor.g >> constSelColor.b
-		   >> constActiveColor.r >> constActiveColor.g >> constActiveColor.b
-		   >> terrRoughness >> terrTextured
-		   >> terrColor.r >> terrColor.g >> terrColor.b
-		   >> compassColor.r >> compassColor.g >> compassColor.b;
+	{
+		try
+		{
+			ar
+
+			// Star Options
+			>> starsGamma
+			>> starsContrast
+			>> starsTextured
+			>> starsColored
+
+			// Constellation Options
+			>> constNormColor
+			>> constSelColor
+			>> constActiveColor
+			>> constStarColor
+			>> constStarsColored
+
+			// Terrain options
+			>> terrVisible
+			>> terrTextured
+			>> terrRoughness
+			>> terrScale
+			>> terrIters
+			>> terrSeason
+			>> terrWinColor
+			>> terrSprColor
+			>> terrSumColor
+			>> terrFalColor
+
+			// Compass options
+			>> compassColor;
+		}
+		catch( CException* e )
+		{
+			CSDebug( "Unable to read options.\nLoading default options.", "CMgrOptions::Serialize" );
+			LoadDefaults();
+			e->Delete();
+		}
+	}
 	else
-		ar << starsGamma << starsContrast << starsTextured << starsColored
-		   << constNormColor.r << constNormColor.g << constNormColor.b
-		   << constSelColor.r << constSelColor.g << constSelColor.b
-		   << constActiveColor.r << constActiveColor.g << constActiveColor.b
-		   << terrRoughness << terrTextured 
-		   << terrColor.r << terrColor.g << terrColor.b
-		   << compassColor.r << compassColor.g << compassColor.b;
-	*/
+	{
+		ar
+
+		// Star Options
+		<< starsGamma
+		<< starsContrast
+		<< starsTextured
+		<< starsColored
+
+		// Constellation Options
+		<< constNormColor
+		<< constSelColor
+		<< constActiveColor
+		<< constStarColor
+		<< constStarsColored
+
+		// Terrain options
+		<< terrVisible
+		<< terrTextured
+		<< terrRoughness
+		<< terrScale
+		<< terrIters
+		<< terrSeason
+		<< terrWinColor
+		<< terrSprColor
+		<< terrSumColor
+		<< terrFalColor
+
+		// Compass options
+		<< compassColor;
+	}
 }

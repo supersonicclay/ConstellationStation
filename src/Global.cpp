@@ -12,36 +12,37 @@
 /////////////////////////////////////////////////////////////////////////////
 // MAIN GLOBALS
 
+// Data
+CDataStarf starfield;
+CDataTerrain terrain;
+
 // Managers
 CMgrInput		inputMgr;
 CMgrGraphics	graphicsMgr;
 CMgrOptions		optionsMgr;
 CMgrDocument	documentMgr;
-CMgrStarfield	starfieldMgr;
+CMgrStarf		starfMgr;
 CMgrConst		constMgr;
 CMgrTerrain		terrainMgr;
 CMgrTeacher		teacherMgr;
 
+// State
 state_e state = state_Viewing;
-
-// Data
-CDataStarfield starfield;
-CDataTerrain terrain;
 
 
 /////////////////////////////////////////////////////////////////////////////
 // MFC CLASS ACCESS
-CConStationApp* GetApp()
+CCSApp* GetApp()
 {
-	return (CConStationApp*)AfxGetApp();
+	return (CCSApp*)AfxGetApp();
 }
 
-CConStationFrame* GetFrame()
+CCSFrame* GetFrame()
 {
-	return (CConStationFrame*)AfxGetMainWnd();
+	return (CCSFrame*)AfxGetMainWnd();
 }
 
-CConStationView* GetView()
+CCSView* GetView()
 {
 	return GetFrame()->GetView();
 }
@@ -81,10 +82,12 @@ const BOOL		DEF_CONST_STARSCOLORED	= TRUE;
 const BOOL		DEF_SUN_VISIBLE			= TRUE;
 const BOOL		DEF_SUN_SHINE			= TRUE;
 const BOOL		DEF_TERR_VISIBLE		= TRUE;
-const float		DEF_TERR_ROUGHNESS		= 0.1f;
 const BOOL		DEF_TERR_TEXTURED		= FALSE;
+const float		DEF_TERR_ROUGHNESS		= 0.1f;
+const int		DEF_TERR_SCALE			= 1;
+const int		DEF_TERR_ITERS			= 3;
 const season_e	DEF_TERR_SEASON			= season_Summer;
-const color_s	DEF_TERR_WINCOLOR		= {0.4f, 0.4f, 0.4f};
+const color_s	DEF_TERR_WINCOLOR		= {0.7f, 0.7f, 0.7f};///{0.4f, 0.4f, 0.4f};
 const color_s	DEF_TERR_SPRCOLOR		= {0.15f, 0.25f, 0.1f};
 const color_s	DEF_TERR_SUMCOLOR		= {0.1f, 0.3f, 0.1f};
 const color_s	DEF_TERR_FALCOLOR		= {0.25f, 0.25f, 0.15f};
@@ -106,6 +109,33 @@ void Redraw()
 {
 	GetView()->InvalidateRect( NULL, FALSE );
 }
+
+
+// Special CArchive functions
+CArchive& operator>> ( CArchive& ar, season_e& s )
+{
+	int i;
+	CArchive* ret = &(ar >> i);
+
+	s = (season_e)i;
+	return *ret;
+}
+
+CArchive& operator>> ( CArchive& ar, color_s& c )
+{
+	return ar >> c.r >> c.g >> c.b;
+}
+
+CArchive& operator<< ( CArchive& ar, season_e s )
+{
+	return ar << (int)s;
+}
+
+CArchive& operator<< ( CArchive& ar, color_s c )
+{
+	return ar << c.r << c.g << c.b;
+}
+
 
 // Message boxes (handle not specified)
 void CSInfo( char* msg, char* title )
@@ -133,10 +163,16 @@ void CSError( char* msg, char* title )
 	CSError( GetFrame()->GetSafeHwnd(), msg, title );
 }
 
+void CSDebug( char* msg, char* title )
+{
+	CSError( GetFrame()->GetSafeHwnd(), msg, title );
+}
+
+
 // Message boxes (handle specified)
 void CSInfo( HWND parent, char* msg, char* title )
 {
-	MessageBox( GetFrame()->GetSafeHwnd(), msg, title, MB_ICONINFORMATION | MB_OK );
+	MessageBox( parent, msg, title, MB_ICONINFORMATION | MB_OK );
 }
 
 int CSQuestion( HWND parent, char* msg, char* title )
@@ -146,18 +182,17 @@ int CSQuestion( HWND parent, char* msg, char* title )
 
 int  CSYesNoCancel( HWND parent, char* msg, char* title )
 {
-	return MessageBox( GetFrame()->GetSafeHwnd(), msg, title, MB_ICONQUESTION | MB_YESNOCANCEL );
+	return MessageBox( parent, msg, title, MB_ICONQUESTION | MB_YESNOCANCEL );
 }
 
 void CSWarn( HWND parent, char* msg, char* title )
 {
-	MessageBox( GetFrame()->GetSafeHwnd(), msg, title, MB_ICONWARNING | MB_OK );
+	MessageBox( parent, msg, title, MB_ICONWARNING | MB_OK );
 }
 
 void CSError( HWND parent, char* msg, char* title )
 {
-	MessageBox( GetFrame()->GetSafeHwnd(), msg, title, MB_ICONERROR | MB_OK );
-	PostQuitMessage(0);
+	MessageBox( parent, msg, title, MB_ICONERROR | MB_OK );
 }
 
 

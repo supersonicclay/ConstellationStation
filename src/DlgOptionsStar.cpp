@@ -6,7 +6,7 @@
 //===========================================================================
 
 #include "stdafx.h"
-#include "ConStation.h"
+#include "CSApp.h"
 #include "DlgOptionsStar.h"
 
 #ifdef _DEBUG

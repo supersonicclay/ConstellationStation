@@ -1,14 +1,14 @@
 //===========================================================================
-// MgrStarfield.cpp
+// MgrStarf.cpp
 //
-// CMgrStarfield
+// CMgrStarf
 //   manager class for starfield functions.
 //===========================================================================
 
 
 #include "stdafx.h"
 #include "CSApp.h"
-#include "MgrStarfield.h"
+#include "MgrStarf.h"
 
 #include "DlgLocation.h"
 #include "DlgTime.h"
@@ -26,11 +26,11 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // Construction / Destruction
 
-CMgrStarfield::CMgrStarfield()
+CMgrStarf::CMgrStarf()
 {
 }
 
-CMgrStarfield::~CMgrStarfield()
+CMgrStarf::~CMgrStarf()
 {
 }
 
@@ -38,13 +38,13 @@ CMgrStarfield::~CMgrStarfield()
 /////////////////////////////////////////////////////////////////////////////
 // Methods
 
-CBarStarf* CMgrStarfield::GetStarfBar()
+CBarStarf* CMgrStarf::GetStarfBar()
 {
 	return GetFrame()->GetStarfBar();
 }
 
 // Open the star options dialog
-void CMgrStarfield::StarOptions()
+void CMgrStarf::StarOptions()
 {
 	if( starfield.IsSpinning() )
 		starfield.SwitchSpinning();
@@ -69,7 +69,7 @@ void CMgrStarfield::StarOptions()
 }
 
 // Open the constellation options dialog
-void CMgrStarfield::ConstOptions()
+void CMgrStarf::ConstOptions()
 {
 	if( starfield.IsSpinning() )
 		starfield.SwitchSpinning();
@@ -94,7 +94,7 @@ void CMgrStarfield::ConstOptions()
 }
 
 // Open the sun options dialog
-void CMgrStarfield::SunOptions()
+void CMgrStarf::SunOptions()
 {
 	CDlgOptionsSun dialog;
 	if( dialog.DoModal() == IDOK )
@@ -107,13 +107,13 @@ void CMgrStarfield::SunOptions()
 }
 
 // Turns starfield spinning on/off
-void CMgrStarfield::Rotate()
+void CMgrStarf::Rotate()
 {
 	starfield.SwitchSpinning();
 }
 
 /// Open the location dialog
-void CMgrStarfield::Location()
+void CMgrStarf::Location()
 {
 	if( starfield.IsSpinning() )
 		starfield.SwitchSpinning();
@@ -124,7 +124,7 @@ void CMgrStarfield::Location()
 }
 
 /// Open the time dialog
-void CMgrStarfield::Time()
+void CMgrStarf::Time()
 {
 	if( starfield.IsSpinning() )
 		starfield.SwitchSpinning();
@@ -134,22 +134,25 @@ void CMgrStarfield::Time()
 }
 
 // Toggle stars on and off
-void CMgrStarfield::ToggleStars()
+void CMgrStarf::ToggleStars()
 {
 	starfield.SwitchStarsVisible(); Redraw();
 }
 
 // Toggle constellations on and off
-void CMgrStarfield::ToggleConsts()
+void CMgrStarf::ToggleConsts()
 {
 	starfield.SwitchConstsVisible(); Redraw();
 }
 
 // Toggle sun on and off
-void CMgrStarfield::ToggleSun()
+void CMgrStarf::ToggleSun()
 {
-	if( starfield.IsSunShining() )
-		starfield.SwitchSunShining();
-
 	starfield.SwitchSunVisible(); Redraw();
+}
+
+// Toggle sunshine on and off
+void CMgrStarf::ToggleSunshine()
+{
+	starfield.SwitchSunShine(); Redraw();
 }

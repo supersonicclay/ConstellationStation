@@ -6,10 +6,8 @@
 //===========================================================================
 
 #include "stdafx.h"
-#include "ConStation.h"
+#include "CSApp.h"
 #include "BarStarf.h"
-
-#include "ConStationFrame.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -61,7 +59,8 @@ BOOL CBarStarf::Init(CWnd *pParentWnd)
 
 	if( !InitDateCtrl() || !InitTimeCtrl() || !InitSpeedCtrl() )
 	{
-		CSError( "Error initializing starfield toolbar controls", "CBarStarf::Init" );
+		CSDebug( "Error initializing starfield toolbar controls", "CBarStarf::Init" );
+		exit(0);
 		return FALSE;
 	}
 
@@ -82,11 +81,17 @@ BOOL CBarStarf::InitDateCtrl()
 	if ( !date.Create( WS_CHILD | DTS_UPDOWN, rect, this,
 		ID_STARF_DATE ) )
 	{
+		CSDebug( "Can't create date control", "CBarStarf::InitDateCtrl" );
+		exit(0);
 		return false;
 	}
 
 	if ( date.m_hWnd == NULL )
+	{
+		CSDebug( "Can't create date control", "CBarStarf::InitDateCtrl" );
+		exit(0);
 		return false;
+	}
 
 	date.SetWindowPos( NULL, rect.left, rect.top, 0, 0,
  		SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOSIZE|SWP_NOCOPYBITS );
@@ -97,7 +102,8 @@ BOOL CBarStarf::InitDateCtrl()
 	COleDateTime maxDate(9999, 12, 31, 0, 0, 0);
 	if( !date.SetRange( &minDate, &maxDate ) )
 	{
-		CSError( "Can't set the date range", "CBarStarf::InitDateCtrl" );
+		CSDebug( "Can't set the date range", "CBarStarf::InitDateCtrl" );
+		exit(0);
 		return false;
 	}
 
@@ -115,11 +121,17 @@ BOOL CBarStarf::InitTimeCtrl()
 	if ( !time.Create( WS_CHILD | DTS_TIMEFORMAT, rect, this,
 		ID_STARF_TIME ) )
 	{
-		return false;
+		CSDebug( "Can't create time control", "CBarStarf::InitDateCtrl" );
+		exit(0);
+		return FALSE;
 	}
 
 	if ( time.m_hWnd == NULL )
-		return false;
+	{
+		CSDebug( "Can't create time control", "CBarStarf::InitDateCtrl" );
+		exit(0);
+		return FALSE;
+	}
 
 	time.SetWindowPos( NULL, rect.left, rect.top, 0, 0,
 		SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOSIZE|SWP_NOCOPYBITS );
@@ -130,7 +142,8 @@ BOOL CBarStarf::InitTimeCtrl()
 	COleDateTime maxTime(9999, 12, 31, 0, 0, 0);
 	if( !time.SetRange( &minTime, &maxTime ) )
 	{
-		CSError( "Can't set the time range", "CBarStarf::InitTimeCtrl" );
+		CSDebug( "Can't set the time range", "CBarStarf::InitTimeCtrl" );
+		exit(0);
 		return false;
 	}
 
@@ -146,11 +159,17 @@ BOOL CBarStarf::InitSpeedCtrl()
 	if ( !speed.Create( WS_CHILD | CBS_DROPDOWNLIST | CBS_HASSTRINGS, rect, this,
 		ID_CONST_LIST ) )
 	{
+		CSDebug( "Can't create speed control", "CBarStarf::InitSpeedCtrl" );
+		exit(0);
 		return false;
 	}
 
 	if ( speed.m_hWnd == NULL )
+	{
+		CSDebug( "Can't create speed control", "CBarStarf::InitSpeedCtrl" );
+		exit(0);
 		return false;
+	}
 
 	GetItemRect( STARFSPEED_INDEX, rect );
 	speed.SetWindowPos( NULL, rect.left, rect.top, 0, 0,

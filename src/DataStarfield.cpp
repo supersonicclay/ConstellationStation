@@ -10,7 +10,7 @@
 
 
 #include "stdafx.h"
-#include "ConStation.h"
+#include "CSApp.h"
 #include "DataStarfield.h"
 
 #include "DataStar.h"
@@ -128,7 +128,7 @@ void CDataStarfield::InitActualStars()
 	dec_s dec = {0};
 	float mag = 0;
 
-	for( int i=0; i<MAX_STARS; ++i )
+	for( int i=0; i<numStars; ++i )
 	{
 		file.Seek( 17, CFile::current );
 		ZeroMemory(&buffer, sizeof(buffer));
@@ -206,6 +206,8 @@ int			CDataStarfield::GetNumNewConstellations()	{	return numNewConstellations;		
 BOOL		CDataStarfield::AreStarsVisible()			{	return starsVisible;							}
 BOOL		CDataStarfield::AreStarsLabeled()			{	return starsLabeled;							}
 float		CDataStarfield::GetLimitingMag()			{	return limitingMag;								}
+///float		CDataStarfield::GetLimitingMag()			{	return limitingMagX10 / 10.0f;					}
+///int			CDataStarfield::GetLimitingMagX10()			{	return limitingMagX10;							}
 BOOL		CDataStarfield::AreConstsVisible()			{	return constsVisible;							}
 BOOL		CDataStarfield::AreConstsLabeled()			{	return constsLabeled;							}
 BOOL		CDataStarfield::IsSunVisible()				{	return sunVisible;								}
@@ -240,6 +242,7 @@ void CDataStarfield::SetStarsVisible( BOOL x )				{	starsVisible = x;				}
 void CDataStarfield::SwitchStarsLabeled()					{	starsLabeled = !starsLabeled;	}
 void CDataStarfield::SetStarsLabeled( BOOL x )				{	starsLabeled = x;				}
 void CDataStarfield::SetLimitingMag( float m )				{	limitingMag = m;				}
+///void CDataStarfield::SetLimitingMagX10( int x )
 void CDataStarfield::SwitchConstsVisible()					{	constsVisible = !constsVisible;	}
 void CDataStarfield::SetConstsVisible( BOOL x )				{	constsVisible = x;				}
 void CDataStarfield::SwitchConstsLabeled()					{	constsLabeled = !constsLabeled;	}
@@ -489,122 +492,4 @@ void CDataStarfield::Serialize(CArchive& ar)
 }
 
 
-/*
-void CDataStarfield::Serialize(CArchive& ar)///
-{
-	CObject::Serialize(ar);
 
-	// Serialize CDataStarfield attributes
-	if (ar.IsStoring())
-	{
-		ar << numStars
-		   << numConstellations << numNewConstellations << numCurConstellation
-		   << rotLatitude << rotTime
-		   << rotX << rotY << zoom;
-	}
-	else
-	{
-		ar >> numStars
-		   >> numConstellations >> numNewConstellations >> numCurConstellation
-		   >> rotLatitude >> rotTime
-		   >> rotX >> rotY >> zoom;
-	}
-
-	// If were loading we need to allocate space for stars and constellations
-	if (ar.IsLoading())
-	{
-		stars = new CDataStar[numStars];
-		constellations = new CDataConst[numConstellations];
-	}
-
-	// Serialize stars and constellations
-	int i;
-	for (i=0; i<numStars; i++)
-	{
-		stars[i].Serialize(ar);
-	}
-
-	for (i=0; i<numConstellations; i++)
-	{
-		constellations[i].Serialize(ar);
-	}
-
-	
-	SerializeConstLines(ar);
-}
-
-void CDataStarfield::SerializeConstLines(CArchive& ar)
-{
-	// Serialization for each constellation line must be done here since
-	//  they reference stars
-	int starIndex, constIndex, lineIndex;
-
-	BOOL starFound;
-
-	// Archive is storing
-	if (ar.IsStoring())
-	{
-		// Cycle through constellations
-		for (constIndex=0; constIndex < numConstellations; constIndex++)
-		{
-			// Cycle through lines
-			for (lineIndex=0; lineIndex < constellations[constIndex].GetNumLines(); lineIndex++)
-			{
-				// For each star find it's corresponding star number 
-				
-				// Star 1
-				starFound = FALSE;
-				// Cycle through stars
-				for (starIndex=0; starIndex < numStars; starIndex++)
-				{
-					// Is this the star we're looking for 
-					if (constellations[constIndex].GetLine(lineIndex)->GetStar1() == &stars[starIndex])
-					{
-						// Store this star's number
-						ar << starIndex;
-						starFound = TRUE;
-						break;
-					}
-				}
-				if (!starFound)
-					CSWarn("A star was not found while saving.");
-
-				// Star 2
-				starFound = FALSE;
-				// Cycle through stars
-				for (starIndex=0; starIndex < numStars; starIndex++)
-				{
-					// Is this the star we're looking for 
-					if (constellations[constIndex].GetLine(lineIndex)->GetStar2() == &stars[starIndex])
-					{
-						// Store this star's number
-						ar << starIndex;
-						starFound = TRUE;
-						break;
-					}
-				}
-				if (!starFound)
-					CSWarn("A star was not found while saving.");
-			}
-		}
-	}
-	else	// Archive is loading
-	{
-		int starNum1, starNum2;
-		// Cycle through constellations
-		for (constIndex=0; constIndex < numConstellations; constIndex++)
-		{
-			// Cycle through lines
-			for (lineIndex=0; lineIndex < constellations[constIndex].GetNumLines(); lineIndex++)
-			{
-				// Archive has the star numbers.
-				//  We need to make the line reference these stars
-				ar >> starNum1 >> starNum2;
-
-				constellations[constIndex].GetLine(lineIndex)->SetStar1(&stars[starNum1]);
-				constellations[constIndex].GetLine(lineIndex)->SetStar2(&stars[starNum2]);
-			}
-		}
-	}
-}
-*/

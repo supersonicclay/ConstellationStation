@@ -7,7 +7,7 @@
 
 
 #include "stdafx.h"
-#include "ConStation.h"
+#include "CSApp.h"
 #include "MgrTeacher.h"
 
 #ifdef _DEBUG

@@ -40,13 +40,17 @@
 	Sun options
 
 0.2.2
--	Options remembered
--	Double click to select constellation
--	Cursor stays in place while rotating
+	Double click to select constellation
+	Options remembered
+
 
 -------------------------------------------------
 0.3 - Math
 -------------------------------------------------
+
+-0.3.1
+-	Trackball mouse interface
+-	Cursor stays in place while rotating
 
 
 
@@ -61,4 +65,4 @@
 -------------------------------------------------
 
 
-	
+

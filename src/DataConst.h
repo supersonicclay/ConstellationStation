@@ -84,7 +84,7 @@ private:
 
 	BOOL visible;
 
-	int numLines;
+	int lineCount;
 	line_v lines;
 
 	CDataConstLine newLine;	// new (proposed) line
@@ -95,7 +95,7 @@ public:
 
 // Gets
 	CString GetName();
-	int GetNumLines();
+	int GetLineCount();
 	CDataConstLine* GetLine( int i );
 	CDataConstLine* GetNewLine();
 	BOOL IsVisible();
@@ -112,8 +112,8 @@ public:
 };
 
 // CDataConst Vector
-typedef std::vector<CDataConst> constellation_v;
-typedef constellation_v::iterator   constellation_vi;
+typedef std::vector<CDataConst> const_v;
+typedef const_v::iterator   const_vi;
 
 
 #endif

@@ -1,12 +1,12 @@
 //===========================================================================
-// ConStation.h
+// CSApp.h
 //
-// CConStationApp
+// CCSApp
 //   main header file for Constellation Station application.
 //===========================================================================
 
-#ifndef CS_CONSTATION_H
-#define CS_CONSTATION_H
+#ifndef CS_CSAPP_H
+#define CS_CSAPP_H
 
 #ifndef __AFXWIN_H__
 	#error include 'stdafx.h' before including this file for PCH
@@ -14,15 +14,14 @@
 
 #include "resource.h"
 
-#include "ConStationFrame.h"
+#include "CSFrame.h"
 
 
-
-class CConStationApp : public CWinApp
+class CCSApp : public CWinApp
 {
 // Construction / Destruction
 public:
-	CConStationApp();
+	CCSApp();
 
 
 // Attributes
@@ -31,12 +30,12 @@ protected:
 
 // Methods
 public:
-	CConStationFrame* GetFrame();
+	CCSFrame* GetFrame();
 
 
 // Overrides
 	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CConStationApp)
+	//{{AFX_VIRTUAL(CCSApp)
 	public:
 	virtual BOOL InitInstance();
 	//}}AFX_VIRTUAL
@@ -44,8 +43,7 @@ public:
 
 // Implementation
 public:
-	//{{AFX_MSG(CConStationApp)
-	afx_msg void OnAppAbout();
+	//{{AFX_MSG(CCSApp)
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

@@ -25,6 +25,7 @@ public:
 public:
 	CBarConst* GetConstBar();
 
+	void Select( int i );
 	void Add();
 	void Delete();
 	void Rename();

@@ -1,13 +1,15 @@
 //===========================================================================
-// ConStationFrame.cpp
+// CSFrame.cpp
 //
-// CConStationFrame
+// CCSFrame
 //   handles (forwards) most non-view related commands and messages.
 //===========================================================================
 
 #include "stdafx.h"
-#include "ConStation.h"
-#include "ConStationFrame.h"
+#include "CSApp.h"
+#include "CSFrame.h"
+
+#include "DlgAbout.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -16,12 +18,12 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 
-BEGIN_MESSAGE_MAP(CConStationFrame, CFrameWnd)
-	//{{AFX_MSG_MAP(CConStationFrame)
+BEGIN_MESSAGE_MAP(CCSFrame, CFrameWnd)
+	//{{AFX_MSG_MAP(CCSFrame)
 	ON_WM_CREATE()
 	ON_WM_SETFOCUS()
-	ON_WM_SHOWWINDOW()
 	ON_WM_CLOSE()
+	ON_COMMAND(ID_APP_ABOUT, OnAppAbout)
 	ON_COMMAND(ID_STARF_NEWACTUAL, OnStarfNewActual)
 	ON_COMMAND(ID_STARF_NEWRANDOM, OnStarfNewRandom)
 	ON_COMMAND(ID_STARF_OPEN, OnStarfOpen)
@@ -40,6 +42,8 @@ BEGIN_MESSAGE_MAP(CConStationFrame, CFrameWnd)
 	ON_COMMAND(ID_CONST_SHOWALL, OnConstShowAll)
 	ON_COMMAND(ID_CONST_TOGGLE, OnConstToggle)
 	ON_COMMAND(ID_TERR_NEW, OnTerrNew)
+	ON_COMMAND(ID_SUN_TOGGLE, OnSunToggle)
+	ON_COMMAND(ID_SUNSHINE_TOGGLE, OnSunshineToggle)
 	ON_COMMAND(ID_TERR_TOGGLE, OnTerrToggle)
 	ON_COMMAND(ID_OPTIONS_GENERAL, OnOptionsGeneral)
 	ON_COMMAND(ID_OPTIONS_TIME, OnOptionsTime)
@@ -62,6 +66,8 @@ BEGIN_MESSAGE_MAP(CConStationFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_CONST_SHOWHIDE, OnUpdateConstShowHide)
 	ON_UPDATE_COMMAND_UI(ID_CONST_TOGGLE, OnUpdateConstToggle)
 	ON_UPDATE_COMMAND_UI(ID_TERR_TOGGLE, OnUpdateTerrToggle)
+	ON_UPDATE_COMMAND_UI(ID_SUN_TOGGLE, OnUpdateSunToggle)
+	ON_UPDATE_COMMAND_UI(ID_SUNSHINE_TOGGLE, OnUpdateSunshineToggle)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -70,18 +76,19 @@ static UINT indicators[] =
 	ID_SEPARATOR
 };
 
+
 /////////////////////////////////////////////////////////////////////////////
 // Construction / Destruction
 
-CConStationFrame::CConStationFrame()
+CCSFrame::CCSFrame()
 {
 }
 
-CConStationFrame::~CConStationFrame()
+CCSFrame::~CCSFrame()
 {
 }
 
-int CConStationFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
+int CCSFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CFrameWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
@@ -136,7 +143,7 @@ int CConStationFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 
-BOOL CConStationFrame::PreCreateWindow(CREATESTRUCT& cs)
+BOOL CCSFrame::PreCreateWindow(CREATESTRUCT& cs)
 {
 	if( !CFrameWnd::PreCreateWindow(cs) )
 		return FALSE;
@@ -147,12 +154,12 @@ BOOL CConStationFrame::PreCreateWindow(CREATESTRUCT& cs)
 	return TRUE;
 }
 
-void CConStationFrame::OnClose() 
+void CCSFrame::OnClose() 
 {
 	if( documentMgr.CheckModified() == IDCANCEL )
 		return;
 
-	/// Save options
+	// Save options
 	optionsMgr.Save();
 
 	CFrameWnd::OnClose();
@@ -160,15 +167,15 @@ void CConStationFrame::OnClose()
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CConStationFrame diagnostics
+// CCSFrame diagnostics
 
 #ifdef _DEBUG
-void CConStationFrame::AssertValid() const
+void CCSFrame::AssertValid() const
 {
 	CFrameWnd::AssertValid();
 }
 
-void CConStationFrame::Dump(CDumpContext& dc) const
+void CCSFrame::Dump(CDumpContext& dc) const
 {
 	CFrameWnd::Dump(dc);
 }
@@ -179,32 +186,32 @@ void CConStationFrame::Dump(CDumpContext& dc) const
 /////////////////////////////////////////////////////////////////////////////
 // Gets
 
-CConStationView* CConStationFrame::GetView()
+CCSView* CCSFrame::GetView()
 {
 	return &view;
 }
 
-CBarConst* CConStationFrame::GetConstBar()
+CBarConst* CCSFrame::GetConstBar()
 {
 	return &constBar;
 }
 
-CBarStarf* CConStationFrame::GetStarfBar()
+CBarStarf* CCSFrame::GetStarfBar()
 {
 	return &starfBar;
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
-// CConStationFrame message handlers
+// CCSFrame message handlers
 
-void CConStationFrame::OnSetFocus(CWnd* pOldWnd)
+void CCSFrame::OnSetFocus(CWnd* pOldWnd)
 {
 	// forward focus to the view window
 	view.SetFocus();
 }
 
-BOOL CConStationFrame::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo)
+BOOL CCSFrame::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo)
 {
 	// let the view have first crack at the command
 	if (view.OnCmdMsg(nID, nCode, pExtra, pHandlerInfo))
@@ -214,82 +221,86 @@ BOOL CConStationFrame::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLE
 	return CFrameWnd::OnCmdMsg(nID, nCode, pExtra, pHandlerInfo);
 }
 
+// Application commands
+void CCSFrame::OnAppAbout()		{	CDlgAbout().DoModal();			}
+
 // Document commands
-void CConStationFrame::OnStarfNewActual()	{	documentMgr.NewActual();	}
-void CConStationFrame::OnStarfNewRandom()	{	documentMgr.NewRandom();	}
-void CConStationFrame::OnStarfOpen()		{	documentMgr.Open();			}
-void CConStationFrame::OnStarfSave()		{	documentMgr.Save();			}
-void CConStationFrame::OnStarfSaveAs()		{	documentMgr.SaveAs();		}
+void CCSFrame::OnStarfNewActual()	{	documentMgr.NewActual();		}
+void CCSFrame::OnStarfNewRandom()	{	documentMgr.NewRandom();		}
+void CCSFrame::OnStarfOpen()		{	documentMgr.Open();				}
+void CCSFrame::OnStarfSave()		{	documentMgr.Save();				}
+void CCSFrame::OnStarfSaveAs()		{	documentMgr.SaveAs();			}
 
 // Starfield commands
-void CConStationFrame::OnStarfRotate()		{	starfieldMgr.Rotate();		}
-void CConStationFrame::OnStarsToggle()		{	starfieldMgr.ToggleStars();	}
-void CConStationFrame::OnConstToggle()		{	starfieldMgr.ToggleConsts();}
-//void CConStationFram::OnSunToggle()			{	starfieldMgr.ToggleSun();	}
+void CCSFrame::OnStarfRotate()		{	starfMgr.Rotate();				}
+void CCSFrame::OnStarsToggle()		{	starfMgr.ToggleStars();			}
+void CCSFrame::OnConstToggle()		{	starfMgr.ToggleConsts();		}
+void CCSFrame::OnSunToggle()		{	starfMgr.ToggleSun();			}
+void CCSFrame::OnSunshineToggle()	{	starfMgr.ToggleSunshine();		}
 
 // Constellation commands
-void CConStationFrame::OnConstAdd()			{	constMgr.Add();				}
-void CConStationFrame::OnConstDelete()		{	constMgr.Delete();			}
-void CConStationFrame::OnConstRename()		{	constMgr.Rename();			}
-void CConStationFrame::OnConstHide()		{	constMgr.Hide();			}
-void CConStationFrame::OnConstAddLine()		{	constMgr.AddLine();			}
-void CConStationFrame::OnConstDeleteLine()	{	constMgr.DeleteLine();		}
-void CConStationFrame::OnConstShowHide()	{	constMgr.ShowHide();		}
-void CConStationFrame::OnConstHideAll()		{	constMgr.HideAll();			}
-void CConStationFrame::OnConstShowAll()		{	constMgr.ShowAll();			}
+void CCSFrame::OnConstAdd()			{	constMgr.Add();					}
+void CCSFrame::OnConstDelete()		{	constMgr.Delete();				}
+void CCSFrame::OnConstRename()		{	constMgr.Rename();				}
+void CCSFrame::OnConstHide()		{	constMgr.Hide();				}
+void CCSFrame::OnConstAddLine()		{	constMgr.AddLine();				}
+void CCSFrame::OnConstDeleteLine()	{	constMgr.DeleteLine();			}
+void CCSFrame::OnConstShowHide()	{	constMgr.ShowHide();			}
+void CCSFrame::OnConstHideAll()		{	constMgr.HideAll();				}
+void CCSFrame::OnConstShowAll()		{	constMgr.ShowAll();				}
 
 // Terrain commands
-void CConStationFrame::OnTerrNew()			{	terrainMgr.New();			}
-void CConStationFrame::OnTerrToggle()		{	terrainMgr.Toggle();		}
+void CCSFrame::OnTerrNew()			{	terrainMgr.New();				}
+void CCSFrame::OnTerrToggle()		{	terrainMgr.Toggle();			}
 
 // Options commands
-void CConStationFrame::OnOptionsGeneral()	{	optionsMgr.General();		}
-void CConStationFrame::OnOptionsTime()		{	starfieldMgr.Time();		}
-void CConStationFrame::OnOptionsLocation()	{	starfieldMgr.Location();	}
-void CConStationFrame::OnOptionsStar()		{	starfieldMgr.StarOptions();	}
-void CConStationFrame::OnOptionsConst()		{	starfieldMgr.ConstOptions();}
-void CConStationFrame::OnOptionsSun()		{	starfieldMgr.SunOptions();	}
-void CConStationFrame::OnOptionsTerr()		{	terrainMgr.Options();		}
+void CCSFrame::OnOptionsGeneral()	{	optionsMgr.General();			}
+void CCSFrame::OnOptionsTime()		{	starfMgr.Time();				}
+void CCSFrame::OnOptionsLocation()	{	starfMgr.Location();			}
+void CCSFrame::OnOptionsStar()		{	starfMgr.StarOptions();			}
+void CCSFrame::OnOptionsConst()		{	starfMgr.ConstOptions();		}
+void CCSFrame::OnOptionsSun()		{	starfMgr.SunOptions();			}
+void CCSFrame::OnOptionsTerr()		{	terrainMgr.Options();			}
 
 
 /////////////////////////////////////////////////////////////////////////////
 // Updates
 
-void CConStationFrame::OnUpdateStarfRotate(CCmdUI* pCmdUI) 
+void CCSFrame::OnUpdateStarfRotate(CCmdUI* pCmdUI) 
 {
 	pCmdUI->SetCheck( starfield.IsSpinning() );
 }
 
-void CConStationFrame::OnUpdateStarsToggle(CCmdUI* pCmdUI) 
+void CCSFrame::OnUpdateStarsToggle(CCmdUI* pCmdUI) 
 {
 	pCmdUI->SetCheck( starfield.AreStarsVisible() );	
 }
 
-void CConStationFrame::OnUpdateConstList(CCmdUI* pCmdUI) 
+void CCSFrame::OnUpdateConstList(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable( state == state_Viewing );
 }
 
-void CConStationFrame::OnUpdateConstAdd(CCmdUI* pCmdUI) 
+void CCSFrame::OnUpdateConstAdd(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable( state == state_Viewing );
 }
 
-void CConStationFrame::OnUpdateConstDelete(CCmdUI* pCmdUI) 
+void CCSFrame::OnUpdateConstDelete(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable( state == state_Viewing &&
-					starfield.GetNumConstellations() > 0 );
+					starfield.GetConstCount() > 0 );
 }
 
-void CConStationFrame::OnUpdateConstRename(CCmdUI* pCmdUI) 
+void CCSFrame::OnUpdateConstRename(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable( state == state_Viewing &&
-					starfield.GetNumConstellations() > 0);
+					starfield.GetConstCount() > 0);
 }
 
-void CConStationFrame::OnUpdateConstHide(CCmdUI* pCmdUI) 
+void CCSFrame::OnUpdateConstHide(CCmdUI* pCmdUI) 
 {
-	if( starfield.GetNumConstellations() == 0 )
+	if( starfield.GetConstCount() == 0 )
 	{
 		pCmdUI->Enable( FALSE );
 		pCmdUI->SetCheck( FALSE );
@@ -297,64 +308,74 @@ void CConStationFrame::OnUpdateConstHide(CCmdUI* pCmdUI)
 	else
 	{
 		pCmdUI->Enable( state == state_Viewing );
-		pCmdUI->SetCheck(!starfield.GetCurConstellation()->IsVisible());
+		pCmdUI->SetCheck(!starfield.GetCurConst()->IsVisible());
 	}
 }
 
-void CConStationFrame::OnUpdateConstAddLine(CCmdUI* pCmdUI) 
+void CCSFrame::OnUpdateConstAddLine(CCmdUI* pCmdUI) 
 {
-	if( starfield.GetNumConstellations() == 0 )
+	if( starfield.GetConstCount() == 0 )
 	{
 		pCmdUI->Enable( FALSE );
 		pCmdUI->SetCheck( FALSE );
 	}
 	else
 	{
-		pCmdUI->Enable( starfield.GetCurConstellation()->IsVisible() );
+		pCmdUI->Enable( starfield.GetCurConst()->IsVisible() );
 		pCmdUI->SetCheck( state == state_AddingLine );
 	}
 }
 
-void CConStationFrame::OnUpdateConstDeleteLine(CCmdUI* pCmdUI) 
+void CCSFrame::OnUpdateConstDeleteLine(CCmdUI* pCmdUI) 
 {
-	if( starfield.GetNumConstellations() == 0 )
+	if( starfield.GetConstCount() == 0 )
 	{
 		pCmdUI->Enable( FALSE );
 		pCmdUI->SetCheck( FALSE );
 	}
 	else
 	{
-		pCmdUI->Enable( starfield.GetCurConstellation()->IsVisible() );
+		pCmdUI->Enable( starfield.GetCurConst()->IsVisible() );
 		pCmdUI->SetCheck( state == state_DeletingLine );
 	}
 }
 
-void CConStationFrame::OnUpdateConstHideAll(CCmdUI* pCmdUI) 
+void CCSFrame::OnUpdateConstHideAll(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable( state == state_Viewing &&
-		starfield.GetNumConstellations() > 0 );
+		starfield.GetConstCount() > 0 );
 }
 
-void CConStationFrame::OnUpdateConstShowAll(CCmdUI* pCmdUI) 
+void CCSFrame::OnUpdateConstShowAll(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable( state == state_Viewing &&
-		starfield.GetNumConstellations() > 0 );
+		starfield.GetConstCount() > 0 );
 }
 
-void CConStationFrame::OnUpdateConstShowHide(CCmdUI* pCmdUI) 
+void CCSFrame::OnUpdateConstShowHide(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable( state == state_Viewing &&
-		starfield.GetNumConstellations() > 0 );
+		starfield.GetConstCount() > 0 );
 }
 
-void CConStationFrame::OnUpdateConstToggle(CCmdUI* pCmdUI) 
+void CCSFrame::OnUpdateConstToggle(CCmdUI* pCmdUI) 
 {
 	pCmdUI->SetCheck( starfield.AreConstsVisible() );	
 }
 
-void CConStationFrame::OnUpdateTerrToggle(CCmdUI* pCmdUI) 
+void CCSFrame::OnUpdateTerrToggle(CCmdUI* pCmdUI) 
 {
-	pCmdUI->SetCheck( terrain.IsVisible() );
+	pCmdUI->SetCheck( optionsMgr.IsTerrVisible() );
+}
+
+void CCSFrame::OnUpdateSunToggle(CCmdUI* pCmdUI) 
+{
+	pCmdUI->SetCheck( starfield.IsSunVisible() );
+}
+
+void CCSFrame::OnUpdateSunshineToggle(CCmdUI* pCmdUI) 
+{
+	pCmdUI->SetCheck( starfield.IsSunShining() );
 }
 
 
@@ -371,10 +392,3 @@ void CConStationFrame::OnUpdateTerrToggle(CCmdUI* pCmdUI)
 
 
 
-void CConStationFrame::OnShowWindow(BOOL bShow, UINT nStatus) 
-{
-	CFrameWnd::OnShowWindow(bShow, nStatus);
-	
-	// TODO: Add your message handler code here
-	
-}

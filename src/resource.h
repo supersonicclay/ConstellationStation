@@ -114,6 +114,8 @@
 #define ID_OPTIONS_LOCATION             32870
 #define ID_OPTIONS_TERRAIN              32871
 #define ID_OPTIONS_SUN                  32872
+#define ID_SUN_TOGGLE                   32874
+#define ID_SUNSHINE_TOGGLE              32875
 
 // Next default values for new objects
 // 
@@ -121,7 +123,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        166
-#define _APS_NEXT_COMMAND_VALUE         32874
+#define _APS_NEXT_COMMAND_VALUE         32876
 #define _APS_NEXT_CONTROL_VALUE         1127
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

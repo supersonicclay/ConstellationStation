@@ -8,7 +8,7 @@
 
 
 #include "stdafx.h"
-#include "ConStation.h"
+#include "CSApp.h"
 #include "DataTerrain.h"
 
 IMPLEMENT_SERIAL( CDataTerrain, CObject, 1 )
@@ -20,9 +20,6 @@ IMPLEMENT_SERIAL( CDataTerrain, CObject, 1 )
 CDataTerrain::CDataTerrain()
 {
 	heights = upperNormals = lowerNormals = NULL;	/// UGLY!
-
-	scale = 1;
-	iterations = 2;
 
 	Clear();
 }
@@ -44,8 +41,6 @@ void CDataTerrain::Clear()
 
 	size = arraySize = 0;
 
-	LoadDefaults();
-
 	viewHeight = 0.0f;
 }
 
@@ -56,7 +51,7 @@ void CDataTerrain::New()
 	// Generate new seed
 	seed = (unsigned)clock();
 
-	size = (int)pow(2, iterations);
+	size = (int)pow( 2, optionsMgr.GetTerrIters() );  /// use binary shift (1<<iterations)
 
 	arraySize = size + 1;
 
@@ -74,9 +69,6 @@ void CDataTerrain::New()
 float*		CDataTerrain::GetHeights()		{	return heights;		}
 int			CDataTerrain::GetArraySize()	{	return arraySize;	}
 int			CDataTerrain::GetSize()			{	return size;		}
-BOOL		CDataTerrain::IsVisible()		{	return visible;		}
-float		CDataTerrain::GetScale()		{	return scale;		}
-int			CDataTerrain::GetIterations()	{	return iterations;	}
 float		CDataTerrain::GetViewHeight()	{	return viewHeight;	}
 
 float CDataTerrain::GetHeight( int i, int j )
@@ -98,9 +90,6 @@ float* CDataTerrain::GetLowerNormal( int i, int j )
 /////////////////////////////////////////////////////////////////////////////
 // Sets
 
-void CDataTerrain::SwitchVisible()			{	visible = !visible;	}
-void CDataTerrain::SetVisible( BOOL x )		{	visible = x;		}
-
 void CDataTerrain::SetUpperNormal( int i, int j, float* n )
 {
 	upperNormals[ (size*j*3 + i*3 + 0) ] = n[0];
@@ -119,21 +108,17 @@ void CDataTerrain::SetLowerNormal( int i, int j, float* n )
 /////////////////////////////////////////////////////////////////////////////
 // Methods
 
-void CDataTerrain::LoadDefaults()
-{
-	visible = DEF_TERR_VISIBLE;
-}
-
 void CDataTerrain::MakeTerrain()
 {
 	// Set seed so terrain is predictable
 	srand( seed );
 
-	float roughness = optionsMgr.GetTerrRoughness();
+	float roughness = optionsMgr.GetTerrRoughness(); /// / 100.0f
 
-	int i, j;
-	float range;
-	int midSize;
+	int i;        // row index
+	int j;        // col index
+	float range;  // range of offset
+	int midSize;  // used to keep track of current iteration
 	BOOL findingOddPoints;
 
 	for (i=0; i<arraySize; i++)
@@ -149,12 +134,17 @@ void CDataTerrain::MakeTerrain()
 
 	while (midSize > 0)
 	{
-		/*
-			X . . . X
-			. . . . .
-			. . * . .
-			. . . . .
-			X . . . X
+		/* FINDING * BY OFFSETTING AVERAGE OF X's
+		    In this case size = 8, arraySize = 9, midSize = 2.
+			X . . . X . . . X
+			. . . . . . . . .
+			. . * . . . * . .
+			. . . . . . . . .
+			X . . . X . . . X
+			. . . . . . . . .
+			. . * . . . * . .
+			. . . . . . . . .
+			X . . . X . . . X
 		*/
 		for (i=midSize; i<size; i+=midSize)
 		{
@@ -166,12 +156,17 @@ void CDataTerrain::MakeTerrain()
 			}
 		}
 
-		/*
-			X . * . X
-			. . . . .
-			* . X . *
-			. . . . .
-			X . * . X
+		/* FINDING * BY OFFSETTING AVERAGE OF X's
+		    In this case size = 8, arraySize = 9, midSize = 2.
+			X . * . X . * . X
+			. . . . . . . . .
+			* . X . * . X . *
+			. . . . . . . . .
+			X . * . X . * . X
+			. . . . . . . . .
+			* . X . * . X . *
+			. . . . . . . . .
+			X . * . X . * . X
 		*/
 		findingOddPoints = FALSE;
 		for (i=0; i<=size; i+=midSize)
@@ -179,6 +174,7 @@ void CDataTerrain::MakeTerrain()
 			findingOddPoints = !findingOddPoints;
 			for (j=0; j<=size; j+=midSize*2)
 			{
+				// Offset initial j for odd points (1st row, 3rd row, ...)
 				if (findingOddPoints && j==0)
 					j += midSize;
 
@@ -210,27 +206,27 @@ float CDataTerrain::AvgSquare(int i, int j, int midSize)
 float CDataTerrain::AvgDiamond(int i, int j, int midSize)
 {
 	float total;
-    if (i == 0)
+	if (i == 0)
 	total = heights[ (i*arraySize) + j-midSize ] +
 			heights[ (i*arraySize) + j+midSize ] +
 			heights[ ((size-midSize)*arraySize) + j ] +
 			heights[ ((i+midSize)*arraySize) + j ];
-    else if (i == arraySize-1)
+	else if (i == arraySize-1)
 	total = heights[ (i*arraySize) + j-midSize ] +
 			heights[ (i*arraySize) + j+midSize ] +
 			heights[ ((i-midSize)*arraySize) + j ] +
 			heights[ ((0+midSize)*arraySize) + j ];
-    else if (j == 0)
+	else if (j == 0)
 	total = heights[ ((i-midSize)*arraySize) + j ] +
 			heights[ ((i+midSize)*arraySize) + j ] +
 			heights[ (i*arraySize) + j+midSize ] +
 			heights[ (i*arraySize) + size-midSize] ;
-    else if (j == arraySize-1)
+	else if (j == arraySize-1)
 	total = heights[ ((i-midSize)*arraySize) + j ] +
 			heights[ ((i+midSize)*arraySize) + j ] +
 			heights[ (i*arraySize) + j-midSize ] +
 			heights[ (i*arraySize) + 0+midSize ];
-    else
+	else
 	total = heights[ ((i-midSize)*arraySize) + j ] +
 			heights[ ((i+midSize)*arraySize) + j ] +
 			heights[ (i*arraySize) + j-midSize ] +
@@ -252,6 +248,8 @@ void CDataTerrain::CalculateNormals()
 	float vec1[3];
 	float vec2[3];
 	float normal[3];
+
+	int iterations = optionsMgr.GetTerrIters();
 
 //	inc = (float)pow(2, -iterations+1);
 
@@ -313,6 +311,11 @@ void CDataTerrain::CalculateViewHeight()
 	// Get the index of the midpoint
 	int middleIndex = size / 2;
 
+	// Just set the viewer a little above the midpoint
+	viewHeight = GetHeight( middleIndex, middleIndex ) + 0.05f;
+
+	/*
+
 	// Average the heights around the midpoint,
 	//  so the viewer isn't placed in a deep pit.
 
@@ -324,6 +327,12 @@ void CDataTerrain::CalculateViewHeight()
 	// Average the two averages
 	viewHeight = ((avg1 + avg2) / 2);
 
+	/// HERE'S THE PROBLEM - viewHeight is always the same at this point
+	// once terrain midpoint is higher than viewHeight, viewHeight jumps up 0.2f
+	//  |
+	//  |
+	// \ /
+
 	// Make sure the new height is not less than the height at the midpoint
 	//  (this would put the viewer under the terrain)
 	// If it is, then switch to the height of the midpoint
@@ -332,7 +341,7 @@ void CDataTerrain::CalculateViewHeight()
 
 	// Move it down a little more than that so the viewer isn't exactly on the surface
 	viewHeight += 0.05f;
-
+	*/
 }
 
 

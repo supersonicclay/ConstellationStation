@@ -7,7 +7,7 @@
 
 
 #include "stdafx.h"
-#include "ConStation.h"
+#include "CSApp.h"
 #include "MgrConst.h"
 
 #include "DlgConstName.h"
@@ -41,11 +41,31 @@ CBarConst* CMgrConst::GetConstBar()
 	return GetFrame()->GetConstBar();
 }
 
+// Set the give constellation as active and select in const bar
+void CMgrConst::Select( int i )
+{
+	// Sanity check
+	if( i < 0 || i > starfield.GetConstCount() )
+	{
+		CSDebug( "Constellation index out of range", "CMgrConst::Select" );
+		return;
+	}
+
+	starfield.SelectConst( i );
+	GetConstBar()->UpdateList();
+}
+
 // Prompt user for a name and add a constellation
 void CMgrConst::Add()
 {
 	if( starfield.IsSpinning() )
 		starfield.SwitchSpinning();
+
+	if( starfield.GetConstCount() == MAX_CONSTS )
+	{
+		CSError( "The maximun number of constellations has been reached.\nPlease delete some to clear space." );
+		return;
+	}
 
 	CDlgConstName dialog;
 
@@ -53,11 +73,11 @@ void CMgrConst::Add()
 	CString constName = "Constellation";
 
 	// The total number of created constellaitons (starting at 1)
-	const int numNewConstellations = starfield.GetNumNewConstellations();
+	const int newConstCount = starfield.GetNewConstCount();
 
 	// Convert the number to a string and append
 	char numString[20];
-	itoa (numNewConstellations+1, numString, 10);
+	itoa (newConstCount+1, numString, 10);
 	constName += numString;
 
 	dialog.name = constName;
@@ -69,7 +89,7 @@ void CMgrConst::Add()
 	// Check for duplicate name
 	while (starfield.IsDuplicate(dialog.name))
 	{
-		CSWarn( "There is already a constellation with this name." );
+		CSError( "There is already a constellation with this name." );
 
 		if (dialog.DoModal() != IDOK)
 			return;
@@ -77,9 +97,9 @@ void CMgrConst::Add()
 
 	// Add constellation and make it the current constellation
 	GetConstBar()->AddConst(dialog.name);
-	starfield.AddConstellation(dialog.name);
-	starfield.IncNumNewConstellations();
-	starfield.SetCurConstellation(dialog.name);
+	starfield.AddConst(dialog.name);
+	starfield.IncNewConstCount();
+	starfield.SelectConst(dialog.name);
 
 	starfield.SetModified();
 	Redraw();
@@ -94,12 +114,12 @@ void CMgrConst::Delete()
 	if( CSQuestion("Are you sure you want to delete this constellation?") == IDNO )
 		return;
 
-	starfield.DeleteConstellation();
+	starfield.DeleteConst();
 	GetConstBar()->DeleteConst();
 
 	// Set newly selected constellation as the current one
-	if (starfield.GetNumConstellations() > 0)
-		starfield.SetCurConstellation( GetConstBar()->GetCurConst() );
+	if (starfield.GetConstCount() > 0)
+		starfield.SelectConst( GetConstBar()->GetCurConst() );
 
 	SetState( state_Viewing );
 
@@ -126,7 +146,7 @@ void CMgrConst::Rename()
 	while (starfield.IsDuplicate(dialog.name) &&
 		dialog.name != origConstName)
 	{
-		CSWarn("There is already a constellation with this name.");
+		CSError("There is already a constellation with this name.");
 
 		if (dialog.DoModal() != IDOK)
 			return;
@@ -142,7 +162,7 @@ void CMgrConst::Rename()
 	GetConstBar()->DeleteConst();
 	GetConstBar()->AddConst(dialog.name);
 
-	starfield.RenameConstellation(dialog.name);
+	starfield.RenameConst(dialog.name);
 
 	starfield.SetModified();
 }
@@ -150,7 +170,7 @@ void CMgrConst::Rename()
 // Hide the current constellation
 void CMgrConst::Hide()
 {
-	starfield.GetCurConstellation()->SwitchVisible();
+	starfield.GetCurConst()->SwitchVisible();
 
 	starfield.SetModified();
 	Redraw();
@@ -177,9 +197,9 @@ void CMgrConst::DeleteLine()
 // Hide all constellations
 void CMgrConst::HideAll()
 {
-	for (int i=0; i<starfield.GetNumConstellations(); i++)
+	for (int i=0; i<starfield.GetConstCount(); i++)
 	{
-		starfield.GetConstellation(i)->SetVisible(FALSE);
+		starfield.GetConst(i)->SetVisible(FALSE);
 	}
 
 	starfield.SetModified();
@@ -189,9 +209,9 @@ void CMgrConst::HideAll()
 // Show all constellations
 void CMgrConst::ShowAll()
 {
-	for (int i=0; i<starfield.GetNumConstellations(); i++)
+	for (int i=0; i<starfield.GetConstCount(); i++)
 	{
-		starfield.GetConstellation(i)->SetVisible(TRUE);
+		starfield.GetConst(i)->SetVisible(TRUE);
 	}
 
 	starfield.SetModified();

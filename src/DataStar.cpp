@@ -7,7 +7,7 @@
 
 
 #include "stdafx.h"
-#include "ConStation.h"
+#include "CSApp.h"
 #include "DataStar.h"
 
 IMPLEMENT_SERIAL( CDataStar, CObject, 1 )
@@ -127,6 +127,27 @@ void CDataStar::SetColor( color_s color_ )
 	color = color_;
 }
 
+
+void CDataStar::SetColorFromMag()
+{
+	if( mag > 2.0f )
+	{
+		color.r = (8-mag)/7;
+		color.g = (8-mag)/7;
+		color.b = (8-mag)/7;
+	}
+	else
+	{
+		color = COLOR_WHITE;
+	}
+}
+
+void CDataStar::SetRadiusFromMag()
+{
+	radius = (8-mag) / 600.0f;///
+}
+
+/*/// old star color/radius
 void CDataStar::SetColorFromMag()
 {
 	if( mag > 2.0f )
@@ -145,6 +166,7 @@ void CDataStar::SetRadiusFromMag()
 {
 	radius = (6-mag) / 500.0f;///
 }
+*/
 
 void CDataStar::SetX( float x_ )
 {
@@ -318,8 +340,25 @@ void CDataStar::PickXYZ()
 }
 
 // Pick a random magnitude
+// Distribution of star magnitudes
+//  is approximately normal (slight skewed to left) with
+//
+// Mean = 9
+// St. Dev = 1.3
+//
+// PickMag picks a random magnitude between 3.8 and 13
+//  such that the distribution will be approximately normal.
 void CDataStar::PickMag()
 {
+	// Magnitude of 3.8 and 13 correspond to
+	// -4 and 3 for z-score
+	// Pick a random z-score
+	float z = (float)(rand()%7000)/100.0f - 4.0f;
+
+///	plug into dist curve
+	mag = 3.0f;///
+
+/*/// Old pickmag
 	// Pick random number from 0.00 to 100.00
 	float random = (float)(rand()%1000)/10;
 
@@ -338,6 +377,7 @@ void CDataStar::PickMag()
 	{
 		mag = (float)(rand()%6000)/1000;
 	}
+*/
 
 	SetColorFromMag();
 }
@@ -355,7 +395,7 @@ void CDataStar::Serialize(CArchive& ar)
 		ar >> ra.hour >> ra.minute >> ra.second
 		   >> dec.positive >> dec.degree >> dec.minute >> dec.second
 		   >> mag >> x >> y >> z
-		   >> color.r >> color.g >> color.b
+		   >> color
 		   >> radius;
 	}
 	else
@@ -363,7 +403,7 @@ void CDataStar::Serialize(CArchive& ar)
 		ar << ra.hour << ra.minute << ra.second
 		   << dec.positive << dec.degree << dec.minute << dec.second
 		   << mag << x << y << z
-		   << color.r << color.g << color.b
+		   << color
 		   << radius;
 	}
 }

@@ -84,6 +84,7 @@ void CMgrDocument::NewActual()
 	strncpy( title, "Untitled.str", MAX_DOC_NAME );
 	modified = FALSE;
 
+	// New data
 	terrain.New();
 	starfield.New( true );
 
@@ -109,6 +110,7 @@ void CMgrDocument::NewRandom()
 	strncpy( title, "Untitled.str", MAX_DOC_NAME );
 	modified = FALSE;
 
+	// New data
 	terrain.New();
 	starfield.New( FALSE );
 

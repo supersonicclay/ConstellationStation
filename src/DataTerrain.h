@@ -27,12 +27,12 @@ public:
 private:
 	UINT seed; // Used for predictable terrain
 
-	float* heights;
+	float** heights;
 	int size;
 	int arraySize;  // size + 1
 
-	float* upperNormals;
-	float* lowerNormals;
+	vector3** upperNormals;
+	vector3** lowerNormals;
 
 	float viewHeight;
 
@@ -41,19 +41,19 @@ private:
 public:
 
 // Gets
-	float* GetHeights();
+	float** GetHeights();
 	float GetHeight( int i, int j );
 
 	int GetArraySize();
 	int GetSize();
 	float GetViewHeight();
 
-	float* GetUpperNormal( int i, int j );
-	float* GetLowerNormal( int i, int j );
+	vector3 GetUpperNormal( int i, int j );
+	vector3 GetLowerNormal( int i, int j );
 
 // Sets
-	void SetUpperNormal( int i, int j, float* n );
-	void SetLowerNormal( int i, int j, float* n );
+	void SetUpperNormal( int i, int j, vector3 n );
+	void SetLowerNormal( int i, int j, vector3 n );
 
 	void IncViewHeight();///
 	void DecViewHeight();///
@@ -66,7 +66,7 @@ public:
 	float RandomOffset( float range );
 
 	void CalculateNormals();
-	void CalculateNormal( float* vec1, float* vec2, float* normal );
+	void CalculateNormal( vector3 vec1, vector3 vec2, vector3 normal );
 
 	void CalculateViewHeight();
 

@@ -115,7 +115,7 @@ void CMgrInput::ProcessKeys()
 		update = TRUE;
 	}
 
-	/// TEST Terrain Height
+	/// Test Terrain Height
 	if( keyDown[VK_ADD] )
 	{
 		terrain.IncViewHeight();
@@ -127,11 +127,15 @@ void CMgrInput::ProcessKeys()
 		update = TRUE;
 	}
 
-	/// Test tracking
+	/// Test finding and tracking
 	if( keyDown['T'] )
 	{
-		starfMgr.StartTracking( starfield.GetStar(8) );
 		keyDown['T'] = FALSE; // Prevent repeat
+		starfMgr.StartTracking( starfield.GetConst(0) );
+//		starfMgr.Find( starfield.GetConst(0) );
+		// 8 = Betelgeuse
+//		starfMgr.StartTracking( starfield.GetStar(8) );
+//		starfMgr.Find( starfield.GetStar(8) );
 		update = TRUE;
 	}
 
@@ -178,8 +182,7 @@ void CMgrInput::MouseLDown( CPoint point )
 		MouseLDownAddingLine();
 		break;
 	case state_DeletingLine:
-		MouseLDownTest();///
-		///MouseLDownDeletingLine();
+		MouseLDownDeletingLine();
 		break;
 	default:
 		break;
@@ -291,6 +294,7 @@ void CMgrInput::MouseLDownTest()///
 		return;
 
 	starfMgr.Find( starfield.GetStar(selectedStarNum) );
+	Redraw();
 }
 
 void CMgrInput::MouseLDownViewing()
@@ -593,16 +597,17 @@ BOOL CMgrInput::Select( select_e selection )
 	GLint	viewport[4];
 	glGetIntegerv( GL_VIEWPORT, viewport );
 
-	glSelectBuffer( 100, selectBuffer );							// Tell OpenGL To Use Our Array For Selection
+	// Tell OpenGL about the selection buffer
+	glSelectBuffer( 100, selectBuffer );
 
 	// Puts OpenGL In Selection Mode. Nothing Will Be Drawn.  Object ID's and Extents Are Stored In The Buffer.
 	glRenderMode( GL_SELECT );
 
-	glInitNames();												// Initializes The Name Stack
+	glInitNames();
 
-	glMatrixMode( GL_PROJECTION );								// Selects The Projection Matrix
-	glPushMatrix();												// Push The Projection Matrix
-	glLoadIdentity();											// Resets The Matrix
+	glMatrixMode( GL_PROJECTION );
+	glPushMatrix();
+	glLoadIdentity();
 
 	// This Creates A Matrix That Will Zoom Up To A Small Portion Of The Screen, Where The Mouse Is.
 	if( selection == select_Star )
@@ -612,7 +617,6 @@ BOOL CMgrInput::Select( select_e selection )
 	else if( selection == select_Const )
 		gluPickMatrix( (GLdouble) mouseClientPoint.x, (GLdouble) (viewport[3]-mouseClientPoint.y), 100.0f, 100.0f, viewport );
 
-
 	// Apply The Perspective Matrix
 	graphicsMgr.Perspective();
 
@@ -621,55 +625,48 @@ BOOL CMgrInput::Select( select_e selection )
 	if( selection == select_Star )
 	{
 		// Draw stars
-		glLoadIdentity();
-		graphicsMgr.RotateView();
-		graphicsMgr.RotateLatitude();
-		graphicsMgr.RotateTime();
+		graphicsMgr.LoadStarfMat();
 		graphicsMgr.DrawStars();
 
 		// Draw terrain
-		glLoadIdentity();
-		graphicsMgr.RotateView();
-		graphicsMgr.PositionTerrain();
-		graphicsMgr.DrawTerrain();
+		if( optionsMgr.IsTerrVisible() )
+		{
+			graphicsMgr.LoadTerrainMat();
+			graphicsMgr.DrawTerrain();
+		}
 	}
 	else if( selection == select_Line )
 	{
 		// Draw current constellation
-		glLoadIdentity();
-		graphicsMgr.RotateView();
-		graphicsMgr.RotateLatitude();
-		graphicsMgr.RotateTime();
+		graphicsMgr.LoadStarfMat();
 		graphicsMgr.DrawCurConst( starfield.GetCurConstNum() );
 
 		// Draw terrain
-		glLoadIdentity();
-		graphicsMgr.RotateView();
-		graphicsMgr.PositionTerrain();
-		graphicsMgr.DrawTerrain();
+		if( optionsMgr.IsTerrVisible() )
+		{
+			graphicsMgr.LoadTerrainMat();
+			graphicsMgr.DrawTerrain();
+		}
 	}
 	else if( selection == select_Const )
 	{
 		// Draw all constellations
-		glLoadIdentity();
-		graphicsMgr.RotateView();
-		graphicsMgr.RotateLatitude();
-		graphicsMgr.RotateTime();
+		graphicsMgr.LoadStarfMat();
 		graphicsMgr.DrawConsts();
 
 		// Draw terrain
-		glLoadIdentity();
-		graphicsMgr.RotateView();
-		graphicsMgr.PositionTerrain();
-		graphicsMgr.DrawTerrain();
+		if( optionsMgr.IsTerrVisible() )
+		{
+			graphicsMgr.LoadTerrainMat();
+			graphicsMgr.DrawTerrain();
+		}
 	}
 
-	glMatrixMode( GL_PROJECTION );								// Select The Projection Matrix
-	glPopMatrix();												// Pop The Projection Matrix
+	glMatrixMode( GL_PROJECTION );
+	glPopMatrix();
 
 	glMatrixMode( GL_MODELVIEW );
-	hits = glRenderMode( GL_RENDER );								// Switch To Render Mode, Find Out How Many
-																// Objects Were Drawn Where The Mouse Was
+	hits = glRenderMode( GL_RENDER );
 
 	// Check if there is a hit
 	if( hits <= 0 )

@@ -61,3 +61,7 @@ Fixed		08-14-04		Roundoff error with sliders
 
 Fixed		08-17-04		Terrain isn't depth testing
 
+Fixed		08-24-04		Shouldn't draw terrain when selecting with terrain off
+
+Fixed		08-26-04		Front facing stars are being culled
+

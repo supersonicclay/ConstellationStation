@@ -12,6 +12,7 @@
 #ifndef CS_DATACONST_H
 #define CS_DATACONST_H
 
+#include "Matrix.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CDataConstLine
@@ -43,12 +44,6 @@ public:
 // Gets
 	int   GetStar1();
 	int   GetStar2();
-	float GetX1();
-	float GetY1();
-	float GetZ1();
-	float GetX2();
-	float GetY2();
-	float GetZ2();
 
 // Sets
 	void SetStar1( int star1_ );
@@ -113,6 +108,7 @@ public:
 	void AddLine();
 	void DeleteLine( int lineNum );
 	void CheckForDuplicateLines();
+	vector3 GetMidpoint();
 };
 
 // CDataConst Vector

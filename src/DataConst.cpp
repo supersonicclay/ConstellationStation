@@ -59,12 +59,6 @@ const CDataConstLine& CDataConstLine::operator=( const CDataConstLine& c )
 
 int		CDataConstLine::GetStar1()	{	return star1;								}
 int		CDataConstLine::GetStar2()	{	return star2;								}
-float	CDataConstLine::GetX1()		{	return starfield.GetStar(star1)->GetX();	}
-float	CDataConstLine::GetY1()		{	return starfield.GetStar(star1)->GetY();	}
-float	CDataConstLine::GetZ1()		{	return starfield.GetStar(star1)->GetZ();	}
-float	CDataConstLine::GetX2()		{	return starfield.GetStar(star2)->GetX();	}
-float	CDataConstLine::GetY2()		{	return starfield.GetStar(star2)->GetY();	}
-float	CDataConstLine::GetZ2()		{	return starfield.GetStar(star2)->GetZ();	}
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -222,6 +216,65 @@ void CDataConst::CheckForDuplicateLines()
 	}
 }
 
+// Get the x,y,z midpoint of this constellation
+vector3 CDataConst::GetMidpoint()
+{
+	int starCount = lineCount*2;
+	CDataStar* s1;
+	CDataStar* s2;
+
+	// Find minimums and maximumss
+	float minX, minY, minZ;
+	float maxX, maxY, maxZ;
+
+	// Set max/min to initial star
+	s1 = starfield.GetStar( GetLine(0)->GetStar1() );
+	minX = maxX = s1->GetCenter().x;
+	minY = maxY = s1->GetCenter().y;
+	minZ = maxZ = s1->GetCenter().z;
+
+	// Search constellation's stars
+	for( int lineIndex = 0; lineIndex < lineCount; ++lineIndex )
+	{
+		s1 = starfield.GetStar( GetLine( lineIndex )->GetStar1() );
+		s2 = starfield.GetStar( GetLine( lineIndex )->GetStar2() );
+
+		// Check for minimum
+		if( s1->GetCenter().x < minX )
+			minX = s1->GetCenter().x;
+		if( s1->GetCenter().y < minY )
+			minY = s1->GetCenter().y;
+		if( s1->GetCenter().z < minZ )
+			minZ = s1->GetCenter().z;
+		if( s2->GetCenter().x < minX )
+			minX = s2->GetCenter().x;
+		if( s2->GetCenter().y < minY )
+			minY = s2->GetCenter().y;
+		if( s2->GetCenter().z < minZ )
+			minZ = s2->GetCenter().z;
+
+		// Check for maximum
+		if( s1->GetCenter().x > maxX )
+			maxX = s1->GetCenter().x;
+		if( s1->GetCenter().y > maxY )
+			maxY = s1->GetCenter().y;
+		if( s1->GetCenter().z > maxZ )
+			maxZ = s1->GetCenter().z;
+		if( s2->GetCenter().x > maxX )
+			maxX = s2->GetCenter().x;
+		if( s2->GetCenter().y > maxY )
+			maxY = s2->GetCenter().y;
+		if( s2->GetCenter().z > maxZ )
+			maxZ = s2->GetCenter().z;
+	}
+	// Find midpoint
+	vector3 mid;
+	mid.x = (maxX + minX) / 2;
+	mid.y = (maxY + minY) / 2;
+	mid.z = (maxZ + minZ) / 2;
+
+	return mid;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Serialization

@@ -6,13 +6,13 @@
 --------------------Configuration: ConStation - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPF6B2.tmp" with contents
+Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP1BF9.tmp" with contents
 [
 /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Release/" /Fp"Release/ConStation.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
-"D:\CODE\ConStation\src\DataStarf.cpp"
+"D:\CODE\ConStation\src\DataStar.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPF6B2.tmp" 
-Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPF6B3.tmp" with contents
+Creating command line "cl.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP1BF9.tmp" 
+Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP1BFA.tmp" with contents
 [
 opengl32.lib glu32.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/ConStation.pdb" /machine:I386 /out:"../ConStation.exe" 
 .\Release\BarConst.obj
@@ -47,12 +47,12 @@ opengl32.lib glu32.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/
 .\Release\MgrTerrain.obj
 .\Release\ConStation.res
 ]
-Creating command line "link.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPF6B3.tmp"
+Creating command line "link.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP1BFA.tmp"
 <h3>Output Window</h3>
 Compiling...
-DataStarf.cpp
+DataStar.cpp
 Linking...
-Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPF6B5.tmp" with contents
+Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP1BFC.tmp" with contents
 [
 /nologo /o"Release/ConStation.bsc" 
 .\Release\StdAfx.sbr
@@ -85,7 +85,7 @@ Creating temporary file "C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPF6B5.tmp" with conten
 .\Release\MgrStarf.sbr
 .\Release\MgrTeacher.sbr
 .\Release\MgrTerrain.sbr]
-Creating command line "bscmake.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSPF6B5.tmp"
+Creating command line "bscmake.exe @C:\DOCUME~1\Clay\LOCALS~1\Temp\RSP1BFC.tmp"
 Creating browse info file...
 <h3>Output Window</h3>
 

@@ -223,7 +223,7 @@ BOOL CCSFrame::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* p
 }
 
 // Application commands
-void CCSFrame::OnAppAbout()		{	CDlgAbout().DoModal();			}
+void CCSFrame::OnAppAbout()			{	CDlgAbout().DoModal();			}
 
 // Document commands
 void CCSFrame::OnStarfNewActual()	{	documentMgr.NewActual();		}

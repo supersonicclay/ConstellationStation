@@ -24,7 +24,7 @@ public:
 	CDataStarf();
 	~CDataStarf();
 
-	void Clear();
+	void Clear( BOOL clearStars=TRUE );
 
 	void New( BOOL actual );
 
@@ -173,6 +173,7 @@ public:
 
 
 // View methods
+	void UpdateMats();
 	void UpdateViewMat();
 	void UpdateTimeMat();
 	void UpdateLatMat();

@@ -84,8 +84,8 @@ const color_s	DEF_CONST_SELCOLOR		= {0.0f, 1.0f, 1.0f};
 const color_s	DEF_CONST_ACTIVECOLOR	= {1.0f, 1.0f, 0.0f};
 const color_s	DEF_CONST_STARCOLOR		= {0.0f, 0.0f, 1.0f};
 const BOOL		DEF_CONST_STARSCOLORED	= TRUE;
-const BOOL		DEF_SUN_VISIBLE			= FALSE;
-const BOOL		DEF_SUN_SHINE			= TRUE;
+const BOOL		DEF_SUN_VISIBLE			= FALSE;///
+const BOOL		DEF_SUN_SHINE			= FALSE;///
 const BOOL		DEF_TERR_VISIBLE		= TRUE;
 const BOOL		DEF_TERR_TEXTURED		= FALSE;
 const int		DEF_TERR_ROUGHNESSX100	= 10;
@@ -94,7 +94,7 @@ const int		DEF_TERR_ITERS			= 3;
 const season_e	DEF_TERR_SEASON			= season_Summer;
 const color_s	DEF_TERR_WINCOLOR		= {0.7f, 0.7f, 0.7f};
 const color_s	DEF_TERR_SPRCOLOR		= {0.15f, 0.25f, 0.1f};
-const color_s	DEF_TERR_SUMCOLOR		= {0.1f, 0.3f, 0.1f};
+const color_s	DEF_TERR_SUMCOLOR		= {0.0f, 0.12f, 0.0f};///{0.1f, 0.3f, 0.1f};
 const color_s	DEF_TERR_FALCOLOR		= {0.25f, 0.25f, 0.15f};
 const color_s	DEF_COMPASS_CROSSCOLOR	= {0.3f, 0.3f, 0.8f};
 const color_s	DEF_COMPASS_NEEDLECOLOR	= {0.7f, 1.0f, 0.7f};
@@ -140,6 +140,13 @@ CArchive& operator<< ( CArchive& ar, season_e s )
 CArchive& operator<< ( CArchive& ar, color_s c )
 {
 	return ar << c.r << c.g << c.b;
+}
+
+
+// Star comparison (for sorting by magnitude)
+BOOL operator< ( CDataStar& s1, CDataStar& s2 )
+{
+	return s1.GetMag() < s2.GetMag();
 }
 
 

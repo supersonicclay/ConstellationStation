@@ -46,50 +46,50 @@ public:
 // Methods
 public:
 
-	// Initialization
+// Initialization
+	// OpenGL
 	BOOL InitializeOpenGL();
 	BOOL SetupPixelFormat();
 
-	// Drawing functions
+// Drawing functions
+	void Paint();
 	void Draw();
-	void DrawTerrain() const;
-	void PositionTerrain() const;
-	void DrawSky() const;
-	void DrawSun() const;
-	void DrawStars() const;
-	void DrawStarQuad( int i ) const;
-	void DrawStarPoint( int i ) const;
-	void DrawConsts() const;
-	void DrawConst( int i ) const;
-	void DrawCurConst( int i ) const;
-	void DrawCompass() const;
+	void DrawTerrain();
+	void DrawSky();
+	void DrawSun();
+	void DrawStars();
+	void DrawStarQuad( int i );
+	void DrawStarPoint( int i );
+	void DrawConsts();
+	void DrawConst( int i );
+	void DrawCurConst( int i );
+	void DrawCompass();
 
-	// View manipulation
-	void Projection() const;
-	void Perspective() const;
-	void RotateView() const;
-	void RotateTime() const;
-	void RotateLatitude() const;
+// View manipulation
+	void Size( int cx, int cy );
+	void Projection();
+	void Perspective();
+	void LoadSkyMat();
+	void LoadStarfMat();
+	void LoadSunMat();
+	void LoadTerrainMat();
 
-	// Textures
+// Textures
 	BOOL LoadTGA( UINT &texID, char* filename );
 	BOOL LoadTextures();
 
-	// Colors
-	void SetColor( color_s c ) const;
+// Colors
+	void SetColor( color_s c );
 
-	// Frustum
+// Frustum
 	void CalculateFrustum();
-	BOOL SphereInFrustum( float x, float y, float z, float radius ) const;
-
-	void Destroy();
-	void Paint();
-	void Size( int cx, int cy );
+	BOOL SphereInFrustum( vector3 v, float radius );
 
 
 // Destruction
 public:
 	~CMgrGraphics();
+	void Destroy();
 
 };
 

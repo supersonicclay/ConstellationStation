@@ -1,5 +1,5 @@
 //===========================================================================
-// DataStar.h
+// DataStar.cpp
 //
 // CDataStar
 //   star data.
@@ -34,10 +34,13 @@ const CDataStar& CDataStar::operator=( const CDataStar& s )
 {
 	ra = s.ra;
 	dec = s.dec;
-	x = s.x; y = s.y; z = s.z;
 	phi = s.phi;
 	theta = s.theta;
-	mat = s.mat;
+	center = s.center;
+	trVert = s.trVert;
+	tlVert = s.tlVert;
+	blVert = s.blVert;
+	brVert = s.brVert;
 	mag = s.mag;
 	radius = s.radius;
 	color = s.color;
@@ -46,9 +49,6 @@ const CDataStar& CDataStar::operator=( const CDataStar& s )
 
 void CDataStar::Init()
 {
-	x = 0.0f;
-	y = 1.0f;
-	z = 0.0f;
 	ra.hour = 0;
 	ra.minute = 0;
 	ra.second = 0.0f;
@@ -58,6 +58,11 @@ void CDataStar::Init()
 	dec.second = 0.0f;
 	phi = 0.0f;
 	theta = 0.0f;
+	center = vector3( 0.0f, 0.0f, 0.0f );
+	trVert = vector3( 0.0f, 0.0f, 0.0f );
+	tlVert = vector3( 0.0f, 0.0f, 0.0f );
+	blVert = vector3( 0.0f, 0.0f, 0.0f );
+	brVert = vector3( 0.0f, 0.0f, 0.0f );
 	mag = 1.0f;
 	radius = 0.0f;
 	color = COLOR_WHITE;
@@ -69,15 +74,16 @@ void CDataStar::Init()
 
 ra_s		CDataStar::GetRA()		{	return ra;		}
 dec_s		CDataStar::GetDec()		{	return dec;		}
-float		CDataStar::GetX()		{	return x;		}
-float		CDataStar::GetY()		{	return y;		}
-float		CDataStar::GetZ()		{	return z;		}
+float		CDataStar::GetPhi()		{	return phi;		}
+float		CDataStar::GetTheta()	{	return theta;	}
+vector3		CDataStar::GetCenter()	{	return center;	}
+vector3		CDataStar::GetTRVert()	{	return trVert;	}
+vector3		CDataStar::GetTLVert()	{	return tlVert;	}
+vector3		CDataStar::GetBLVert()	{	return blVert;	}
+vector3		CDataStar::GetBRVert()	{	return brVert;	}
 float		CDataStar::GetMag()		{	return mag;		}
 float		CDataStar::GetRadius()	{	return radius;	}
 color_s		CDataStar::GetColor()	{	return color;	}
-matrix44*	CDataStar::GetMat()		{	return &mat;	}
-float		CDataStar::GetPhi()		{	return phi;		}
-float		CDataStar::GetTheta()	{	return theta;	}
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -85,9 +91,7 @@ float		CDataStar::GetTheta()	{	return theta;	}
 
 void CDataStar::SetRA( ra_s r )			{	ra = r;		}
 void CDataStar::SetDec( dec_s d )		{	dec = d;	}
-void CDataStar::SetX( float x_ )		{	x = x_;		}
-void CDataStar::SetY( float y_ )		{	y = y_;		}
-void CDataStar::SetZ( float z_ )		{	z = z_;		}
+void CDataStar::SetCenter( vector3 c )		{	center = c;	}
 void CDataStar::SetMag( float m )		{	mag = m;	}
 void CDataStar::SetRadius( float r )	{	radius = r;	}
 void CDataStar::SetColor( color_s c )	{	color = c;	}
@@ -111,44 +115,42 @@ void CDataStar::SetDec( BOOL p, USHORT d, USHORT m, float s )
 /////////////////////////////////////////////////////////////////////////////
 // Methods
 
-//*/// test star color/radius
-void CDataStar::SetColorFromMag()
+// Update all position info from the right ascension and declination that are already set
+void CDataStar::UpdatePosFromRADec()
 {
-	if( mag < 3.5f )
-		color.r = color.g = color.b = starfMgr.GetStarsBrightColor();
-	else
-		color.r = color.g = color.b = starfMgr.GetStarsDimColor();
+	SetPhiThetaFromRADec();
+	SetXYZFromRADec();
 }
 
-void CDataStar::SetRadiusFromMag()
+// Update all position info from the x, y, and z coordinates that are already set
+void CDataStar::UpdatePosFromXYZ()
 {
-	if( mag < 3.5f )
-		radius = starfMgr.GetStarsBrightRadius();
-	else
-		radius = starfMgr.GetStarsDimRadius();
-}
-///*/
-
-/*/// old star color/radius
-void CDataStar::SetColorFromMag()
-{
-	if( mag > 2.0f )
-	{
-		color.r = (8-mag)/7;
-		color.g = (8-mag)/7;
-		color.b = (8-mag)/7;
-	}
-	else
-	{
-		color = COLOR_WHITE;
-	}
+	SetPhiThetaFromXYZ();
+	SetRADecFromXYZ();
 }
 
-void CDataStar::SetRadiusFromMag()
+// Set the x, y, and z coords from the right ascension and declination
+// Phi and theta must already be calculated
+void CDataStar::SetXYZFromRADec()
 {
-	radius = (8-mag) / 600.0f;
+	center.x = (float) ( sin(phi) * sin(theta) );
+	center.y = (float) ( cos(phi) );
+	center.z = (float) ( sin(phi) * cos(theta) );
 }
-///*/
+
+// Set spherical coordinate (phi and theta) from the right ascension and declination
+void CDataStar::SetPhiThetaFromRADec()
+{
+	// Calculate phi
+	float radians = DegToRad( dec.degree + (dec.minute+dec.second/60)/60 );
+	if( dec.positive )
+		phi = (PI/2.0f)-radians;
+	else
+		phi = (PI/2.0f)+radians;
+
+	// Calculate theta
+	theta = PI*2 * (ra.hour+(ra.minute+ra.second/60)/60)/24;
+}
 
 // Set right ascension and Declination from the x, y, and z coordinates
 // Phi and theta must already be calculated
@@ -157,73 +159,54 @@ void CDataStar::SetRADecFromXYZ()
 	float hour, minute;
 
 	// Convert phi to declination form
-	// At this point:    0 <= phi <= 180.
+	// At this point:    0 <= phi <= PI.
 	// Need it to be:   90 <= deg <= -90. (for declination)
-	float deg = 90.0f - phi;
-	if( deg < 0.0f ) { dec.positive = FALSE; deg = -deg; }
-	minute = (deg - (int)deg)*60;
+	float degrees = 90.0f - RadToDeg(phi);
+	if( degrees < 0.0f ) { dec.positive = FALSE; degrees = -degrees; }
+	minute = (degrees - (int)degrees)*60;
 	dec.second = (minute - (int)minute)*60;
 	dec.minute = (int)minute;
-	dec.degree = (int)deg;
+	dec.degree = (int)degrees;
 
 	// Convert theta to right ascension form
-	hour = theta*24/360;
+	hour = theta*12/PI;
 	minute = (hour - (int)hour)*60;
 	ra.second = (minute - (int)minute)*60;
 	ra.minute = (int)minute;
 	ra.hour = (int)hour;
 }
 
-// Set the x, y, and z coords from the right ascension and declination
-// Phi and theta must already be calculated
-void CDataStar::SetXYZFromRADec()
-{
-	float phiRad = DegToRad(phi);
-	float thetaRad = DegToRad(theta);
-
-	x = (float) ( sin(phiRad) * sin(thetaRad) );
-	y = (float) ( cos(phiRad) );
-	z = (float) ( sin(phiRad) * cos(thetaRad) );
-}
-
-// Set spherical coordinate (phi and theta) from the right ascension and declination
-void CDataStar::SetPhiThetaFromRADec()
-{
-	// Calculate phi
-	float degrees = dec.degree + (dec.minute+dec.second/60)/60;
-	if( dec.positive )
-		phi = 90.0f-degrees;
-	else
-		phi = 90.0f+degrees;
-
-	// Calculate theta
-	theta = 360 * (ra.hour+(ra.minute+ra.second/60)/60)/24;
-}
-
 // Set spherical coordinates (phi and theta) from the  x, y, and z coordinates
 void CDataStar::SetPhiThetaFromXYZ()
 {
-	// Phi is measured from 0 (north) to 180 (south) degrees
-	phi  = (float) acos( (double) y  );
-	phi  = RadToDeg(phi);
+	// Phi is measured from 0 (north) to PI (south)
+	phi  = (float) acos( (double) center.y  );
 
-	// Theta is measured from 0 to 360 degrees
-	if( z >= 0 )
-		theta = (float)       asin( x / sqrt( (double)(z*z) + (x*x) ) );
+	// Theta is measured from 0 to 2*PI degrees
+	if( center.z >= 0 )
+		theta = (float)       asin( center.x / sqrt( (double)(center.z*center.z) + (center.x*center.x) ) );
 	else
-		theta = (float) (PI - asin( x / sqrt( (double)(z*z) + (x*x) ) ));
-	theta = RadToDeg(theta);
-	if( theta < 0 )	theta += 360.0f;	/// Prevent negative theta (necessary?)
+		theta = (float) (PI - asin( center.x / sqrt( (double)(center.z*center.z) + (center.x*center.x) ) ));
+
+	if( theta < 0.0f )	theta += 2*PI;	// Prevent negative theta
 }
 
-// Sets the local-to-world matrix based on right ascension and declination
-void CDataStar::SetMatFromPhiTheta()
+// Sets the quad vertices based on spherical coordinates, phi and theta
+void CDataStar::UpdateVerts()
 {
+	matrix44 mat;
 	mat.identity();
 
-	mat = RotateRadMatrix44( 'y', DegToRad(theta) );
-	mat *= RotateRadMatrix44( 'x', DegToRad(phi) );
+	// Initialize local-to-world matrix
+	mat = RotateRadMatrix44( 'y', theta );
+	mat *= RotateRadMatrix44( 'x', phi );
 	mat *= TranslateMatrix44( 0.0f, 1.0f, 0.0f );
+
+	// Calculate vertices
+	trVert = mat*vector3(  radius, 0.0f,  radius );
+	tlVert = mat*vector3( -radius, 0.0f,  radius );
+	blVert = mat*vector3( -radius, 0.0f, -radius );
+	brVert = mat*vector3(  radius, 0.0f, -radius );
 }
 
 // Pick random x then a random y and z so that x,y,z has length of 1
@@ -238,15 +221,13 @@ void CDataStar::Randomize()
 void CDataStar::PickLocation()
 {
 	PickXYZ();
-	SetPhiThetaFromXYZ();
-	SetRADecFromXYZ();
-	SetMatFromPhiTheta();
+	UpdatePosFromXYZ();
 }
 
 // Pick random x, y, and z values such that <x,y,z> is normalized
 void CDataStar::PickXYZ()
 {
-	x = (float)(rand()%2000)/1000-1;	// +1.0 to -1.0
+	center.x = (float)(rand()%2000)/1000-1;	// +1.0 to -1.0
 
 	int chooseYbeforeZ;					// Helps randomize stars
 	float absYMax;						// The maximum absolute value of Y based on X
@@ -257,33 +238,33 @@ void CDataStar::PickXYZ()
 
 	if(chooseYbeforeZ)
 	{
-		absYMax = (float)pow(1.0-(x*x), 0.5);
+		absYMax = (float)pow(1.0-(center.x*center.x), 0.5);
 		if ((int)(absYMax*1000) != 0)
 		{
 			plus_minus = (rand()%2)*2-1;
-			y = plus_minus * (float)(rand()%(int)(absYMax*1000))/1000;
+			center.y = plus_minus * (float)(rand()%(int)(absYMax*1000))/1000;
 		}
 		else
 		{
-			y = 0.0;
+			center.y = 0.0;
 		}
 		plus_minus = (rand()%2)*2-1;
-		z = plus_minus * (float)pow((1.0-(x * x)-(y * y)), 0.5);
+		center.z = plus_minus * (float)pow((1.0-(center.x * center.x)-(center.y * center.y)), 0.5);
 	}
 	else //chooseZbeforeY
 	{
-		absZMax = (float)pow(1.0-(x*x), 0.5);
+		absZMax = (float)pow(1.0-(center.x*center.x), 0.5);
 		if ((int)(absZMax*1000) != 0)
 		{
 			plus_minus = (rand()%2)*2-1;
-			z = plus_minus * (float)(rand()%(int)(absZMax*1000))/1000;
+			center.z = plus_minus * (float)(rand()%(int)(absZMax*1000))/1000;
 		}
 		else
 		{
-			z = 0.0;
+			center.z = 0.0;
 		}
 		plus_minus = (rand()%2)*2-1;
-		y = plus_minus * (float)pow((1.0-(x * x)-(z * z)), 0.5);
+		center.y = plus_minus * (float)pow((1.0-(center.x * center.x)-(center.z * center.z)), 0.5);
 	}
 }
 
@@ -298,36 +279,60 @@ void CDataStar::PickXYZ()
 //  such that the distribution will be approximately normal.
 void CDataStar::PickMag()
 {
-	// Magnitude of 3.8 and 13 correspond to
-	// -4 and 3 for z-score
-	// Pick a random z-score
-	float z = (float)(rand()%7000)/100.0f - 4.0f;
+	// Pick random percent from 0.00 to 100.00
+	float percent = (float)(rand()%1000)/10;
 
-///	plug into dist curve
-	mag = 3.0f;///
+	// 50.53% between 8 and 9
+	if( percent < 50.53f )
+		mag = (rand()%100)/100.0f + 8.0f;
 
-/*/// Old pickmag
-	// Pick random number from 0.00 to 100.00
-	float random = (float)(rand()%1000)/10;
-
-	// 97% pick mag to be 3 to 6
-	if( random < 97.0f )
+	// 30.91% between 7 and 8
+	else if( percent < 50.53f + 30.91f )
 	{
-		mag = (float)(rand()%3000)/1000 + 3.0f;
+		mag = (rand()%100)/100.0f + 7.0f;
 	}
-	// 2.3% pick mag to be 2 to 6
-	else if( random < 99.3f )
+
+	// 12.54% between 6 and 7
+	else if( percent < 50.53f + 30.91f + 12.54f )
 	{
-		mag = (float)(rand()%4000)/1000 + 2.0f;
+		mag = (rand()%100)/100.0f + 6.0f;
 	}
-	// 0.7% pick mag to be 0 to 6
+
+	// 04.08% between 5 and 6
+	else if( percent < 50.53f + 30.91f + 12.54f + 04.08f )
+	{
+		mag = (rand()%100)/100.0f + 5.0f;
+	}
+	
+	// 01.32% between 4 and 5
+	else if( percent < 50.53f + 30.91f + 12.54f + 04.08f + 01.32f )
+	{
+		mag = (rand()%100)/100.0f + 4.0f;
+	}
+	
+	// 00.41% between 3 and 4
+	else if( percent < 50.53f + 30.91f + 12.54f + 04.08f + 01.32f + 00.41f )
+	{
+		mag = (rand()%100)/100.0f + 3.0f;
+	}
+	
+	// 00.15% between 2 and 3
+	else if( percent < 50.53f + 30.91f + 12.54f + 04.08f + 01.32f + 00.41f + 00.15f )
+	{
+		mag = (rand()%100)/100.0f + 2.0f;
+	}
+	
+	// 00.04% between 1 and 2
+	else if( percent < 50.53f + 30.91f + 12.54f + 04.08f + 01.32f + 00.41f + 00.15f + 00.04f )
+	{
+		mag = (rand()%100)/100.0f + 1.0f;
+	}
+	
+	// 00.02% between 0 and 1
 	else
 	{
-		mag = (float)(rand()%6000)/1000;
+		mag = (rand()%100)/100.0f + 0.0f;
 	}
-*/
-
-	SetColorFromMag();
 }
 
 
@@ -345,7 +350,7 @@ void CDataStar::Serialize(CArchive& ar)
 	{
 		ar >> ra.hour >> ra.minute >> ra.second
 		   >> dec.positive >> dec.degree >> dec.minute >> dec.second
-		   >> mag >> x >> y >> z
+		   >> mag >> center.x >> center.y >> center.z
 		   >> color
 		   >> radius;
 	}
@@ -353,7 +358,7 @@ void CDataStar::Serialize(CArchive& ar)
 	{
 		ar << ra.hour << ra.minute << ra.second
 		   << dec.positive << dec.degree << dec.minute << dec.second
-		   << mag << x << y << z
+		   << mag << center.x << center.y << center.z
 		   << color
 		   << radius;
 	}

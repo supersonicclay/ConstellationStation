@@ -205,6 +205,8 @@ CArchive& operator>> ( CArchive& ar, color_s& c );
 CArchive& operator<< ( CArchive& ar, season_e s );
 CArchive& operator<< ( CArchive& ar, color_s c );
 
+// Star comparison (for sorting by magnitude)
+BOOL operator< ( CDataStar& s1, CDataStar& s2 );
 
 // Message boxes (handle not specified)
 void CSInfo( char* msg, char* title="Information" );

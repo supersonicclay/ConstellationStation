@@ -63,25 +63,41 @@ void CMgrStarf::SetStarsBrightColor( float x )	{	starsBrightColor = x;	}
 // Find the specified star
 void CMgrStarf::Find( CDataStar* star )
 {
-	starfield.Find( star->GetX(), star->GetY(), star->GetZ() );
-}
+	starfield.Find( star->GetCenter().x, star->GetCenter().y, star->GetCenter().z );
+}   
 
 // Find the specified constellation
 void CMgrStarf::Find( CDataConst* constellation )
 {
-	/// Average all stars
+	if( constellation->GetLineCount() == 0 )
+	{
+		CSWarn( "Can't find a constellation with no lines" );
+		return;
+	}
+
+	vector3 mid = constellation->GetMidpoint();
+
+	starfield.Find( mid.x, mid.y, mid.z );
 }
 
 // Track the specified star
 void CMgrStarf::StartTracking( CDataStar* star )
 {
-	starfield.StartTracking( star->GetX(), star->GetY(), star->GetZ() );
+	starfield.StartTracking( star->GetCenter().x, star->GetCenter().y, star->GetCenter().z );
 }
 
 // Track the specified constellation
 void CMgrStarf::StartTracking( CDataConst* constellation )
 {
-	/// Average all stars
+	if( constellation->GetLineCount() == 0 )
+	{
+		CSWarn( "Can't track a constellation with no lines" );
+		return;
+	}
+
+	vector3 mid = constellation->GetMidpoint();
+
+	starfield.StartTracking( mid.x, mid.y, mid.z );
 }
 
 // Turns starfield spinning on/off
@@ -183,10 +199,6 @@ void CMgrStarf::UpdateStarsAppearance()
 	float starsMaxMag = optionsMgr.GetStarsLimMag();
 	float magDiff = starsMaxMag - starsMinMag;
 
-	/// min/max rad/color check
-	float minRadius2=10, maxRadius2=0;
-	float minColor2=10, maxColor2=0;
-
 	for( int i=0; i<starfield.GetStarCount(); ++i )
 	{
 		mag = starfield.GetStar(i)->GetMag();
@@ -200,18 +212,7 @@ void CMgrStarf::UpdateStarsAppearance()
 
 		starfield.GetStar(i)->SetRadius( radius );
 		starfield.GetStar(i)->SetColor( color );
-
-		/// min/max rad/color check
-		if( starfield.GetStar(i)->GetRadius() < minRadius2 )
-			minRadius2 = starfield.GetStar(i)->GetRadius();
-		if( starfield.GetStar(i)->GetRadius() > maxRadius2 )
-			maxRadius2 = starfield.GetStar(i)->GetRadius();
-
-		if( starfield.GetStar(i)->GetColor().r < minColor2 )
-			minColor2 = starfield.GetStar(i)->GetColor().r;
-		if( starfield.GetStar(i)->GetColor().r > maxColor2 )
-			maxColor2 = starfield.GetStar(i)->GetColor().r;
-		
+		starfield.GetStar(i)->UpdateVerts();
 	}
 }
 

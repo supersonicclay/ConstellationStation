@@ -11,8 +11,10 @@ PHASES
 
 
 BUGS
+-	3	Random starfield has circles around E and W poles
+-	3	first star is a blank
 -	3	cursor doesn't hide after open
--	3	Random starfield looks bad
+	4	Sunshine without sun isn't calculating light position
 	5	Program Icon
 		- frame.GetIcon()
 		- frame.SetIcon()
@@ -22,14 +24,16 @@ BUGS
 GENERAL
 -	1	Read-through cleaning / Sanity checks
 		- DataTerrain
+-	3	CDataSun
 	5	Spin sun separately
 	5	Don't maximize on startup
 	5	Redraw starfield toolbar buttons
 	5	Splash Screen
+	5	Loading message
 	5	Print
 	5	Undo
 
-OPTION MGR
+OPTIONS
 	4	ConstLine width
 	4	Terrain shadows on/off
 	4	constellation labels
@@ -37,29 +41,25 @@ OPTION MGR
 	5	Latitude		(Portales: 34.60N)
 	5	home location
 
-INPUT MGR
+INPUT
 -	3	Trackball
 -	3	Keep Mouse in place while rotating
 -	3	Rotate / Zoom speed
 
-GRAPHICS MGR
--	3	Improve 3D math
--	3	Vertex/color arrays for stars
+GRAPHICS
 	4	Lighting is shining through
 	4	Print Constellation Name near constellation
 		- moveable?
 	4	Heading indicator needs work.
 		- Do it like Starry Night?
 	5	Actual magnification 1X/2X/1024X
-	5	Celestial Grid
+	5	Celestial/Equatorial Grid
 
-CONSTELLATION MGR
+CONSTELLATION
 	5	Input actual constellations
 	5	Constellation details
 
-STARFIELD MGR
--	3	Store rad instead of deg
--	3	Tracking
+STARFIELD
 	5	Track/Find
 		- constellation
 		- star
@@ -74,20 +74,23 @@ STARFIELD MGR
 	5?	Add Stars
 	5?	Precession
 
-TERRAIN MGR
+STARS
+
+
+TERRAIN
 -	3	Generate first few so you're sitting in a valley
--	3?	More circular
--	3?	vectors / 2d arrays
 -	3	Iterations / scale
+-	3?	More circular
 	4	Textured terrain
 
-DOCUMENT MGR
-	5	Import/Export constellations (must check seed if random starf)
+DOCUMENT
+	5	Import/Export constellations (must check seed)
 
-TEACHER MGR
+TEACHER
 	5	CONSTELLATION TESTS
 		- Types
 			- Show constlines. Pick a line
 			- Don't show constlines. Pick a star 
 			- Draw constellation
 		- Choose constellations in test
+

@@ -371,9 +371,9 @@ public:
   // Constructor with initializing vector4
   vector4(const vector4 &v): x(v.x), y(v.y), z(v.z), w(v.w) {}
   // Constructor with initializing vector3
-  explicit vector4(const vector3 &v): x(v.x), y(v.y), z(v.z), w(0.0F) {}
+  explicit vector4(const vector3 &v): x(v.x), y(v.y), z(v.z), w(1.0F) {}
   // Constructor with initializing vector2
-  explicit vector4(const vector2 &v): x(v.x), y(v.y), z(0.0F), w(0.0F) {}
+  explicit vector4(const vector2 &v): x(v.x), y(v.y), z(0.0F), w(1.0F) {}
   // Constructor with initializing float array
   vector4(const float* v) { *this = v; }
 
@@ -396,7 +396,7 @@ public:
     x = v.x;
     y = v.y;
     z = v.z;
-    w = 0.0F;
+    w = 1.0F;
     return *this;
   }
   // Assign from a vector2
@@ -404,7 +404,7 @@ public:
     x = v.x;
     y = v.y;
     z = 0.0F;
-    w = 0.0F;
+    w = 1.0F;
     return *this;
   }
   // Assign from a float array

@@ -31,11 +31,17 @@ CDataStarf::~CDataStarf()
 {
 }
 
-void CDataStarf::Clear()
+// Clear starfield. Also clear stars if told to do so
+void CDataStarf::Clear( BOOL clearStars )
 {
 	// Stars
-	starCount = 0;
-	stars.clear();
+	if( clearStars )
+	{
+		seed = 0;
+		starCount = 0;
+		stars.clear();
+		stars.push_back( CDataStar() );
+	}
 
 	// Constellations
 	constCount = 0;
@@ -73,20 +79,31 @@ void CDataStarf::Clear()
 	longitude = 0.0f;
 }
 
+// Create a new random or actual starfield
 void CDataStarf::New( BOOL actual )
 {
-	Clear();
+	// Don't clear stars if we don't need to
+	if( actual && seed == -1 )
+		Clear( FALSE );
+	else
+		Clear();
 
 	if( actual )
 	{
-		seed = -1;
-		InitActualStars();
+		// Check if we've already loaded actual stars
+		if( seed != -1 )
+		{
+			seed = -1;
+			InitActualStars();
+		}
 		InitActualConsts();
+		UpdateMats();
 	}
 	else
 	{
 		seed = clock();
 		InitRandomStars();
+		UpdateMats();
 	}
 }
 
@@ -100,13 +117,11 @@ void CDataStarf::InitRandomStars()
 	CDataStar newStar;
 
 	/* /// North Star
-	newStar.SetColor( COLOR_NORTHSTAR );
+	newStar.SetColor( COLOR_GREEN );
 	newStar.SetMag( 2.0f );
 	newStar.SetRA( 0, 0, 0.0f );
-	newStar.SetDec( 90, 0, 0.0f );
-	newStar.SetX( 0.0f );
-	newStar.SetY( 1.0f );
-	newStar.SetZ( 0.0f );
+	newStar.SetDec( TRUE, 90, 0, 0.0f );
+	newStar.SetCenter( vector3(0.0f,1.0f,0.0f) );
 	stars.push_back( CDataStar(newStar) );
 	*/
 
@@ -115,9 +130,7 @@ void CDataStarf::InitRandomStars()
 	newStar.SetMag( -10.0f );
 	newStar.SetRA( 12, 0, 0.0f );
 	newStar.SetDec( TRUE, 0, 0, 0.0f );
-	newStar.SetX( 0.0f );
-	newStar.SetY( 0.0f );
-	newStar.SetZ(-1.0f );
+	newStar.SetCenter( vector3(0.0f,0.0f,-1.0f) );
 	stars.push_back( CDataStar(newStar) );
 
 	// Randomize the rest
@@ -127,12 +140,11 @@ void CDataStarf::InitRandomStars()
 		stars.push_back( CDataStar(newStar) );
 	}
 
+	// Sort stars by magnitude
+	std::sort( stars.begin(), stars.end() );
+
 	CountStars();
 	starfMgr.UpdateStarsAppearance();
-	UpdateViewMat();
-	UpdateTimeMat();
-	UpdateLatMat();
-	UpdateLongMat();
 }
 
 // Load the actual stars from the magnitude-sorted hipparcos catalog
@@ -201,19 +213,14 @@ void CDataStarf::InitActualStars()
 
 		newStar.SetRA( ra );
 		newStar.SetDec( dec );
-		newStar.SetPhiThetaFromRADec();
-		newStar.SetXYZFromRADec();
-		newStar.SetMatFromPhiTheta();
 		newStar.SetMag( mag );
+		newStar.UpdatePosFromRADec();
 
 		stars.push_back( CDataStar(newStar) );
 	}
 
 	CountStars();
 	starfMgr.UpdateStarsAppearance();
-	UpdateViewMat();
-	UpdateTimeMat();
-	UpdateLatMat();
 
 	file.Close();
 }
@@ -462,6 +469,14 @@ void CDataStarf::LoadSunDefaults()
 /////////////////////////////////////////////////////////////////////////////
 // View Methods
 
+// Update all matrices
+void CDataStarf::UpdateMats()
+{
+	UpdateViewMat();
+	UpdateTimeMat();
+	UpdateLatMat();
+	UpdateLongMat();
+}
 // Update view matrix
 void CDataStarf::UpdateViewMat()
 {
@@ -523,6 +538,7 @@ void CDataStarf::ResetRot()
 	rotY = 0.0f;
 	rotTime = 0.0f;
 	UpdateViewMat();
+	UpdateTimeMat();
 }
 
 // Reset zoom
@@ -557,13 +573,11 @@ void CDataStarf::Track()
 	vector4 worldVec( trackX, trackY, trackZ, 1.0f );
 	worldVec = latMat * timeMat * worldVec;
 
-	/// Make up a fake star so we can use its methods
+	// Make up a fake star so we can use its methods
+	//   (little sloppy, but it'll work)
 	CDataStar fakeStar;
-	fakeStar.SetX( worldVec.x );
-	fakeStar.SetY( worldVec.y );
-	fakeStar.SetZ( worldVec.z );
-	fakeStar.SetPhiThetaFromXYZ();
-	fakeStar.SetRADecFromXYZ();
+	fakeStar.SetCenter( vector3(worldVec.x, worldVec.y, worldVec.z) );
+	fakeStar.UpdatePosFromXYZ();
 
 	rotX = fakeStar.GetPhi() - 90.0f;
 	rotY = 180.0f - fakeStar.GetTheta();
@@ -578,18 +592,16 @@ void CDataStarf::Find( float x, float y, float z )
 //  (ie. doesn't include latitude or time rotation)
 
 	// Find world coordinates (ie. after latitude and time rotation)
-	vector4 worldVec( trackX, trackY, trackZ, 1.0f );
+	vector4 worldVec( x, y, z, 1.0f );
 	worldVec = latMat * timeMat * worldVec;
 
-	/// Make up a fake star so we can use its methods
+	// Make up a fake star so we can use its methods
+	//   (little sloppy, but it'll work)
 	CDataStar fakeStar;
-	fakeStar.SetX( worldVec.x );
-	fakeStar.SetY( worldVec.y );
-	fakeStar.SetZ( worldVec.z );
-	fakeStar.SetPhiThetaFromXYZ();
-	fakeStar.SetRADecFromXYZ();
+	fakeStar.SetCenter( vector3(worldVec.x, worldVec.y, worldVec.z) );
+	fakeStar.UpdatePosFromXYZ();
 
-	rotX = 90.0f - fakeStar.GetPhi();
+	rotX = fakeStar.GetPhi() - 90.0f;
 	rotY = 180.0f - fakeStar.GetTheta();
 
 	UpdateViewMat();
@@ -607,21 +619,32 @@ void CDataStarf::Serialize(CArchive& ar)
 	// Serialize CDataStarf attributes
 	if( ar.IsLoading() )
 	{
+		// Prevent loading actual stars over again
+		BOOL isActual = seed == -1;
+
 		ar >> seed
 		   >> constCount >> newConstCount >> curConstNum
 		   >> latitude >> longitude
 		   >> rotX >> rotY >> rotTime
 		   >> zoom;
 
+		// If we're loading an actual starfield
 		if( seed == -1 )
 		{
-			stars.clear();
-			InitActualStars();
+			// Only InitActualStars if we haven't already
+			if( !isActual )
+			{
+				stars.clear();
+				InitActualStars();
+			}
+			UpdateMats();
 		}
+		// Otherwise initialize random starfield
 		else
 		{
 			stars.clear();
 			InitRandomStars();
+			UpdateMats();
 		}
 	}
 	else
@@ -633,7 +656,7 @@ void CDataStarf::Serialize(CArchive& ar)
 		   << zoom;
 	}
 
-	/// If we're loading, get the constellations vector ready
+	// If we're loading, get the constellations vector ready
 	if( ar.IsLoading() )
 	{
 		consts.clear();

@@ -17,14 +17,26 @@
 
 CDataTerrain::CDataTerrain()
 {
-	heights = upperNormals = lowerNormals = NULL;	/// UGLY!
+	// Initialize array pointers to NULL
+	heights = NULL;
+	upperNormals = lowerNormals = NULL;
+
+	size = arraySize = 0;
 
 	Clear();
 }
 
 CDataTerrain::~CDataTerrain()
 {
-	/// UGLY!
+	// Delete any memory reserved for arrays
+	int i;
+	for( i=0; i<arraySize; ++i )
+		delete[] heights[i];
+	for( i=0; i<size; ++i )
+	{
+		delete[] upperNormals[i];
+		delete[] lowerNormals[i];
+	}
 	delete[] heights;
 	delete[] upperNormals;
 	delete[] lowerNormals;
@@ -32,7 +44,15 @@ CDataTerrain::~CDataTerrain()
 
 void CDataTerrain::Clear()
 {
-	/// UGLY!
+	// Delete any memory reserved for arrays
+	int i;
+	for( i=0; i<arraySize; ++i )
+		delete[] heights[i];
+	for( i=0; i<size; ++i )
+	{
+		delete[] upperNormals[i];
+		delete[] lowerNormals[i];
+	}
 	delete[] heights;
 	delete[] upperNormals;
 	delete[] lowerNormals;
@@ -42,20 +62,34 @@ void CDataTerrain::Clear()
 	viewHeight = 0.0f;
 }
 
+// Make a new terrain with a random seed
 void CDataTerrain::New()
 {
 	Clear();
 
+	int i;
+
 	// Generate new seed
-	seed = (unsigned)clock(); 
+	seed = (unsigned)clock();
+	seed = 10;///
 
 	size = 1<<optionsMgr.GetTerrIters();
 
 	arraySize = size + 1;
 
-	heights = new float[arraySize * arraySize];
-	upperNormals = new float[ size*size*3 ];
-	lowerNormals = new float[ size*size*3 ];
+	// Reserve memory for heights array
+	heights = new float*[arraySize];
+	for( i=0; i<arraySize; ++i )
+		heights[i] = new float[arraySize];
+
+	// Reserve memory for normals arrays
+	upperNormals = new vector3*[size];
+	lowerNormals = new vector3*[size];
+	for( i=0; i<size; ++i )
+	{
+		upperNormals[i] = new vector3[size];
+		lowerNormals[i] = new vector3[size];
+	}
 
 	MakeTerrain();
 }
@@ -64,43 +98,20 @@ void CDataTerrain::New()
 /////////////////////////////////////////////////////////////////////////////
 // Gets
 
-float*		CDataTerrain::GetHeights()		{	return heights;		}
-int			CDataTerrain::GetArraySize()	{	return arraySize;	}
-int			CDataTerrain::GetSize()			{	return size;		}
-float		CDataTerrain::GetViewHeight()	{	return viewHeight;	}
-
-float CDataTerrain::GetHeight( int i, int j )
-{
-	return heights[ i*arraySize + j ];
-}
-
-float* CDataTerrain::GetUpperNormal( int i, int j )
-{
-	return &upperNormals [ (size*j*3 + i*3) ];
-}
-
-float* CDataTerrain::GetLowerNormal( int i, int j )
-{
-	return &lowerNormals [ (size*j*3 + i*3) ];
-}
+float**		CDataTerrain::GetHeights()						{	return heights;				}
+int			CDataTerrain::GetArraySize()					{	return arraySize;			}
+int			CDataTerrain::GetSize()							{	return size;				}
+float		CDataTerrain::GetViewHeight()					{	return viewHeight;			}
+float		CDataTerrain::GetHeight( int i, int j )			{	return heights[i][j];		}
+vector3		CDataTerrain::GetUpperNormal( int i, int j )	{	return upperNormals[i][j];	}
+vector3		CDataTerrain::GetLowerNormal( int i, int j )	{	return lowerNormals[i][j];	}
 
 
 /////////////////////////////////////////////////////////////////////////////
 // Sets
 
-void CDataTerrain::SetUpperNormal( int i, int j, float* n )
-{
-	upperNormals[ (size*j*3 + i*3 + 0) ] = n[0];
-	upperNormals[ (size*j*3 + i*3 + 1) ] = n[1];
-	upperNormals[ (size*j*3 + i*3 + 2) ] = n[2];
-}
-
-void CDataTerrain::SetLowerNormal( int i, int j, float* n )
-{
-	lowerNormals[ (size*j*3 + i*3 + 0) ] = n[0];
-	lowerNormals[ (size*j*3 + i*3 + 1) ] = n[1];
-	lowerNormals[ (size*j*3 + i*3 + 2) ] = n[2];
-}
+void CDataTerrain::SetUpperNormal( int i, int j, vector3 n )	{	upperNormals[i][j] = n;	}
+void CDataTerrain::SetLowerNormal( int i, int j, vector3 n )	{	lowerNormals[i][j] = n;	}
 
 void CDataTerrain::IncViewHeight()///
 {	viewHeight += 0.01f;	}
@@ -111,6 +122,7 @@ void CDataTerrain::DecViewHeight()///
 /////////////////////////////////////////////////////////////////////////////
 // Methods
 
+// Make a new terrain with the current seed and current options
 void CDataTerrain::MakeTerrain()
 {
 	// Set seed so terrain is predictable
@@ -128,7 +140,7 @@ void CDataTerrain::MakeTerrain()
 	{
 		for (j=0; j<arraySize; ++j)
 		{
-			heights[(i*arraySize) + j] = 0.0f;
+			heights[i][j] = 0.0f;
 		}
 	}
 
@@ -153,7 +165,7 @@ void CDataTerrain::MakeTerrain()
 		{
 			for (j=midSize; j<size; j+=midSize)
 			{
-				heights[(i*arraySize) + j] = 
+				heights[i][j] = 
 					RandomOffset(range) + 
 					AvgSquare(i, j, midSize);
 			}
@@ -181,7 +193,7 @@ void CDataTerrain::MakeTerrain()
 				if (findingOddPoints && j==0)
 					j += midSize;
 
-				heights[ (i*arraySize) + j ] =
+				heights[i][j] =
 					RandomOffset(range) +
 					AvgDiamond(i, j, midSize);
 			}
@@ -197,43 +209,57 @@ void CDataTerrain::MakeTerrain()
 
 float CDataTerrain::AvgSquare(int i, int j, int midSize)
 {
+	/* RETURN AVERAGE OF X's
+		X . . . X
+		. . . . .
+		. . * . .
+		. . . . .
+		X . . . X
+	*/
 	float total = 
-		heights[ ((i + midSize) * arraySize) + (j + midSize) ] +
-		heights[ ((i + midSize) * arraySize) + (j - midSize) ] +
-		heights[ ((i - midSize) * arraySize) + (j + midSize) ] +
-		heights[ ((i - midSize) * arraySize) + (j - midSize) ];
+		heights [i + midSize] [j + midSize] +
+		heights [i + midSize] [j - midSize] +
+		heights [i - midSize] [j + midSize] +
+		heights [i - midSize] [j - midSize];
 
 	return total / 4;
 }
 
 float CDataTerrain::AvgDiamond(int i, int j, int midSize)
 {
+	/* RETURN AVERAGE OF X's
+		. . X . .
+		. . . . .
+		X . * . X
+		. . . . .
+		. . X . .
+	*/
 	float total;
 	if (i == 0)
-	total = heights[ (i*arraySize) + j-midSize ] +
-			heights[ (i*arraySize) + j+midSize ] +
-			heights[ ((size-midSize)*arraySize) + j ] +
-			heights[ ((i+midSize)*arraySize) + j ];
+	total = heights [i]            [j-midSize] +
+			heights [i]            [j+midSize] +
+			heights [size-midSize] [j] +
+			heights [i+midSize]    [j];
 	else if (i == arraySize-1)
-	total = heights[ (i*arraySize) + j-midSize ] +
-			heights[ (i*arraySize) + j+midSize ] +
-			heights[ ((i-midSize)*arraySize) + j ] +
-			heights[ ((0+midSize)*arraySize) + j ];
+	total = heights [i]            [j-midSize] +
+			heights [i]            [j+midSize] +
+			heights [i-midSize]    [j] +
+			heights [0+midSize]    [j];
 	else if (j == 0)
-	total = heights[ ((i-midSize)*arraySize) + j ] +
-			heights[ ((i+midSize)*arraySize) + j ] +
-			heights[ (i*arraySize) + j+midSize ] +
-			heights[ (i*arraySize) + size-midSize] ;
+	total = heights [i-midSize]    [j] +
+			heights [i+midSize]    [j] +
+			heights [i]            [j+midSize] +
+			heights [i]            [size-midSize];
 	else if (j == arraySize-1)
-	total = heights[ ((i-midSize)*arraySize) + j ] +
-			heights[ ((i+midSize)*arraySize) + j ] +
-			heights[ (i*arraySize) + j-midSize ] +
-			heights[ (i*arraySize) + 0+midSize ];
+	total = heights [i-midSize]    [j] +
+			heights [i+midSize]    [j] +
+			heights [i]            [j-midSize] +
+			heights [i]            [0+midSize];
 	else
-	total = heights[ ((i-midSize)*arraySize) + j ] +
-			heights[ ((i+midSize)*arraySize) + j ] +
-			heights[ (i*arraySize) + j-midSize ] +
-			heights[ (i*arraySize) + j+midSize ];
+	total = heights [i-midSize]    [j] +
+			heights [i+midSize]    [j] +
+			heights [i]            [j-midSize] +
+			heights [i]            [j+midSize];
 	return total / 4;
 }
 
@@ -245,70 +271,53 @@ float CDataTerrain::RandomOffset( float range )
 	return ratio * (2 * range) - range;
 }
 
-
+// Calculate normals for upper and lower triangles
 void CDataTerrain::CalculateNormals()
 {
-	float vec1[3];
-	float vec2[3];
-	float normal[3];
+	vector3 vec1;
+	vector3 vec2;
+	vector3 normal;
 
 	int iterations = optionsMgr.GetTerrIters();
-
-//	inc = (float)pow(2, -iterations+1);
 
 	for( int x=0; x<size; x++ )
 	{
 		for( int z=0; z<size; z++ )
 		{
 			// Upper triangle
-			vec1[0] = (float) pow(2, -iterations+1);
-			vec1[1] = GetHeight( x+1, z ) - GetHeight( x, z );
-			vec1[2] = 0;
-			vec2[0] = 0;
-			vec2[1] = GetHeight( x, z+1 ) - GetHeight( x, z );
-			vec2[2] = (float) pow(2, -iterations+1);
+			vec1.x = (float) pow(2, -iterations+1);
+			vec1.y = GetHeight( x+1, z ) - GetHeight( x, z );
+			vec1.z = 0;
+			vec2.x = 0;
+			vec2.y = GetHeight( x, z+1 ) - GetHeight( x, z );
+			vec2.z = (float) pow(2, -iterations+1);
 
-			CalculateNormal( vec1, vec2, normal );
+			normal = CrossProduct( vec1, vec2 );
+			normal.normalize();
+			// Make sure normal points upward
+			if( normal.y < 0 )
+				normal = -normal;
 			SetUpperNormal( x, z, normal );
 
 			// Lower triangle
-			vec1[0] = -(float) pow(2, -iterations+1);
-			vec1[1] = GetHeight( x+1, z ) - GetHeight( x+1, z+1 );
-			vec1[2] = 0;
-			vec2[0] = 0;
-			vec2[1] = GetHeight( x, z+1 ) - GetHeight( x+1, z+1 );
-			vec2[2] = -(float) pow(2, -iterations+1);
+			vec1.x = -(float) pow(2, -iterations+1);
+			vec1.y = GetHeight( x+1, z ) - GetHeight( x+1, z+1 );
+			vec1.z = 0;
+			vec2.x = 0;
+			vec2.y = GetHeight( x, z+1 ) - GetHeight( x+1, z+1 );
+			vec2.z = -(float) pow(2, -iterations+1);
 
-			CalculateNormal( vec1, vec2, normal );
+			normal = CrossProduct( vec1, vec2 );
+			normal.normalize();
+			// Make sure normal points upward
+			if( normal.y < 0 )
+				normal = -normal;
 			SetLowerNormal( x, z, normal );
 		}
 	}
 }
 
-void CDataTerrain::CalculateNormal( float* vec1, float* vec2, float* normal )
-{
-	normal[0] = vec1[1]*vec2[2] - vec1[2]*vec2[1];
-	normal[1] = vec1[2]*vec2[0] - vec1[0]*vec2[2];
-	normal[2] = vec1[0]*vec2[1] - vec1[1]*vec2[0];
-
-	float normalLength = (float) sqrt (
-		normal[0]*normal[0] +
-		normal[1]*normal[1] +
-		normal[2]*normal[2] );
-
-	normal[0] /= normalLength;
-	normal[1] /= normalLength;
-	normal[2] /= normalLength;
-
-	// Make sure we have upward normals
-	if( normal[1] < 0 )
-	{
-		normal[0] = -normal[0];
-		normal[1] = -normal[1];
-		normal[2] = -normal[2];
-	}
-}
-
+// Calculate the viewing height
 void CDataTerrain::CalculateViewHeight()
 {
 	// Get the index of the midpoint

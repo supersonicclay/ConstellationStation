@@ -1,25 +1,37 @@
 -------------------------------------------------
-0.0 - Creation
+0.5 - Features
 -------------------------------------------------
-
-0.0.0
-	Created Constellation Station using Document / View Architecture
-	Created random starfield
-	Constellation editor
-
-0.0.1
-	Loaded actual stars
 
 
 -------------------------------------------------
-0.1 - Cleanup
+0.4 - Graphics
 -------------------------------------------------
 
-0.1.0
-	Restructured and cleaned code
-	Moved from dynamic arrays to vectors
-	Stopped up memory leaks
-	Implemented saving/opening
+
+-------------------------------------------------
+0.3 - Math
+-------------------------------------------------
+
+0.3.1
+	Limiting magnitude option
+	Brightness / Contrast options
+
+0.3.2
+	Non-textured stars
+	Smoother zoom (dependent on zoom)
+	Active constellation lines (moused over)
+	Local star matrix
+	Local star matrix
+	Limiting magnitude stored in options
+	Saves starfield seed instead of all stars
+	Starfield matrices (view, time, latitude, longitude)
+	Tracking methods
+
+-0.3.3
+	Accurate magnitudes for random starfield
+	2d Dynamic arrays for terrain
+	Stores star vertices instead of matrix
+	Stars now use radians instead of degrees
 
 
 -------------------------------------------------
@@ -45,34 +57,26 @@
 
 
 -------------------------------------------------
-0.3 - Math
+0.1 - Cleanup
 -------------------------------------------------
 
-0.3.0
-	Limiting magnitude option
-	Brightness / Contrast options
-
-0.3.1
-	Non-textured stars
-	Smoother zoom (dependent on zoom)
-	Active constellation lines (moused over)
-	Local star matrix
-	Limiting magnitude stored in options
-	Saves starfield seed instead of all stars
-	Starfield matrices (view, time, latitude, longitude)
-	Tracking methods
-
+0.1.0
+	Restructured and cleaned code
+	Moved from dynamic arrays to vectors
+	Stopped up memory leaks
+	Implemented saving/opening
 
 
 -------------------------------------------------
-0.4 - Graphics
+0.0 - Creation
 -------------------------------------------------
 
+0.0.0
+	Created Constellation Station using Document / View Architecture
+	Created random starfield
+	Constellation editor
 
-
--------------------------------------------------
-0.5 - Features
--------------------------------------------------
-
+0.0.1
+	Loaded actual stars
 
 

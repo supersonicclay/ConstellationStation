@@ -27,14 +27,17 @@ public:
 
 
 // Attributes
-private:
+protected:
 	// Position
-	matrix44 mat;
 	ra_s ra;
 	dec_s dec;
 	float phi;
 	float theta;
-	float x, y, z;
+	vector3 center;
+	vector3 trVert;
+	vector3 tlVert;
+	vector3 blVert;
+	vector3 brVert;
 
 	// Appearance
 	float mag;
@@ -48,42 +51,46 @@ public:
 // Gets
 	ra_s GetRA();
 	dec_s GetDec();
+	float GetPhi();
+	float GetTheta();
+	vector3 GetCenter();
+	vector3 GetNormal();
+	vector3 GetTRVert();
+	vector3 GetTLVert();
+	vector3 GetBLVert();
+	vector3 GetBRVert();
 	float GetMag();
 	color_s GetColor();
 	float GetRadius();
-	float GetX();
-	float GetY();
-	float GetZ();
-	float GetPhi();
-	float GetTheta();
-	matrix44* GetMat();
 
 // Sets
-	void SetMag( float m );
-	void SetColor( color_s c );
-	void SetRadius( float r );
-	void SetX( float x_ );
-	void SetY( float y_ );
-	void SetZ( float z_ );
 	void SetRA( ra_s r );
 	void SetDec( dec_s d );
 	void SetRA( USHORT h, USHORT m, float s );
 	void SetDec( BOOL p, USHORT d, USHORT m, float s );
-
+	void SetCenter( vector3 c );
+	void SetMag( float m );
+	void SetColor( color_s c );
+	void SetRadius( float r );
 
 // Methods
-	void SetColorFromMag();
-	void SetRadiusFromMag();
-	void SetRADecFromXYZ();
+	// Right ascension and declination known
+	void UpdatePosFromRADec();
 	void SetXYZFromRADec();
 	void SetPhiThetaFromRADec();
+
+	// X, Y, and Z coordinates known
+	void UpdatePosFromXYZ();
+	void SetRADecFromXYZ();
 	void SetPhiThetaFromXYZ();
-	void SetMatFromPhiTheta();
+
+	void UpdateVerts();
 
 	void Randomize();
 	void PickXYZ();
 	void PickLocation();
 	void PickMag();
+
 };
 
 // CDataStar vector

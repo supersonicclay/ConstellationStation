@@ -98,7 +98,8 @@ void CDataSun::AdjRotTime( float delta )
 
 void CDataSun::UpdateTimeMat()
 {
-	timeMat = RotateRadMatrix44( 'y', rotTime );
+	timeMat.identity();
+///	timeMat = RotateRadMatrix44( 'y', rotTime );
 }
 
 

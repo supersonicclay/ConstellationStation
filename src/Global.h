@@ -35,6 +35,14 @@ enum season_e
 	season_Autumn
 };
 
+enum track_e
+{
+	track_None,
+	track_Const,
+	track_Star,
+	track_RADec
+};
+
 typedef struct
 {
 	float r;
@@ -53,8 +61,8 @@ typedef struct
 
 typedef struct
 {
-	USHORT hour;
-	USHORT minute;
+	int hour;
+	int minute;
 	float second;
 } ra_s;
 
@@ -72,6 +80,7 @@ typedef struct
 
 extern BOOL terrFog;
 extern BOOL terrExternal;
+extern BOOL terrWire;
 
 
 /////////////////////////////////////////////////////////////////////////////

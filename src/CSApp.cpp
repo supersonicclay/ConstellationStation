@@ -54,6 +54,9 @@ BOOL CCSApp::InitInstance()
 		WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE,
 		NULL, NULL );
 
+	pFrame->SetIcon( LoadIcon( IDI_FRAME ), TRUE );
+	pFrame->SetIcon( LoadIcon( IDI_FRAME ), FALSE );
+
 	m_pMainWnd->ShowWindow( SW_MAXIMIZE );
 	m_pMainWnd->UpdateWindow();
 

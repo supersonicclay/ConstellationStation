@@ -61,15 +61,6 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Icon
-//
-
-// Icon with lowest ID value placed first to ensure application icon
-// remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\ConStation.ico"
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // Bitmap
 //
 
@@ -170,6 +161,7 @@ BEGIN
     END
     POPUP "&View"
     BEGIN
+        MENUITEM "&Find / Track",               ID_VIEW_FINDTRACK
         MENUITEM "&Stars",                      ID_STARS_TOGGLE
         MENUITEM "&Constellations",             ID_CONST_TOGGLE
         MENUITEM "&Terrain",                    ID_TERR_TOGGLE
@@ -213,7 +205,7 @@ STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About Constellation Station"
 FONT 8, "MS Sans Serif"
 BEGIN
-    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,21,20
+    ICON            120,IDC_STATIC,11,17,21,20
     LTEXT           "Constellation Station Version 1.0",IDC_STATIC,40,10,119,
                     8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2003",IDC_STATIC,40,25,119,8
@@ -273,13 +265,15 @@ BEGIN
     PUSHBUTTON      "Defaults",IDC_TERR_DEFAULTS,280,121,50,14
 END
 
-IDD_LOCATION DIALOG DISCARDABLE  0, 0, 186, 95
+IDD_LOCATION DIALOG DISCARDABLE  0, 0, 296, 231
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Dialog"
+CAPTION "Location"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+    DEFPUSHBUTTON   "OK",IDOK,236,10,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,236,27,50,14
+    CONTROL         "MonthCalendar1",IDC_MONTHCALENDAR1,"SysMonthCal32",
+                    MCS_NOTODAY | WS_TABSTOP,10,10,127,84
 END
 
 IDD_OPTIONS_GENERAL DIALOG DISCARDABLE  0, 0, 275, 180
@@ -350,7 +344,7 @@ END
 
 IDD_TIME DIALOG DISCARDABLE  0, 0, 186, 94
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Dialog"
+CAPTION "Time"
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
@@ -472,6 +466,72 @@ BEGIN
     PUSHBUTTON      "Defaults",IDC_COLOR_DEFAULTS,275,158,50,14
 END
 
+IDD_STARINFO DIALOG DISCARDABLE  0, 0, 250, 120
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Star Info"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Info",IDC_STATIC,10,10,165,100
+    DEFPUSHBUTTON   "OK",IDOK,190,10,50,15
+    LTEXT           "Right Ascension",IDC_STATIC,20,40,72,14
+    EDITTEXT        IDC_STAR_RA,103,40,62,14,ES_AUTOHSCROLL | ES_READONLY | 
+                    NOT WS_BORDER
+    LTEXT           "Declination",IDC_STATIC,20,55,72,14
+    EDITTEXT        IDC_STAR_DEC,103,55,62,14,ES_AUTOHSCROLL | ES_READONLY | 
+                    NOT WS_BORDER
+    LTEXT           "Apparent Magnitude",IDC_STATIC,20,70,72,14
+    EDITTEXT        IDC_STAR_MAG,103,70,62,14,ES_AUTOHSCROLL | ES_READONLY | 
+                    NOT WS_BORDER
+    LTEXT           "Spectral Type",IDC_STATIC,20,85,72,14
+    EDITTEXT        IDC_STAR_SPECTRAL,103,85,62,14,ES_AUTOHSCROLL | 
+                    ES_READONLY | NOT WS_BORDER
+    LTEXT           "Common Name",IDC_STATIC,20,25,72,14
+    EDITTEXT        IDC_STAR_NAME,103,25,62,14,ES_AUTOHSCROLL | ES_READONLY | 
+                    NOT WS_BORDER
+END
+
+IDD_FINDTRACK DIALOG DISCARDABLE  0, 0, 305, 310
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Find / Track"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Constellation",IDC_STATIC,10,65,220,55
+    COMBOBOX        IDC_CONST,20,80,140,27,CBS_DROPDOWN | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Find",IDC_FIND_CONST,170,80,50,14
+    PUSHBUTTON      "Track",IDC_TRACK_CONST,170,97,50,14
+    GROUPBOX        "Star",IDC_STATIC,10,135,220,55
+    COMBOBOX        IDC_STAR,20,150,140,65,CBS_DROPDOWN | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Find",IDC_FIND_STAR,170,150,50,14
+    PUSHBUTTON      "Track",IDC_TRACK_STAR,170,167,50,14
+    GROUPBOX        "Right Ascension / Declination",IDC_STATIC,10,205,220,95
+    LTEXT           "Right Ascension",IDC_STATIC,34,221,52,8
+    EDITTEXT        IDC_RA_H,34,235,20,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "h",IDC_STATIC,56,239,8,11
+    EDITTEXT        IDC_RA_M,66,235,20,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "m",IDC_STATIC,88,239,8,11
+    EDITTEXT        IDC_RA_S,100,235,20,14,ES_AUTOHSCROLL | ES_NUMBER
+    CTEXT           ".",IDC_STATIC,120,239,8,11
+    EDITTEXT        IDC_RA_SD,130,235,14,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "s",IDC_STATIC,146,239,8,11
+    LTEXT           "Declination",IDC_STATIC,34,257,36,8
+    EDITTEXT        IDC_DEC_D,34,272,20,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "d",IDC_STATIC,56,275,8,11
+    EDITTEXT        IDC_DEC_M,66,272,20,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "m",IDC_STATIC,88,275,8,11
+    EDITTEXT        IDC_DEC_S,100,272,20,14,ES_AUTOHSCROLL | ES_NUMBER
+    CTEXT           ".",IDC_STATIC,120,275,8,11
+    EDITTEXT        IDC_DEC_SD,130,272,14,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "s",IDC_STATIC,146,275,8,11
+    PUSHBUTTON      "Find",IDC_FIND_RADEC,170,239,50,14
+    PUSHBUTTON      "Track",IDC_TRACK_RADEC,170,257,50,14
+    DEFPUSHBUTTON   "Cancel",IDCANCEL,245,10,50,14
+    GROUPBOX        "Currently Tracking",IDC_STATIC,10,10,220,40
+    EDITTEXT        IDC_CURRENT,20,25,140,14,ES_AUTOHSCROLL | ES_READONLY
+    PUSHBUTTON      "Stop Tracking",IDC_STOP_TRACKING,170,25,50,14
+END
+
 
 #ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
@@ -501,9 +561,9 @@ BEGIN
             VALUE "FileDescription", "Constellation Station Application\0"
             VALUE "FileVersion", "1, 0, 0, 1\0"
             VALUE "InternalName", "ConStation\0"
-            VALUE "LegalCopyright", "Copyright (C) 2003\0"
+            VALUE "LegalCopyright", "Copyright (C) 2004\0"
             VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "ConStation.EXE\0"
+            VALUE "OriginalFilename", "ConStation.exe\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "Constellation Station Application\0"
             VALUE "ProductVersion", "1, 0, 0, 1\0"
@@ -563,10 +623,10 @@ BEGIN
 
     IDD_LOCATION, DIALOG
     BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 179
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 88
+        LEFTMARGIN, 10
+        RIGHTMARGIN, 286
+        TOPMARGIN, 10
+        BOTTOMMARGIN, 221
     END
 
     IDD_OPTIONS_GENERAL, DIALOG
@@ -686,6 +746,40 @@ BEGIN
         HORZGUIDE, 145
         HORZGUIDE, 155
     END
+
+    IDD_STARINFO, DIALOG
+    BEGIN
+        LEFTMARGIN, 10
+        RIGHTMARGIN, 240
+        VERTGUIDE, 20
+        VERTGUIDE, 103
+        VERTGUIDE, 165
+        VERTGUIDE, 175
+        VERTGUIDE, 190
+        TOPMARGIN, 10
+        BOTTOMMARGIN, 110
+        HORZGUIDE, 25
+        HORZGUIDE, 100
+    END
+
+    IDD_FINDTRACK, DIALOG
+    BEGIN
+        LEFTMARGIN, 10
+        RIGHTMARGIN, 295
+        VERTGUIDE, 20
+        VERTGUIDE, 160
+        VERTGUIDE, 170
+        VERTGUIDE, 220
+        VERTGUIDE, 230
+        VERTGUIDE, 245
+        TOPMARGIN, 10
+        BOTTOMMARGIN, 300
+        HORZGUIDE, 25
+        HORZGUIDE, 50
+        HORZGUIDE, 65
+        HORZGUIDE, 190
+        HORZGUIDE, 205
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -697,7 +791,7 @@ END
 
 IDC_POINT               CURSOR  DISCARDABLE     "res\\point.cur"
 IDC_ROTXY               CURSOR  DISCARDABLE     "res\\rotxy.cur"
-IDC_ROTZ                CURSOR  DISCARDABLE     "res\\rotz.cur"
+IDC_ROTY                CURSOR  DISCARDABLE     "res\\rotz.cur"
 IDC_EDIT                CURSOR  DISCARDABLE     "res\\edit.cur"
 IDC_ALINE               CURSOR  DISCARDABLE     "res\\aline.cur"
 IDC_DLINE               CURSOR  DISCARDABLE     "res\\dline.cur"
@@ -733,6 +827,16 @@ BEGIN
     0
 END
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_FRAME               ICON    DISCARDABLE     "res\\ConStation.ico"
+IDI_FILE                ICON    DISCARDABLE     "res\\file.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -845,6 +949,7 @@ END
 STRINGTABLE DISCARDABLE 
 BEGIN
     ID_CONST_LINESTOGGLE    "Toggle constellations lines on/off\nToggle Constellation Lines"
+    ID_VIEW_FINDTRACK       "Find or Track a star, constellation, or a position\nFind / Track"
 END
 
 #endif    // English (U.S.) resources

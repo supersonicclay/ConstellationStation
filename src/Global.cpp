@@ -54,6 +54,7 @@ CCSView* GetView()
 
 BOOL terrFog = TRUE;
 BOOL terrExternal = FALSE;
+BOOL terrWire = FALSE;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -109,7 +110,7 @@ const int		DEF_CONST_LINEWIDTH		= 3;
 const float		DEF_SUN_RADIUS			= 0.08f;
 const color_s	DEF_SUN_COLOR			= {1.0f, 1.0f, 0.5f};
 const BOOL		DEF_SUN_VISIBLE			= TRUE;
-const BOOL		DEF_SUN_SHINE			= TRUE;
+const BOOL		DEF_SUN_SHINE			= FALSE;//TRUE;
 
 const color_s	DEF_SKY_COLOR			= {0.6f, 0.7f, 1.0f};
 
@@ -125,8 +126,8 @@ const color_s	DEF_TERR_SPRCOLOR		= {0.15f, 0.25f, 0.1f};
 const color_s	DEF_TERR_SUMCOLOR		= {0.1f, 0.3f, 0.1f};
 const color_s	DEF_TERR_FALCOLOR		= {0.25f, 0.25f, 0.15f};
 
-const color_s	DEF_TEXT_CONSTCOLOR		= {0.7f, 0.7f, 0.7f};
-const color_s	DEF_TEXT_CONSTSELCOLOR	= {1.0f, 1.0f, 0.5f};
+const color_s	DEF_TEXT_CONSTCOLOR		= {1.0f, 1.0f, 0.5f};
+const color_s	DEF_TEXT_CONSTSELCOLOR	= {1.0f, 1.0f, 1.0f};
 const color_s	DEF_TEXT_STARCOLOR		= {1.0f, 0.0f, 0.0f};
 const color_s	DEF_TEXT_DIRCOLOR		= {1.0f, 0.5f, 0.0f};
 

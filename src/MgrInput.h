@@ -24,7 +24,7 @@ public:
 
 	// Mouse
 	BOOL    mouseRotatingXY;
-	BOOL    mouseRotatingZ;
+	BOOL    mouseRotatingY;
 	CPoint  mousePoint;
 	CPoint  mouseLPoint;
 	CPoint  mouseRPoint;
@@ -97,7 +97,7 @@ public:
 	int SelectStar();
 	int SelectConst();
 	int SelectConstLine();
-	BOOL Select( select_e selection );
+	BOOL Select( select_e selection, float radius );
 
 
 // Destruction

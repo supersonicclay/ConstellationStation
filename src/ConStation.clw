@@ -2,13 +2,13 @@
 
 [General Info]
 Version=1
-LastClass=CCSFrame
+LastClass=CDlgTime
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "ConStation.h"
 LastPage=0
 
-ClassCount=15
+ClassCount=17
 Class1=CCSApp
 Class2=CDlgLocation
 Class3=CCSView
@@ -24,25 +24,29 @@ Class12=CDlgTime
 Class13=CDlgOptionsText
 Class14=CDlgOptionsSun
 
-ResourceCount=17
+ResourceCount=19
 Resource1="IDR_TOOLBAR1"
-Resource2=IDD_SHOW_HIDE
-Resource3=IDD_OPTIONS_SUN
-Resource4=IDD_ABOUTBOX
-Resource5=IDD_OPTIONS_COLOR
-Resource6=IDD_OPTIONS_TEXT
-Resource7=IDD_OPTIONS_GENERAL
-Resource8=IDD_LOCATION
-Resource9=IDR_STARFIELD
-Resource10=IDD_OPTIONS_STAR
-Resource11=IDR_CONSTELLATION
-Resource12=IDD_OPTIONS_CONST
-Resource13=IDD_TIME
-Resource14=IDD_OPTIONS_TERR
-Resource15=IDD_CONST_NAME
-Resource16=IDR_MAINFRAME
+Resource2=IDD_OPTIONS_SUN
+Resource3=IDD_OPTIONS_TEXT
+Resource4=IDD_CONST_NAME
+Resource5=IDR_MAINFRAME
+Resource6=IDD_OPTIONS_COLORSold
+Resource7=IDD_LOCATION
+Resource8=IDD_OPTIONS_STAR
+Resource9=IDD_TIME
+Resource10=IDR_STARFIELD
+Resource11=IDD_ABOUTBOX
+Resource12=IDR_CONSTELLATION
+Resource13=IDD_SHOW_HIDE
+Resource14=IDD_OPTIONS_GENERAL
+Resource15=IDD_OPTIONS_CONST
+Resource16=IDD_STARINFO
 Class15=CDlgOptionsColor
-Resource17=IDD_OPTIONS_COLORSold
+Resource17=IDD_OPTIONS_TERR
+Class16=CDlgStarInfo
+Resource18=IDD_OPTIONS_COLOR
+Class17=CDlgFindTrack
+Resource19=IDD_FINDTRACK
 
 [CLS:CDlgAbout]
 Type=0
@@ -84,11 +88,12 @@ Command17=ID_OPTIONS_SUN
 Command18=ID_OPTIONS_TERR
 Command19=ID_OPTIONS_COLOR
 Command20=ID_OPTIONS_TEXT
-Command21=ID_STARS_TOGGLE
-Command22=ID_CONST_TOGGLE
-Command23=ID_TERR_TOGGLE
-Command24=ID_APP_ABOUT
-CommandCount=24
+Command21=ID_VIEW_FINDTRACK
+Command22=ID_STARS_TOGGLE
+Command23=ID_CONST_TOGGLE
+Command24=ID_TERR_TOGGLE
+Command25=ID_APP_ABOUT
+CommandCount=25
 
 [ACL:IDR_MAINFRAME]
 Type=1
@@ -149,9 +154,10 @@ VirtualFilter=dWC
 [DLG:IDD_LOCATION]
 Type=1
 Class=CDlgLocation
-ControlCount=2
+ControlCount=3
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
+Control3=IDC_MONTHCALENDAR1,SysMonthCal32,1342242832
 
 [TB:IDR_STARFIELD]
 Type=1
@@ -185,7 +191,7 @@ HeaderFile=DlgLocation.h
 ImplementationFile=DlgLocation.cpp
 BaseClass=CDialog
 Filter=D
-LastObject=CDlgLocation
+LastObject=IDC_MONTHCALENDAR1
 
 [DLG:IDD_OPTIONS_STAR]
 Type=1
@@ -240,6 +246,7 @@ ImplementationFile=DlgTime.cpp
 BaseClass=CDialog
 Filter=D
 LastObject=CDlgTime
+VirtualFilter=dWC
 
 [CLS:CDlgOptionsConst]
 Type=0
@@ -334,7 +341,7 @@ Type=0
 HeaderFile=csframe.h
 ImplementationFile=csframe.cpp
 BaseClass=CFrameWnd
-LastObject=ID_SUNSHINE_TOGGLE
+LastObject=ID_VIEW_FINDTRACK
 Filter=T
 VirtualFilter=fWC
 
@@ -439,4 +446,77 @@ Control22=IDC_TERR_SUMCOLOR_PREV,edit,1484849280
 Control23=IDC_COLOR_TERRFAL,button,1342242816
 Control24=IDC_TERR_FALCOLOR_PREV,edit,1484849280
 Control25=IDC_COLOR_DEFAULTS,button,1342242816
+
+[DLG:IDD_STARINFO]
+Type=1
+Class=CDlgStarInfo
+ControlCount=12
+Control1=IDC_STATIC,button,1342177287
+Control2=IDOK,button,1342242817
+Control3=IDC_STATIC,static,1342308352
+Control4=IDC_STAR_RA,edit,1342244992
+Control5=IDC_STATIC,static,1342308352
+Control6=IDC_STAR_DEC,edit,1342244992
+Control7=IDC_STATIC,static,1342308352
+Control8=IDC_STAR_MAG,edit,1342244992
+Control9=IDC_STATIC,static,1342308352
+Control10=IDC_STAR_SPECTRAL,edit,1342244992
+Control11=IDC_STATIC,static,1342308352
+Control12=IDC_STAR_NAME,edit,1342244992
+
+[CLS:CDlgStarInfo]
+Type=0
+HeaderFile=DlgStarInfo.h
+ImplementationFile=DlgStarInfo.cpp
+BaseClass=CDialog
+Filter=D
+LastObject=CDlgStarInfo
+VirtualFilter=dWC
+
+[DLG:IDD_FINDTRACK]
+Type=1
+Class=CDlgFindTrack
+ControlCount=33
+Control1=IDC_STATIC,button,1342177287
+Control2=IDC_CONST,combobox,1344340226
+Control3=IDC_FIND_CONST,button,1342242816
+Control4=IDC_TRACK_CONST,button,1342242816
+Control5=IDC_STATIC,button,1342177287
+Control6=IDC_STAR,combobox,1344340226
+Control7=IDC_FIND_STAR,button,1342242816
+Control8=IDC_TRACK_STAR,button,1342242816
+Control9=IDC_STATIC,button,1342177287
+Control10=IDC_STATIC,static,1342308352
+Control11=IDC_RA_H,edit,1350639744
+Control12=IDC_STATIC,static,1342308352
+Control13=IDC_RA_M,edit,1350639744
+Control14=IDC_STATIC,static,1342308352
+Control15=IDC_RA_S,edit,1350639744
+Control16=IDC_STATIC,static,1342308353
+Control17=IDC_RA_SD,edit,1350639744
+Control18=IDC_STATIC,static,1342308352
+Control19=IDC_STATIC,static,1342308352
+Control20=IDC_DEC_D,edit,1350639744
+Control21=IDC_STATIC,static,1342308352
+Control22=IDC_DEC_M,edit,1350639744
+Control23=IDC_STATIC,static,1342308352
+Control24=IDC_DEC_S,edit,1350639744
+Control25=IDC_STATIC,static,1342308353
+Control26=IDC_DEC_SD,edit,1350639744
+Control27=IDC_STATIC,static,1342308352
+Control28=IDC_FIND_RADEC,button,1342242816
+Control29=IDC_TRACK_RADEC,button,1342242816
+Control30=IDCANCEL,button,1342242817
+Control31=IDC_STATIC,button,1342177287
+Control32=IDC_CURRENT,edit,1350633600
+Control33=IDC_STOP_TRACKING,button,1342242816
+
+[CLS:CDlgFindTrack]
+Type=0
+HeaderFile=DlgFindTrack.h
+ImplementationFile=DlgFindTrack.cpp
+BaseClass=CDialog
+Filter=D
+LastObject=CDlgFindTrack
+VirtualFilter=dWC
 

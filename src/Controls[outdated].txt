@@ -1,0 +1,30 @@
++----------+
+|  Basic   |
++----------+
+
+Mouse:
+Left Drag		Move view
+Right Drag		Change time
+
+Keyboard:
+Ctrl+A			Add constellation
+Ctrl+D			Delete constellation
+A			Add line to current constellation
+D			Delete line from current constellation
+S			Start rotating starfield
+
+
+
++----------+
+|   Fun    |
++----------+
+
+Mouse:
+Ctrl + Right Drag	Change latitude
+Shift + Right Drag	Move sun independently from stars
+
+Keyboard:
+F			Fog on/off
+E			External terrain view on/off
+NumPad +		Move terrain down
+NumPad -		Move terrain up

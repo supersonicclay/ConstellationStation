@@ -19,6 +19,8 @@ static char THIS_FILE[] = __FILE__;
 BEGIN_MESSAGE_MAP( CBarStarf, CToolBar )
 	//{{AFX_MSG_MAP(CBarStarf)
 	ON_WM_TIMER()
+	ON_NOTIFY(DTN_DATETIMECHANGE, ID_STARF_DATE, OnDateChange)
+	ON_NOTIFY(DTN_DATETIMECHANGE, ID_STARF_TIME, OnTimeChange)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -107,6 +109,9 @@ BOOL CBarStarf::InitDateCtrl()
 		return false;
 	}
 
+	// Set to current date
+	date.SetTime(COleDateTime::GetCurrentTime());
+
 	return true;
 }
 
@@ -146,6 +151,9 @@ BOOL CBarStarf::InitTimeCtrl()
 		exit(0);
 		return false;
 	}
+
+	// Set to current time
+	time.SetTime(COleDateTime::GetCurrentTime());
 
 	return true;
 }
@@ -198,4 +206,44 @@ void CBarStarf::OnTimer(UINT nIDEvent)
 	time.SetTime(curTime);
 	date.SetTime(curTime);
 	*/
+}
+
+void CBarStarf::UpdateTime()
+{
+	COleDateTime t, d;
+	time.GetTime(t);
+	date.GetTime(d);
+	t.SetDateTime( d.GetYear(), d.GetMonth(), d.GetDay(), t.GetHour(), t.GetMinute(), t.GetSecond() );
+	// Convert to UTC
+	t.m_dt += _timezone/60/60/24.0;
+	starfield.SetGregorian(t);
+
+	/// Format to string
+//	char str[100];
+
+	/*
+	sprintf( str, "%f", starfield.GetJulian() );
+	CSInfo( str );
+
+	sprintf( str, "%i/%i/%i %02i:%02i:%02i",
+		t.GetMonth(),
+		t.GetDay(),
+		t.GetYear(),
+		t.GetHour(),
+		t.GetMinute(),
+		t.GetSecond() );
+	CSInfo( str );
+	*/
+
+	Redraw();
+}
+
+void CBarStarf::OnDateChange(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	UpdateTime();
+}
+
+void CBarStarf::OnTimeChange(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	UpdateTime();
 }

@@ -93,6 +93,7 @@ protected:
 	afx_msg void OnOptionsTerr();
 	afx_msg void OnOptionsColor();
 	afx_msg void OnOptionsText();
+	afx_msg void OnViewFindTrack();
 	afx_msg void OnUpdateStarfRotate(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateStarsToggle(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateConstList(CCmdUI* pCmdUI);
@@ -106,6 +107,7 @@ protected:
 	afx_msg void OnUpdateTerrToggle(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateSunToggle(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateSunshineToggle(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateViewFindTrack(CCmdUI* pCmdUI);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

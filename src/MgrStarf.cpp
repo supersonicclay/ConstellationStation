@@ -15,6 +15,8 @@
 #include "DlgOptionsStar.h"
 #include "DlgOptionsConst.h"
 #include "DlgOptionsSun.h"
+#include "DlgStarInfo.h"
+#include "DlgFindTrack.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -60,44 +62,12 @@ void CMgrStarf::SetStarsBrightColor( float x )	{	starsBrightColor = x;	}
 /////////////////////////////////////////////////////////////////////////////
 // Starfield Methods
 
-// Find the specified star
-void CMgrStarf::Find( CDataStar* star )
+// Open Find / Track dialog
+void CMgrStarf::FindTrack()
 {
-	starfield.Find( star->GetCenter().x, star->GetCenter().y, star->GetCenter().z );
-}   
+	CDlgFindTrack dialog;
 
-// Find the specified constellation
-void CMgrStarf::Find( CDataConst* constellation )
-{
-	if( constellation->GetLineCount() == 0 )
-	{
-		CSWarn( "Can't find a constellation with no lines" );
-		return;
-	}
-
-	vector3 c = constellation->GetCenter();
-
-	starfield.Find( c.x, c.y, c.z );
-}
-
-// Track the specified star
-void CMgrStarf::StartTracking( CDataStar* star )
-{
-	starfield.StartTracking( star->GetCenter().x, star->GetCenter().y, star->GetCenter().z );
-}
-
-// Track the specified constellation
-void CMgrStarf::StartTracking( CDataConst* constellation )
-{
-	if( constellation->GetLineCount() == 0 )
-	{
-		CSWarn( "Can't track a constellation with no lines" );
-		return;
-	}
-
-	vector3 c = constellation->GetCenter();
-
-	starfield.StartTracking( c.x, c.y, c.z );
+	dialog.DoModal();
 }
 
 // Turns starfield spinning on/off
@@ -160,6 +130,14 @@ void CMgrStarf::StarOptions()
 	}
 	Redraw();
 }
+
+void CMgrStarf::StarInfo( CDataStar* star )
+{
+	CDlgStarInfo dialog( star );
+
+	dialog.DoModal();
+}
+
 
 // Toggle stars on and off
 void CMgrStarf::ToggleStars()

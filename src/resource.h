@@ -9,6 +9,7 @@
 #define IDC_POINT                       140
 #define IDC_ROTXY                       141
 #define IDC_ROTZ                        142
+#define IDC_ROTY                        142
 #define IDC_EDIT                        143
 #define IDC_EDITX                       144
 #define IDC_ALINE                       145
@@ -28,6 +29,10 @@
 #define IDD_OPTIONS_SUN                 165
 #define IDD_OPTIONS_TEXT                166
 #define IDD_OPTIONS_COLORSold           167
+#define IDI_FRAME                       172
+#define IDI_FILE                        173
+#define IDD_STARINFO                    174
+#define IDD_FINDTRACK                   175
 #define IDC_CONST_NAME                  1014
 #define IDC_CONST_LIST                  1021
 #define IDC_SHOWALL                     1027
@@ -106,6 +111,31 @@
 #define IDC_COLOR_DIRLABELS_PREV        1148
 #define IDC_COLOR_COMPASS_PREV          1149
 #define IDC_COLOR_STARCONST             1150
+#define IDC_STAR_RA                     1151
+#define IDC_STAR_DEC                    1152
+#define IDC_STAR_MAG                    1153
+#define IDC_STAR_SPECTRAL               1154
+#define IDC_FIND_CONST                  1154
+#define IDC_STAR_NAME                   1155
+#define IDC_CONST                       1155
+#define IDC_TRACK_CONST                 1156
+#define IDC_FIND_STAR                   1157
+#define IDC_TRACK_STAR                  1158
+#define IDC_FIND_RADEC                  1159
+#define IDC_TRACK_RADEC                 1160
+#define IDC_STAR                        1161
+#define IDC_STOP_TRACKING               1162
+#define IDC_RA_H                        1163
+#define IDC_RA_M                        1164
+#define IDC_MONTHCALENDAR1              1164
+#define IDC_RA_S                        1165
+#define IDC_RA_SD                       1166
+#define IDC_LIST1                       1168
+#define IDC_CURRENT                     1169
+#define IDC_DEC_D                       1170
+#define IDC_DEC_M                       1171
+#define IDC_DEC_S                       1172
+#define IDC_DEC_SD                      1173
 #define ID_STARF_NEWRANDOM              32772
 #define ID_STARF_NEWACTUAL              32773
 #define ID_STARF_OPEN                   32774
@@ -140,15 +170,16 @@
 #define ID_OPTIONS_TEXT                 32876
 #define ID_OPTIONS_COLOR                32879
 #define ID_CONST_LINESTOGGLE            32880
+#define ID_VIEW_FINDTRACK               32882
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        169
-#define _APS_NEXT_COMMAND_VALUE         32882
-#define _APS_NEXT_CONTROL_VALUE         1151
+#define _APS_NEXT_RESOURCE_VALUE        176
+#define _APS_NEXT_COMMAND_VALUE         32883
+#define _APS_NEXT_CONTROL_VALUE         1175
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

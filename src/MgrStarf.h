@@ -43,16 +43,14 @@ public:
 	void SetStarsBrightColor( float x );
 
 // Starfield methods
-	void Find( CDataStar* star );
-	void Find( CDataConst* constellation );
-	void StartTracking( CDataStar* star );
-	void StartTracking( CDataConst* constellation );
+	void FindTrack();
 	void Rotate();
 	void Location();
 	void Time();
 
 // Star methods
 	void StarOptions();
+	void StarInfo( CDataStar* star );
 	void ToggleStars();
 	void UpdateStarsAppearance();
 

@@ -51,6 +51,7 @@ BEGIN_MESSAGE_MAP(CCSFrame, CFrameWnd)
 	ON_COMMAND(ID_OPTIONS_TERR, OnOptionsTerr)
 	ON_COMMAND(ID_OPTIONS_COLOR, OnOptionsColor)
 	ON_COMMAND(ID_OPTIONS_TEXT, OnOptionsText)
+	ON_COMMAND(ID_VIEW_FINDTRACK, OnViewFindTrack)
 	ON_UPDATE_COMMAND_UI(ID_STARF_ROTATE, OnUpdateStarfRotate)
 	ON_UPDATE_COMMAND_UI(ID_STARS_TOGGLE, OnUpdateStarsToggle)
 	ON_UPDATE_COMMAND_UI(ID_CONST_LIST, OnUpdateConstList)
@@ -64,6 +65,7 @@ BEGIN_MESSAGE_MAP(CCSFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_TERR_TOGGLE, OnUpdateTerrToggle)
 	ON_UPDATE_COMMAND_UI(ID_SUN_TOGGLE, OnUpdateSunToggle)
 	ON_UPDATE_COMMAND_UI(ID_SUNSHINE_TOGGLE, OnUpdateSunshineToggle)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_FINDTRACK, OnUpdateViewFindTrack)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -271,6 +273,9 @@ void CCSFrame::OnOptionsTerr()		{	terrainMgr.Options();			}
 void CCSFrame::OnOptionsColor()		{	optionsMgr.ColorOptions();		}
 void CCSFrame::OnOptionsText()		{	textMgr.Options();				}
 
+// View commands
+void CCSFrame::OnViewFindTrack()	{	starfMgr.FindTrack();			}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // Updates
@@ -358,6 +363,12 @@ void CCSFrame::OnUpdateSunToggle(CCmdUI* pCmdUI)
 void CCSFrame::OnUpdateSunshineToggle(CCmdUI* pCmdUI) 
 {
 	pCmdUI->SetCheck( starfield.IsSunShining() );
+}
+
+void CCSFrame::OnUpdateViewFindTrack(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable( state == state_Viewing );
+	
 }
 
 

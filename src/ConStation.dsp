@@ -140,7 +140,16 @@ SOURCE=.\DlgAbout.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\DlgBlank.cpp
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
 SOURCE=.\DlgConstName.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\DlgFindTrack.cpp
 # End Source File
 # Begin Source File
 
@@ -177,6 +186,10 @@ SOURCE=.\DlgOptionsText.cpp
 # Begin Source File
 
 SOURCE=.\DlgShowHide.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\DlgStarInfo.cpp
 # End Source File
 # Begin Source File
 
@@ -305,7 +318,16 @@ SOURCE=.\DlgAbout.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\DlgBlank.h
+# PROP Exclude_From_Build 1
+# End Source File
+# Begin Source File
+
 SOURCE=.\DlgConstName.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\DlgFindTrack.h
 # End Source File
 # Begin Source File
 
@@ -342,6 +364,10 @@ SOURCE=.\DlgOptionsText.h
 # Begin Source File
 
 SOURCE=.\DlgShowHide.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\DlgStarInfo.h
 # End Source File
 # Begin Source File
 
@@ -508,6 +534,10 @@ SOURCE=.\res\editx.cur
 # Begin Source File
 
 SOURCE=.\res\file.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\icon1.ico
 # End Source File
 # Begin Source File
 

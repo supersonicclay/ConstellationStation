@@ -109,6 +109,7 @@ BOOL CMgrGraphics::InitializeOpenGL()
 	glClearDepth( 1.0f );
 	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
 	glShadeModel( GL_SMOOTH );
+	glDisable( GL_DEPTH_TEST );
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE );
 	glEnable( GL_BLEND );
 	glEnable( GL_CULL_FACE );
@@ -247,7 +248,11 @@ void CMgrGraphics::Draw()
 void CMgrGraphics::DrawTerrain()
 {
 	glEnable( GL_DEPTH_TEST );
+
 	if( terrFog ) glEnable( GL_FOG ); ///
+	if( terrWire ) 	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );///
+	if( terrExternal ) glDisable( GL_CULL_FACE );///
+
 	glDisable( GL_BLEND );
 	if( !optionsMgr.IsTerrTextured() )
 		glDisable( GL_TEXTURE_2D );
@@ -345,6 +350,9 @@ void CMgrGraphics::DrawTerrain()
 	}
 	glPopName();
 
+	if( terrWire ) 	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );///
+
+	glEnable( GL_CULL_FACE );
 	glEnable( GL_TEXTURE_2D );
 	glEnable( GL_BLEND );
 	glDisable( GL_FOG );
@@ -491,10 +499,14 @@ void CMgrGraphics::DrawConsts()
 	// Draw each constellation
 	for( int i=0; i<starfield.GetConstCount(); ++i )
 	{
-		if( i == starfield.GetCurConstNum() && starfield.AreConstsLinesVisible() )
-			DrawCurConst(i);
-		else if( i != starfield.GetCurConstNum() )
-			DrawConst(i);
+		// Draw lines
+		if( starfield.AreConstsLinesVisible() )
+		{
+			if( i == starfield.GetCurConstNum() )
+				DrawCurConst(i);
+			else if( i != starfield.GetCurConstNum() )
+				DrawConst(i);
+		}
 
 		// Type constellation name if necessary
 		if( starfield.GetConst(i)->GetLineCount() != 0 && starfield.AreConstsLabeled() && !inputMgr.selecting )
@@ -657,19 +669,19 @@ void CMgrGraphics::DrawStars()
 // Draw star i as a textured quad
 void CMgrGraphics::DrawStarQuad( int i )
 {
-	CDataStar* curStar = starfield.GetStar(i);
+	CDataStar* star = starfield.GetStar(i);
 
 	// Find color for this star
 	if( starfield.AreConstsVisible() && !starfield.AreConstsLinesVisible() && starfield.IsStarInCurConst(i) )
 		SelectColor4( optionsMgr.GetConstStarColor(), starAlpha );
 	else
-		SelectColor4( curStar->GetColor(), starAlpha );
+		SelectColor4( star->GetColor(), starAlpha );
 
 	// Get vertices
-	vector3 trVert = curStar->GetTRVert();
-	vector3 tlVert = curStar->GetTLVert();
-	vector3 blVert = curStar->GetBLVert();
-	vector3 brVert = curStar->GetBRVert();
+	vector3 trVert = star->GetTRVert();
+	vector3 tlVert = star->GetTLVert();
+	vector3 blVert = star->GetBLVert();
+	vector3 brVert = star->GetBRVert();
 
 	// Draw a star quad counterclockwise
 	glBegin( GL_QUADS );
@@ -680,9 +692,9 @@ void CMgrGraphics::DrawStarQuad( int i )
 	glEnd();
 
 	/*
-	/// Offset after projection
+	/// Size after projection
 	float d = .01f;
-	vector3 c = curStar->GetCenter();
+	vector3 c = star->GetCenter();
 	vector3 tr = c; tr.x+=d; tr.y+=d;
 	vector3 tl = c; tl.x-=d; tl.y+=d;
 	vector3 bl = c; bl.x-=d; bl.y-=d;
@@ -695,27 +707,25 @@ void CMgrGraphics::DrawStarQuad( int i )
 		glTexCoord2i( 1, 0 ); glVertex3f( br.x, br.y, br.z );
 	glEnd();
 	*/
-
-
 }
 
 // Draw star i as a point
 void CMgrGraphics::DrawStarPoint( int i )
 {
-	CDataStar* curStar = starfield.GetStar(i);
+	CDataStar* star = starfield.GetStar(i);
 
 	// Find color for this star
 	if( starfield.AreConstsVisible() && !starfield.AreConstsLinesVisible() && starfield.IsStarInCurConst(i) )
 		SelectColor4( optionsMgr.GetConstStarColor(), starAlpha );
 	else
-		SelectColor4( curStar->GetColor(), starAlpha );
+		SelectColor4( star->GetColor(), starAlpha );
 
 	// Set point size (dependent on zoom)
-	glPointSize( curStar->GetRadius()*500*(starfield.GetZoom()+2) );
+	glPointSize( star->GetRadius()*500*(starfield.GetZoom()+2) );
 
 	// Draw point
 	glBegin( GL_POINTS );
-		glVertex3f( curStar->GetCenter().x, curStar->GetCenter().y, curStar->GetCenter().z );
+		glVertex3f( star->GetCenter().x, star->GetCenter().y, star->GetCenter().z );
 	glEnd();
 }
 
@@ -745,25 +755,20 @@ void CMgrGraphics::DrawCompass()
 
 	// Disk
 	glPushMatrix();
-	glTranslatef( 0.0f, -0.001f, 0.0f );
 	glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
 	gluDisk( gluNewQuadric(), 0.0f, 0.95f, 25, 10 );
-	glPopMatrix();
-	glPushMatrix();
-	glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
+	
+	// Disk lines
+	glDisable( GL_DEPTH_TEST );
 	SelectColor4( DEF_COMPASS_CROSSCOLOR*0.2f, 0.75f );
 	gluDisk( gluNewQuadric(), 0.9f, 1.0f, 25, 1 );
 	glPopMatrix();
-
-	// Cross
-	glTranslatef( 0.0f, 0.001f, 0.0f );
 	glBegin( GL_LINES );
 		glVertex3f ( 1.0f, 0.0f, 0.0f);
 		glVertex3f (-1.0f, 0.0f, 0.0f);
 		glVertex3f ( 0.0f, 0.0f, 1.0f);
 		glVertex3f ( 0.0f, 0.0f,-1.0f);
 	glEnd();
-
 
 	// Rotate for frustum pyramid
 	glPushMatrix();
@@ -773,6 +778,7 @@ void CMgrGraphics::DrawCompass()
 	glMultMatrixf( viewMat.getFloats() );
 
 	// Frustum pyramid
+	glEnable( GL_DEPTH_TEST );
 	float baseWidth = 1.0f;
 	float baseHeight = 0.5f;
 	vector3 tr = vector3(  sin(DegToRad(fov))*baseWidth,  sin(DegToRad(fov))*baseHeight, -1.0f );
@@ -796,7 +802,8 @@ void CMgrGraphics::DrawCompass()
 		glVertex3f( 0.0f, 0.0f, 0.0f );
 		glVertex( br );
 	glEnd();
-	glColor4( DEF_COMPASS_FRUSTUMCOLOR, 0.4f );
+	// Frustum screen
+	glColor4( DEF_COMPASS_FRUSTUMCOLOR, 0.6f );
 	glBegin( GL_QUADS );
 		glVertex( tr );
 		glVertex( tl );

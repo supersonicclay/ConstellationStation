@@ -2,6 +2,16 @@
 0.5 - Features
 -------------------------------------------------
 
+0.5.0
+	Star info dialog
+	Shift + Left	rotTime
+	Ctrl  + Left	rotSun
+	Tab   + Left	rotLatitude
+	Const lines toggle
+	Radius parameter for Select()
+	Import / Export constellations
+	Accurately timed starfield.
+
 
 -------------------------------------------------
 0.4 - Graphics

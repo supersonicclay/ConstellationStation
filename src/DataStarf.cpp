@@ -15,6 +15,7 @@
 
 #include "DataStar.h"
 #include "DataConst.h"
+#include "fstream.h"
 
 IMPLEMENT_SERIAL( CDataStarf, CObject, 1 )
 
@@ -66,21 +67,24 @@ void CDataStarf::Clear( BOOL clearStars )
 	spinning = FALSE;
 
 	tracking = FALSE;
-	trackX = 0.0f;
-	trackY = 0.0f;
-	trackZ = 0.0f;
+	trackingType = track_None;
+	trackingName = "";
+	trackingRA.hour = 0;
+	trackingRA.minute = 0;
+	trackingRA.second = 0.0f;
+	trackingDec.degree = 0;
+	trackingDec.minute = 0;
+	trackingDec.second = 0.0f;
+	trackVec = vector3( 0.0f, 0.0f, 0.0f );
 
 	// Defaults
 	LoadStarDefaults();
 	LoadConstDefaults();
 	LoadSunDefaults();
 
-	// Location Time
-	time_t seconds = time(NULL);
-	gregorian = *(localtime( &seconds ));
-	gregorian.tm_year += 1900;
-	latitude = 34.6f;///34.6N for Portales
-	longitude = 0.0f;
+	// Location
+	latitude = 34.2f;///34.2N for Portales
+	longitude = -103.3f;///103.3
 }
 
 // Create a new random or actual starfield
@@ -103,15 +107,15 @@ void CDataStarf::New( BOOL actual )
 			InitActualStars();
 		}
 		InitActualConsts();
-		UpdateMats();
 	}
 	else
 	{
 		seed = clock();
 		InitRandomStars();
 ///		InitTestStars();
-		UpdateMats();
 	}
+
+	UpdateMats();
 }
 
 // Creates sphere of random stars
@@ -371,51 +375,89 @@ void CDataStarf::InitActualConsts()
 /////////////////////////////////////////////////////////////////////////////
 // Gets
 
-CDataStar*	CDataStarf::GetStar(int i)			{	return &stars[i];				}
-int			CDataStarf::GetStarCount()			{	return starCount;				}
-CDataSun*	CDataStarf::GetSun()				{	return &sun;					}
-CDataConst*	CDataStarf::GetConst(int i)			{	return &consts[i];				}
-CDataConst*	CDataStarf::GetCurConst()			{	return &consts[curConstNum];	}
-int			CDataStarf::GetConstCount()			{	return constCount;				}
-int			CDataStarf::GetCurConstNum()		{	return curConstNum;				}
-int			CDataStarf::GetNewConstCount()		{	return newConstCount;			}
+CDataStar*		CDataStarf::GetStar(int i)			{	return &stars[i];				}
+int				CDataStarf::GetStarCount()			{	return starCount;				}
+CDataSun*		CDataStarf::GetSun()				{	return &sun;					}
+CDataConst*		CDataStarf::GetConst(int i)			{	return &consts[i];				}
+CDataConst*		CDataStarf::GetCurConst()			{	return &consts[curConstNum];	}
+int				CDataStarf::GetConstCount()			{	return constCount;				}
+int				CDataStarf::GetCurConstNum()		{	return curConstNum;				}
+int				CDataStarf::GetNewConstCount()		{	return newConstCount;			}
 
-float		CDataStarf::GetLatitude()			{	return latitude;				}
-float		CDataStarf::GetLongitude()			{	return longitude;				}
+COleDateTime	CDataStarf::GetGregorian()			{	return gregorian;				}
+double			CDataStarf::GetJulian()				{	return julian;					}
 
-BOOL		CDataStarf::AreStarsVisible()		{	return starsVisible;			}
-BOOL		CDataStarf::AreStarsDaylight()		{	return starsDaylight;			}
-BOOL		CDataStarf::AreStarsLabeled()		{	return starsLabeled;			}
-BOOL		CDataStarf::AreConstsVisible()		{	return constsVisible;			}
-BOOL		CDataStarf::AreConstsDaylight()		{	return constsDaylight;			}
-BOOL		CDataStarf::AreConstsLabeled()		{	return constsLabeled;			}
-BOOL		CDataStarf::AreConstsLinesVisible()	{	return constsLinesVisible;		}
-BOOL		CDataStarf::IsSunVisible()			{	return sunVisible;				}
-BOOL		CDataStarf::IsSunShining()			{	return sunShine;				}
+float			CDataStarf::GetLatitude()			{	return latitude;				}
+float			CDataStarf::GetLongitude()			{	return longitude;				}
 
-matrix44*	CDataStarf::GetViewMat()			{	return &viewMat;				}
-matrix44*	CDataStarf::GetStarfMat()			{	return &starfMat;				}
-matrix44*	CDataStarf::GetTimeMat()			{	return &timeMat;				}
-matrix44*	CDataStarf::GetLatMat()				{	return &latMat;					}
-matrix44*	CDataStarf::GetLongMat()			{	return &longMat;				}
-float		CDataStarf::GetRotX()				{	return rotX;					}
-float		CDataStarf::GetRotY()				{	return rotY;					}
-float		CDataStarf::GetTempRotX()			{	return tempRotX;				}
-float		CDataStarf::GetTempRotY()			{	return tempRotY;				}
-float		CDataStarf::GetRotTime()			{	return rotTime;					}
-float		CDataStarf::GetZoom()				{	return zoom;					}
-BOOL		CDataStarf::IsSpinning()			{	return spinning;				}
-BOOL		CDataStarf::IsTracking()			{	return tracking;				}
+BOOL			CDataStarf::AreStarsVisible()		{	return starsVisible;			}
+BOOL			CDataStarf::AreStarsDaylight()		{	return starsDaylight;			}
+BOOL			CDataStarf::AreStarsLabeled()		{	return starsLabeled;			}
+BOOL			CDataStarf::AreConstsVisible()		{	return constsVisible;			}
+BOOL			CDataStarf::AreConstsDaylight()		{	return constsDaylight;			}
+BOOL			CDataStarf::AreConstsLabeled()		{	return constsLabeled;			}
+BOOL			CDataStarf::AreConstsLinesVisible()	{	return constsLinesVisible;		}
+BOOL			CDataStarf::IsSunVisible()			{	return sunVisible;				}
+BOOL			CDataStarf::IsSunShining()			{	return sunShine;				}
+
+matrix44*		CDataStarf::GetViewMat()			{	return &viewMat;				}
+matrix44*		CDataStarf::GetStarfMat()			{	return &starfMat;				}
+matrix44*		CDataStarf::GetTimeMat()			{	return &timeMat;				}
+matrix44*		CDataStarf::GetLatMat()				{	return &latMat;					}
+matrix44*		CDataStarf::GetLongMat()			{	return &longMat;				}
+float			CDataStarf::GetRotX()				{	return rotX;					}
+float			CDataStarf::GetRotY()				{	return rotY;					}
+float			CDataStarf::GetTempRotX()			{	return tempRotX;				}
+float			CDataStarf::GetTempRotY()			{	return tempRotY;				}
+float			CDataStarf::GetRotTime()			{	return rotTime;					}
+float			CDataStarf::GetZoom()				{	return zoom;					}
+BOOL			CDataStarf::IsSpinning()			{	return spinning;				}
+BOOL			CDataStarf::IsTracking()			{	return tracking;				}
+track_e			CDataStarf::GetTrackingType()		{	return trackingType;			}
+CString			CDataStarf::GetTrackingName()		{	return trackingName;			}
+ra_s			CDataStarf::GetTrackingRA()			{	return trackingRA;				}
+dec_s			CDataStarf::GetTrackingDec()		{	return trackingDec;				}
+
+// Find the star with the given name
+CDataStar* CDataStarf::GetStar( CString& name )
+{
+	int i = GetStarIndex( name );
+	if( i != -1 )
+		return &stars[i];
+	return NULL;
+}
 
 // Find the constellation with the given name
-CDataConst*	CDataStarf::GetConst( CString& name )
+CDataConst* CDataStarf::GetConst( CString& name )
+{
+	int i = GetConstIndex( name );
+	if( i != -1 )
+		return &consts[i];
+	return NULL;
+}
+
+// Find the star index with the given name
+int CDataStarf::GetStarIndex( CString& name )
+{
+	for( int i=0; i<starCount; ++i )
+	{
+		if( GetStar(i)->GetName() == name )
+			return i;
+	}
+	CSDebug( "Star name not found", "CDataStarf::GetStarIndex" );
+	return -1;
+}
+
+// Find the constellation index with the given name
+int CDataStarf::GetConstIndex( CString& name )
 {
 	for( int i=0; i<constCount; ++i )
 	{
 		if( GetConst(i)->GetName() == name )
-			return &consts[i];
+			return i;
 	}
-	return NULL;
+	CSDebug( "Constellation name not found", "CDataStarf::GetConstIndex" );
+	return -1;
 }
 
 
@@ -438,6 +480,15 @@ void CDataStarf::SetSunVisible( BOOL x )		{	sunVisible = x;								}
 void CDataStarf::SwitchSunShine()				{	sunShine = !sunShine;						}
 void CDataStarf::SetSunShine( BOOL x )			{	sunShine = x;								}
 void CDataStarf::SwitchSpinning()				{	spinning = !spinning;						}
+
+void CDataStarf::SetGregorian( COleDateTime& g )
+{
+	gregorian = g;
+	UpdateJulian();
+	UpdateRotations();
+	UpdateSunRADec();
+	UpdateMats();/// May not need to update all
+}
 
 void CDataStarf::SetLatitude( float l, BOOL updateMat )
 {
@@ -614,6 +665,17 @@ void CDataStarf::CountStars()
 	}
 }
 
+// Find index into stars array with specified hid
+int CDataStarf::FindHID( int hid )
+{
+	for( int i=0; i<starCount; ++i )
+	{
+		if( stars[i].GetHID() == hid )
+			return i;
+	}
+	return -1;
+}
+
 // Check if the given star number belongs to a hidden constellation
 BOOL CDataStarf::IsStarInCurConst( int i )
 {
@@ -714,9 +776,144 @@ void CDataStarf::LoadSunDefaults()
 	sunShine = DEF_SUN_SHINE;
 }
 
+void CDataStarf::UpdateSunRADec()
+{
+	// Method for determining right ascension and declination of sun from
+	//  http://www.jgiesen.de/astro/astroJS/riseset/index.htm
+
+	double cos_eps = 0.917482;
+	double sin_eps = 0.397778;
+	double M, DL, L, SL, X, Y, Z, R;
+	double T, ra_double, dec_double;
+	T = (julian - 2451545.0) / 36525.0;	// number of Julian centuries since Jan 1, 2000, 0 GMT
+	M = PI2*(0.993133 + 99.997361*T);///	M = PI2*frac(0.993133 + 99.997361*T);
+	DL = 6893.0*sin(M) + 72.0*sin(2.0*M);
+	L = PI2*(0.7859453 + M/PI2 + (6191.2*T+DL)/1296000);///	L = PI2*frac(0.7859453 + M/PI2 + (6191.2*T+DL)/1296000);
+	SL = sin(L);
+	X = cos(L);
+	Y = cos_eps*SL;
+	Z = sin_eps*SL;
+	R = sqrt(1.0-Z*Z);
+	dec_double = (360.0/PI2)*atan(Z/R);
+	ra_double = (48.0/PI2)*atan(Y/(X+R));
+	if (ra_double<0)
+		ra_double = ra_double + 24.0;
+
+	// Convert right ascension to structure
+	ra_s ra;
+	ra.hour = (int)ra_double;
+	ra_double -= ra.hour;
+	ra.minute = (int)(ra_double*60);
+	ra_double -= ra.minute/60.0;
+	ra.second = ra_double*3600;
+	ra.hour %= 24;/// can I do this?
+
+	// Convert declination to structure
+	dec_s dec;
+	dec.positive = dec_double>=0;
+	dec.degree = (int)dec_double;
+	dec_double -= dec.degree;
+	dec.minute = (int)(dec_double*60);
+	dec_double -= dec.minute/60.0;
+	dec.second = (int)(dec_double*3600);
+	dec.degree %= 360;
+
+	sun.SetRA(ra);
+	sun.SetDec(dec);
+	sun.UpdatePosFromRADec();
+}
+
+/*
+void CDataStarf::UpdateSunRADec()
+{
+	// Method for determining right ascension and declination of sun from
+	//  http://aa.usno.navy.mil/faq/docs/GAST.html
+
+	// Days and fraction (+ or -) from 2000 January 1, 12h UT
+	double D = julian - 2451545;
+
+	double g = 357.529 + 0.98560028*D;
+	double q = 280.459 + 0.98564736*D;
+	double L = q + 1.915*RadToDeg(sin(DegToRad(g))) + 0.020*RadToDeg(sin(DegToRad(2*g)));
+	double e = 23.439 - 0.00000036*D;
+	
+	// Compute right ascension
+	double RA = atan2( cos(DegToRad(e)) * sin(DegToRad(L)), cos(DegToRad(L)) );
+	// Convert to hours
+	RA = RadToDeg(RA)/15.0;
+
+	// Compute declination
+	double d = asin( sin(DegToRad(e)) * sin(DegToRad(L)) );
+	d = RadToDeg(d);
+
+	// Convert right ascension to structure
+	ra_s ra;
+	ra.hour = (int)RA;
+	RA -= ra.hour;
+	ra.minute = (int)(RA*60);
+	RA -= ra.minute/60.0;
+	ra.second = RA*3600;
+	ra.hour %= 24;/// can I do this?
+
+	// Convert declination to structure
+	dec_s dec;
+	dec.positive = d>=0;
+	dec.degree = (int)d;
+	d -= dec.degree;
+	dec.minute = (int)(d*60);
+	d -= dec.minute/60.0;
+	dec.second = (int)(d*3600);
+	dec.degree %= 360;
+
+	sun.SetRA(ra);
+	sun.SetDec(dec);
+	sun.UpdatePosFromRADec();
+}
+*/
+
+/////////////////////////////////////////////////////////////////////////////
+// Time Methods
+
+// Update Julian time based on current Gregorian time
+void CDataStarf::UpdateJulian()
+{
+	// Method for converting gregorian date to julian date from
+	//  http://scienceworld.wolfram.com/astronomy/JulianDate.html
+
+	int y = gregorian.GetYear();
+	int m = gregorian.GetMonth();
+	int d = gregorian.GetDay();
+	int h = gregorian.GetHour();
+	int n = gregorian.GetMinute();
+	int s = gregorian.GetSecond();
+
+	/// Mostly accurate. Doesn't account for deleted/added days in the past
+	julian = 367*y - 7*(y+(m+9)/12)/4
+		 - 3*((y+(m-9)/7)/100+1)/4
+		 + 275*m/9 + d + 1721028.5
+		 + (h+(n+(s/60.0))/60.0)/24.0;
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // View Methods
+
+// Update starfield rotations based on current julian date
+void CDataStarf::UpdateRotations()
+{
+
+	// Days and fraction (+ or -) from 2000 January 1, 12h UT
+	double D = julian - 2451545;
+
+	// Sidereal time in hours
+	double GMST = 18.697374558 + 24.06570982441908*D;
+
+	// Longitude adjustment in hours
+	double longfix = longitude / 15.0;
+
+	// Convert to radians and negate for rotation
+	rotTime = -(GMST+longfix)*PI2/24.0;
+}
 
 // Update all matrices
 void CDataStarf::UpdateMats()
@@ -805,37 +1002,55 @@ void CDataStarf::ResetZoom()
 	zoom = 0.0f;
 }
 
-// Stop tracking
-void CDataStarf::StopTracking()
+
+/////////////////////////////////////////////////////////////////////////////
+// Tracking Methods
+
+// Find the specified star
+void CDataStarf::Find( CDataStar* star )
 {
-	tracking = FALSE;
+	trackingType = track_Star;
+	trackingName = star->GetName();
+	Find( star->GetCenter() );
+}   
+
+// Find the specified constellation
+void CDataStarf::Find( CDataConst* constellation )
+{
+	if( constellation->GetLineCount() == 0 )
+	{
+		CSWarn( "Can't find a constellation with no lines" );
+		return;
+	}
+
+	trackingType = track_Const;
+	trackingName = constellation->GetName();
+
+	Find( constellation->GetCenter() );
 }
 
-// Start tracking the specified spherical coordinates
-void CDataStarf::StartTracking( float x, float y, float z )
+// Find the specified right ascension and declination
+void CDataStarf::Find( ra_s ra, dec_s dec )
 {
-	tracking = TRUE;
-	trackX = x;
-	trackY = y;
-	trackZ = z;
-	Track();
-}
+	trackingType = track_RADec;
 
-// Track the spherical coordinates set in StartTracking
-void CDataStarf::Track()
-{
-	Find( trackX, trackY, trackZ );
+	// Make a fake star so we can use it's methods
+	CDataStar s;
+	s.SetRA( ra );
+	s.SetDec( dec );
+	s.UpdatePosFromRADec();
+
+	Find( s.GetCenter() );
 }
 
 // Find and view the specified spherical coordinates
-void CDataStarf::Find( float x, float y, float z )
+void CDataStarf::Find( vector3 t )
 {
 //  Coordinates specify a point on celectial sphere
 //  (ie. doesn't include latitude or time rotation)
 
 	// Find world coordinates (ie. after latitude and time rotation)
-	vector3 worldVec( x, y, z );
-	worldVec = latMat * timeMat * worldVec;
+	vector3 worldVec = latMat * timeMat * t;
 
 	// Make up a fake star so we can use its methods
 	//   (little sloppy, but it'll work)
@@ -849,6 +1064,167 @@ void CDataStarf::Find( float x, float y, float z )
 	UpdateViewMat();
 }
 
+// Track the specified star
+void CDataStarf::StartTracking( CDataStar* star )
+{
+	trackingType = track_Star;
+	trackingName = star->GetName();
+	StartTracking( star->GetCenter() );
+}
+
+// Track the specified constellation
+void CDataStarf::StartTracking( CDataConst* constellation )
+{
+	if( constellation->GetLineCount() == 0 )
+	{
+		CSWarn( "Can't track a constellation with no lines" );
+		return;
+	}
+
+	trackingType = track_Const;
+	trackingName = constellation->GetName();
+
+	StartTracking( constellation->GetCenter() );
+}
+
+// Track the specified right ascension and declination
+void CDataStarf::StartTracking( ra_s ra, dec_s dec )
+{
+	trackingType = track_RADec;
+	trackingRA = ra;
+	trackingDec = dec;
+
+	// Make a fake star so we can use it's methods
+	CDataStar s;
+	s.SetRA( ra );
+	s.SetDec( dec );
+	s.UpdatePosFromRADec();
+
+	StartTracking( s.GetCenter() );
+}
+
+// Start tracking the specified spherical coordinates
+void CDataStarf::StartTracking( vector3 t )
+{
+	tracking = TRUE;
+	trackVec = t;
+	Track();
+}
+
+// Stop tracking
+void CDataStarf::StopTracking()
+{
+	trackingType = track_None;
+	trackingName = "";
+	tracking = FALSE;
+}
+
+// Track the spherical coordinates set in StartTracking
+void CDataStarf::Track()
+{
+	Find( trackVec );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Import / Export Constellations
+
+void CDataStarf::ExportConsts()
+{
+	ofstream file( "data\\consts.dat" );
+	if( !file.is_open() )
+	{
+		CSDebug( "Error opening output file", "CDataStarf::ExportConsts" );
+		return;
+	}
+
+	CDataConst* c;
+	CDataConstLine* l;
+
+	// Write constellation count
+	file << constCount << '\n';
+	for( int ci=0; ci<constCount; ++ci )
+	{
+		c = &consts[ci];
+		// Write current constellation's name and line count
+		file << c->GetName() << '\n';
+		file << c->GetLineCount() << '\n';
+		for( int li=0; li<c->GetLineCount(); ++li )
+		{
+			l = c->GetLine(li);
+			// Write HIDs of stars of current line
+			file << stars[l->GetStar1()].GetHID() << ' ';
+			file << stars[l->GetStar2()].GetHID() << '\n';			
+		}
+		file << '\n';
+	}
+
+	file.close();
+
+}
+
+void CDataStarf::ImportConsts()
+{
+	ifstream file( "data\\consts.dat" );
+	if( !file.is_open() )
+	{
+		CSDebug( "Error opening input file", "CDataStarf::ImportConsts" );
+		exit(0);
+		return;
+	}
+
+	int x;
+	char buf[100];
+	CDataConst c;
+	int lineCount;
+
+	// Read constellation count
+	file >> x;
+	constCount = x;
+
+	// Clear all constellations
+	consts.clear();
+
+	for( int ci=0; ci<constCount; ++ci )
+	{
+		// Create new temp constellation
+		c = CDataConst();
+
+		// Read name and line count
+		file >> buf;
+		file >> x;
+		c.SetName( buf );
+		lineCount = x;
+
+		for( int li=0; li<lineCount; ++li )
+		{
+			// Read star 1
+			file >> x;
+			x = FindHID(x); // Find index into stars array
+			c.GetNewLine()->SetStar1( x );
+
+			// Read star 2
+			file >> x;
+			x = FindHID(x); // Find index into stars array
+			c.GetNewLine()->SetStar2( x );
+
+			// Sanity check
+			if( c.GetNewLine()->GetStar1()==-1 || c.GetNewLine()->GetStar2()==-1 )
+			{
+				CSDebug( "Bad HID", "CDataStarf::ImportConsts" );
+				exit(0);
+				return;
+			}
+
+			c.AddLine();			
+		}
+
+		consts.push_back( c );
+	}
+
+	file.close();
+	Redraw();
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Serialization

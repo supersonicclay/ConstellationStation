@@ -15,38 +15,33 @@ PHASES
 ----------------------------------------------------------------
 
 BUGS
-	5	Program Icon
-		- Reinstall VC++
-		- frame.GetIcon()
-		- frame.SetIcon()
-		- create structure
-		- (WM_SETICON)
+-	5	Show labels while no lines
+-	5	Track/Find constellation combo box too short
 
 GENERAL
-	5	Star info dialog
-	5	Save/Load terrain in document
-	5	Right click menu to track/center/magnify
-	5	Actual magnification 1X/2X/1024X
-	5	Redraw starfield toolbar buttons
-	5	Splash Screen
-	5	Loading message
-	5	Size controls to fit (large windows themes)
-	5	Don't maximize on startup
+-	5	Currently Tracking...
+-	5	Save/Load terrain in document
+-	5	Right click menu to track/center/magnify
+-	5	Actual magnification 1X/2X/1024X
+-	5	Redraw starfield toolbar buttons
+-	5	Splash Screen
+-	5	Loading message
+-	5	Size controls to fit (large windows themes)
+-	5	Don't maximize on startup
 	6	Print
 	6	Undo
 
 OPTIONS
-	5	Track/Find
+-	5	Track/Find
+		+ dialog
+			- floating point text box
 		- constellation
 		- star
 		- ra dec
 	6	Prompt for seed with random stars
 
 INPUT
-	5	Radius parameter for Select()
-	5	Shift + Left	rotTime
-	5	Ctrl  + Left	rotLatitude
-	5	Right			context menu
+-	5	Right button for context menu
 	6	More accurate trackball
 	6	Select const label
 
@@ -58,17 +53,18 @@ GRAPHICS
 	6	Celestial/Equatorial Grid
 
 TEXT
+-	5	Compass N/S/E/W X° Up/Down
 
 CONSTELLATION
-	5	Input actual constellations
-	5	Constellation details
+-	5	Input actual constellations
+	6	Constellation details
 
 STARFIELD
-	5	Choose date
-	5	Choose time
-	5	Choose location (lat & long) (Portales: 34.60N)
-	5	Link time with starfield
-	5	Inc/Dec by 1/2/3 years/days/hours/mins
+-	5	Choose date
+-	5	Choose time
+-	5	Choose location (lat & long) (Portales: 34.60N)
+-	5	Link time with starfield
+-	5	Inc/Dec by 1/2/3 years/days/sid.days/hours/mins
 	6	Increase year range
 	6	Add Stars
 	6	Precession
@@ -80,13 +76,12 @@ TERRAIN
 
 
 DOCUMENT
-	6	Import/Export constellations (must check seed)
 
 STUDENT
-	5	Disable tracking/finding
-	
+-	5	Disable tracking/finding
+
 TEACHER
-	5	CONSTELLATION TESTS
+-	5	CONSTELLATION TESTS
 		- Types
 			- Show constlines. Pick a line
 			- Don't show constlines. Pick a star 

@@ -34,6 +34,9 @@ public:
 	void InitActualStars();
 	void InitActualConsts();
 
+	void ExportConsts();
+	void ImportConsts();
+
 	void Serialize( CArchive& ar );
 
 
@@ -45,8 +48,8 @@ private:
 	int seed;
 
 	// Location & Time
-	struct tm gregorian;	// Gregorian time - people's time
-	long julian;			// Julian date
+	COleDateTime gregorian;	// Gregorian time - people's time
+	double julian;			// Julian date
 	float latitude;
 	float longitude;
 
@@ -65,10 +68,14 @@ private:
 	float rotTime;
 	float zoom;
 	BOOL  spinning;
+
+	// Tracking
 	BOOL  tracking;
-	float trackX;
-	float trackY;
-	float trackZ;
+	track_e trackingType;
+	CString trackingName;
+	ra_s trackingRA;
+	dec_s trackingDec;	
+	vector3 trackVec;
 
 
 // Stars
@@ -105,16 +112,22 @@ public:
 
 // Gets
 	CDataStar* GetStar( int i );
+	CDataStar* GetStar( CString& name );
+	int GetStarIndex( CString& name );
 	int GetStarCount();
 
 	CDataSun* GetSun();
 
 	CDataConst* GetConst( int i );
-	CDataConst* GetConst( CString &name );
+	CDataConst* GetConst( CString& name );
+	int GetConstIndex( CString& name );
 	CDataConst* GetCurConst();
 	int GetConstCount();
 	int GetNewConstCount();
 	int GetCurConstNum();
+
+	COleDateTime GetGregorian();
+	double GetJulian();
 
 	float GetLatitude();
 	float GetLongitude();
@@ -141,9 +154,13 @@ public:
 	float GetTempRotY();
 	float GetRotTime();
 	float GetZoom();
-
 	BOOL  IsSpinning();
+
 	BOOL  IsTracking();
+	track_e GetTrackingType();
+	CString GetTrackingName();
+	ra_s GetTrackingRA();
+	dec_s GetTrackingDec();
 
 
 // Sets
@@ -166,8 +183,12 @@ public:
 	void SwitchSunShine();
 	void SetSunShine( BOOL x );
 
+	void SetGregorian( COleDateTime& g );
+///	void SetJulian( double j );     May not allow
+
 	void SetLatitude( float l, BOOL updateMat=TRUE );
 	void SetLongitude( float l, BOOL updateMat=TRUE );
+
 	void SetRotX( float r, BOOL updateMat=TRUE );
 	void SetRotY( float r, BOOL updateMat=TRUE );
 	void SetTempRotX( float r, BOOL updateMat=TRUE );
@@ -183,9 +204,12 @@ public:
 	void SwitchSpinning();
 
 
+// Methods
+
 // Star methods
 	void LoadStarDefaults();
 	void CountStars();
+	int  FindHID( int hid );
 	BOOL IsStarInCurConst( int i );
 
 
@@ -201,9 +225,13 @@ public:
 
 // Sun methods
 	void LoadSunDefaults();
+	void UpdateSunRADec();
 
+// Time methods
+	void UpdateJulian();
 
 // View methods
+	void UpdateRotations();
 	void UpdateMats();
 	void UpdateViewMat();
 	void UpdateStarfMat();
@@ -221,11 +249,19 @@ public:
 	void ResetRot();
 	void ResetZoom();
 
+// Tracking methods
+	void Find( CDataStar* star );
+	void Find( CDataConst* constellation );
+	void Find( ra_s ra, dec_s dec );
+	void Find( vector3 t );
+
+	void StartTracking( CDataStar* star );
+	void StartTracking( CDataConst* constellation );
+	void StartTracking( ra_s ra, dec_s dec );
+	void StartTracking( vector3 t );
 	void StopTracking();
-	void StartTracking( float x, float y, float z );
 	void Track();
 
-	void Find( float x, float y, float z );
 
 };
 

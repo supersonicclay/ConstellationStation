@@ -93,6 +93,7 @@ void CMgrDocument::NewActual()
 	starfield.SelectConst( CString("TEST") );
 
 	// Reset UI and refresh screen
+	GetFrame()->GetStarfBar()->UpdateTime(); /// Maybe set to current time?
 	UpdateTitle();
 	SetState( state_Viewing );
 	GetFrame()->GetConstBar()->UpdateList();
@@ -115,6 +116,7 @@ void CMgrDocument::NewRandom()
 	starfield.New( FALSE );
 
 	// Reset UI and refresh screen
+	GetFrame()->GetStarfBar()->UpdateTime(); /// Maybe set to current time?
 	UpdateTitle();
 	SetState( state_Viewing );
 	GetFrame()->GetConstBar()->UpdateList();

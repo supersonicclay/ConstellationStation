@@ -111,3 +111,5 @@ Fixed		11-20-04		Fonts not loading into dialog
 
 Fixed		11-26-04		terrain dissapearing when looking straight down
 
+Fixed		12-11-04		Frame Icon
+

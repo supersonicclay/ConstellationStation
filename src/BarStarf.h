@@ -29,6 +29,7 @@ public:
 
 // Methods
 public:
+	void UpdateTime();
 
 
 // Overrides
@@ -44,6 +45,8 @@ public:
 protected:
 	//{{AFX_MSG(CBarStarf)
 	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnDateChange(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnTimeChange(NMHDR* pNMHDR, LRESULT* pResult);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

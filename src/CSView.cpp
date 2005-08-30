@@ -131,7 +131,7 @@ void CCSView::OnTimer(UINT nIDEvent)
 		state == state_Viewing &&
 		!inputMgr.mouseRotatingXY && !inputMgr.mouseRotatingY )
 	{
-		starfield.AdjRotTime(-0.0009f);
+		GetFrame()->GetStarfBar()->AdjustTime( COleDateTimeSpan( 0, 0, 0, 15 ) );
 		Redraw();
 	}
 }

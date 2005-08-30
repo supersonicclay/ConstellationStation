@@ -7,16 +7,19 @@ PHASES
 2	Options - UI, dialogs
 3	Math - graphics optimization, terrain, selecting, random
 4	Graphics - effects, text
-5	Features - tests, actual
-6	Extras
+5	Features - actual
+6	Teacher - and student
+7	Extras
 
 ----------------------------------------------------------------
  ALWAYS UPDATE COPY CONSTRUCTORS AND SERIALIZE WHEN ADDING VARS
 ----------------------------------------------------------------
 
 BUGS
+-	5	Find/Track negative declination
 -	5	Show labels while no lines
 -	5	Track/Find constellation combo box too short
+	7	Force redraw of date and time controls while mouse rotating
 
 GENERAL
 -	5	Currently Tracking...
@@ -28,8 +31,9 @@ GENERAL
 -	5	Loading message
 -	5	Size controls to fit (large windows themes)
 -	5	Don't maximize on startup
-	6	Print
-	6	Undo
+-	5	Daylight savings time
+	7	Print
+	7	Undo
 
 OPTIONS
 -	5	Track/Find
@@ -38,36 +42,44 @@ OPTIONS
 		- constellation
 		- star
 		- ra dec
-	6	Prompt for seed with random stars
+	7	Preset color schemes
+	7	Prompt for seed with random stars
 
 INPUT
 -	5	Right button for context menu
-	6	More accurate trackball
-	6	Select const label
+	7	More accurate trackball
+	7	Select const label
 
 GRAPHICS
-	6	Lighting normals
-	6	Shadows
-	6	Lens flare
-	6	Stars shouldn't all fade at same rate
-	6	Celestial/Equatorial Grid
+-	5	sunMat, starfMat, etc. maybe shouldn't include viewMat
+-	5	Smooth autorotation
+	7	Lighting normals
+	7	Shadows
+	7	Lens flare
+	7	Stars shouldn't all fade at same rate
+	7	Celestial/Equatorial Grid
 
 TEXT
 -	5	Compass N/S/E/W X° Up/Down
 
 CONSTELLATION
 -	5	Input actual constellations
-	6	Constellation details
+	7	Constellation details
 
 STARFIELD
+-	5	Autorotation
+		- Forward, reverse, step
+		- Speed: now, years, days, sidereal days, hours, minutes, seconds
+		- Adjust CSView's timer frequency for each
 -	5	Choose date
+		- save
 -	5	Choose time
--	5	Choose location (lat & long) (Portales: 34.60N)
--	5	Link time with starfield
--	5	Inc/Dec by 1/2/3 years/days/sid.days/hours/mins
-	6	Increase year range
-	6	Add Stars
-	6	Precession
+		- save
+-	5	Choose location (lat & long) (Portales: 34.70N)
+		- save as option
+	7	Increase year range
+	7	Add Stars
+	7	Precession
 
 STARS
 
@@ -78,10 +90,10 @@ TERRAIN
 DOCUMENT
 
 STUDENT
--	5	Disable tracking/finding
+	6	Disable tracking/finding
 
 TEACHER
--	5	CONSTELLATION TESTS
+	6	CONSTELLATION TESTS
 		- Types
 			- Show constlines. Pick a line
 			- Don't show constlines. Pick a star 

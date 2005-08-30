@@ -30,6 +30,7 @@ public:
 // Methods
 public:
 	void UpdateTime();
+	void AdjustTime( COleDateTimeSpan& s );
 
 
 // Overrides

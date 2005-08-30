@@ -48,7 +48,7 @@ private:
 	int seed;
 
 	// Location & Time
-	COleDateTime gregorian;	// Gregorian time - people's time
+	COleDateTime gregorian;	// Gregorian time - stored as UT
 	double julian;			// Julian date
 	float latitude;
 	float longitude;
@@ -183,9 +183,6 @@ public:
 	void SwitchSunShine();
 	void SetSunShine( BOOL x );
 
-	void SetGregorian( COleDateTime& g );
-///	void SetJulian( double j );     May not allow
-
 	void SetLatitude( float l, BOOL updateMat=TRUE );
 	void SetLongitude( float l, BOOL updateMat=TRUE );
 
@@ -228,7 +225,8 @@ public:
 	void UpdateSunRADec();
 
 // Time methods
-	void UpdateJulian();
+	void SetGregorian( COleDateTime& g );
+///	void SetJulian( double j );     May not allow
 
 // View methods
 	void UpdateRotations();

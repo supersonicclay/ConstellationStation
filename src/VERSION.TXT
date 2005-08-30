@@ -2,6 +2,10 @@
 0.5 - Features
 -------------------------------------------------
 
+0.5.1
+	Link time with starfield
+	Link time with sun
+
 0.5.0
 	Star info dialog
 	Shift + Left	rotTime

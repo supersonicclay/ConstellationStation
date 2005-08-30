@@ -83,8 +83,8 @@ void CDataStarf::Clear( BOOL clearStars )
 	LoadSunDefaults();
 
 	// Location
-	latitude = 34.2f;///34.2N for Portales
-	longitude = -103.3f;///103.3
+	latitude = 34.f;///34.2N for Portales
+	longitude = -103.f;///-103.3 (103.3 W)
 }
 
 // Create a new random or actual starfield
@@ -267,108 +267,10 @@ void CDataStarf::InitActualStars()
 	file.Close();
 }
 
-/*
-// Load the actual stars from the magnitude-sorted hipparcos catalog
-void CDataStarf::InitActualStars() /// before names
-{
-	CDataStar newStar;
-
-	CFile file;
-	if( !file.Open( "data\\stars[nonames].dat", CFile::modeRead ) )
-	{
-		CSDebug( "Unable to open star catalog", "CDataStarf::InitActualStars" );
-		exit(0);
-		return;
-	}
-
-	int hid;
-	char buffer[100];
-	ra_s ra = {0};
-	dec_s dec = {0};
-	float mag = 0;
-	char spectral;
-
-	// Initially load all stars
-	for( int i=0; i<MAX_STARS; ++i )
-	{
-		file.Seek( 2, CFile::current );
-		ZeroMemory(&buffer, sizeof(buffer));
-
-		// Hipparcos id
-		file.Read( buffer, 12 );
-		hid = atoi( buffer );
-
-		file.Seek( 1, CFile::current );
-		ZeroMemory(&buffer, sizeof(buffer));
-
-		// Right Ascension
-		file.Read( buffer, 2 );
-		ra.hour = atoi( buffer );
-			file.Seek( 1, CFile::current );
-			ZeroMemory(&buffer, sizeof(buffer));
-		file.Read( buffer, 2 );
-		ra.minute = atoi( buffer );
-			file.Seek( 1, CFile::current );
-			ZeroMemory(&buffer, sizeof(buffer));
-		file.Read( buffer, 5 );
-		ra.second = (float) atof( buffer );
-
-		file.Seek( 1, CFile::current );
-		ZeroMemory(&buffer, sizeof(buffer));
-
-		// Declination
-		file.Read( buffer, 1 );
-		dec.positive = buffer[0] == '+';
-
-		file.Read( buffer, 2 );
-		dec.degree = atoi( buffer );
-			file.Seek( 1, CFile::current );
-			ZeroMemory(&buffer, sizeof(buffer));
-		file.Read( buffer, 2 );
-		dec.minute = atoi( buffer );
-			file.Seek( 1, CFile::current );
-			ZeroMemory(&buffer, sizeof(buffer));
-		file.Read( buffer, 4 );
-		dec.second = (float) atof( buffer);
-
-		file.Seek( 1, CFile::current );
-		ZeroMemory(&buffer, sizeof(buffer));
-
-		// Magnitude
-		file.Read( buffer, 5 );
-		mag = (float) atof( buffer );
-
-		file.Seek( 1, CFile::current );
-		ZeroMemory(&buffer, sizeof(buffer));
-
-		// Spectral type
-		file.Read( buffer, 1 );
-		spectral = buffer[0];
-
-		// Ignore rest of line
-		file.Seek( 3, CFile::current );
-
-		newStar.SetName( "A" );
-		newStar.SetHID( hid );
-		newStar.SetRA( ra );
-		newStar.SetDec( dec );
-		newStar.SetMag( mag );
-		newStar.SetSpectral( spectral );
-		newStar.UpdatePosFromRADec();
-
-		stars.push_back( CDataStar(newStar) );
-	}
-
-	CountStars();
-	starfMgr.UpdateStarsAppearance();
-
-	file.Close();
-}
-*/
-
 /// Load actual constellations somehow
 void CDataStarf::InitActualConsts()
 {
+	ImportConsts();
 }
 
 
@@ -480,15 +382,6 @@ void CDataStarf::SetSunVisible( BOOL x )		{	sunVisible = x;								}
 void CDataStarf::SwitchSunShine()				{	sunShine = !sunShine;						}
 void CDataStarf::SetSunShine( BOOL x )			{	sunShine = x;								}
 void CDataStarf::SwitchSpinning()				{	spinning = !spinning;						}
-
-void CDataStarf::SetGregorian( COleDateTime& g )
-{
-	gregorian = g;
-	UpdateJulian();
-	UpdateRotations();
-	UpdateSunRADec();
-	UpdateMats();/// May not need to update all
-}
 
 void CDataStarf::SetLatitude( float l, BOOL updateMat )
 {
@@ -611,8 +504,9 @@ void CDataStarf::AdjRotY( float delta, BOOL updateMat )
 		UpdateViewMat();
 }
 
-void CDataStarf::AdjRotTime( float delta, BOOL updateMat )
+void CDataStarf::AdjRotTime( float delta, BOOL updateMat ) /// should be disabled
 {
+
 	rotTime += delta;
 
 	// Keep rotTime between 0 and 2*PI
@@ -776,122 +670,21 @@ void CDataStarf::LoadSunDefaults()
 	sunShine = DEF_SUN_SHINE;
 }
 
-void CDataStarf::UpdateSunRADec()
-{
-	// Method for determining right ascension and declination of sun from
-	//  http://www.jgiesen.de/astro/astroJS/riseset/index.htm
-
-	double cos_eps = 0.917482;
-	double sin_eps = 0.397778;
-	double M, DL, L, SL, X, Y, Z, R;
-	double T, ra_double, dec_double;
-	T = (julian - 2451545.0) / 36525.0;	// number of Julian centuries since Jan 1, 2000, 0 GMT
-	M = PI2*(0.993133 + 99.997361*T);///	M = PI2*frac(0.993133 + 99.997361*T);
-	DL = 6893.0*sin(M) + 72.0*sin(2.0*M);
-	L = PI2*(0.7859453 + M/PI2 + (6191.2*T+DL)/1296000);///	L = PI2*frac(0.7859453 + M/PI2 + (6191.2*T+DL)/1296000);
-	SL = sin(L);
-	X = cos(L);
-	Y = cos_eps*SL;
-	Z = sin_eps*SL;
-	R = sqrt(1.0-Z*Z);
-	dec_double = (360.0/PI2)*atan(Z/R);
-	ra_double = (48.0/PI2)*atan(Y/(X+R));
-	if (ra_double<0)
-		ra_double = ra_double + 24.0;
-
-	// Convert right ascension to structure
-	ra_s ra;
-	ra.hour = (int)ra_double;
-	ra_double -= ra.hour;
-	ra.minute = (int)(ra_double*60);
-	ra_double -= ra.minute/60.0;
-	ra.second = ra_double*3600;
-	ra.hour %= 24;/// can I do this?
-
-	// Convert declination to structure
-	dec_s dec;
-	dec.positive = dec_double>=0;
-	dec.degree = (int)dec_double;
-	dec_double -= dec.degree;
-	dec.minute = (int)(dec_double*60);
-	dec_double -= dec.minute/60.0;
-	dec.second = (int)(dec_double*3600);
-	dec.degree %= 360;
-
-	sun.SetRA(ra);
-	sun.SetDec(dec);
-	sun.UpdatePosFromRADec();
-}
-
-/*
-void CDataStarf::UpdateSunRADec()
-{
-	// Method for determining right ascension and declination of sun from
-	//  http://aa.usno.navy.mil/faq/docs/GAST.html
-
-	// Days and fraction (+ or -) from 2000 January 1, 12h UT
-	double D = julian - 2451545;
-
-	double g = 357.529 + 0.98560028*D;
-	double q = 280.459 + 0.98564736*D;
-	double L = q + 1.915*RadToDeg(sin(DegToRad(g))) + 0.020*RadToDeg(sin(DegToRad(2*g)));
-	double e = 23.439 - 0.00000036*D;
-	
-	// Compute right ascension
-	double RA = atan2( cos(DegToRad(e)) * sin(DegToRad(L)), cos(DegToRad(L)) );
-	// Convert to hours
-	RA = RadToDeg(RA)/15.0;
-
-	// Compute declination
-	double d = asin( sin(DegToRad(e)) * sin(DegToRad(L)) );
-	d = RadToDeg(d);
-
-	// Convert right ascension to structure
-	ra_s ra;
-	ra.hour = (int)RA;
-	RA -= ra.hour;
-	ra.minute = (int)(RA*60);
-	RA -= ra.minute/60.0;
-	ra.second = RA*3600;
-	ra.hour %= 24;/// can I do this?
-
-	// Convert declination to structure
-	dec_s dec;
-	dec.positive = d>=0;
-	dec.degree = (int)d;
-	d -= dec.degree;
-	dec.minute = (int)(d*60);
-	d -= dec.minute/60.0;
-	dec.second = (int)(d*3600);
-	dec.degree %= 360;
-
-	sun.SetRA(ra);
-	sun.SetDec(dec);
-	sun.UpdatePosFromRADec();
-}
-*/
 
 /////////////////////////////////////////////////////////////////////////////
 // Time Methods
 
-// Update Julian time based on current Gregorian time
-void CDataStarf::UpdateJulian()
+void CDataStarf::SetGregorian( COleDateTime& g )
 {
-	// Method for converting gregorian date to julian date from
-	//  http://scienceworld.wolfram.com/astronomy/JulianDate.html
+	// Convert to UT
+	g.m_dt += _timezone/60/60/24.0;
 
-	int y = gregorian.GetYear();
-	int m = gregorian.GetMonth();
-	int d = gregorian.GetDay();
-	int h = gregorian.GetHour();
-	int n = gregorian.GetMinute();
-	int s = gregorian.GetSecond();
-
-	/// Mostly accurate. Doesn't account for deleted/added days in the past
-	julian = 367*y - 7*(y+(m+9)/12)/4
-		 - 3*((y+(m-9)/7)/100+1)/4
-		 + 275*m/9 + d + 1721028.5
-		 + (h+(n+(s/60.0))/60.0)/24.0;
+	gregorian = g;
+	julian = GregorianToJulian( g.GetYear(), g.GetMonth(), g.GetDay(), g.GetHour(), g.GetMinute(), g.GetSecond() );
+	sun.UpdatePosition( g.GetYear(), g.GetMonth(), g.GetDay(), g.GetHour(), g.GetMinute(), g.GetSecond(), latitude, longitude);
+	///moon.UpdatePosition( g.GetYear(), g.GetMonth(), g.GetDay(), g.GetHour(), g.GetMinute(), g.GetSecond(), latitude, longitude);
+	UpdateRotations();
+	UpdateMats();/// May not need to update all
 }
 
 
@@ -909,7 +702,7 @@ void CDataStarf::UpdateRotations()
 	double GMST = 18.697374558 + 24.06570982441908*D;
 
 	// Longitude adjustment in hours
-	double longfix = longitude / 15.0;
+	float longfix = longitude / 15.0f;
 
 	// Convert to radians and negate for rotation
 	rotTime = -(GMST+longfix)*PI2/24.0;
@@ -923,6 +716,7 @@ void CDataStarf::UpdateMats()
 	UpdateLatMat();
 	UpdateLongMat();
 	UpdateStarfMat();
+	sun.UpdateTimeMat();///
 }
 // Update view matrix
 void CDataStarf::UpdateViewMat()
@@ -1142,7 +936,7 @@ void CDataStarf::ExportConsts()
 	CDataConstLine* l;
 
 	// Write constellation count
-	file << constCount << '\n';
+	file << constCount << "\n\n";
 	for( int ci=0; ci<constCount; ++ci )
 	{
 		c = &consts[ci];
@@ -1191,7 +985,9 @@ void CDataStarf::ImportConsts()
 		c = CDataConst();
 
 		// Read name and line count
-		file >> buf;
+		file.get(); file.get(); // Get two newlines
+		file.getline(buf, 100);
+		//file >> buf;
 		file >> x;
 		c.SetName( buf );
 		lineCount = x;
@@ -1221,6 +1017,9 @@ void CDataStarf::ImportConsts()
 
 		consts.push_back( c );
 	}
+
+	// Update listbox
+	GetFrame()->GetConstBar()->UpdateList();
 
 	file.close();
 	Redraw();

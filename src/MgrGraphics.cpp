@@ -425,7 +425,7 @@ void CMgrGraphics::DrawSun()
 		glBindTexture( GL_TEXTURE_2D, sunGlowTex );
 
 		// Get world coordinates of sun center
-		vector3 wc = *(starfield.GetStarfMat()) * *(starfield.GetSun()->GetTimeMat()) * center;
+		vector3 wc = center;///*(starfield.GetSun()->GetTimeMat()) * center;
 
 		// Find angle to rotate to make quad perp to viewer
 		vector2 v1( wc.x, wc.z );
@@ -484,7 +484,8 @@ void CMgrGraphics::DrawSunlight()
 	light[3] = 1.0f;
 	glLightfv( GL_LIGHT0, GL_DIFFUSE, light );
 
-	vector3 pos = starfield.GetSun()->GetCenter();
+	///vector3 pos = starfield.GetSun()->GetCenter();
+	vector3 pos( 0.0f, 0.0f, -1.0f );
 	glLightfv( GL_LIGHT0, GL_POSITION, pos.getFloats() );
 }
 
@@ -961,8 +962,12 @@ void CMgrGraphics::UpdateStarfMat()
 // Update matrix for sun (starfield matrix must be updated first)
 void CMgrGraphics::UpdateSunMat()
 {
-	sunMat = starfMat;
+	sunMat = *(starfield.GetViewMat());
 	sunMat *= *(starfield.GetSun()->GetTimeMat());
+
+	/// For sun using RA/Dec
+	//sunMat = starfMat;
+	//sunMat *= *(starfield.GetSun()->GetTimeMat());
 }
 
 // Update matrix for terrain
@@ -1003,9 +1008,7 @@ void CMgrGraphics::UpdateDayFactor()
 	// sun is at horizon when dayFactor = 0 (center.y = 0)
 
 	// Find center of sun
-	vector3 center = *(starfield.GetStarfMat()) *
-	                 *(starfield.GetSun()->GetTimeMat()) *
-	                 starfield.GetSun()->GetCenter();
+	vector3 center = starfield.GetSun()->GetCenter();
 
 	// Find factor
 	dayFactor = center.y*7.5f;

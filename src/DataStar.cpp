@@ -174,6 +174,13 @@ void CDataStar::UpdatePosFromXYZ()
 	SetRADecFromPhiTheta();
 }
 
+// Update all position info from phi and thetha that are already set
+void CDataStar::UpdatePosFromPhiTheta()
+{
+	SetXYZFromPhiTheta();
+	SetRADecFromPhiTheta();
+}
+
 // Set the x, y, and z coords from the right ascension and declination
 // Phi and theta must already be calculated
 void CDataStar::SetXYZFromPhiTheta()

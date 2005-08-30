@@ -31,7 +31,6 @@ public:
 private:
 
 	color_s color;
-	float rotTime;
 
 	matrix44 timeMat;
 
@@ -41,13 +40,11 @@ public:
 
 	color_s GetColor();
 
-	float   GetRotTime();
 	matrix44* GetTimeMat();
 
-	void AdjRotTime( float delta );
-
+	void UpdatePosition( int year, int month, int day, int hour, int minute, int second, float lat, float lon );
 	void UpdateTimeMat();
-	
+
 };
 
 #endif

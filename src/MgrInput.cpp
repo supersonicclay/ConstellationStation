@@ -155,28 +155,16 @@ void CMgrInput::ProcessKeys()
 		update = TRUE;
 	}
 
-	/// Test key
+	/// Test keys
 	if( keyDown['T'] )
 	{
 		keyDown['T'] = FALSE;
 		GetFrame()->GetStarfBar()->UpdateTime();
-
-		/*
-		if( starfield.IsTracking() )
-			starfield.StopTracking();
-		else
-			starfield.StartTracking( starfield.GetCurConst() );
-//			starfield.Find( starfield.GetConst(0) );
-		// 8 = Betelgeuse
-//			starfield.StartTracking( starfield.GetStar(8) );
-//			starfield.Find( starfield.GetStar(8) );
-		update = TRUE;
-		*/
 	}
 	if( keyDown['I'] )
 	{
 		keyDown['I'] = FALSE;
-		starfMgr.StarInfo( starfield.GetStar(8) );
+		starfMgr.StarInfo( starfield.GetSun() );///starfield.GetStar(8) );
 	}
 	if( keyDown[VK_F5] )
 	{
@@ -534,10 +522,11 @@ void CMgrInput::MouseMoveViewing3()  // Trackball
 		int diff = mousePoint.y-mouseLPoint.y;
 		// Rotate time
 		if( keyDown[VK_SHIFT] )
-			starfield.AdjRotTime( -diff * 0.002f );/// * (1-zoom);
+			GetFrame()->GetStarfBar()->AdjustTime( COleDateTimeSpan( 0, 0, diff, 0 ) );
 		// Rotate Sun
 		else if( keyDown[VK_CONTROL] )
-			starfield.GetSun()->AdjRotTime( -diff * 0.002f );
+			///starfield.GetSun()->AdjRotTime( -diff * 0.002f );
+			GetFrame()->GetStarfBar()->AdjustTime( COleDateTimeSpan( diff, 0, 0, 0 ) );
 		// Rotate latitude
 		else if( keyDown[VK_TAB] )
 			starfield.AdjLatitude( diff * 0.1f );
@@ -588,11 +577,11 @@ void CMgrInput::MouseMoveViewing2()  // Mouse stays in place
 
 	if( mouseRotatingY )
 	{
-		float deltaTime = (mouseScreenPoint.y-mouseScreenRPoint.y) * 0.002f;
+		float deltaTime = (mouseScreenPoint.y-mouseScreenRPoint.y);
 
 		SetCursorPos( mouseScreenRPoint.x, mouseScreenRPoint.y );
 
-		starfield.AdjRotTime( -deltaTime );
+		GetFrame()->GetStarfBar()->AdjustTime( COleDateTimeSpan( 0, 0, deltaTime, 0 ) );
 	}
 
 	else if( mouseRotatingXY )
@@ -619,13 +608,13 @@ void CMgrInput::MouseMoveViewing()  // Original
 		int diff = mousePoint.y-mouseRPoint.y;
 		// Rotate Sun
 		if( keyDown[VK_SHIFT] )
-			starfield.GetSun()->AdjRotTime( diff * 0.002f );
+			GetFrame()->GetStarfBar()->AdjustTime( COleDateTimeSpan( diff, 0, 0, 0 ) );
 		// Rotate latitude
 		else if( keyDown[VK_CONTROL] )
 			starfield.AdjLatitude( diff * 0.1f );
 		// Rotate time
 		else
-			starfield.AdjRotTime( -diff * 0.002f );/// * (1-zoom);
+			GetFrame()->GetStarfBar()->AdjustTime( COleDateTimeSpan( 0, 0, diff, 0 ) );
 		mouseRPoint = mousePoint;
 	}
 

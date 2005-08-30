@@ -227,7 +227,9 @@ void CMgrStarf::ToggleConsts()
 // Toggle constellation lines on and off
 void CMgrStarf::ToggleConstsLines()
 {
-	starfield.SwitchConstsLinesVisible(); Redraw();
+	starfield.SwitchConstsLinesVisible();
+	SetState( state_Viewing );
+	Redraw();
 }
 
 

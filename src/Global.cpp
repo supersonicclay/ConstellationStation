@@ -110,7 +110,7 @@ const int		DEF_CONST_LINEWIDTH		= 3;
 const float		DEF_SUN_RADIUS			= 0.08f;
 const color_s	DEF_SUN_COLOR			= {1.0f, 1.0f, 0.5f};
 const BOOL		DEF_SUN_VISIBLE			= TRUE;
-const BOOL		DEF_SUN_SHINE			= FALSE;//TRUE;
+const BOOL		DEF_SUN_SHINE			= TRUE;
 
 const color_s	DEF_SKY_COLOR			= {0.6f, 0.7f, 1.0f};
 
@@ -206,6 +206,21 @@ void SetState( state_e s )
 void Redraw()
 {
 	GetView()->InvalidateRect( NULL, FALSE );
+}
+
+
+// Math functions
+double GregorianToJulian( int y, int m, int d, int h, int n, int s )
+{
+	// Method for converting gregorian date to julian date from
+	//  http://scienceworld.wolfram.com/astronomy/JulianDate.html
+	
+	/// Mostly accurate. Doesn't account for deleted/added days in the past
+	double j = 367*y - 7*(y+(m+9)/12)/4
+		 - 3*((y+(m-9)/7)/100+1)/4
+		 + 275*m/9 + d + 1721028.5
+		 + (h+(n+(s/60.0))/60.0)/24.0;
+	return j;
 }
 
 

@@ -113,3 +113,9 @@ Fixed		11-26-04		terrain dissapearing when looking straight down
 
 Fixed		12-11-04		Frame Icon
 
+Fixed		08-27-05		Can't import constellations with spaces in name
+
+Fixed		08-28-05		When lines are hidden, set state to viewing
+
+Fixed		08-28-05		Update listbox when importing constellations
+

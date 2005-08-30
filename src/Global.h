@@ -247,6 +247,9 @@ CCSView* GetView();
 void SetState( state_e s );
 void Redraw();
 
+// Math functions
+double GregorianToJulian( int y, int m, int d, int h, int n, int s );
+
 // Special CArchive functions
 CArchive& operator>> ( CArchive& ar, season_e& s );
 CArchive& operator>> ( CArchive& ar, color_s& c );

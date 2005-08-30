@@ -40,6 +40,8 @@ protected:
 	dec_s dec;
 	float phi;
 	float theta;
+	float altitude;
+	float azimuth;
 	vector3 center;
 	vector3 trVert;
 	vector3 tlVert;
@@ -93,13 +95,16 @@ public:
 // Methods
 	// Right ascension and declination known
 	void UpdatePosFromRADec();
-	void SetXYZFromPhiTheta();
 	void SetPhiThetaFromRADec();
+	void SetXYZFromPhiTheta();
 
 	// X, Y, and Z coordinates known
 	void UpdatePosFromXYZ();
-	void SetRADecFromPhiTheta();
 	void SetPhiThetaFromXYZ();
+	void SetRADecFromPhiTheta();
+
+	// Phi and theta known
+	void UpdatePosFromPhiTheta();
 
 	void UpdateVerts();
 

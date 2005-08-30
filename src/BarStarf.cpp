@@ -199,7 +199,7 @@ BOOL CBarStarf::InitSpeedCtrl()
 
 void CBarStarf::OnTimer(UINT nIDEvent) 
 {
-	CToolBar ::OnTimer(nIDEvent);
+	CToolBar::OnTimer(nIDEvent);
 
 	/*
 	COleDateTime curTime = COleDateTime::GetCurrentTime();
@@ -210,30 +210,27 @@ void CBarStarf::OnTimer(UINT nIDEvent)
 
 void CBarStarf::UpdateTime()
 {
-	COleDateTime t, d;
+	COleDateTime t, d, g;
 	time.GetTime(t);
 	date.GetTime(d);
-	t.SetDateTime( d.GetYear(), d.GetMonth(), d.GetDay(), t.GetHour(), t.GetMinute(), t.GetSecond() );
-	// Convert to UTC
-	t.m_dt += _timezone/60/60/24.0;
-	starfield.SetGregorian(t);
+	g.SetDateTime( d.GetYear(), d.GetMonth(), d.GetDay(), t.GetHour(), t.GetMinute(), t.GetSecond() );
+	starfield.SetGregorian(g);
 
-	/// Format to string
-//	char str[100];
+	Redraw();
+}
 
-	/*
-	sprintf( str, "%f", starfield.GetJulian() );
-	CSInfo( str );
-
-	sprintf( str, "%i/%i/%i %02i:%02i:%02i",
-		t.GetMonth(),
-		t.GetDay(),
-		t.GetYear(),
-		t.GetHour(),
-		t.GetMinute(),
-		t.GetSecond() );
-	CSInfo( str );
-	*/
+void CBarStarf::AdjustTime( COleDateTimeSpan& s )
+{
+	COleDateTime t, d, g;
+	time.GetTime(t);
+	date.GetTime(d);
+	g.SetDateTime( d.GetYear(), d.GetMonth(), d.GetDay(), t.GetHour(), t.GetMinute(), t.GetSecond() );
+	
+	// Adjust time
+	g += s;
+	time.SetTime(g);
+	date.SetTime(g);
+	starfield.SetGregorian(g);
 
 	Redraw();
 }

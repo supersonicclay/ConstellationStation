@@ -156,11 +156,6 @@ void CMgrInput::ProcessKeys()
 	}
 
 	/// Test keys
-	if( keyDown['T'] )
-	{
-		keyDown['T'] = FALSE;
-		GetFrame()->GetStarfBar()->UpdateTime();
-	}
 	if( keyDown['I'] )
 	{
 		keyDown['I'] = FALSE;

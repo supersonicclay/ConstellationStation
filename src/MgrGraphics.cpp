@@ -194,7 +194,6 @@ void CMgrGraphics::Draw()
 		if( redColor.r > 0.0f )
 			DrawSky();
 
-		glLoadMatrixf( sunMat.getFloats() );
 		DrawSunlight();
 	}
 
@@ -249,9 +248,9 @@ void CMgrGraphics::DrawTerrain()
 {
 	glEnable( GL_DEPTH_TEST );
 
-	if( terrFog ) glEnable( GL_FOG ); ///
-	if( terrWire ) 	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );///
-	if( terrExternal ) glDisable( GL_CULL_FACE );///
+	if( terrFog ) glEnable( GL_FOG );
+	if( terrWire ) 	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+	if( terrExternal ) glDisable( GL_CULL_FACE );
 
 	glDisable( GL_BLEND );
 	if( !optionsMgr.IsTerrTextured() )
@@ -484,8 +483,7 @@ void CMgrGraphics::DrawSunlight()
 	light[3] = 1.0f;
 	glLightfv( GL_LIGHT0, GL_DIFFUSE, light );
 
-	///vector3 pos = starfield.GetSun()->GetCenter();
-	vector3 pos( 0.0f, 0.0f, -1.0f );
+	vector3 pos = starfield.GetSun()->GetCenter();
 	glLightfv( GL_LIGHT0, GL_POSITION, pos.getFloats() );
 }
 

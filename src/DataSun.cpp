@@ -45,6 +45,8 @@ const CDataSun& CDataSun::operator=( const CDataSun& s )
 	radius = s.radius;
 	alpha = s.alpha;
 	color = s.color;
+	altitude = s.altitude;
+	azimuth = s.azimuth;
 	timeMat = s.timeMat;
 	return *this;
 }
@@ -58,6 +60,8 @@ void CDataSun::Init()
 	dec.degree = 0;
 	dec.minute = 0;
 	dec.second = 0.0f;
+	altitude = 0.0f;
+	azimuth = 0.0f;
 
 	radius = DEF_SUN_RADIUS;
 	color = DEF_SUN_COLOR;
@@ -92,20 +96,19 @@ void CDataSun::UpdateTimeMat()
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-double dblmod( double x, int m )
+double dblmod( double x, int m ) /// Needs to go in global. Is there already one in MFC?
 {
 	return (int)x%m+(x-(int)x);
 }
 
-double jd( int y, int m, int d, int h, int n )
+double jd( int y, int m, int d, int h, int n ) /// ugly
 {
 	double u = h + n/60.0;
 	return (367*y) - (int)((7/4.0)*((int)((m+9)/12.0)+y))+(int)(275*m/9.0)+d-730531.5+(u/24);
 }
 
-double alt( int y, int m, int d, int h, int n, int s, float lat, float lon )
+double alt( int y, int m, int d, int h, int n, int s, float lat, float lon ) /// ugly
 {
-	///var uu=ut(ho,mi,zo);
 	double j = jd( y, m, d, h, n );
 	double T=j/36525;
 	double k=PI/180.0;
@@ -432,13 +435,11 @@ void CDataSun::Serialize(CArchive& ar)
 {
 	CObject::Serialize(ar);
 
-	CSDebug( "Shouldn't be serializing a sun", "CDataSun::Serialize" );
-	return;
-
 	if( ar.IsLoading() )
 	{
 		ar >> ra.hour >> ra.minute >> ra.second
 		   >> dec.positive >> dec.degree >> dec.minute >> dec.second
+		   >> altitude >> azimuth
 		   >> mag >> center.x >> center.y >> center.z
 		   >> radius
 		   >> alpha
@@ -448,6 +449,7 @@ void CDataSun::Serialize(CArchive& ar)
 	{
 		ar << ra.hour << ra.minute << ra.second
 		   << dec.positive << dec.degree << dec.minute << dec.second
+		   << altitude << azimuth
 		   << mag << center.x << center.y << center.z
 		   << radius
 		   << alpha

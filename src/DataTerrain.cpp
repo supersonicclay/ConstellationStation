@@ -456,10 +456,11 @@ void CDataTerrain::CalculateNormals()
 /// Calculate the viewing height (should just be able to do this in CMgrGraphics)
 void CDataTerrain::CalculateViewHeight()
 {
-	/// Midpoint height should is always 0
+	// Midpoint height should always be 0
 	viewHeight = 0.01f;
 	return;
 
+	/// Old way, before midpoint was always 0
 	// Get the index of the midpoint
 	int middleIndex = size / 2;
 

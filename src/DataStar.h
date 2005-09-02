@@ -40,8 +40,6 @@ protected:
 	dec_s dec;
 	float phi;
 	float theta;
-	float altitude;
-	float azimuth;
 	vector3 center;
 	vector3 trVert;
 	vector3 tlVert;

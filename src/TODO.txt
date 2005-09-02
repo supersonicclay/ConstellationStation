@@ -51,6 +51,7 @@ INPUT
 	7	Select const label
 
 GRAPHICS
+-	5	Getting dark a little too fast
 -	5	sunMat, starfMat, etc. maybe shouldn't include viewMat
 -	5	Smooth autorotation
 	7	Lighting normals
@@ -71,11 +72,8 @@ STARFIELD
 		- Forward, reverse, step
 		- Speed: now, years, days, sidereal days, hours, minutes, seconds
 		- Adjust CSView's timer frequency for each
--	5	Choose date
-		- save
--	5	Choose time
-		- save
 -	5	Choose location (lat & long) (Portales: 34.70N)
+		- save in document
 		- save as option
 	7	Increase year range
 	7	Add Stars

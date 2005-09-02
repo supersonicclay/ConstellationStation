@@ -2,6 +2,9 @@
 0.5 - Features
 -------------------------------------------------
 
+0.5.2
+	Starfield saves ut instead of local time
+
 0.5.1
 	Link time with starfield
 	Link time with sun

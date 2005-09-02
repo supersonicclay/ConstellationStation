@@ -29,7 +29,9 @@ public:
 
 // Methods
 public:
-	void UpdateTime();
+	void UpdateStarfieldTime();
+	void SetTimeToNow();
+	void SetTime( COleDateTime& dt );
 	void AdjustTime( COleDateTimeSpan& s );
 
 

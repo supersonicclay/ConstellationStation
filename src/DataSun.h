@@ -31,8 +31,10 @@ public:
 private:
 
 	color_s color;
+	float altitude;
+	float azimuth;
 
-	matrix44 timeMat;
+	matrix44 timeMat; /// CHANGE NAME to rotMat or something
 
 
 // Methods

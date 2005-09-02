@@ -208,39 +208,54 @@ void CBarStarf::OnTimer(UINT nIDEvent)
 	*/
 }
 
-void CBarStarf::UpdateTime()
+void CBarStarf::UpdateStarfieldTime()
 {
-	COleDateTime t, d, g;
+	COleDateTime t, d, lt;
 	time.GetTime(t);
 	date.GetTime(d);
-	g.SetDateTime( d.GetYear(), d.GetMonth(), d.GetDay(), t.GetHour(), t.GetMinute(), t.GetSecond() );
-	starfield.SetGregorian(g);
+	lt.SetDateTime( d.GetYear(), d.GetMonth(), d.GetDay(), t.GetHour(), t.GetMinute(), t.GetSecond() );
+	starfield.SetLT(lt);
 
 	Redraw();
 }
 
+void CBarStarf::SetTimeToNow()
+{
+	COleDateTime dt = COleDateTime::GetCurrentTime();
+	time.SetTime(dt);
+	date.SetTime(dt);
+	UpdateStarfieldTime();
+}
+
+void CBarStarf::SetTime( COleDateTime& lt )
+{
+	time.SetTime(lt);
+	date.SetTime(lt);
+	UpdateStarfieldTime();
+}
+
 void CBarStarf::AdjustTime( COleDateTimeSpan& s )
 {
-	COleDateTime t, d, g;
+	COleDateTime t, d, lt;
 	time.GetTime(t);
 	date.GetTime(d);
-	g.SetDateTime( d.GetYear(), d.GetMonth(), d.GetDay(), t.GetHour(), t.GetMinute(), t.GetSecond() );
-	
+	lt.SetDateTime( d.GetYear(), d.GetMonth(), d.GetDay(), t.GetHour(), t.GetMinute(), t.GetSecond() );
+
 	// Adjust time
-	g += s;
-	time.SetTime(g);
-	date.SetTime(g);
-	starfield.SetGregorian(g);
+	lt += s;
+	time.SetTime(lt);
+	date.SetTime(lt);
+	starfield.SetLT(lt);
 
 	Redraw();
 }
 
 void CBarStarf::OnDateChange(NMHDR* pNMHDR, LRESULT* pResult)
 {
-	UpdateTime();
+	UpdateStarfieldTime();
 }
 
 void CBarStarf::OnTimeChange(NMHDR* pNMHDR, LRESULT* pResult)
 {
-	UpdateTime();
+	UpdateStarfieldTime();
 }

@@ -144,7 +144,7 @@ int CCSFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	textMgr.InitFonts();
 
 	// Load options
-	optionsMgr.Load();///
+	optionsMgr.Load();
 	optionsMgr.LoadDefaults();/// always defaults
 
 	// New document

@@ -205,11 +205,6 @@ SOURCE=.\DataConst.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\DataMoon.cpp
-# PROP Exclude_From_Build 1
-# End Source File
-# Begin Source File
-
 SOURCE=.\DataStar.cpp
 # End Source File
 # Begin Source File

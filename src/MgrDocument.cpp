@@ -93,7 +93,7 @@ void CMgrDocument::NewActual()
 	starfield.SelectConst( CString("TEST") );
 
 	// Reset UI and refresh screen
-	GetFrame()->GetStarfBar()->UpdateTime(); /// Maybe set to current time?
+	GetFrame()->GetStarfBar()->SetTimeToNow();
 	UpdateTitle();
 	SetState( state_Viewing );
 	GetFrame()->GetConstBar()->UpdateList();
@@ -116,7 +116,7 @@ void CMgrDocument::NewRandom()
 	starfield.New( FALSE );
 
 	// Reset UI and refresh screen
-	GetFrame()->GetStarfBar()->UpdateTime(); /// Maybe set to current time?
+	GetFrame()->GetStarfBar()->SetTimeToNow();
 	UpdateTitle();
 	SetState( state_Viewing );
 	GetFrame()->GetConstBar()->UpdateList();
@@ -259,7 +259,7 @@ void CMgrDocument::SaveAs()
 //  returns answer to dialog or IDNO if starfield isn't modified
 int CMgrDocument::CheckModified()
 {
-	return IDNO;/// Don't ask for save on modified
+	return IDNO;/// Don't ask for save on modified until production
 	// Check if document is modified
 	if( modified )
 	{

@@ -48,7 +48,8 @@ private:
 	int seed;
 
 	// Location & Time
-	COleDateTime gregorian;	// Gregorian time - stored as UT
+	COleDateTime lt;		// Local time
+	COleDateTime ut;		// Universal time
 	double julian;			// Julian date
 	float latitude;
 	float longitude;
@@ -57,8 +58,7 @@ private:
 	matrix44 viewMat;
 	matrix44 timeMat;
 	matrix44 latMat;
-	matrix44 longMat;
-	matrix44 starfMat;      // compilation of latMat, longMat, and timeMat
+	matrix44 starfMat;      // composition of latMat and timeMat
 
 	// Viewing
 	float rotX;
@@ -126,7 +126,8 @@ public:
 	int GetNewConstCount();
 	int GetCurConstNum();
 
-	COleDateTime GetGregorian();
+	COleDateTime GetLT();
+	COleDateTime GetUT();
 	double GetJulian();
 
 	float GetLatitude();
@@ -146,7 +147,6 @@ public:
 	matrix44* GetStarfMat();
 	matrix44* GetTimeMat();
 	matrix44* GetLatMat();
-	matrix44* GetLongMat();
 
 	float GetRotX();
 	float GetRotY();
@@ -190,12 +190,10 @@ public:
 	void SetRotY( float r, BOOL updateMat=TRUE );
 	void SetTempRotX( float r, BOOL updateMat=TRUE );
 	void SetTempRotY( float r, BOOL updateMat=TRUE );
-	void SetRotTime( float r, BOOL updateMat=TRUE );
 	void AdjLatitude( float delta, BOOL updateMat=TRUE );
 	void AdjLongitude( float delta, BOOL updateMat=TRUE );
 	void AdjRotX( float delta, BOOL updateMat=TRUE );
 	void AdjRotY( float delta, BOOL updateMat=TRUE );
-	void AdjRotTime( float delta, BOOL updateMat=TRUE );
 	void AdjZoom( float delta );
 
 	void SwitchSpinning();
@@ -225,17 +223,18 @@ public:
 	void UpdateSunRADec();
 
 // Time methods
-	void SetGregorian( COleDateTime& g );
-///	void SetJulian( double j );     May not allow
+	void UpdateTime();
+	void SetLT( COleDateTime& dt );
+	void SetUT( COleDateTime& dt );
+	void SetJulian( double j );
 
 // View methods
-	void UpdateRotations();
+	void CalculateRotTime();
 	void UpdateMats();
 	void UpdateViewMat();
 	void UpdateStarfMat();
 	void UpdateTimeMat();
 	void UpdateLatMat();
-	void UpdateLongMat();
 
 	void RotateUp();
 	void RotateDown();

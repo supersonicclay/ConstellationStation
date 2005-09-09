@@ -86,8 +86,7 @@ matrix44*	CDataSun::GetTimeMat()	{	return &timeMat;	}
 
 void CDataSun::UpdateTimeMat()
 {
-	timeMat  = RotateRadMatrix44( 'y', -DegToRad(azimuth) );
-	timeMat *= RotateRadMatrix44( 'x', DegToRad(altitude) );
+	timeMat  = RotateRadMatrix44( 'y', -DegToRad(azimuth) ) * RotateRadMatrix44( 'x', DegToRad(altitude) );
 }
 
 

@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CDlgTime
+LastClass=CCSFrame
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "ConStation.h"
@@ -24,29 +24,30 @@ Class12=CDlgTime
 Class13=CDlgOptionsText
 Class14=CDlgOptionsSun
 
-ResourceCount=19
+ResourceCount=20
 Resource1="IDR_TOOLBAR1"
-Resource2=IDD_LOCATION
-Resource3=IDD_OPTIONS_GENERAL
-Resource4=IDD_OPTIONS_COLORSold
-Resource5=IDD_OPTIONS_SUN
-Resource6=IDD_OPTIONS_STAR
-Resource7=IDR_CONSTELLATION
-Resource8=IDD_ABOUTBOX
-Resource9=IDD_SHOW_HIDE
-Resource10=IDD_TIME
-Resource11=IDD_OPTIONS_TEXT
-Resource12=IDD_OPTIONS_COLOR
-Resource13=IDD_STARINFO
-Resource14=IDR_MAINFRAME
-Resource15=IDD_CONST_NAME
-Resource16=IDD_OPTIONS_CONST
+Resource2=IDD_STARINFO
+Resource3=IDR_CONSTELLATION
+Resource4=IDD_OPTIONS_GENERAL
+Resource5=IDD_ABOUTBOX
+Resource6=IDD_LOCATION
+Resource7=IDD_OPTIONS_TEXT
+Resource8=IDD_CONST_NAME
+Resource9=IDD_OPTIONS_CONST
+Resource10=IDD_OPTIONS_COLOR
+Resource11=IDD_OPTIONS_STAR
+Resource12=IDR_POPUP
+Resource13=IDR_MAINFRAME
+Resource14=IDD_TIME
+Resource15=IDD_OPTIONS_COLORSold
+Resource16=IDD_OPTIONS_TERR
 Class15=CDlgOptionsColor
-Resource17=IDR_STARFIELD
+Resource17=IDD_SHOW_HIDE
 Class16=CDlgStarInfo
-Resource18=IDD_OPTIONS_TERR
+Resource18=IDD_OPTIONS_SUN
 Class17=CDlgFindTrack
-Resource19=IDD_FINDTRACK
+Resource19=IDR_STARFIELD
+Resource20=IDD_FINDTRACK
 
 [CLS:CDlgAbout]
 Type=0
@@ -154,10 +155,13 @@ VirtualFilter=dWC
 [DLG:IDD_LOCATION]
 Type=1
 Class=CDlgLocation
-ControlCount=3
+ControlCount=6
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
-Control3=IDC_MONTHCALENDAR1,SysMonthCal32,1342242832
+Control3=IDC_EDIT1,edit,1350631552
+Control4=IDC_EDIT2,edit,1350631552
+Control5=IDC_STATIC,static,1342308352
+Control6=IDC_STATIC,static,1342308352
 
 [TB:IDR_STARFIELD]
 Type=1
@@ -170,20 +174,25 @@ Command5=ID_OPTIONS_LOCATION
 Command6=ID_STARF_DATE
 Command7=ID_STARF_TIME
 Command8=ID_STARF_SPEED
-Command9=ID_STARS_TOGGLE
-Command10=ID_CONST_TOGGLE
-Command11=ID_SUN_TOGGLE
-Command12=ID_SUNSHINE_TOGGLE
-Command13=ID_TERR_TOGGLE
-Command14=ID_OPTIONS_STAR
-Command15=ID_OPTIONS_CONST
-Command16=ID_OPTIONS_SUN
-Command17=ID_OPTIONS_TERR
-Command18=ID_OPTIONS_COLOR
-Command19=ID_OPTIONS_TEXT
-Command20=ID_TERR_NEW
-Command21=ID_STARF_ROTATE
-CommandCount=21
+Command9=ID_ANIM_PREV
+Command10=ID_ANIM_REV
+Command11=ID_ANIM_PAUSE
+Command12=ID_ANIM_PLAY
+Command13=ID_ANIM_NEXT
+Command14=ID_STARS_TOGGLE
+Command15=ID_CONST_TOGGLE
+Command16=ID_SUN_TOGGLE
+Command17=ID_SUNSHINE_TOGGLE
+Command18=ID_TERR_TOGGLE
+Command19=ID_OPTIONS_STAR
+Command20=ID_OPTIONS_CONST
+Command21=ID_OPTIONS_SUN
+Command22=ID_OPTIONS_TERR
+Command23=ID_OPTIONS_COLOR
+Command24=ID_OPTIONS_TEXT
+Command25=ID_TERR_NEW
+Command26=ID_STARF_ROTATE
+CommandCount=26
 
 [CLS:CDlgLocation]
 Type=0
@@ -341,7 +350,7 @@ Type=0
 HeaderFile=csframe.h
 ImplementationFile=csframe.cpp
 BaseClass=CFrameWnd
-LastObject=ID_VIEW_FINDTRACK
+LastObject=ID_POPUPSTAR_INFO
 Filter=T
 VirtualFilter=fWC
 
@@ -350,6 +359,9 @@ Type=0
 HeaderFile=csview.h
 ImplementationFile=csview.cpp
 BaseClass=CWnd
+Filter=W
+VirtualFilter=WC
+LastObject=CCSView
 
 [CLS:CCSApp]
 Type=0
@@ -519,4 +531,15 @@ BaseClass=CDialog
 Filter=D
 LastObject=CDlgFindTrack
 VirtualFilter=dWC
+
+[MNU:IDR_POPUP]
+Type=1
+Class=?
+Command1=ID_POPUPCONST_CENTER
+Command2=ID_POPUPCONST_TRACK
+Command3=ID_POPUPCONST_INFO
+Command4=ID_POPUPSTAR_CENTER
+Command5=ID_POPUPSTAR_TRACK
+Command6=ID_POPUPSTAR_INFO
+CommandCount=6
 

@@ -16,15 +16,16 @@ PHASES
 ----------------------------------------------------------------
 
 BUGS
+-	5	starfield and sun 180 degrees off before 1900
+-	5	Sidereal days jitter
+-	5	Not showing text until loaddefaults
 -	5	Find/Track negative declination
--	5	Show labels while no lines
--	5	Track/Find constellation combo box too short
+-	5	Show labels while no lines (lines hidden?)
 	7	Force redraw of date and time controls while mouse rotating
 
 GENERAL
 -	5	Currently Tracking...
 -	5	Save/Load terrain in document
--	5	Right click menu to track/center/magnify
 -	5	Actual magnification 1X/2X/1024X
 -	5	Redraw starfield toolbar buttons
 -	5	Splash Screen
@@ -46,14 +47,12 @@ OPTIONS
 	7	Prompt for seed with random stars
 
 INPUT
--	5	Right button for context menu
 	7	More accurate trackball
 	7	Select const label
 
 GRAPHICS
--	5	Getting dark a little too fast
 -	5	sunMat, starfMat, etc. maybe shouldn't include viewMat
--	5	Smooth autorotation
+	7	Getting dark a little too fast
 	7	Lighting normals
 	7	Shadows
 	7	Lens flare
@@ -68,22 +67,27 @@ CONSTELLATION
 	7	Constellation details
 
 STARFIELD
--	5	Autorotation
-		- Forward, reverse, step
-		- Speed: now, years, days, sidereal days, hours, minutes, seconds
-		- Adjust CSView's timer frequency for each
--	5	Choose location (lat & long) (Portales: 34.70N)
+-	5	Kill isSpinning
+-	5	Star and Cosntellation Info
+		- RA / DEC
+		- Altitude / Azimuth
+		- HID
+		- Rises / Sets / Transits times
+-	5	Choose location (lat & lon)
 		- save in document
 		- save as option
+	7	Magnify
 	7	Increase year range
 	7	Add Stars
 	7	Precession
 
 STARS
 
+SUN
+-	5	Take seconds into calculation
 
 TERRAIN
-
+-	5	Don't make edge heights 0. Stretch terrain instead
 
 DOCUMENT
 

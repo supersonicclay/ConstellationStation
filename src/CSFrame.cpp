@@ -52,6 +52,11 @@ BEGIN_MESSAGE_MAP(CCSFrame, CFrameWnd)
 	ON_COMMAND(ID_OPTIONS_COLOR, OnOptionsColor)
 	ON_COMMAND(ID_OPTIONS_TEXT, OnOptionsText)
 	ON_COMMAND(ID_VIEW_FINDTRACK, OnViewFindTrack)
+	ON_COMMAND(ID_ANIM_PREV, OnAnimPrev)
+	ON_COMMAND(ID_ANIM_REV, OnAnimRev)
+	ON_COMMAND(ID_ANIM_PAUSE, OnAnimPause)
+	ON_COMMAND(ID_ANIM_PLAY, OnAnimPlay)
+	ON_COMMAND(ID_ANIM_NEXT, OnAnimNext)
 	ON_UPDATE_COMMAND_UI(ID_STARF_ROTATE, OnUpdateStarfRotate)
 	ON_UPDATE_COMMAND_UI(ID_STARS_TOGGLE, OnUpdateStarsToggle)
 	ON_UPDATE_COMMAND_UI(ID_CONST_LIST, OnUpdateConstList)
@@ -66,6 +71,17 @@ BEGIN_MESSAGE_MAP(CCSFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_SUN_TOGGLE, OnUpdateSunToggle)
 	ON_UPDATE_COMMAND_UI(ID_SUNSHINE_TOGGLE, OnUpdateSunshineToggle)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_FINDTRACK, OnUpdateViewFindTrack)
+	ON_UPDATE_COMMAND_UI(ID_ANIM_PREV, OnUpdateAnimPrev)
+	ON_UPDATE_COMMAND_UI(ID_ANIM_REV, OnUpdateAnimRev)
+	ON_UPDATE_COMMAND_UI(ID_ANIM_PAUSE, OnUpdateAnimPause)
+	ON_UPDATE_COMMAND_UI(ID_ANIM_PLAY, OnUpdateAnimPlay)
+	ON_UPDATE_COMMAND_UI(ID_ANIM_NEXT, OnUpdateAnimNext)
+	ON_COMMAND(ID_POPUPCONST_CENTER, OnPopupConstCenter)
+	ON_COMMAND(ID_POPUPCONST_TRACK, OnPopupConstTrack)
+	ON_COMMAND(ID_POPUPCONST_INFO, OnPopupConstInfo)
+	ON_COMMAND(ID_POPUPSTAR_CENTER, OnPopupStarCenter)
+	ON_COMMAND(ID_POPUPSTAR_TRACK, OnPopupStarTrack)
+	ON_COMMAND(ID_POPUPSTAR_INFO, OnPopupStarInfo)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -276,6 +292,45 @@ void CCSFrame::OnOptionsText()		{	textMgr.Options();				}
 // View commands
 void CCSFrame::OnViewFindTrack()	{	starfMgr.FindTrack();			}
 
+// Animation commands
+void CCSFrame::OnAnimPrev()			{	starfMgr.Previous();			}
+void CCSFrame::OnAnimRev()			{	starfMgr.Reverse();				}
+void CCSFrame::OnAnimPause()		{	starfMgr.Pause();				}
+void CCSFrame::OnAnimPlay()			{	starfMgr.Forward();				}
+void CCSFrame::OnAnimNext()			{	starfMgr.Next();				}
+
+// Popup commands
+void CCSFrame::OnPopupConstCenter() 
+{
+	starfield.FindConst( inputMgr.popupConstNum );
+	Redraw();
+}
+
+void CCSFrame::OnPopupConstTrack() 
+{
+	starfield.StartTrackingConst( inputMgr.popupConstNum );
+	Redraw();
+}
+
+void CCSFrame::OnPopupConstInfo() 
+{
+}
+
+void CCSFrame::OnPopupStarCenter() 
+{
+	starfield.FindStar( inputMgr.popupStarNum );
+	Redraw();
+}
+
+void CCSFrame::OnPopupStarTrack() 
+{
+	starfield.StartTrackingStar( inputMgr.popupStarNum );
+	Redraw();
+}
+
+void CCSFrame::OnPopupStarInfo() 
+{
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Updates
@@ -369,6 +424,29 @@ void CCSFrame::OnUpdateViewFindTrack(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable( state == state_Viewing );
 	
+}
+
+void CCSFrame::OnUpdateAnimPrev(CCmdUI* pCmdUI) 
+{
+}
+
+void CCSFrame::OnUpdateAnimRev(CCmdUI* pCmdUI) 
+{
+	pCmdUI->SetCheck( starfield.GetAnimation() == animation_Reverse );
+}
+
+void CCSFrame::OnUpdateAnimPause(CCmdUI* pCmdUI) 
+{
+	pCmdUI->SetCheck( starfield.GetAnimation() == animation_Paused );
+}
+
+void CCSFrame::OnUpdateAnimPlay(CCmdUI* pCmdUI) 
+{
+	pCmdUI->SetCheck( starfield.GetAnimation() == animation_Forward );
+}
+
+void CCSFrame::OnUpdateAnimNext(CCmdUI* pCmdUI) 
+{
 }
 
 

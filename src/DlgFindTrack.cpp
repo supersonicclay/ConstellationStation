@@ -56,6 +56,11 @@ BEGIN_MESSAGE_MAP(CDlgFindTrack, CDialog)
 END_MESSAGE_MAP()
 
 
+// Combo box dimensions
+#define CONSTLIST_HEIGHT	200
+#define STARLIST_HEIGHT		200
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CDlgFindTrack message handlers
 
@@ -93,12 +98,25 @@ BOOL CDlgFindTrack::OnInitDialog()
 	}
 
 
+	// Resize constellation and star combo boxes
+	CRect r;
+	constControl.GetDroppedControlRect( &r );
+	constControl.GetParent()->ScreenToClient( &r );
+	r.bottom = r.top + CONSTLIST_HEIGHT;
+	constControl.MoveWindow( &r );
+	starControl.GetDroppedControlRect( &r );
+	starControl.GetParent()->ScreenToClient( &r );
+	r.bottom = r.top + STARLIST_HEIGHT;
+	starControl.MoveWindow( &r );
+
+	// Fill constellation list
 	for( int ci=0; ci<starfield.GetConstCount(); ++ci )
 	{
 		s = starfield.GetConst(ci)->GetName();
 		constControl.AddString( s );
 	}
 
+	// Fill stars list
 	for( int si=0; si<starfield.GetStarCount(); ++si )
 	{
 		s = starfield.GetStar(si)->GetName();
@@ -123,7 +141,7 @@ void CDlgFindTrack::OnFindConst()
 {
 	CString buf;
 	constControl.GetLBText( constControl.GetCurSel(), buf );
-	starfield.Find( starfield.GetConst( buf ) );
+	starfield.FindConst( starfield.GetConst( buf ) );
 	constMgr.Select( starfield.GetConstIndex(buf) );
 	EndDialog( IDOK );
 	Redraw();
@@ -133,7 +151,7 @@ void CDlgFindTrack::OnTrackConst()
 {
 	CString buf;
 	constControl.GetLBText( constControl.GetCurSel(), buf );
-	starfield.StartTracking( starfield.GetConst( buf ) );
+	starfield.StartTrackingConst( starfield.GetConst( buf ) );
 	constMgr.Select( starfield.GetConstIndex(buf) );
 	EndDialog( IDOK );
 	Redraw();	
@@ -143,7 +161,7 @@ void CDlgFindTrack::OnFindStar()
 {
 	CString buf;
 	starControl.GetLBText( starControl.GetCurSel(), buf );
-	starfield.Find( starfield.GetStar( buf ) );
+	starfield.FindStar( starfield.GetStar( buf ) );
 	EndDialog( IDOK );
 	Redraw();	
 }
@@ -152,7 +170,7 @@ void CDlgFindTrack::OnTrackStar()
 {
 	CString buf;
 	starControl.GetLBText( starControl.GetCurSel(), buf );
-	starfield.StartTracking( starfield.GetStar( buf ) );
+	starfield.StartTrackingStar( starfield.GetStar( buf ) );
 	EndDialog( IDOK );
 	Redraw();	
 }
@@ -170,7 +188,7 @@ void CDlgFindTrack::OnFindRaDec()
 	dec.second = GetDlgItemInt( IDC_DEC_S );
 	dec.second += GetDlgItemInt( IDC_DEC_SD )*0.1f;
 
-	starfield.Find( ra, dec );
+	starfield.FindRADec( ra, dec );
 	EndDialog( IDOK );
 	Redraw();
 }
@@ -188,7 +206,7 @@ void CDlgFindTrack::OnTrackRaDec()
 	dec.second = GetDlgItemInt( IDC_DEC_S );
 	dec.second += GetDlgItemInt( IDC_DEC_SD )*0.1f;
 
-	starfield.StartTracking( ra, dec );
+	starfield.StartTrackingRADec( ra, dec );
 	EndDialog( IDOK );
 	Redraw();
 }

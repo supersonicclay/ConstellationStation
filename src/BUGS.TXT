@@ -4,118 +4,65 @@ STATUS		DATE			DESCRIPTION
 
 Fixed		10-23-03		Stars that are part of constellations aren't going active
 							-Stars being copied when serialized from ConstLine?
-
 Fixed		10-23-03		Projection needs called on new document
-	
 Fixed		10-26-03		Position viewer above terrain
-
 Fixed		10-26-03		Arrow Down is rotating too far
-
 Fixed		10-30-03		CStar.PickDirection() isn't computing x,y,z right
-
 Fixed		10-29-03		Stars aren't evenly displaced
-
 Fixed		11-01-03		Saving / Loading isn't working with textures
-
 Fixed		11-01-03		Isn't saving Terrain
-
 Fixed		11-01-03		Select(LINE) is returning the wrong number
-
 Fixed		11-01-03		Show / Hide is letting you hide while editing
-
 Fixed		11-01-03		Constellations can have duplicate lines
-
 Fixed		11-01-03		Shouldn't select stars behind ground
-
 Fixed		11-25-03		Dialogs disappear while starfrotating
-
 Fixed		01-10-04		Restructured; Globals ( terrain, starfield, RedrawView() )
-
 Fixed		01-24-04		Shouldn't hide while editing a constellation
-
-Fixed		7-18-04			RedrawView() isn't finding correct CCSView
-
-Disappeared	7-18-04			Bugs occasionally on exit
-
-Fixed		7-22-04			Memory leaks
-
-Fixed		7-23-04			Bugs when 2 constellations deleted in a row.
-
-Fixed		7-23-04			Message Box's aren't modal
-
-Fixed		7-25-04			New after save or open (save/open dlg was changing working dir)
-
-Fixed		7-30-04			Frustum culling
-
-Fixed		7-31-04			Color components were multiplied by 256 instead of 255
-
+Fixed		07-18-04		RedrawView() isn't finding correct CCSView
+Disappeared	07-18-04		Bugs occasionally on exit
+Fixed		07-22-04		Memory leaks
+Fixed		07-23-04		Bugs when 2 constellations deleted in a row.
+Fixed		07-23-04		Message Box's aren't modal
+Fixed		07-25-04		New after save or open (save/open dlg was changing working dir)
+Fixed		07-30-04		Frustum culling
+Fixed		07-31-04		Color components were multiplied by 256 instead of 255
 Fixed		08-05-04		Select line isn't checking for terrain hits
-
 Fixed		08-12-04		Show / Hide list is using number index instead of name index
-
 Fixed		08-12-04		Viewheight is choppy
-
 Fixed		08-13-04		Terrain stays lit after toggle sun command
-
 Fixed		08-14-04		Roundoff error with sliders
-
 Fixed		08-17-04		Terrain isn't depth testing
-
 Fixed		08-24-04		Shouldn't draw terrain when selecting with terrain off
-
 Fixed		08-26-04		Front facing stars are being culled
-
 Fixed		08-30-04		SetTempRot should check if it will go to far (poles)
-
 Disappeared	08-30-04		Random starfield has circles around E and W poles
-
 Fixed		08-30-04		First star is a blank InitActualStars
-
 Fixed		08-30-04		Isn't calculating correct light position
-
 Disappeared	09-03-04		No depth test on compass
-
 Fixed		10-18-04		Star options sliders not moving
-
 Fixed		10-18-04		Fog stays blue after sunshine toggle
-
 Fixed		10-19-04		Consts are being drawn with dayAlpha = 0
-
 Fixed		10-19-04		DrawTerrain should select white if textured
-
 Not Worried	10-19-04		Sphere texture has alpha=0
-
 Fixed		11-03-04		Textures not changing on load defaults.
-
 Fixed		11-10-04		Sun glow quad needs to be perp to viewer
-
 Fixed		11-12-04		perspMat killed selection
-
 Fixed		11-14-04		Sun glow not showing
-
 Fixed		11-14-04		Tracking after adding/deleting  (didn't update copy constructor)
-
 Fixed		11-18-04		Make sure and handle no spectral and no name
-
 Fixed		11-18-04		Selection screwed after TypeStar()
-
 Fixed		11-18-04		Should only dblclick if viewing
-
 Fixed		11-20-04		Const blend while daylight
-
 Fixed		11-20-04		Not loading font defaults
-
 Fixed		11-20-04		Font dialog needs better parent
-
 Fixed		11-20-04		Fonts not loading into dialog
-
 Fixed		11-26-04		terrain dissapearing when looking straight down
-
 Fixed		12-11-04		Frame Icon
-
 Fixed		08-27-05		Can't import constellations with spaces in name
-
 Fixed		08-28-05		When lines are hidden, set state to viewing
-
 Fixed		08-28-05		Update listbox when importing constellations
-
+Fixed		08-31-05		CBarStarf not being notified of speed change
+Fixed		09-07-05		Track/Find constellation combo box too short
+Fixed		09-08-05		SelectConst would try multiple times with smaller radii
+Fixed		09-08-05		SelectConst's sanity check didn't allow -1
+Fixed		09-08-05		Change to realtime when time change from toolbar

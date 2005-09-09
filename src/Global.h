@@ -43,6 +43,32 @@ enum track_e
 	track_RADec
 };
 
+enum animation_e
+{
+	animation_Paused,
+	animation_Forward,
+	animation_Reverse
+};
+
+enum speed_e
+{
+	speed_Now=0,
+	speed_Realtime,
+	speed_Seconds,
+	speed_Minutes,
+	speed_Hours,
+	speed_Days,
+	speed_Years,
+	speed_SiderealDays
+};
+
+enum popup_e
+{
+	popup_Constellation=0,
+	popup_Star,
+	popup_ConstellationAndStar
+};
+
 typedef struct
 {
 	float r;

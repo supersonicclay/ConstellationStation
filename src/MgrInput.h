@@ -39,6 +39,11 @@ public:
 	UINT selectBuffer[100];
 	UINT  hits;
 
+	// Popup menu
+	popup_e popup;
+	int popupConstNum;
+	int popupStarNum;
+
 	// Constellation editor
 	int firstStarNum;
 	int secondStarNum;

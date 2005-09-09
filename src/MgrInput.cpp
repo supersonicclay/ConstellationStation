@@ -262,9 +262,6 @@ void CMgrInput::MouseLUp( CPoint point )
 // Main handler for right mouse button down
 void CMgrInput::MouseRDown( CPoint point ) 
 {
-	// Give view the focus
-	GetView()->SetFocus();
-
 	mouseRPoint = mousePoint;
 	mousePoint.x = point.x;
 	mousePoint.y = graphicsMgr.height - point.y;
@@ -272,6 +269,7 @@ void CMgrInput::MouseRDown( CPoint point )
 	GetCursorPos( &mouseScreenPoint );
 	mouseScreenRPoint = mouseScreenPoint;
 
+	// Call appropriate function based on state
 	switch( state )
 	{
 	case state_Viewing:
@@ -360,11 +358,14 @@ void CMgrInput::MouseLDownViewing()
 	{
 		mouseRotatingY = TRUE;
 		SetCur( IDC_ROTY );
+		if( starfield.GetSpeed() == speed_Now )
+			GetFrame()->GetStarfBar()->ChangeSpeed( speed_Realtime );
 	}
 	else
 	{
 		mouseRotatingXY = TRUE;
 		SetCur( IDC_ROTXY );
+		starfield.StopTracking();
 	}
 
 	GetView()->SetCapture();
@@ -445,30 +446,150 @@ void CMgrInput::MouseLUpDeletingLine()
 
 void CMgrInput::MouseRDownViewing()
 {
-	/// Show menu
 }
 
 void CMgrInput::MouseRDownAddingLine()
 {
-	SetState( state_Viewing );
-	Redraw();
 }
 
 void CMgrInput::MouseRDownDeletingLine()
 {
-	SetState( state_Viewing );
+}
+
+// FindMenuItem() will find a menu item string from the specified
+// popup menu and returns its position (0-based) in the specified 
+// popup menu. It returns -1 if no such menu item string is found.
+int FindMenuItem(CMenu* Menu, LPCTSTR MenuString)
+{
+   ASSERT(Menu);
+   ASSERT(::IsMenu(Menu->GetSafeHmenu()));
+
+   int count = Menu->GetMenuItemCount();
+   for (int i = 0; i < count; i++)
+   {
+      CString str;
+      if (Menu->GetMenuString(i, str, MF_BYPOSITION) &&
+         (strcmp(str, MenuString) == 0))
+         return i;
+   }
+
+   return -1;
 }
 
 void CMgrInput::MouseRUpViewing()
 {
+	CMenu menu_bar;
+	menu_bar.LoadMenu( IDR_POPUP );
+
+	CMenu* constMenu;
+	CMenu* starMenu;
+	CString constName;
+	CString starName;
+
+	// Try to select a constellation and a star
+	popupConstNum = SelectConst();
+	popupStarNum = SelectStar();
+
+	// Create const menu
+	if( popupConstNum != -1 )
+	{
+		constMenu = menu_bar.GetSubMenu( popup_Constellation );
+		if( !constMenu )
+		{
+			CSDebug( "Can't get submenu of popup menubar", "CMgrInput::MouseRUpViewing" );
+			return;
+		}
+		// Rename first item to name of constellation
+		constName = "Constellation: " + starfield.GetConst( popupConstNum )->GetName();
+		if( !constMenu->InsertMenu( 0, MF_BYPOSITION | MF_DISABLED, 0, constName ) )
+		{
+			CSDebug( "Can't rename popup menu item name", "CMgrInput::MouseRUpViewing" );
+			return;
+		}
+	}
+
+	// Create star menu
+	if( popupStarNum != -1 )
+	{
+		starMenu = menu_bar.GetSubMenu( popup_Star );
+		if( !starMenu )
+		{
+			CSDebug( "Can't get submenu of popup menubar", "CMgrInput::MouseRUpViewing" );
+			return;
+		}
+
+		// Rename first item to name of star
+		if( starfield.GetStar( popupStarNum )->GetName().IsEmpty() )
+			starName.Format( "Star: HID %d", starfield.GetStar( popupStarNum )->GetHID() );
+		else
+			starName = "Star: " + starfield.GetStar( popupStarNum )->GetName();
+		if( !starMenu->InsertMenu( 0, MF_BYPOSITION | MF_DISABLED, 0, starName ) )
+		{
+			CSDebug( "Can't rename popup menu item name", "CMgrInput::MouseRUpViewing" );
+			return;
+		}
+	}
+
+	// If both are selected
+	if( popupConstNum != -1 && popupStarNum != -1 )
+	{
+		popup = popup_ConstellationAndStar;
+
+		// Create a menu for each
+		CMenu comboMenu;
+		if( !comboMenu.CreatePopupMenu() )
+		{
+			CSDebug( "Can't create combo popup menu", "CMgrInput::MouseRUpViewing" );
+			return;
+		}
+		if( !comboMenu.AppendMenu( MF_POPUP, (UINT)constMenu->GetSafeHmenu(), constName ) )
+		{
+			CSDebug( "Can't append constellation menu to combo popup menu", "CMgrInput::MouseRUpViewing" );
+			return;
+		}
+		if( !comboMenu.AppendMenu( MF_POPUP, (UINT)starMenu->GetSafeHmenu(), starName ) )
+		{
+			CSDebug( "Can't append star menu to combo popup menu", "CMgrInput::MouseRUpViewing" );
+			return;
+		}
+		if( !comboMenu.TrackPopupMenu( TPM_LEFTALIGN | TPM_LEFTBUTTON, mouseScreenPoint.x, mouseScreenPoint.y, GetFrame() ) )
+		{
+			CSDebug( "Can't track combo popup menu", "CMgrInput::MouseRUpViewing" );
+			return;
+		}
+	}
+
+	// If just a constellation was selected
+	else if( popupConstNum != -1 )
+	{
+		popup = popup_Constellation;
+		if( !constMenu->TrackPopupMenu( TPM_LEFTALIGN | TPM_LEFTBUTTON, mouseScreenPoint.x, mouseScreenPoint.y, GetFrame() ) )
+		{
+			CSDebug( "Can't track constellation popup menu", "CMgrInput::MouseRUpViewing" );
+			return;
+		}
+	}
+
+	// If just a star was selected
+	else if( popupStarNum != -1 )
+	{
+		popup = popup_Star;
+		if( !starMenu->TrackPopupMenu( TPM_LEFTALIGN | TPM_LEFTBUTTON, mouseScreenPoint.x, mouseScreenPoint.y, GetFrame() ) )
+		{
+			CSDebug( "Can't track star popup menu", "CMgrInput::MouseRUpViewing" );
+			return;
+		}
+	}
 }
 
 void CMgrInput::MouseRUpAddingLine()
 {
+	SetState( state_Viewing );
 }
 
 void CMgrInput::MouseRUpDeletingLine()
 {
+	SetState( state_Viewing );
 }
 
 
@@ -517,11 +638,11 @@ void CMgrInput::MouseMoveViewing3()  // Trackball
 		int diff = mousePoint.y-mouseLPoint.y;
 		// Rotate time
 		if( keyDown[VK_SHIFT] )
-			GetFrame()->GetStarfBar()->AdjustTime( COleDateTimeSpan( 0, 0, diff, 0 ) );
+			GetFrame()->GetStarfBar()->AdjustTime( 0, 0, 0, diff, 0 );
 		// Rotate Sun
 		else if( keyDown[VK_CONTROL] )
 			///starfield.GetSun()->AdjRotTime( -diff * 0.002f );
-			GetFrame()->GetStarfBar()->AdjustTime( COleDateTimeSpan( diff, 0, 0, 0 ) );
+			GetFrame()->GetStarfBar()->AdjustTime( 0, diff, 0, 0, 0 );
 		// Rotate latitude
 		else if( keyDown[VK_TAB] )
 			starfield.AdjLatitude( diff * 0.1f );
@@ -576,7 +697,7 @@ void CMgrInput::MouseMoveViewing2()  // Mouse stays in place
 
 		SetCursorPos( mouseScreenRPoint.x, mouseScreenRPoint.y );
 
-		GetFrame()->GetStarfBar()->AdjustTime( COleDateTimeSpan( 0, 0, deltaTime, 0 ) );
+		GetFrame()->GetStarfBar()->AdjustTime( 0, 0, 0, deltaTime, 0 );
 	}
 
 	else if( mouseRotatingXY )
@@ -603,13 +724,13 @@ void CMgrInput::MouseMoveViewing()  // Original
 		int diff = mousePoint.y-mouseRPoint.y;
 		// Rotate Sun
 		if( keyDown[VK_SHIFT] )
-			GetFrame()->GetStarfBar()->AdjustTime( COleDateTimeSpan( diff, 0, 0, 0 ) );
+			GetFrame()->GetStarfBar()->AdjustTime( 0, diff, 0, 0, 0 );
 		// Rotate latitude
 		else if( keyDown[VK_CONTROL] )
 			starfield.AdjLatitude( diff * 0.1f );
 		// Rotate time
 		else
-			GetFrame()->GetStarfBar()->AdjustTime( COleDateTimeSpan( 0, 0, diff, 0 ) );
+			GetFrame()->GetStarfBar()->AdjustTime( 0, 0, 0, diff, 0 );
 		mouseRPoint = mousePoint;
 	}
 
@@ -858,7 +979,8 @@ int CMgrInput::SelectConst()
 	for( int i=0; i<3; ++i )
 	{
 		// If no line was selected
-		if( !Select( select_Const, 100.0f ) )
+		///if( !Select( select_Const, 100.0f ) ) why was this 100? Think it's supposed to be radius
+		if( !Select( select_Const, radius ) )
 			return -1;
 
 		// Calculate constellation number
@@ -872,16 +994,15 @@ int CMgrInput::SelectConst()
 				// Set constNum to undefined and decrease radius.
 				constNum = -1;
 				radius*=0.75f;
-				continue;
 			}
 		}
 
-		// If we've gotten here, we got one.
-		break;
+		if( constNum != -1 )
+			break;
 	}
 
 	// Sanity check
-	if( constNum < 0 || constNum > starfield.GetConstCount()-1 )
+	if( constNum < -1 || constNum > starfield.GetConstCount()-1 )
 	{
 		CSDebug( "constNum out of range", "CMgrInput::SelectConst" );
 		return -1;

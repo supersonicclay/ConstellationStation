@@ -99,6 +99,55 @@ void CMgrStarf::Time()
 
 
 /////////////////////////////////////////////////////////////////////////////
+// Animation Methods
+
+void CMgrStarf::ChangeStarfSpeed( speed_e x )
+{
+	starfield.SetSpeed(x);
+	if( starfield.GetAnimation() != animation_Paused )
+		GetStarfBar()->AnimationSetTimer();
+}
+
+void CMgrStarf::Pause()
+{
+	starfield.SetAnimation( animation_Paused );
+	GetStarfBar()->KillTimer( 1 );
+	if( starfield.GetSpeed() == speed_Now )
+		GetStarfBar()->ChangeSpeed( speed_Realtime );
+}
+
+void CMgrStarf::Forward()
+{
+	starfield.SetAnimation( animation_Forward );
+	GetStarfBar()->AnimationSetTimer();
+}
+
+void CMgrStarf::Reverse()
+{
+	starfield.SetAnimation( animation_Reverse );
+	GetStarfBar()->AnimationSetTimer();
+}
+
+void CMgrStarf::Next()
+{
+	starfield.SetAnimation( animation_Paused );
+	GetStarfBar()->KillTimer( 1 );
+	GetStarfBar()->AnimationAdjustTime( 1 );
+	if( starfield.GetSpeed() == speed_Now )
+		GetStarfBar()->ChangeSpeed( speed_Realtime );
+}
+
+void CMgrStarf::Previous()
+{
+	starfield.SetAnimation( animation_Paused );
+	GetStarfBar()->KillTimer( 1 );
+	GetStarfBar()->AnimationAdjustTime( -1 );
+	if( starfield.GetSpeed() == speed_Now )
+		GetStarfBar()->ChangeSpeed( speed_Realtime );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
 // Star Methods
 
 // Open the star options dialog

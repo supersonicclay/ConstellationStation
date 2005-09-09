@@ -47,10 +47,17 @@ private:
 	// Random seed or -1 for actual
 	int seed;
 
-	// Location & Time
+	// Time
 	COleDateTime lt;		// Local time
 	COleDateTime ut;		// Universal time
 	double julian;			// Julian date
+
+	// Animation
+	animation_e animation;
+	speed_e speed;
+
+	// Location
+	///CString location;
 	float latitude;
 	float longitude;
 
@@ -130,6 +137,9 @@ public:
 	COleDateTime GetUT();
 	double GetJulian();
 
+	animation_e GetAnimation();
+	speed_e GetSpeed();
+
 	float GetLatitude();
 	float GetLongitude();
 
@@ -183,6 +193,9 @@ public:
 	void SwitchSunShine();
 	void SetSunShine( BOOL x );
 
+	void SetAnimation( animation_e x );
+	void SetSpeed( speed_e s );
+
 	void SetLatitude( float l, BOOL updateMat=TRUE );
 	void SetLongitude( float l, BOOL updateMat=TRUE );
 
@@ -207,7 +220,6 @@ public:
 	int  FindHID( int hid );
 	BOOL IsStarInCurConst( int i );
 
-
 // Constellation methods
 	void LoadConstDefaults();
 	BOOL IsDuplicate( CString& name );
@@ -216,7 +228,6 @@ public:
 	void RenameConst( CString& name );
 	BOOL SelectConst( CString& name );
 	void SelectConst( int i );
-
 
 // Sun methods
 	void LoadSunDefaults();
@@ -247,14 +258,18 @@ public:
 	void ResetZoom();
 
 // Tracking methods
-	void Find( CDataStar* star );
-	void Find( CDataConst* constellation );
-	void Find( ra_s ra, dec_s dec );
+	void FindStar( int num );
+	void FindStar( CDataStar* star );
+	void FindConst( int num );
+	void FindConst( CDataConst* constellation );
+	void FindRADec( ra_s ra, dec_s dec );
 	void Find( vector3 t );
 
-	void StartTracking( CDataStar* star );
-	void StartTracking( CDataConst* constellation );
-	void StartTracking( ra_s ra, dec_s dec );
+	void StartTrackingStar( int num );
+	void StartTrackingStar( CDataStar* star );
+	void StartTrackingConst( int num );
+	void StartTrackingConst( CDataConst* constellation );
+	void StartTrackingRADec( ra_s ra, dec_s dec );
 	void StartTracking( vector3 t );
 	void StopTracking();
 	void Track();

@@ -32,7 +32,10 @@ public:
 	void UpdateStarfieldTime();
 	void SetTimeToNow();
 	void SetTime( COleDateTime& dt );
-	void AdjustTime( COleDateTimeSpan& s );
+	void AdjustTime( int years, int days, int hours, int minutes, int seconds );
+	void ChangeSpeed( speed_e x );
+	void AnimationSetTimer();
+	void AnimationAdjustTime( int m ); // m - multiplier (1 for forward, -1 for reverse)
 
 
 // Overrides
@@ -50,6 +53,7 @@ protected:
 	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg void OnDateChange(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnTimeChange(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnSpeedChange();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

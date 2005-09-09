@@ -75,7 +75,6 @@ protected:
 	afx_msg void OnConstAdd();
 	afx_msg void OnConstDelete();
 	afx_msg void OnConstRename();
-	afx_msg void OnConstHide();
 	afx_msg void OnConstAddLine();
 	afx_msg void OnConstDeleteLine();
 	afx_msg void OnConstToggle();
@@ -94,6 +93,11 @@ protected:
 	afx_msg void OnOptionsColor();
 	afx_msg void OnOptionsText();
 	afx_msg void OnViewFindTrack();
+	afx_msg void OnAnimPrev();
+	afx_msg void OnAnimRev();
+	afx_msg void OnAnimPause();
+	afx_msg void OnAnimPlay();
+	afx_msg void OnAnimNext();
 	afx_msg void OnUpdateStarfRotate(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateStarsToggle(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateConstList(CCmdUI* pCmdUI);
@@ -108,6 +112,17 @@ protected:
 	afx_msg void OnUpdateSunToggle(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateSunshineToggle(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateViewFindTrack(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateAnimPrev(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateAnimRev(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateAnimPause(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateAnimPlay(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateAnimNext(CCmdUI* pCmdUI);
+	afx_msg void OnPopupConstCenter();
+	afx_msg void OnPopupConstTrack();
+	afx_msg void OnPopupConstInfo();
+	afx_msg void OnPopupStarCenter();
+	afx_msg void OnPopupStarTrack();
+	afx_msg void OnPopupStarInfo();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

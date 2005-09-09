@@ -2,8 +2,16 @@
 0.5 - Features
 -------------------------------------------------
 
+0.5.3
+	Autorotation
+		- Speed: now, years, days, sidereal days, hours, minutes, seconds
+		- Adjust CSView's timer frequency for each
+		- Change from Now to Realtime when needed
+		- Update selected speed function
+	Right click menu to track/center
+
 0.5.2
-	Starfield saves ut instead of local time
+	Starfield save ut instead of local time
 
 0.5.1
 	Link time with starfield

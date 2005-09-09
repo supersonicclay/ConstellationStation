@@ -21,6 +21,7 @@ BEGIN_MESSAGE_MAP( CBarStarf, CToolBar )
 	ON_WM_TIMER()
 	ON_NOTIFY(DTN_DATETIMECHANGE, ID_STARF_DATE, OnDateChange)
 	ON_NOTIFY(DTN_DATETIMECHANGE, ID_STARF_TIME, OnTimeChange)
+	ON_CBN_SELCHANGE(ID_STARF_SPEED, OnSpeedChange)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -33,8 +34,8 @@ END_MESSAGE_MAP()
 #define STARFDATE_HEIGHT	25
 #define STARFTIME_WIDTH		100
 #define STARFTIME_HEIGHT	25
-#define STARFSPEED_WIDTH	100
-#define STARFSPEED_HEIGHT	100
+#define STARFSPEED_WIDTH	120
+#define STARFSPEED_HEIGHT	200
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -66,7 +67,7 @@ BOOL CBarStarf::Init(CWnd *pParentWnd)
 		return FALSE;
 	}
 
-	// Timer ticks every second
+	// Timer ticks every second by default
 	SetTimer( 1, 1000, NULL );
 
 	return TRUE;
@@ -165,7 +166,7 @@ BOOL CBarStarf::InitSpeedCtrl()
 	SetButtonInfo( STARFSPEED_INDEX, ID_STARF_SPEED, TBBS_SEPARATOR, STARFSPEED_WIDTH );
 
 	if ( !speed.Create( WS_CHILD | CBS_DROPDOWNLIST | CBS_HASSTRINGS, rect, this,
-		ID_CONST_LIST ) )
+		ID_STARF_SPEED ) )
 	{
 		CSDebug( "Can't create speed control", "CBarStarf::InitSpeedCtrl" );
 		exit(0);
@@ -184,11 +185,16 @@ BOOL CBarStarf::InitSpeedCtrl()
 		SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOSIZE|SWP_NOCOPYBITS );
 	speed.ShowWindow( SW_SHOW );
 
+	// MUST BE ADDED IN SAME ORDER as in speed_e declaration
+	//  so that index number will be same as integer value of enum
 	speed.SetCurSel( speed.AddString("Now") );
-	speed.AddString("1X");
-	speed.AddString("10X");
-	speed.AddString("100X");
-	speed.AddString("1000X");
+	speed.AddString("Realtime");
+	speed.AddString("Seconds");
+	speed.AddString("Minutes");
+	speed.AddString("Hours");
+	speed.AddString("Days");
+	speed.AddString("Years");
+	speed.AddString("Sidereal Days");
 
 	return true;
 }
@@ -200,12 +206,17 @@ BOOL CBarStarf::InitSpeedCtrl()
 void CBarStarf::OnTimer(UINT nIDEvent) 
 {
 	CToolBar::OnTimer(nIDEvent);
-
-	/*
-	COleDateTime curTime = COleDateTime::GetCurrentTime();
-	time.SetTime(curTime);
-	date.SetTime(curTime);
-	*/
+	
+	if( !inputMgr.mouseRotatingXY &&
+		!inputMgr.mouseRotatingY &&
+		nIDEvent == 1 &&
+		state == state_Viewing )
+	{
+		if( starfield.GetAnimation() == animation_Forward )
+			AnimationAdjustTime( 1 );
+		else
+			AnimationAdjustTime( -1 );
+	}
 }
 
 void CBarStarf::UpdateStarfieldTime()
@@ -234,28 +245,117 @@ void CBarStarf::SetTime( COleDateTime& lt )
 	UpdateStarfieldTime();
 }
 
-void CBarStarf::AdjustTime( COleDateTimeSpan& s )
+void CBarStarf::AdjustTime( int years, int days, int hours, int minutes, int seconds )
 {
-	COleDateTime t, d, lt;
+	COleDateTime t, d, dt;
 	time.GetTime(t);
 	date.GetTime(d);
-	lt.SetDateTime( d.GetYear(), d.GetMonth(), d.GetDay(), t.GetHour(), t.GetMinute(), t.GetSecond() );
 
 	// Adjust time
-	lt += s;
-	time.SetTime(lt);
-	date.SetTime(lt);
-	starfield.SetLT(lt);
+	dt.SetDateTime( d.GetYear()+years, d.GetMonth(), d.GetDay(), t.GetHour(), t.GetMinute(), t.GetSecond() );
+	dt += COleDateTimeSpan( days, hours, minutes, seconds );
+	if( dt.GetStatus() != COleDateTime::valid )
+	{
+		CSDebug( "COleDateTime not valid", "CBarStarf::AdjustTime" );
+		starfield.SetAnimation( animation_Paused );
+	}
+
+	time.SetTime(dt);
+	date.SetTime(dt);
+	starfield.SetLT(dt);
 
 	Redraw();
 }
 
+void CBarStarf::ChangeSpeed( speed_e x )
+{
+	speed.SetCurSel(x);
+	OnSpeedChange();
+}
+
+void CBarStarf::AnimationAdjustTime( int m )
+{
+	switch( starfield.GetSpeed() )
+	{
+		case speed_Now:
+			SetTimeToNow();
+			break;
+		case speed_Realtime:
+			AdjustTime( 0, 0, 0, 0, m );
+			break;
+		case speed_Seconds:
+			AdjustTime( 0, 0, 0, 0, m );
+			break;
+		case speed_Minutes:
+			AdjustTime( 0, 0, 0, m, 0 );
+			break;
+		case speed_Hours:
+			AdjustTime( 0, 0, m, 0, 0 );
+			break;
+		case speed_Days:
+			AdjustTime( 0, m, 0, 0, 0 );
+			break;
+		case speed_Years:
+			AdjustTime( m, 0, 0, 0, 0 );
+			break;
+		case speed_SiderealDays:
+			AdjustTime( 0, 0, 23*m, 56*m, 4*m );/// How's it look?
+			break;
+		default:
+			break;
+	}
+	Redraw();
+}
+
+void CBarStarf::AnimationSetTimer()
+{
+	switch( starfield.GetSpeed() )
+	{
+		case speed_Now:
+			SetTimeToNow();
+			SetTimer( 1, 1000, NULL );
+			break;
+		case speed_Realtime:
+			SetTimer( 1, 1000, NULL );
+			break;
+		case speed_Seconds:
+			SetTimer( 1, 40, NULL );
+			break;
+		case speed_Minutes:
+			SetTimer( 1, 40, NULL );
+			break;
+		case speed_Hours:
+			SetTimer( 1, 40, NULL );
+			break;
+		case speed_Days:
+			SetTimer( 1, 40, NULL );
+			break;
+		case speed_Years:
+			SetTimer( 1, 40, NULL );
+			break;
+		case speed_SiderealDays:
+			SetTimer( 1, 40, NULL );
+			break;
+		default:
+			break;
+	}
+}
+
 void CBarStarf::OnDateChange(NMHDR* pNMHDR, LRESULT* pResult)
 {
+	if( starfield.GetSpeed() == speed_Now )
+		ChangeSpeed( speed_Realtime );
 	UpdateStarfieldTime();
 }
 
 void CBarStarf::OnTimeChange(NMHDR* pNMHDR, LRESULT* pResult)
 {
+	if( starfield.GetSpeed() == speed_Now )
+		ChangeSpeed( speed_Realtime );
 	UpdateStarfieldTime();
+}
+
+void CBarStarf::OnSpeedChange()
+{
+	starfMgr.ChangeStarfSpeed( (speed_e) speed.GetCurSel() );
 }

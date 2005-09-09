@@ -52,6 +52,9 @@ void CDataStarf::Clear( BOOL clearStars )
 	// Time
 	lt.m_dt = 0;
 	ut.m_dt = 0;
+	julian = 0;
+	animation = animation_Forward;
+	speed = speed_Now;
 
 	// Location
 	latitude = 47.65f;    /// 34.2N for Portales             47.65N for Seattle
@@ -92,6 +95,8 @@ void CDataStarf::Clear( BOOL clearStars )
 // Create a new random or actual starfield
 void CDataStarf::New( BOOL actual )
 {
+	//actual = false; /// faster loads
+
 	// Don't clear stars if we don't need to
 	if( actual && seed == -1 )
 		Clear( FALSE );
@@ -111,10 +116,13 @@ void CDataStarf::New( BOOL actual )
 	else
 	{
 		seed = clock();
-		InitRandomStars();
-///		InitTestStars();
+///		InitRandomStars();
+		InitTestStars();
 	}
 
+	SetAnimation( animation_Forward );
+	SetSpeed( speed_Now );
+	SwitchSpinning();
 	UpdateMats();
 }
 
@@ -290,6 +298,9 @@ COleDateTime	CDataStarf::GetLT()					{	return lt;						}
 COleDateTime	CDataStarf::GetUT()					{	return ut;						}
 double			CDataStarf::GetJulian()				{	return julian;					}
 
+animation_e		CDataStarf::GetAnimation()			{	return animation;				}
+speed_e			CDataStarf::GetSpeed()				{	return speed;					}
+
 float			CDataStarf::GetLatitude()			{	return latitude;				}
 float			CDataStarf::GetLongitude()			{	return longitude;				}
 
@@ -381,6 +392,8 @@ void CDataStarf::SwitchSunVisible()				{	sunVisible = !sunVisible;					}
 void CDataStarf::SetSunVisible( BOOL x )		{	sunVisible = x;								}
 void CDataStarf::SwitchSunShine()				{	sunShine = !sunShine;						}
 void CDataStarf::SetSunShine( BOOL x )			{	sunShine = x;								}
+void CDataStarf::SetAnimation( animation_e x )	{	animation = x;								}
+void CDataStarf::SetSpeed( speed_e x )			{	speed = x;									}
 void CDataStarf::SwitchSpinning()				{	spinning = !spinning;						}
 
 void CDataStarf::SetLatitude( float lat, BOOL updateMat )
@@ -647,6 +660,8 @@ void CDataStarf::UpdateTime()
 	sun.UpdateTimeMat();
 	UpdateTimeMat();
 	UpdateStarfMat();
+	if( tracking )
+		Track();
 }
 
 void CDataStarf::SetLT( COleDateTime& dt )
@@ -776,7 +791,18 @@ void CDataStarf::ResetZoom()
 // Tracking Methods
 
 // Find the specified star
-void CDataStarf::Find( CDataStar* star )
+void CDataStarf::FindStar( int num )
+{
+	if( num == -1 )
+	{
+		CSDebug( "Shouldn't be finding a star number -1", "CDataStarf::FindStar" );
+		return;
+	}
+	FindStar( &stars[num] );
+}
+
+// Find the specified star
+void CDataStarf::FindStar( CDataStar* star )
 {
 	trackingType = track_Star;
 	trackingName = star->GetName();
@@ -784,7 +810,18 @@ void CDataStarf::Find( CDataStar* star )
 }   
 
 // Find the specified constellation
-void CDataStarf::Find( CDataConst* constellation )
+void CDataStarf::FindConst( int num )
+{
+	if( num == -1 )
+	{
+		CSDebug( "Shouldn't be finding a constellation number -1", "CDataStarf::FindConst" );
+		return;
+	}
+	FindConst( &consts[num] );
+}
+
+// Find the specified constellation
+void CDataStarf::FindConst( CDataConst* constellation )
 {
 	if( constellation->GetLineCount() == 0 )
 	{
@@ -799,7 +836,7 @@ void CDataStarf::Find( CDataConst* constellation )
 }
 
 // Find the specified right ascension and declination
-void CDataStarf::Find( ra_s ra, dec_s dec )
+void CDataStarf::FindRADec( ra_s ra, dec_s dec )
 {
 	trackingType = track_RADec;
 
@@ -834,15 +871,37 @@ void CDataStarf::Find( vector3 t )
 }
 
 // Track the specified star
-void CDataStarf::StartTracking( CDataStar* star )
+void CDataStarf::StartTrackingStar( int num )
+{
+	if( num == -1 )
+	{
+		CSDebug( "Shouldn't be tracking a star number -1", "CDataStarf::StarTrackingStar" );
+		return;
+	}
+	StartTrackingStar( &stars[num] );
+}
+
+// Track the specified star
+void CDataStarf::StartTrackingStar( CDataStar* star )
 {
 	trackingType = track_Star;
 	trackingName = star->GetName();
 	StartTracking( star->GetCenter() );
 }
 
+// Track the specified star
+void CDataStarf::StartTrackingConst( int num )
+{
+	if( num == -1 )
+	{
+		CSDebug( "Shouldn't be tracking a cosntellation number -1", "CDataStarf::StarTrackingConst" );
+		return;
+	}
+	StartTrackingConst( &consts[num] );
+}
+
 // Track the specified constellation
-void CDataStarf::StartTracking( CDataConst* constellation )
+void CDataStarf::StartTrackingConst( CDataConst* constellation )
 {
 	if( constellation->GetLineCount() == 0 )
 	{
@@ -857,7 +916,7 @@ void CDataStarf::StartTracking( CDataConst* constellation )
 }
 
 // Track the specified right ascension and declination
-void CDataStarf::StartTracking( ra_s ra, dec_s dec )
+void CDataStarf::StartTrackingRADec( ra_s ra, dec_s dec )
 {
 	trackingType = track_RADec;
 	trackingRA = ra;
@@ -1006,7 +1065,7 @@ void CDataStarf::ImportConsts()
 void CDataStarf::Serialize(CArchive& ar)
 {
 	CObject::Serialize(ar);
-	int i;
+	int i, s;
 	COleDateTime dt;
 
 	// Serialize sun
@@ -1020,12 +1079,11 @@ void CDataStarf::Serialize(CArchive& ar)
 
 		ar >> seed
 		   >> constCount >> newConstCount >> curConstNum
-		   >> dt.m_dt
+		   >> dt.m_dt >> s
 		   >> latitude >> longitude
 		   >> rotX >> rotY >> rotTime
-		   >> zoom;
-		
-		int x = dt.GetHour();
+		   >> zoom >> spinning;
+		speed = (speed_e)s;
 
 		// If we're loading an actual starfield
 		if( seed == -1 )
@@ -1054,12 +1112,10 @@ void CDataStarf::Serialize(CArchive& ar)
 	{
 		ar << seed
 		   << constCount << newConstCount << curConstNum
-		   << ut.m_dt
+		   << ut.m_dt << speed
 		   << latitude << longitude
 		   << rotX << rotY << rotTime
-		   << zoom;
-
-		int x = lt.GetHour();
+		   << zoom << spinning;
 	}
 
 	// If we're loading, get the constellations vector ready

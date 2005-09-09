@@ -21,11 +21,13 @@ BEGIN_MESSAGE_MAP(CCSView, CWnd)
 	//{{AFX_MSG_MAP(CCSView)
 	ON_WM_CREATE()
 	ON_WM_DESTROY()
+	ON_WM_PAINT()
 	ON_WM_ERASEBKGND()
 	ON_WM_SIZE()
 	ON_WM_TIMER()
 	ON_WM_KEYDOWN()
 	ON_WM_KEYUP()
+	ON_WM_LBUTTONDBLCLK()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
 	ON_WM_RBUTTONDOWN()
@@ -33,8 +35,6 @@ BEGIN_MESSAGE_MAP(CCSView, CWnd)
 	ON_WM_MOUSEWHEEL()
 	ON_WM_MOUSEMOVE()
 	ON_WM_SETCURSOR()
-	ON_WM_PAINT()
-	ON_WM_LBUTTONDBLCLK()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -52,8 +52,6 @@ CCSView::~CCSView()
 
 BOOL CCSView::PreCreateWindow(CREATESTRUCT& cs)
 {
-	cs.style |= WS_EX_CLIENTEDGE; //WS_CLIPCHILDREN | WS_CLIPSIBLINGS | CS_OWNDC ;
-	cs.style &= ~WS_BORDER;
 	cs.lpszClass = AfxRegisterWndClass(CS_HREDRAW|CS_VREDRAW|CS_DBLCLKS, 
 		::LoadCursor(NULL, IDC_ARROW), HBRUSH(COLOR_WINDOW+1), NULL);
 	cs.cx = 600;
@@ -72,7 +70,7 @@ int CCSView::OnCreate( LPCREATESTRUCT lpCreateStruct )
 	if (CWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
-	SetTimer( 1, 20, NULL );
+	SetTimer( 2, 20, NULL );
 
 	return 0;
 }
@@ -112,6 +110,7 @@ void CCSView::OnPaint()
 
 /////////////////////////////////////////////////////////////////////////////
 // Keyboard
+
 void CCSView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	inputMgr.KeyDown( nChar );
@@ -126,19 +125,12 @@ void CCSView::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 void CCSView::OnTimer(UINT nIDEvent)
 {
 	inputMgr.ProcessKeys();
-
-	if( starfield.IsSpinning() &&
-		state == state_Viewing &&
-		!inputMgr.mouseRotatingXY && !inputMgr.mouseRotatingY )
-	{
-		GetFrame()->GetStarfBar()->AdjustTime( COleDateTimeSpan( 0, 0, 0, 15 ) );
-		Redraw();
-	}
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
 // Mouse
+
 void CCSView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	inputMgr.MouseLDown( point );
@@ -175,13 +167,16 @@ void CCSView::OnMouseMove(UINT nFlags, CPoint point)
 	inputMgr.MouseMove( point );
 }
 
+
 /////////////////////////////////////////////////////////////////////////////
 // Cursor
+
 BOOL CCSView::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 {
 	inputMgr.DetermineCursor();
 	return TRUE;
 }
+
 
 
 

@@ -87,6 +87,12 @@ BEGIN
     SEPARATOR
     BUTTON      ID_STARF_SPEED
     SEPARATOR
+    BUTTON      ID_ANIM_PREV
+    BUTTON      ID_ANIM_REV
+    BUTTON      ID_ANIM_PAUSE
+    BUTTON      ID_ANIM_PLAY
+    BUTTON      ID_ANIM_NEXT
+    SEPARATOR
     BUTTON      ID_STARS_TOGGLE
     BUTTON      ID_CONST_TOGGLE
     BUTTON      ID_SUN_TOGGLE
@@ -169,6 +175,24 @@ BEGIN
     POPUP "&Help"
     BEGIN
         MENUITEM "&About ConStation...",        ID_APP_ABOUT
+    END
+END
+
+IDR_POPUP MENU DISCARDABLE 
+BEGIN
+    POPUP "PopupConst"
+    BEGIN
+        MENUITEM SEPARATOR
+        MENUITEM "&Center",                     ID_POPUPCONST_CENTER
+        MENUITEM "&Track",                      ID_POPUPCONST_TRACK
+        MENUITEM "&Info",                       ID_POPUPCONST_INFO
+    END
+    POPUP "PopupStar"
+    BEGIN
+        MENUITEM SEPARATOR
+        MENUITEM "&Center",                     ID_POPUPSTAR_CENTER
+        MENUITEM "&Track",                      ID_POPUPSTAR_TRACK
+        MENUITEM "&Info",                       ID_POPUPSTAR_INFO
     END
 END
 
@@ -272,8 +296,10 @@ FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,236,10,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,236,27,50,14
-    CONTROL         "MonthCalendar1",IDC_MONTHCALENDAR1,"SysMonthCal32",
-                    MCS_NOTODAY | WS_TABSTOP,10,10,127,84
+    EDITTEXT        IDC_EDIT1,37,18,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT2,36,36,40,14,ES_AUTOHSCROLL
+    LTEXT           "Static",IDC_STATIC,10,23,19,8
+    LTEXT           "Static",IDC_STATIC,10,40,19,8
 END
 
 IDD_OPTIONS_GENERAL DIALOG DISCARDABLE  0, 0, 275, 180
@@ -950,6 +976,13 @@ STRINGTABLE DISCARDABLE
 BEGIN
     ID_CONST_LINESTOGGLE    "Toggle constellations lines on/off\nToggle Constellation Lines"
     ID_VIEW_FINDTRACK       "Find or Track a star, constellation, or a position\nFind / Track"
+    ID_STARF_PAUSE          "Pause animation\nPause Animation"
+    ID_ANIM_FORWARD         "Play animation step\nPrevious Step"
+    ID_ANIM_NEXT            "Next animation step\nNext Step"
+    ID_ANIM_PREV            "Previous animation step\nPrevious Step"
+    ID_ANIM_REV             "Play animation in reverse\nReverse Animation"
+    ID_ANIM_PAUSE           "Pause animation\nPause Animation"
+    ID_ANIM_PLAY            "Play animation forward\nPlay Animation"
 END
 
 #endif    // English (U.S.) resources

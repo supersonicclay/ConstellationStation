@@ -33,6 +33,7 @@
 #define IDI_FILE                        173
 #define IDD_STARINFO                    174
 #define IDD_FINDTRACK                   175
+#define IDR_POPUP                       178
 #define IDC_CONST_NAME                  1014
 #define IDC_CONST_LIST                  1021
 #define IDC_SHOWALL                     1027
@@ -136,6 +137,8 @@
 #define IDC_DEC_M                       1171
 #define IDC_DEC_S                       1172
 #define IDC_DEC_SD                      1173
+#define IDC_EDIT1                       1176
+#define IDC_EDIT2                       1177
 #define ID_STARF_NEWRANDOM              32772
 #define ID_STARF_NEWACTUAL              32773
 #define ID_STARF_OPEN                   32774
@@ -171,15 +174,29 @@
 #define ID_OPTIONS_COLOR                32879
 #define ID_CONST_LINESTOGGLE            32880
 #define ID_VIEW_FINDTRACK               32882
+#define ID_STARF_PAUSE                  32883
+#define ID_ANIM_FORWARD                 32884
+#define ID_ANIM_NEXT                    32885
+#define ID_ANIM_PREV                    32886
+#define ID_ANIM_REV                     32887
+#define ID_ANIM_PAUSE                   32888
+#define ID_ANIM_PLAY                    32889
+#define ID_POPUPSTAR_NAME               32897
+#define ID_POPUPSTAR_CENTER             32898
+#define ID_POPUPSTAR_TRACK              32899
+#define ID_POPUPSTAR_INFO               32900
+#define ID_POPUPCONST_CENTER            32901
+#define ID_POPUPCONST_TRACK             32902
+#define ID_POPUPCONST_INFO              32903
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        176
-#define _APS_NEXT_COMMAND_VALUE         32883
-#define _APS_NEXT_CONTROL_VALUE         1175
+#define _APS_NEXT_RESOURCE_VALUE        179
+#define _APS_NEXT_COMMAND_VALUE         32904
+#define _APS_NEXT_CONTROL_VALUE         1178
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

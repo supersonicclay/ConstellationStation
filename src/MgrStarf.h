@@ -48,6 +48,14 @@ public:
 	void Location();
 	void Time();
 
+// Animation methods
+	void ChangeStarfSpeed( speed_e x );
+	void Pause();
+	void Forward();
+	void Reverse();
+	void Next();
+	void Previous();
+
 // Star methods
 	void StarOptions();
 	void StarInfo( CDataStar* star );

@@ -18,11 +18,17 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CDlgLocation)
 	enum { IDD = IDD_LOCATION };
-		// NOTE: the ClassWizard will add data members here
+	CComboBox	locationCombo;
 	//}}AFX_DATA
 
+	std::vector<location_s> locationsVec;
+
+	location_s location;
 
 // Methods
+	void LoadLocations();
+	void GetCurrentLocation();
+	BOOL Search( CString t );
 
 
 // Overrides
@@ -37,7 +43,19 @@ protected:
 
 	// Generated message map functions
 	//{{AFX_MSG(CDlgLocation)
-		// NOTE: the ClassWizard will add member functions here
+	afx_msg void OnLocationSearch();
+	afx_msg void OnLocationSetHome();
+	virtual BOOL OnInitDialog();
+	afx_msg void OnSelChangeLocationCombo();
+	afx_msg void OnChangeLocationLatitudeD();
+	afx_msg void OnChangeLocationLatitudeM();
+	afx_msg void OnChangeLocationLongitudeD();
+	afx_msg void OnChangeLocationLongitudeM();
+	afx_msg void OnLocationE();
+	afx_msg void OnLocationW();
+	afx_msg void OnLocationN();
+	afx_msg void OnLocationS();
+	afx_msg void OnChangeLocationTimezone();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

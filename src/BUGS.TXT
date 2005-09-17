@@ -44,6 +44,7 @@ Fixed		10-18-04		Fog stays blue after sunshine toggle
 Fixed		10-19-04		Consts are being drawn with dayAlpha = 0
 Fixed		10-19-04		DrawTerrain should select white if textured
 Not Worried	10-19-04		Sphere texture has alpha=0
+Fixed		??-??-04		Show labels while no lines (lines hidden?)
 Fixed		11-03-04		Textures not changing on load defaults.
 Fixed		11-10-04		Sun glow quad needs to be perp to viewer
 Fixed		11-12-04		perspMat killed selection
@@ -66,3 +67,9 @@ Fixed		09-07-05		Track/Find constellation combo box too short
 Fixed		09-08-05		SelectConst would try multiple times with smaller radii
 Fixed		09-08-05		SelectConst's sanity check didn't allow -1
 Fixed		09-08-05		Change to realtime when time change from toolbar
+Fixed		09-08-05		Find/Track negative declination
+Fixed		09-09-05		Not showing text until loaddefaults
+Fixed		09-10-05		BarStarf.ChangeSpeed on open document
+Fixed		09-14-05		Reverse, pause should change speed to realtime
+Fixed		09-14-05		When Now is selected, forward animation
+Fixed		09-15-05		Not calculating accurate ratio for terrain texture. Most are < 0.5

@@ -36,12 +36,18 @@ CMgrOptions::~CMgrOptions()
 
 void CMgrOptions::LoadDefaults()
 {
+	LoadLocationDefaults();
 	LoadStarDefaults();
 	LoadConstDefaults();
 	LoadSunDefaults();
 	LoadTerrDefaults();
 	LoadColorDefaults();
 	LoadTextDefaults();
+}
+
+void CMgrOptions::LoadLocationDefaults()
+{
+	locationHome = DEF_LOCATION_HOME;
 }
 
 void CMgrOptions::LoadStarDefaults()
@@ -80,13 +86,14 @@ void CMgrOptions::LoadTerrDefaults()
 	terrScale = DEF_TERR_SCALE;
 	terrTexIters = DEF_TERR_TEX_ITERS;
 	terrHeightIters = DEF_TERR_HEIGHT_ITERS;
+	terrViewHeight = DEF_TERR_VIEW_HEIGHT;
 	terrSeason = DEF_TERR_SEASON;
 	terrWinColor = DEF_TERR_WINCOLOR;
 	terrSprColor = DEF_TERR_SPRCOLOR;
 	terrSumColor = DEF_TERR_SUMCOLOR;
 	terrAutColor = DEF_TERR_FALCOLOR;
 
-	terrain.MakeTerrain();
+	terrain.MakeTerrain( TRUE );
 }
 
 void CMgrOptions::LoadColorDefaults()
@@ -115,6 +122,7 @@ void CMgrOptions::LoadTextDefaults()
 
 /////////////////////////////////////////////////////////////////////////////
 // Gets
+location_s	CMgrOptions::GetLocationHome()			{	return locationHome;			}
 BOOL		CMgrOptions::AreStarsTextured()			{	return starsTextured;			}
 BOOL		CMgrOptions::AreStarsColored()			{	return starsColored;			}
 float		CMgrOptions::GetStarsLimMag()			{	return starsLimMagX10 / 10.0f;	}
@@ -136,6 +144,7 @@ float		CMgrOptions::GetTerrRoughness()			{	return terrRoughnessX100/100.0f;}
 int			CMgrOptions::GetTerrScale()				{	return terrScale;				}
 int			CMgrOptions::GetTerrTexIters()			{	return terrTexIters;			}
 int			CMgrOptions::GetTerrHeightIters()		{	return terrHeightIters;			}
+float		CMgrOptions::GetTerrViewHeight()		{	return terrViewHeight;			}
 season_e	CMgrOptions::GetTerrSeason()			{	return terrSeason;				}
 color_s		CMgrOptions::GetTerrWinColor()			{	return terrWinColor;			}
 color_s		CMgrOptions::GetTerrSprColor()			{	return terrSprColor;			}
@@ -172,39 +181,41 @@ color_s CMgrOptions::GetTerrColor()
 /////////////////////////////////////////////////////////////////////////////
 // Sets
 
-void CMgrOptions::SetStarsTextured( BOOL t )		{	starsTextured = t;						}
-void CMgrOptions::SetStarsColored( BOOL c )			{	starsColored = c;						}
-void CMgrOptions::SetStarsLimMagX10( int x )		{	starsLimMagX10 = x;						}
-void CMgrOptions::SetStarsSize( int g )				{	starsSize = g;							}
-void CMgrOptions::SetStarsSContrast( int c )		{	starsSContrast = c;						}
-void CMgrOptions::SetStarsCContrast( int c )		{	starsCContrast = c;						}
+void CMgrOptions::SetLocationHome( location_s x )	{	locationHome = x;			}
+void CMgrOptions::SetStarsTextured( BOOL t )		{	starsTextured = t;			}
+void CMgrOptions::SetStarsColored( BOOL c )			{	starsColored = c;			}
+void CMgrOptions::SetStarsLimMagX10( int x )		{	starsLimMagX10 = x;			}
+void CMgrOptions::SetStarsSize( int g )				{	starsSize = g;				}
+void CMgrOptions::SetStarsSContrast( int c )		{	starsSContrast = c;			}
+void CMgrOptions::SetStarsCContrast( int c )		{	starsCContrast = c;			}
 
-void CMgrOptions::SetConstNormColor( color_s c )	{	constNormColor = c;						}
-void CMgrOptions::SetConstSelColor( color_s c )		{	constSelColor = c;						}
-void CMgrOptions::SetConstActiveColor( color_s c )	{	constActiveColor = c;					}
-void CMgrOptions::SetConstStarColor( color_s c )	{	constStarColor = c;						}
-void CMgrOptions::SetConstLineWidth( int w )		{	constLineWidth = w;						}
+void CMgrOptions::SetConstNormColor( color_s c )	{	constNormColor = c;			}
+void CMgrOptions::SetConstSelColor( color_s c )		{	constSelColor = c;			}
+void CMgrOptions::SetConstActiveColor( color_s c )	{	constActiveColor = c;		}
+void CMgrOptions::SetConstStarColor( color_s c )	{	constStarColor = c;			}
+void CMgrOptions::SetConstLineWidth( int w )		{	constLineWidth = w;			}
 
-void CMgrOptions::SwitchTerrVisible()				{	terrVisible = !terrVisible;				}
-void CMgrOptions::SetTerrVisible( BOOL x )			{	terrVisible = x;						}
-void CMgrOptions::SetTerrTextured( BOOL t )			{	terrTextured = t;						}
-void CMgrOptions::SetTerrRoughnessX100( int r )		{	terrRoughnessX100 = r;					}
-void CMgrOptions::SetTerrScale( int s )				{	terrScale = s;							}
-void CMgrOptions::SetTerrTexIters( int i )			{	terrTexIters = i;						}
-void CMgrOptions::SetTerrHeightIters( int i )		{	terrHeightIters = i;					}
-void CMgrOptions::SetTerrSeason( season_e s )		{	terrSeason = s;	terrain.MakeTerrain();	}
-void CMgrOptions::SetTerrWinColor( color_s c )		{	terrWinColor = c;						}
-void CMgrOptions::SetTerrSprColor( color_s c )		{	terrSprColor = c;						}
-void CMgrOptions::SetTerrSumColor( color_s c )		{	terrSumColor = c;						}
-void CMgrOptions::SetTerrAutColor( color_s c )		{	terrAutColor = c;						}
+void CMgrOptions::SwitchTerrVisible()				{	terrVisible = !terrVisible;	}
+void CMgrOptions::SetTerrVisible( BOOL x )			{	terrVisible = x;			}
+void CMgrOptions::SetTerrTextured( BOOL t )			{	terrTextured = t;			}
+void CMgrOptions::SetTerrRoughnessX100( int r )		{	terrRoughnessX100 = r;		}
+void CMgrOptions::SetTerrScale( int s )				{	terrScale = s;				}
+void CMgrOptions::SetTerrTexIters( int i )			{	terrTexIters = i;			}
+void CMgrOptions::SetTerrHeightIters( int i )		{	terrHeightIters = i;		}
+void CMgrOptions::SetTerrViewHeight( float x )		{	terrViewHeight = x;			}
+void CMgrOptions::SetTerrSeason( season_e s )		{	terrSeason = s;				}
+void CMgrOptions::SetTerrWinColor( color_s c )		{	terrWinColor = c;			}
+void CMgrOptions::SetTerrSprColor( color_s c )		{	terrSprColor = c;			}
+void CMgrOptions::SetTerrSumColor( color_s c )		{	terrSumColor = c;			}
+void CMgrOptions::SetTerrAutColor( color_s c )		{	terrAutColor = c;			}
 
-void CMgrOptions::SetTextConstFont( LOGFONT f )		{	textConstFont = f;						}
-void CMgrOptions::SetTextStarFont( LOGFONT f )		{	textStarFont = f;						}
-void CMgrOptions::SetTextDirFont( LOGFONT f )		{	textDirFont = f;						}
-void CMgrOptions::SetTextConstColor( color_s c )	{	textConstColor = c;						}
-void CMgrOptions::SetTextConstSelColor( color_s c )	{	textConstSelColor = c;					}
-void CMgrOptions::SetTextStarColor( color_s c )		{	textStarColor = c;						}
-void CMgrOptions::SetTextDirColor( color_s c )		{	textDirColor = c;						}
+void CMgrOptions::SetTextConstFont( LOGFONT f )		{	textConstFont = f;			}
+void CMgrOptions::SetTextStarFont( LOGFONT f )		{	textStarFont = f;			}
+void CMgrOptions::SetTextDirFont( LOGFONT f )		{	textDirFont = f;			}
+void CMgrOptions::SetTextConstColor( color_s c )	{	textConstColor = c;			}
+void CMgrOptions::SetTextConstSelColor( color_s c )	{	textConstSelColor = c;		}
+void CMgrOptions::SetTextStarColor( color_s c )		{	textStarColor = c;			}
+void CMgrOptions::SetTextDirColor( color_s c )		{	textDirColor = c;			}
 
 // Set terrain color for the current season
 void CMgrOptions::SetTerrColor( color_s c )
@@ -303,6 +314,9 @@ void CMgrOptions::Serialize( CArchive& ar )
 		{
 			ar
 
+			// Location options
+			>> locationHome
+
 			// Star options
 			>> starsTextured
 			>> starsColored
@@ -325,6 +339,7 @@ void CMgrOptions::Serialize( CArchive& ar )
 			>> terrScale
 			>> terrTexIters
 			>> terrHeightIters
+			>> terrViewHeight
 			>> terrSeason
 			>> terrWinColor
 			>> terrSprColor
@@ -342,6 +357,8 @@ void CMgrOptions::Serialize( CArchive& ar )
 
 			// Compass options
 			>> compassColor;
+
+			terrScale = DEF_TERR_SCALE; ///
 		}
 		catch( CException* e )
 		{
@@ -349,10 +366,15 @@ void CMgrOptions::Serialize( CArchive& ar )
 			LoadDefaults();
 			e->Delete();
 		}
+
+		textMgr.BuildFonts();
 	}
 	else
 	{
 		ar
+
+		// Location options
+		<< locationHome
 
 		// Star options
 		<< starsTextured
@@ -376,6 +398,7 @@ void CMgrOptions::Serialize( CArchive& ar )
 		<< terrScale
 		<< terrTexIters
 		<< terrHeightIters
+		<< terrViewHeight
 		<< terrSeason
 		<< terrWinColor
 		<< terrSprColor

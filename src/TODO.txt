@@ -1,13 +1,13 @@
-
-CONSTELLATION STATION - YOU Make the Night Sky!
-------------------------------------------------
++-------------------------------------------------+
+| CONSTELLATION STATION - YOU Make the Night Sky! |
++=================================================+
 
 PHASES
 1	Cleanup - Bugs, organization, saving
 2	Options - UI, dialogs
 3	Math - graphics optimization, terrain, selecting, random
 4	Graphics - effects, text
-5	Features - actual
+5	Actual - features
 6	Teacher - and student
 7	Extras
 
@@ -16,16 +16,16 @@ PHASES
 ----------------------------------------------------------------
 
 BUGS
--	5	starfield and sun 180 degrees off before 1900
--	5	Sidereal days jitter
--	5	Not showing text until loaddefaults
--	5	Find/Track negative declination
--	5	Show labels while no lines (lines hidden?)
-	7	Force redraw of date and time controls while mouse rotating
+-	5	Control won't let you enter < year 1752 without using dropdown
+		- Date range is 1/1/1601 - 12/31/9999
+-	5	Time Dialog should change speed to realtime and/or pause
+-	5	Sidereal time calculation in CalculateRotTime
+		- Starfield and sun 180 degrees off before 1900
+		- Sidereal days jitter after ~2020
 
 GENERAL
+-	5	Rename realtime
 -	5	Currently Tracking...
--	5	Save/Load terrain in document
 -	5	Actual magnification 1X/2X/1024X
 -	5	Redraw starfield toolbar buttons
 -	5	Splash Screen
@@ -52,6 +52,7 @@ INPUT
 
 GRAPHICS
 -	5	sunMat, starfMat, etc. maybe shouldn't include viewMat
+	7	Use vertex buffers
 	7	Getting dark a little too fast
 	7	Lighting normals
 	7	Shadows
@@ -84,12 +85,11 @@ STARFIELD
 STARS
 
 SUN
--	5	Take seconds into calculation
 
 TERRAIN
--	5	Don't make edge heights 0. Stretch terrain instead
 
 DOCUMENT
+	6	Make sure SetModified is called when needed
 
 STUDENT
 	6	Disable tracking/finding

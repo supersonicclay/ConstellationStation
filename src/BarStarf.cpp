@@ -27,7 +27,7 @@ END_MESSAGE_MAP()
 
 
 // Time, Date, and Speed control dimensions
-#define STARFDATE_INDEX		7
+#define STARFDATE_INDEX		8
 #define STARFTIME_INDEX		9
 #define STARFSPEED_INDEX	11
 #define STARFDATE_WIDTH		100
@@ -214,8 +214,13 @@ void CBarStarf::OnTimer(UINT nIDEvent)
 	{
 		if( starfield.GetAnimation() == animation_Forward )
 			AnimationAdjustTime( 1 );
-		else
+		else if( starfield.GetAnimation() == animation_Reverse )
 			AnimationAdjustTime( -1 );
+		else
+		{
+			CSDebug( "Shouldn't be a timer when animation_Paused", "CBarStarf::OnTimer" );
+			exit(0);
+		}
 	}
 }
 

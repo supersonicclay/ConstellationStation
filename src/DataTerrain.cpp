@@ -11,6 +11,8 @@
 #include "CSApp.h"
 #include "DataTerrain.h"
 
+IMPLEMENT_SERIAL( CDataTerrain, CObject, 1 )
+
 
 /////////////////////////////////////////////////////////////////////////////
 // Construction / Destruction
@@ -51,27 +53,14 @@ CDataTerrain::~CDataTerrain()
 
 void CDataTerrain::Clear()
 {
-	// Delete any memory reserved for arrays
-	int i;
-	for( i=0; i<arraySize; ++i )
-		delete[] heights[i];
-	for( i=0; i<size; ++i )
-	{
-		delete[] upperNormals[i];
-		delete[] lowerNormals[i];
-	}
-	delete[] heights;
-	delete[] upperNormals;
-	delete[] lowerNormals;
-
-	maxOffset = 0.0f;
+	minHeight = 1000.0f;
+	maxHeight = -1000.0f;
 
 	size = arraySize = 0;
 	texIters = 0;
 	roughness = 0.0f;
 
-	viewHeight = 0.0f;///
-	viewDistance = 0.0f;///
+	DeleteArrays();
 }
 
 // Make a new terrain with a random seed
@@ -80,37 +69,32 @@ void CDataTerrain::New()
 	// Generate new seed
 	seed = (unsigned)clock();
 
-	MakeTerrain();
+	MakeTerrain( TRUE );
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
 // Gets
 
-float**		CDataTerrain::GetHeights()						{	return heights;				}
-float		CDataTerrain::GetHeight( int i, int j )			{	return heights[i][j];		}
-int			CDataTerrain::GetSize()							{	return size;				}
-int			CDataTerrain::GetArraySize()					{	return arraySize;			}
-vector3**	CDataTerrain::GetUpperNormals()					{	return upperNormals;		}
-vector3**	CDataTerrain::GetLowerNormals()					{	return lowerNormals;		}
-vector3		CDataTerrain::GetUpperNormal( int i, int j )	{	return upperNormals[i][j];	}
-vector3		CDataTerrain::GetLowerNormal( int i, int j )	{	return lowerNormals[i][j];	}
-UINT		CDataTerrain::GetTexID()						{	return texID;				}
+float**		CDataTerrain::GetHeights()						{	return heights;					}
+float		CDataTerrain::GetHeight( int i, int j )			{	return heights[i][j];			}
+float		CDataTerrain::GetMiddleHeight()					{	return heights[size/2][size/2];	}
+int			CDataTerrain::GetSize()							{	return size;					}
+int			CDataTerrain::GetArraySize()					{	return arraySize;				}
+int			CDataTerrain::GetTexIters()						{	return texIters;				}
+int			CDataTerrain::GetHeightIters()					{	return heightIters;				}
+float		CDataTerrain::GetRoughness()					{	return roughness;				}
+vector3**	CDataTerrain::GetUpperNormals()					{	return upperNormals;			}
+vector3**	CDataTerrain::GetLowerNormals()					{	return lowerNormals;			}
+vector3		CDataTerrain::GetUpperNormal( int i, int j )	{	return upperNormals[i][j];		}
+vector3		CDataTerrain::GetLowerNormal( int i, int j )	{	return lowerNormals[i][j];		}
+UINT		CDataTerrain::GetTexID()						{	return texID;					}
 
 
-/// Debug view of terrain
-float CDataTerrain::GetViewHeight()
-{	return viewHeight;		}
-float CDataTerrain::GetViewDistance()
-{	return viewDistance;	}
-void CDataTerrain::IncViewHeight()
-{	viewHeight += 0.01f;	}
-void CDataTerrain::DecViewHeight()
-{	viewHeight -= 0.01f;	}
-void CDataTerrain::IncViewDistance()
-{	viewDistance += 0.01f;	}
-void CDataTerrain::DecViewDistance()
-{	viewDistance -= 0.01f;	}
+/////////////////////////////////////////////////////////////////////////////
+// Sets
+
+void CDataTerrain::SetRoughness( float x )		{	roughness = x;	}
 
 
 
@@ -118,21 +102,18 @@ void CDataTerrain::DecViewDistance()
 // Methods
 
 // Initializes all terrain options and arrays
-void CDataTerrain::Init()
+void CDataTerrain::InitArrays()
 {
-	Clear();
+	DeleteArrays();
 
-	int i;
-	int j;
-
-	texIters = optionsMgr.GetTerrTexIters();
-	heightIters = optionsMgr.GetTerrHeightIters();
 	size = 1<<texIters;
 	arraySize = size + 1;
-	roughness = optionsMgr.GetTerrRoughness();
 
 	// Set seed so terrain is predictable
 	srand( seed );
+
+	int i;
+	int j;
 
 	// Reserve memory for heights array
 	heights = new float*[arraySize];
@@ -154,21 +135,50 @@ void CDataTerrain::Init()
 		for (j=0; j<arraySize; ++j)
 		{
 			// Set outside heights to 0 for horizon
-			if( i==0 || i==size || j==0 || j==size )
+///			if( i==0 || i==size || j==0 || j==size )
+///				heights[i][j] = 0.0f;
+///			else
 				heights[i][j] = 0.0f;
-			else
-				heights[i][j] = -1.0f;
 		}
 	}
-	// Set midpoint to 0
-	heights[size/2][size/2] = 0.0f;
+	// Set midpoint to 1
+	///heights[size/2][size/2] = 0.0f;
+}
+
+// Delete memory for arrays
+void CDataTerrain::DeleteArrays()
+{
+	// Delete any memory reserved for arrays
+	int i;
+	for( i=0; i<arraySize; ++i )
+		delete[] heights[i];
+	for( i=0; i<size; ++i )
+	{
+		delete[] upperNormals[i];
+		delete[] lowerNormals[i];
+	}
+	delete[] heights;
+	delete[] upperNormals;
+	delete[] lowerNormals;
 }
 
 
-// Make a new terrain with the current seed and current options
-void CDataTerrain::MakeTerrain()
+
+// Get values that are stored in options
+void CDataTerrain::GetValuesFromOptions()
 {
-	Init();
+	season = optionsMgr.GetTerrSeason();
+	texIters = optionsMgr.GetTerrTexIters();
+	heightIters = optionsMgr.GetTerrHeightIters();
+	roughness = optionsMgr.GetTerrRoughness();
+}
+
+// Make a new terrain with the current seed and current options
+void CDataTerrain::MakeTerrain( BOOL loadOptions )
+{
+	if( loadOptions )
+		GetValuesFromOptions();
+	InitArrays();
 
 	int i;        // row index
 	int j;        // col index
@@ -198,12 +208,12 @@ void CDataTerrain::MakeTerrain()
 			for (j=midSize; j<size; j+=midSize*2)
 			{
 				// Only set height if it hasn't already been set
-				if( heights[i][j] == -1.0f )
+				if( heights[i][j] == 0.0f )
 					heights[i][j] = RandomOffset(range) + AvgSquare(i, j, midSize);
-				if( heights[i][j] > maxOffset )
-					maxOffset = heights[i][j];
-				else if( -heights[i][j] > maxOffset )
-					maxOffset = -heights[i][j];
+				if( heights[i][j] > maxHeight )
+					maxHeight = heights[i][j];
+				else if( heights[i][j] < minHeight )
+					minHeight = heights[i][j];
 			}
 		}
 
@@ -230,21 +240,31 @@ void CDataTerrain::MakeTerrain()
 					j += midSize;
 
 				// Only set height if it hasn't already been set
-				if( heights[i][j] == -1.0f )
+				if( heights[i][j] == 0.0f )
 					 heights[i][j] = RandomOffset(range) + AvgDiamond(i, j, midSize);
-				if( heights[i][j] > maxOffset )
-					maxOffset = heights[i][j];
-				else if( -heights[i][j] > maxOffset )
-					maxOffset = -heights[i][j];
+				if( heights[i][j] > maxHeight )
+					maxHeight = heights[i][j];
+				else if( heights[i][j] < minHeight )
+					minHeight = heights[i][j];
 			}
 		}
 
 		midSize /= 2;
-		range *= MAX_TERR_ROUGHNESS;
+
+		// Calculate decrease in range
+		if( midSize > (1<<(texIters-heightIters-1)) )
+		{
+			// We're still generating heights for polygons
+			range *= MAX_TERR_ROUGHNESS;
+		}
+		else
+		{
+			// We're generating heights for texture
+			range *= MAX_TERR_ROUGHNESS*MAX_TERR_ROUGHNESS*MAX_TERR_ROUGHNESS;
+		}
 	}
 
 	CalculateNormals();
-	CalculateViewHeight();
 	MakeTexture();
 }
 
@@ -290,13 +310,9 @@ void CDataTerrain::MakeTexture()
 	int i, j;
 	int dims = (1<<texIters);
 
-	// Make sure roughness is up to date
-	roughness = optionsMgr.GetTerrRoughness();
-
 	// Get texture of current season
-	season_e s = optionsMgr.GetTerrSeason();
 	texture_s* tex;
-	switch( s )
+	switch( season )
 	{
 	case season_Winter:
 		tex = &winterTex; break;
@@ -315,16 +331,44 @@ void CDataTerrain::MakeTexture()
 	int pixelIndex = 0;
 	float ratio;
 
+	int c1=0, c2=0, c3=0, c4=0;///
+
+	float absDiff = maxHeight-minHeight;
+
 	// Fill in pixels based on heights
 	for( i=0; i<dims; ++i )
 	{
 		for( j=0; j<dims; ++j )
 		{
 			// Calculate ratio (0..1) to use as color index
+			/*
 			if( roughness != 0.0f )
 				ratio = heights[j][i]*roughness/(2*maxOffset)+0.5f;
 			else
 				ratio = 0.5f;
+///			*/
+			ratio = roughness*(heights[j][i]-minHeight)/absDiff;
+
+			// Sanity check
+			if( ratio > 1.0f )
+			{
+				CSDebug( "Texture ratio shouldn't be > 1", "CDataTerrain::MakeTexture" );
+				exit(0);
+			}
+			if( ratio < 0.0f )
+			{
+				CSDebug( "Texture ratio shouldn't be < 0", "CDataTerrain::MakeTexture" );
+				exit(0);
+			}
+
+			if( ratio < 0.25f )
+				++c1;
+			else if( ratio < 0.5f )
+				++c2;
+			else if( ratio < 0.75f )
+				++c3;
+			else
+				++c4;
 
 			// Fill RGB of cuurent pixel
 			pixels[pixelIndex++] = tex->data[ (int)(ratio*(tex->height-1))*3+0 ];
@@ -453,18 +497,23 @@ void CDataTerrain::CalculateNormals()
 	}
 }
 
-/// Calculate the viewing height (should just be able to do this in CMgrGraphics)
-void CDataTerrain::CalculateViewHeight()
+/////////////////////////////////////////////////////////////////////////////
+// Serialization
+
+void CDataTerrain::Serialize(CArchive& ar)
 {
-	// Midpoint height should always be 0
-	viewHeight = 0.01f;
-	return;
+	CObject::Serialize(ar);
 
-	/// Old way, before midpoint was always 0
-	// Get the index of the midpoint
-	int middleIndex = size / 2;
-
-	// Just set the viewer a little above the midpoint
-	viewHeight = GetHeight( middleIndex, middleIndex ) + 0.05f;
+	if( ar.IsLoading() )
+	{
+		ar >> seed >> season ///>> maxOffset
+		   >> texIters >> heightIters >> roughness;
+		InitArrays();
+		MakeTerrain( FALSE );
+	}
+	else
+	{
+		ar << seed << season ///<< maxOffset
+		   << texIters << heightIters << roughness;
+	}
 }
-

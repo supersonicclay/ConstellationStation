@@ -19,6 +19,7 @@ public:
 	CMgrOptions();
 
 	void LoadDefaults();
+	void LoadLocationDefaults();
 	void LoadStarDefaults();
 	void LoadConstDefaults();
 	void LoadSunDefaults();
@@ -31,6 +32,9 @@ public:
 
 // Attributes
 private:
+
+	// Location options
+	location_s locationHome;
 
 	// Star options
 	BOOL starsTextured;
@@ -54,6 +58,7 @@ private:
 	int terrScale;
 	int terrTexIters;
 	int terrHeightIters;
+	float terrViewHeight;
 	season_e terrSeason;
 	color_s terrWinColor;
 	color_s terrSprColor;
@@ -77,6 +82,8 @@ private:
 public:
 
 // Gets
+	location_s GetLocationHome();
+
 	BOOL AreStarsTextured();
 	BOOL AreStarsColored();
 	float GetStarsLimMag();
@@ -98,6 +105,7 @@ public:
 	int GetTerrScale();
 	int GetTerrTexIters();
 	int GetTerrHeightIters();
+	float GetTerrViewHeight();
 	season_e GetTerrSeason();
 	color_s GetTerrWinColor();
 	color_s GetTerrSprColor();
@@ -114,6 +122,8 @@ public:
 	color_s GetTextDirColor();
 
 // Sets
+	void SetLocationHome( location_s x );
+
 	void SetStarsTextured( BOOL t );
 	void SetStarsColored( BOOL c );
 	void SetStarsLimMagX10( int m );
@@ -134,6 +144,7 @@ public:
 	void SetTerrScale( int s );
 	void SetTerrTexIters( int i );
 	void SetTerrHeightIters( int i );
+	void SetTerrViewHeight( float x );
 	void SetTerrSeason( season_e s );
 	void SetTerrWinColor( color_s c );
 	void SetTerrSprColor( color_s c );

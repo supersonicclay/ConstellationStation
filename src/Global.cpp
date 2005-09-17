@@ -52,9 +52,14 @@ CCSView* GetView()
 /////////////////////////////////////////////////////////////////////////////
 /// DEBUG VARS
 
-BOOL terrFog = TRUE;
-BOOL terrExternal = FALSE;
-BOOL terrWire = FALSE;
+BOOL dbgGod = FALSE;
+BOOL dbgFog = TRUE;
+BOOL dbgTerrExternal = FALSE;
+BOOL dbgTerrWire = FALSE;
+BOOL dbgStarfDepthTest = FALSE;
+float dbgTerrViewHeight = 0.0f;
+float dbgTerrViewDistance = 0.0f;
+
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -74,70 +79,90 @@ const color_s	COLOR_WHITE			= {1.0f, 1.0f, 1.0f},
 /////////////////////////////////////////////////////////////////////////////
 // DEFAULTS
 
-const BOOL		DEF_STARS_VISIBLE			= TRUE;
-const BOOL		DEF_STARS_DAYLIGHT			= FALSE;
-const BOOL		DEF_STARS_LABELED			= FALSE;
-const BOOL		DEF_STARS_TEXTURED			= TRUE;
-const BOOL		DEF_STARS_COLORED			= FALSE;
-const int		DEF_STARS_LIMMAGX10			= 70;
-const int		DEF_STARS_SIZE				= 25;
-const int		DEF_STARS_SCONTRAST			= 50;
-const int		DEF_STARS_CCONTRAST			= 75;
-const float		DEF_STARS_BRIGHT_RADIUS		= 0.013f;
-const float		DEF_STARS_BRIGHT_COLOR		= 1.0f;
-const float		DEF_STARS_RADIUS_DIFF		= 0.011f;
-const float		DEF_STARS_COLOR_DIFF		= 0.8f;
-const color_s	DEF_STARS_SPECTRAL_O_COLOR	= { 1.0f, 0.85f, 1.0f };
-const color_s	DEF_STARS_SPECTRAL_B_COLOR	= { 0.5f, 1.0f, 1.0f };
-const color_s	DEF_STARS_SPECTRAL_A_COLOR	= { 1.0f, 1.0f, 1.0f };
-const color_s	DEF_STARS_SPECTRAL_F_COLOR	= { 1.0f, 1.0f, 0.5f };
-const color_s	DEF_STARS_SPECTRAL_G_COLOR	= { 1.0f, 0.95f, 1.0f };
-const color_s	DEF_STARS_SPECTRAL_K_COLOR	= { 1.0f, 0.75f, 1.0f };
-const color_s	DEF_STARS_SPECTRAL_M_COLOR	= { 1.0f, 0.75f, 0.5f };
+const location_s	DEF_LOCATION_HOME = location_s
+(
+	CString("USA"),
+	CString("NM"),
+	CString("Portales"),
+	34,
+	12,
+	'N',
+	103,
+	20,
+	'W',
+	-7
+);
+
+const BOOL			DEF_STARS_VISIBLE			= TRUE;
+const BOOL			DEF_STARS_DAYLIGHT			= FALSE;
+const BOOL			DEF_STARS_LABELED			= FALSE;
+const BOOL			DEF_STARS_TEXTURED			= TRUE;
+const BOOL			DEF_STARS_COLORED			= FALSE;
+const int			DEF_STARS_LIMMAGX10			= 70;
+const int			DEF_STARS_SIZE				= 25;
+const int			DEF_STARS_SCONTRAST			= 50;
+const int			DEF_STARS_CCONTRAST			= 75;
+const float			DEF_STARS_BRIGHT_RADIUS		= 0.013f;
+const float			DEF_STARS_BRIGHT_COLOR		= 1.0f;
+const float			DEF_STARS_RADIUS_DIFF		= 0.011f;
+const float			DEF_STARS_COLOR_DIFF		= 0.8f;
+const color_s		DEF_STARS_SPECTRAL_O_COLOR	= { 1.0f, 0.85f, 1.0f };
+const color_s		DEF_STARS_SPECTRAL_B_COLOR	= { 0.5f, 1.0f, 1.0f };
+const color_s		DEF_STARS_SPECTRAL_A_COLOR	= { 1.0f, 1.0f, 1.0f };
+const color_s		DEF_STARS_SPECTRAL_F_COLOR	= { 1.0f, 1.0f, 0.5f };
+const color_s		DEF_STARS_SPECTRAL_G_COLOR	= { 1.0f, 0.95f, 1.0f };
+const color_s		DEF_STARS_SPECTRAL_K_COLOR	= { 1.0f, 0.75f, 1.0f };
+const color_s		DEF_STARS_SPECTRAL_M_COLOR	= { 1.0f, 0.75f, 0.5f };
 
 
-const BOOL		DEF_CONST_VISIBLE		= TRUE;
-const BOOL		DEF_CONST_DAYLIGHT		= TRUE;
-const BOOL		DEF_CONST_LABELED		= TRUE;
-const BOOL		DEF_CONST_LINESVISIBLE	= TRUE;
-const color_s	DEF_CONST_NORMCOLOR		= {0.5f, 0.25f, 0.0f};
-const color_s	DEF_CONST_SELCOLOR		= {0.0f, 0.75f, 0.25f};
-const color_s	DEF_CONST_ACTIVECOLOR	= {1.0f, 1.0f, 0.0f};
-const color_s	DEF_CONST_STARCOLOR		= {1.0f, 0.5f, 1.0f};
-const BOOL		DEF_CONST_STARSCOLORED	= TRUE;
-const int		DEF_CONST_LINEWIDTH		= 3;
+const BOOL			DEF_CONST_VISIBLE		= TRUE;
+const BOOL			DEF_CONST_DAYLIGHT		= TRUE;
+const BOOL			DEF_CONST_LABELED		= TRUE;
+const BOOL			DEF_CONST_LINESVISIBLE	= TRUE;
+const color_s		DEF_CONST_NORMCOLOR		= {0.5f, 0.25f, 0.0f};
+///const color_s		DEF_TEXT_CONSTCOLOR		= {0.5f, 0.0f, 0.5f}; /// purple theme
+const color_s		DEF_CONST_SELCOLOR		= {0.0f, 0.75f, 0.25f};
+const color_s		DEF_CONST_ACTIVECOLOR	= {1.0f, 1.0f, 0.0f};
+const color_s		DEF_CONST_STARCOLOR		= {1.0f, 0.5f, 1.0f};
+const BOOL			DEF_CONST_STARSCOLORED	= TRUE;
+const int			DEF_CONST_LINEWIDTH		= 3;
 
-const float		DEF_SUN_RADIUS			= 0.08f;
-const color_s	DEF_SUN_COLOR			= {1.0f, 1.0f, 0.5f};
-const BOOL		DEF_SUN_VISIBLE			= TRUE;
-const BOOL		DEF_SUN_SHINE			= TRUE;
+const float			DEF_SUN_RADIUS			= 0.08f;
+const color_s		DEF_SUN_COLOR			= {1.0f, 1.0f, 0.5f};
+const BOOL			DEF_SUN_VISIBLE			= TRUE;
+const BOOL			DEF_SUN_SHINE			= TRUE;
 
-const color_s	DEF_SKY_COLOR			= {0.6f, 0.7f, 1.0f};
+const color_s		DEF_SKY_COLOR			= {0.7f, 0.9f, 1.0f};///{0.6f, 0.7f, 1.0f};
 
-const BOOL		DEF_TERR_VISIBLE		= TRUE;
-const BOOL		DEF_TERR_TEXTURED		= TRUE;
-const int		DEF_TERR_ROUGHNESSX100	= 20;
-const int		DEF_TERR_SCALE			= 1;
-const int		DEF_TERR_TEX_ITERS		= 7;
-const int		DEF_TERR_HEIGHT_ITERS	= 4;
-const season_e	DEF_TERR_SEASON			= season_Spring;
-const color_s	DEF_TERR_WINCOLOR		= {0.7f, 0.7f, 0.7f};
-const color_s	DEF_TERR_SPRCOLOR		= {0.15f, 0.25f, 0.1f};
-const color_s	DEF_TERR_SUMCOLOR		= {0.1f, 0.3f, 0.1f};
-const color_s	DEF_TERR_FALCOLOR		= {0.25f, 0.25f, 0.15f};
+const BOOL			DEF_TERR_VISIBLE		= TRUE;
+const BOOL			DEF_TERR_TEXTURED		= TRUE;
+const int			DEF_TERR_ROUGHNESSX100	= 20;
+const int			DEF_TERR_SCALE			= 5;
+const int			DEF_TERR_TEX_ITERS		= 7;
+const int			DEF_TERR_HEIGHT_ITERS	= 5;
+const float			DEF_TERR_VIEW_HEIGHT	= 0.1f;
+const season_e		DEF_TERR_SEASON			= season_Spring;
+const color_s		DEF_TERR_WINCOLOR		= {0.7f, 0.7f, 0.7f};
+const color_s		DEF_TERR_SPRCOLOR		= {0.15f, 0.25f, 0.1f};
+const color_s		DEF_TERR_SUMCOLOR		= {0.1f, 0.3f, 0.1f};
+const color_s		DEF_TERR_FALCOLOR		= {0.25f, 0.25f, 0.15f};
 
-const color_s	DEF_TEXT_CONSTCOLOR		= {1.0f, 1.0f, 0.5f};
-const color_s	DEF_TEXT_CONSTSELCOLOR	= {1.0f, 1.0f, 1.0f};
-const color_s	DEF_TEXT_STARCOLOR		= {1.0f, 0.0f, 0.0f};
-const color_s	DEF_TEXT_DIRCOLOR		= {1.0f, 0.5f, 0.0f};
+const color_s		DEF_TEXT_CONSTCOLOR		= {1.0f, 0.5f, 0.0f};
+///const color_s		DEF_TEXT_CONSTCOLOR		= {1.0f, 0.5f, 0.7f}; /// purple theme
+const color_s		DEF_TEXT_CONSTSELCOLOR	= {1.0f, 1.0f, 1.0f};
+const color_s		DEF_TEXT_STARCOLOR		= {1.0f, 0.0f, 0.0f};
+const color_s		DEF_TEXT_DIRCOLOR		= {1.0f, 0.5f, 0.0f};
 
-const color_s	DEF_COMPASS_CROSSCOLOR	= {0.4f, 0.8f, 0.5f};
-const color_s	DEF_COMPASS_FRUSTUMCOLOR	= {1.0f, 1.0f, 0.7f};
-///const color_s	DEF_COMPASS_CROSSCOLOR	= {0.4f, 0.25f, 0.1f};//{0.3f, 0.3f, 0.8f};
-///const color_s	DEF_COMPASS_FRUSTUMCOLOR	= {0.7f, 1.0f, 0.7f};
+const color_s		DEF_COMPASS_CROSSCOLOR	= {0.4f, 0.8f, 0.5f};
+const color_s		DEF_COMPASS_FRUSTUMCOLOR	= {1.0f, 1.0f, 0.7f};
+///const color_s		DEF_COMPASS_CROSSCOLOR	= {0.4f, 0.25f, 0.1f};//{0.3f, 0.3f, 0.8f};
+///const color_s		DEF_COMPASS_FRUSTUMCOLOR	= {0.7f, 1.0f, 0.7f};
 
+const float			DEF_FOG_DENSITY			= 0.2f;//1.0f
+const float			DEF_FOG_START			= 4.5f;//0.9f
+const float			DEF_FOG_END				= 4.8f;//1.0f
 
-const LOGFONT	DEF_TEXT_CONSTFONT = 
+const LOGFONT		DEF_TEXT_CONSTFONT = 
 {
 	-24,							// Height Of Font
 	0,								// Width Of Font
@@ -155,7 +180,7 @@ const LOGFONT	DEF_TEXT_CONSTFONT =
 	"Courier New"					// Font Name
 };
 
-const LOGFONT	DEF_TEXT_STARFONT = 
+const LOGFONT		DEF_TEXT_STARFONT = 
 {
 	-16,							// Height Of Font
 	0,								// Width Of Font
@@ -166,16 +191,16 @@ const LOGFONT	DEF_TEXT_STARFONT =
 	FALSE,							// Underline
 	FALSE,							// Strikeout
 	ANSI_CHARSET,					// Character Set Identifier
-	OUT_STROKE_PRECIS,					// Output Precision
-	CLIP_STROKE_PRECIS,			// Clipping Precision
+	OUT_STROKE_PRECIS,				// Output Precision
+	CLIP_STROKE_PRECIS,				// Clipping Precision
 	ANTIALIASED_QUALITY,			// Output Quality
 	FF_DONTCARE|DEFAULT_PITCH,		// Family And Pitch
 	"Courier New"					// Font Name
 };
 
-const LOGFONT	DEF_TEXT_DIRFONT = 
+const LOGFONT		DEF_TEXT_DIRFONT = 
 {
-	-21,							// Height Of Font
+	-18,							// Height Of Font
 	0,								// Width Of Font
 	0,								// Angle Of Escapement
 	0,								// Orientation Angle
@@ -184,11 +209,11 @@ const LOGFONT	DEF_TEXT_DIRFONT =
 	FALSE,							// Underline
 	FALSE,							// Strikeout
 	ANSI_CHARSET,					// Character Set Identifier
-	OUT_STROKE_PRECIS,					// Output Precision
-	CLIP_STROKE_PRECIS,			// Clipping Precision
+	OUT_STROKE_PRECIS,				// Output Precision
+	CLIP_STROKE_PRECIS,				// Clipping Precision
 	ANTIALIASED_QUALITY,			// Output Quality
 	FF_DONTCARE|DEFAULT_PITCH,		// Family And Pitch
-	"Arial Black"					// Font Name
+	"Arial"							// Font Name
 };
 
 
@@ -209,8 +234,8 @@ void Redraw()
 }
 
 
-// Math functions
-double GregorianToJulian( int y, int m, int d, int h, int n, int s )
+// Time functions
+double UTtoJulian( int y, int m, int d, int h, int n, int s )
 {
 	// Method for converting gregorian date to julian date from
 	//  http://scienceworld.wolfram.com/astronomy/JulianDate.html
@@ -223,8 +248,155 @@ double GregorianToJulian( int y, int m, int d, int h, int n, int s )
 	return j;
 }
 
+double UTtoJulian( COleDateTime& ut )
+{
+	return UTtoJulian( ut.GetYear(), ut.GetMonth(), ut.GetDay(), ut.GetHour(), ut.GetMinute(), ut.GetSecond() );
+}
+
+COleDateTime LTtoUT( COleDateTime& lt, float tz, BOOL dst )
+{
+	COleDateTime ut;
+	ut.m_dt = lt.m_dt - tz/24.0;
+	if( dst ) ut.m_dt -= 1/24.0;
+	return ut;
+}
+
+COleDateTime UTtoLT( COleDateTime& ut, float tz, BOOL dst )
+{
+	COleDateTime lt;
+	lt.m_dt = ut.m_dt + tz/24.0;
+	if( dst ) lt.m_dt += 1/24.0;
+	return lt;
+}
+
+COleDateTime JulianToUT( double j )
+{
+	// From http://www.csgnetwork.com/julianmodifdateconv.html
+	int year, month, day, hour, minute, second;
+	double ut;
+	double l, n;
+
+	int jdi = (int)j;
+	double jdf = j-jdi+0.5;
+
+    if (jdf >= 1.0) {
+       jdf = jdf - 1.0;
+       jdi = jdi + 1;
+    }
+
+	// Calculate time
+    ut = jdf * 24.0;
+	hour = (int)ut;
+	ut -= hour;
+	minute = (int)(ut*60);
+	ut -= minute/60.0;
+	second = (int)(ut*3600);
+
+
+    l = jdi + 68569;
+    n = (int)(4 * l / 146097.0);
+   
+    l = (int)l - (int)((146097 * n + 3) / 4.0);
+    year = (int) (4000 * (l + 1) / 1461001.0);
+    
+    l = l - (int)(1461 * year / 4.0) + 31;
+    month = (int)(80 * l / 2447.0);
+    
+    day = l - (int)(2447 * month / 80.0);
+    
+    l = (int)(month / 11.0);
+    
+    month = (int)(month + 2 - 12 * l);
+    year = (int)(100 * (n - 49) + year + l);
+
+	return COleDateTime( year, month, day, hour, minute, second );
+
+	/*
+    if (month < 10)
+       month = "0" + month;
+       
+    if (day < 10)
+       day = "0" + day;
+    
+    //year = year - 1900;
+    
+    return (new Array (year, month, day));
+
+	/*
+    var year;
+    var month;
+    var day;
+    var hour;
+    var jd;
+    var jdi;
+    var jdf
+    var l;
+    var n;
+    
+    
+    // Julian day
+    jd = Math.floor (mjd_in) + 2400000.5;
+
+    // Integer Julian day
+    jdi = Math.floor (jd);
+    
+    // Fractional part of day
+    jdf = jd - jdi + 0.5;
+    
+    // Really the next calendar day?
+    if (jdf >= 1.0) {
+       jdf = jdf - 1.0;
+       jdi = jdi + 1;
+    }
+
+
+    hour = jdf * 24.0;    
+    l = jdi + 68569;
+    n = Math.floor (4 * l / 146097);
+   
+    l = Math.floor (l) - Math.floor ((146097 * n + 3) / 4);
+    year = Math.floor (4000 * (l + 1) / 1461001);
+    
+    l = l - (Math.floor (1461 * year / 4)) + 31;
+    month = Math.floor (80 * l / 2447);
+    
+    day = l - Math.floor (2447 * month / 80);
+    
+    l = Math.floor (month / 11);
+    
+    month = Math.floor (month + 2 - 12 * l);
+    year = Math.floor (100 * (n - 49) + year + l);
+
+    if (month < 10)
+       month = "0" + month;
+       
+    if (day < 10)
+       day = "0" + day;
+    
+    //year = year - 1900;
+    
+    return (new Array (year, month, day));
+	*/
+}
+
+
 
 // CArchive reads
+CArchive& operator>> ( CArchive& ar, location_s& l )
+{
+	return ar
+		>> l.country
+		>> l.state
+		>> l.city
+		>> l.latd
+		>> l.latm
+		>> l.ns
+		>> l.lond
+		>> l.lonm
+		>> l.ew
+		>> l.timezone;
+}
+
 CArchive& operator>> ( CArchive& ar, season_e& s )
 {
 	int i;
@@ -274,6 +446,21 @@ CArchive& operator>> ( CArchive& ar, LOGFONT& f )
 
 
 // CArchive writes
+CArchive& operator<< ( CArchive& ar, location_s& l )
+{
+	return ar
+		<< l.country
+		<< l.state
+		<< l.city
+		<< l.latd
+		<< l.latm
+		<< l.ns
+		<< l.lond
+		<< l.lonm
+		<< l.ew
+		<< l.timezone;
+}
+
 CArchive& operator<< ( CArchive& ar, season_e s )
 {
 	return ar << (int)s;

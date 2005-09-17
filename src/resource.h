@@ -2,6 +2,7 @@
 // Microsoft Developer Studio generated include file.
 // Used by ConStation.rc
 //
+#define IDC_TIME_CALC                   3
 #define IDD_ABOUTBOX                    100
 #define IDR_MAINFRAME                   120
 #define IDR_STARFIELD                   120
@@ -44,6 +45,10 @@
 #define IDC_TERR_COLOR                  1036
 #define IDC_TERR_ROUGHNESS_TXT          1041
 #define IDC_DATETIMEPICKER              1045
+#define IDC_TIME_LT_DATE                1045
+#define IDC_TIME_LT_TIME                1046
+#define IDC_TIME_UT_DATE                1047
+#define IDC_TIME_UT_TIME                1048
 #define IDC_CONST_NORMCOLOR             1074
 #define IDC_CONST_ACTIVECOLOR           1075
 #define IDC_CONST_SELCOLOR              1076
@@ -137,8 +142,21 @@
 #define IDC_DEC_M                       1171
 #define IDC_DEC_S                       1172
 #define IDC_DEC_SD                      1173
-#define IDC_EDIT1                       1176
-#define IDC_EDIT2                       1177
+#define IDC_LOCATION_SETHOME            1178
+#define IDC_LOCATION_COMBO              1180
+#define IDC_LOCATION_SEARCH             1181
+#define IDC_LOCATION_SEARCH_TEXT        1182
+#define IDC_LOCATION_LATITUDE_D         1183
+#define IDC_LOCATION_TIMEZONE           1184
+#define IDC_LOCATION_LATITUDE_M         1185
+#define IDC_LOCATION_LONGITUDE_D        1186
+#define IDC_LOCATION_LONGITUDE_M        1187
+#define IDC_TIME_DST                    1187
+#define IDC_TIME_JULIAN                 1188
+#define IDC_LOCATION_N                  1189
+#define IDC_LOCATION_S                  1190
+#define IDC_LOCATION_E                  1191
+#define IDC_LOCATION_W                  1192
 #define ID_STARF_NEWRANDOM              32772
 #define ID_STARF_NEWACTUAL              32773
 #define ID_STARF_OPEN                   32774
@@ -181,7 +199,6 @@
 #define ID_ANIM_REV                     32887
 #define ID_ANIM_PAUSE                   32888
 #define ID_ANIM_PLAY                    32889
-#define ID_POPUPSTAR_NAME               32897
 #define ID_POPUPSTAR_CENTER             32898
 #define ID_POPUPSTAR_TRACK              32899
 #define ID_POPUPSTAR_INFO               32900
@@ -196,7 +213,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        179
 #define _APS_NEXT_COMMAND_VALUE         32904
-#define _APS_NEXT_CONTROL_VALUE         1178
+#define _APS_NEXT_CONTROL_VALUE         1189
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

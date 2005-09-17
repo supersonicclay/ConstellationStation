@@ -12,6 +12,7 @@
 
 class CDataTerrain : public CObject
 {
+DECLARE_SERIAL( CDataTerrain )
 
 // Construction / Destruction
 public:
@@ -22,6 +23,8 @@ public:
 	void Clear();
 	void New();
 
+	void Serialize( CArchive& ar );
+
 
 // Attributes
 private:
@@ -30,7 +33,10 @@ private:
 	float** heights;
 	int size;
 	int arraySize;    // size + 1
-	float maxOffset;  // maximum absolute-valued height
+	float maxHeight;  // used to compute ratio for texture
+	float minHeight;  // used to compute ratio for texture
+
+	season_e season;
 
 	int texIters;
 	int heightIters;
@@ -45,9 +51,6 @@ private:
 	texture_s summerTex;
 	texture_s autumnTex;
 
-	float viewHeight;///
-	float viewDistance;///
-
 
 // Methods
 public:
@@ -55,9 +58,14 @@ public:
 // Gets
 	float** GetHeights();
 	float GetHeight( int i, int j );
+	float GetMiddleHeight();
 
 	int GetSize();
 	int GetArraySize();
+
+	int GetTexIters();
+	int GetHeightIters();
+	float GetRoughness();
 
 	vector3** GetUpperNormals();
 	vector3** GetLowerNormals();
@@ -66,19 +74,18 @@ public:
 
 	UINT GetTexID();
 
-/// Debug View
-	float GetViewHeight();
-	float GetViewDistance();
-	void IncViewHeight();
-	void DecViewHeight();
-	void IncViewDistance();
-	void DecViewDistance();
+// Sets
+	void SetRoughness( float x );
 
 
 // Methods
 
-	void Init();
-	void MakeTerrain();
+	void GetValuesFromOptions();
+
+	void InitArrays();
+	void DeleteArrays();
+
+	void MakeTerrain( BOOL loadOptions );
 
 	BOOL LoadTextures();
 	void MakeTexture();
@@ -89,8 +96,6 @@ public:
 
 	void CalculateNormals();
 	void CalculateNormal( vector3 vec1, vector3 vec2, vector3 normal );
-
-	void CalculateViewHeight();
 
 };
 

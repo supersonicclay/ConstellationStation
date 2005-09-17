@@ -96,7 +96,7 @@ color_s CDlgOptionsColor::SelectColor( color_s& c )
 {
 	CColorDialog dialog;
 
-	dialog.m_cc.Flags = CC_FULLOPEN | CC_RGBINIT;
+	dialog.m_cc.Flags = CC_FULLOPEN | CC_RGBINIT | CC_ENABLEHOOK;
 	dialog.m_cc.rgbResult = RGB( c.r * 255, c.g * 255, c.b * 255 );
 
 	if( dialog.DoModal() == IDOK )

@@ -167,6 +167,7 @@ void CMgrDocument::Open()
 	UpdateTitle();
 	SetState( state_Viewing );
 	GetFrame()->GetConstBar()->UpdateList();
+	GetFrame()->GetStarfBar()->ChangeSpeed( starfield.GetSpeed() );
 	graphicsMgr.UpdateMats();
 	Redraw();
 }

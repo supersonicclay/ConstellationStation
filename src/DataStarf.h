@@ -51,13 +51,14 @@ private:
 	COleDateTime lt;		// Local time
 	COleDateTime ut;		// Universal time
 	double julian;			// Julian date
+	BOOL dst;
 
 	// Animation
 	animation_e animation;
 	speed_e speed;
 
 	// Location
-	///CString location;
+	location_s location;
 	float latitude;
 	float longitude;
 
@@ -136,10 +137,12 @@ public:
 	COleDateTime GetLT();
 	COleDateTime GetUT();
 	double GetJulian();
+	BOOL GetDST();
 
 	animation_e GetAnimation();
 	speed_e GetSpeed();
 
+	location_s GetLocation();
 	float GetLatitude();
 	float GetLongitude();
 
@@ -194,17 +197,16 @@ public:
 	void SetSunShine( BOOL x );
 
 	void SetAnimation( animation_e x );
-	void SetSpeed( speed_e s );
+	void SetSpeed( speed_e x );
 
-	void SetLatitude( float l, BOOL updateMat=TRUE );
-	void SetLongitude( float l, BOOL updateMat=TRUE );
+	void SetLocation( location_s x );
+	void SetLatitude( float x, BOOL updateMat=TRUE );
+	void SetLongitude( float x, BOOL updateMat=TRUE );
 
 	void SetRotX( float r, BOOL updateMat=TRUE );
 	void SetRotY( float r, BOOL updateMat=TRUE );
 	void SetTempRotX( float r, BOOL updateMat=TRUE );
 	void SetTempRotY( float r, BOOL updateMat=TRUE );
-	void AdjLatitude( float delta, BOOL updateMat=TRUE );
-	void AdjLongitude( float delta, BOOL updateMat=TRUE );
 	void AdjRotX( float delta, BOOL updateMat=TRUE );
 	void AdjRotY( float delta, BOOL updateMat=TRUE );
 	void AdjZoom( float delta );
@@ -235,6 +237,7 @@ public:
 
 // Time methods
 	void UpdateTime();
+	void SetDST( BOOL x );
 	void SetLT( COleDateTime& dt );
 	void SetUT( COleDateTime& dt );
 	void SetJulian( double j );
@@ -258,12 +261,13 @@ public:
 	void ResetZoom();
 
 // Tracking methods
+	void CenterView( vector3 t );
+
 	void FindStar( int num );
 	void FindStar( CDataStar* star );
 	void FindConst( int num );
 	void FindConst( CDataConst* constellation );
 	void FindRADec( ra_s ra, dec_s dec );
-	void Find( vector3 t );
 
 	void StartTrackingStar( int num );
 	void StartTrackingStar( CDataStar* star );

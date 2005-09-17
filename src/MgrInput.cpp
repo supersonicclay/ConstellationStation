@@ -102,56 +102,95 @@ void CMgrInput::ProcessKeys()
 	/// Resets
 	if( keyDown[' '] )
 	{
+		keyDown[' '] = FALSE; // Prevent repeat
 		starfield.ResetZoom();
 		graphicsMgr.UpdatePerspMat();
-		keyDown[' '] = FALSE; // Prevent repeat
 		update = TRUE;
 	}
 	if( keyDown[VK_RETURN] )
 	{
+		keyDown[VK_RETURN] = FALSE; // Prevent repeat
 		starfield.ResetView();
 		graphicsMgr.UpdatePerspMat();
-		keyDown[VK_RETURN] = FALSE; // Prevent repeat
 		update = TRUE;
 	}
 
-	/// Debug Terrain View
-	if( keyDown[VK_ADD] && keyDown[VK_SHIFT] )
-	{
-		terrain.IncViewDistance();
-		update = TRUE;
-	}
-	if( keyDown[VK_SUBTRACT] && keyDown[VK_SHIFT] )
-	{
-		terrain.DecViewDistance();
-		update = TRUE;
-	}
+	/// Debug Keys
 	if( keyDown[VK_ADD] && !keyDown[VK_SHIFT] )
 	{
-		terrain.IncViewHeight();
+		dbgTerrViewHeight += 0.01f;
 		update = TRUE;
 	}
 	if( keyDown[VK_SUBTRACT] && !keyDown[VK_SHIFT] )
 	{
-		terrain.DecViewHeight();
+		dbgTerrViewHeight -= 0.01f;
 		update = TRUE;
 	}
-	if( keyDown['E'] )
+	if( keyDown[VK_ADD] && keyDown[VK_SHIFT] )
 	{
-		keyDown['E'] = FALSE;
-		terrExternal = !terrExternal;
+		dbgTerrViewDistance += 0.01f;
 		update = TRUE;
 	}
-	if( keyDown['F'] )
+	if( keyDown[VK_SUBTRACT] && keyDown[VK_SHIFT] )
 	{
-		keyDown['F'] = FALSE;
-		terrFog = !terrFog;
+		dbgTerrViewDistance -= 0.01f;
 		update = TRUE;
 	}
-	if( keyDown['W'] )
+	if( keyDown['1'] && keyDown[VK_TAB] )
 	{
-		keyDown['W'] = FALSE;
-		terrWire = !terrWire;
+		keyDown['1'] = FALSE;
+		dbgGod = !dbgGod;
+		starfield.UpdateViewMat();
+		update = TRUE;
+	}
+	if( keyDown['2'] && keyDown[VK_TAB] )
+	{
+		keyDown['2'] = FALSE;
+		dbgTerrExternal = !dbgTerrExternal;
+		update = TRUE;
+	}
+
+	if( keyDown['3'] && keyDown[VK_TAB] )
+	{
+		keyDown['3'] = FALSE;
+		dbgFog = !dbgFog;
+		update = TRUE;
+	}
+	if( keyDown['4'] && keyDown[VK_TAB] )
+	{
+		keyDown['4'] = FALSE;
+		dbgTerrWire = !dbgTerrWire;
+		update = TRUE;
+	}
+	if( keyDown['5'] && keyDown[VK_TAB] )
+	{
+		keyDown['5'] = FALSE;
+		dbgStarfDepthTest = !dbgStarfDepthTest;
+		update = TRUE;
+	}
+	if( keyDown['6'] && keyDown[VK_TAB] )
+	{
+		keyDown['6'] = FALSE;
+		update = TRUE;
+	}
+	if( keyDown['7'] && keyDown[VK_TAB] )
+	{
+		keyDown['7'] = FALSE;
+		update = TRUE;
+	}
+	if( keyDown['8'] && keyDown[VK_TAB] )
+	{
+		keyDown['8'] = FALSE;
+		update = TRUE;
+	}
+	if( keyDown['9'] && keyDown[VK_TAB] )
+	{
+		keyDown['9'] = FALSE;
+		update = TRUE;
+	}
+	if( keyDown['0'] && keyDown[VK_TAB] )
+	{
+		keyDown['0'] = FALSE;
 		update = TRUE;
 	}
 
@@ -354,7 +393,13 @@ void CMgrInput::MouseLDownViewing()
 {
 	mouseLDownCoord = GetMouseSphereCoord();
 
-	if( keyDown[VK_SHIFT] || keyDown[VK_CONTROL] || keyDown[VK_TAB] )
+	if( GetView()->GetFocus() != GetView() )
+	{
+		CSInfo( "Has Focus" );
+		return;
+	}
+
+	if( keyDown[VK_SHIFT] || keyDown[VK_CONTROL] )
 	{
 		mouseRotatingY = TRUE;
 		SetCur( IDC_ROTY );
@@ -636,16 +681,12 @@ void CMgrInput::MouseMoveViewing3()  // Trackball
 	if( mouseRotatingY )
 	{
 		int diff = mousePoint.y-mouseLPoint.y;
-		// Rotate time
+		// Rotate time in minutes
 		if( keyDown[VK_SHIFT] )
 			GetFrame()->GetStarfBar()->AdjustTime( 0, 0, 0, diff, 0 );
-		// Rotate Sun
+		// Rotate time in days
 		else if( keyDown[VK_CONTROL] )
-			///starfield.GetSun()->AdjRotTime( -diff * 0.002f );
 			GetFrame()->GetStarfBar()->AdjustTime( 0, diff, 0, 0, 0 );
-		// Rotate latitude
-		else if( keyDown[VK_TAB] )
-			starfield.AdjLatitude( diff * 0.1f );
 		mouseLPoint = mousePoint;
 	}
 
@@ -725,9 +766,6 @@ void CMgrInput::MouseMoveViewing()  // Original
 		// Rotate Sun
 		if( keyDown[VK_SHIFT] )
 			GetFrame()->GetStarfBar()->AdjustTime( 0, diff, 0, 0, 0 );
-		// Rotate latitude
-		else if( keyDown[VK_CONTROL] )
-			starfield.AdjLatitude( diff * 0.1f );
 		// Rotate time
 		else
 			GetFrame()->GetStarfBar()->AdjustTime( 0, 0, 0, diff, 0 );

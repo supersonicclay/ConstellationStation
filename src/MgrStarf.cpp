@@ -76,7 +76,7 @@ void CMgrStarf::Rotate()
 	starfield.SwitchSpinning();
 }
 
-/// Open the location dialog
+// Open the location dialog
 void CMgrStarf::Location()
 {
 	if( starfield.IsSpinning() )
@@ -84,17 +84,31 @@ void CMgrStarf::Location()
 
 	CDlgLocation dialog;
 
-	dialog.DoModal();	
+	if( dialog.DoModal() == IDOK )
+	{
+		starfield.SetLocation( dialog.location );
+		documentMgr.SetModified();
+	}
+
+	Redraw();
 }
 
-/// Open the time dialog
+// Open the time dialog
 void CMgrStarf::Time()
 {
 	if( starfield.IsSpinning() )
 		starfield.SwitchSpinning();
+	if( starfield.GetSpeed() == speed_Now )
+		GetStarfBar()->ChangeSpeed( speed_Realtime );
+	starfMgr.Pause();
 
 	CDlgTime dialog;
-	dialog.DoModal();
+	if( dialog.DoModal() == IDOK )
+	{
+		starfield.SetDST( dialog.dst );
+		GetStarfBar()->SetTime( dialog.lt );
+		documentMgr.SetModified();
+	}
 }
 
 
@@ -104,6 +118,8 @@ void CMgrStarf::Time()
 void CMgrStarf::ChangeStarfSpeed( speed_e x )
 {
 	starfield.SetSpeed(x);
+	if( x == speed_Now )
+		starfield.SetAnimation( animation_Forward );
 	if( starfield.GetAnimation() != animation_Paused )
 		GetStarfBar()->AnimationSetTimer();
 }
@@ -126,6 +142,8 @@ void CMgrStarf::Reverse()
 {
 	starfield.SetAnimation( animation_Reverse );
 	GetStarfBar()->AnimationSetTimer();
+	if( starfield.GetSpeed() == speed_Now )
+		GetStarfBar()->ChangeSpeed( speed_Realtime );
 }
 
 void CMgrStarf::Next()

@@ -117,10 +117,10 @@ BOOL CMgrGraphics::InitializeOpenGL()
 
 	// Fog
 	glFogi( GL_FOG_MODE, GL_EXP2  );
-	glFogf( GL_FOG_DENSITY, 1.0f );
+	glFogf( GL_FOG_DENSITY, DEF_FOG_DENSITY );
 	glHint( GL_FOG_HINT, GL_FASTEST );
-	glFogf( GL_FOG_START, 0.9f );
-	glFogf( GL_FOG_END, 1.0f );
+	glFogf( GL_FOG_START, DEF_FOG_START );
+	glFogf( GL_FOG_END, DEF_FOG_END );
 
 	// Material
 	glColorMaterial( GL_FRONT, GL_AMBIENT_AND_DIFFUSE );
@@ -226,7 +226,7 @@ void CMgrGraphics::Draw()
 
 	// Draw direction indicators
 	glLoadMatrixf( terrainMat.getFloats() );
-	textMgr.TypeDirections();
+	textMgr.TypeDirections( -terrOffset );
 
 	// Draw compass
 	DrawCompass();
@@ -248,9 +248,9 @@ void CMgrGraphics::DrawTerrain()
 {
 	glEnable( GL_DEPTH_TEST );
 
-	if( terrFog ) glEnable( GL_FOG );
-	if( terrWire ) 	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-	if( terrExternal ) glDisable( GL_CULL_FACE );
+	if( dbgFog ) glEnable( GL_FOG );
+	if( dbgTerrWire ) 	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+	if( dbgTerrExternal ) glDisable( GL_CULL_FACE );
 
 	glDisable( GL_BLEND );
 	if( !optionsMgr.IsTerrTextured() )
@@ -282,9 +282,9 @@ void CMgrGraphics::DrawTerrain()
 	vector3** lowerNormals = terrain.GetLowerNormals();
 	int       arraySize    = terrain.GetArraySize();
 	int       size         = terrain.GetSize();
-	int       texIters     = optionsMgr.GetTerrTexIters();
-	int       heightIters  = optionsMgr.GetTerrHeightIters();
-	float     r            = optionsMgr.GetTerrRoughness();
+	int       texIters     = terrain.GetTexIters();
+	int       heightIters  = terrain.GetHeightIters();
+	float     r            = terrain.GetRoughness();
 	float     scale        = optionsMgr.GetTerrScale();
 	float     scale2       = scale*2;
 
@@ -349,7 +349,7 @@ void CMgrGraphics::DrawTerrain()
 	}
 	glPopName();
 
-	if( terrWire ) 	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );///
+	if( dbgTerrWire ) 	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
 	glEnable( GL_CULL_FACE );
 	glEnable( GL_TEXTURE_2D );
@@ -375,6 +375,9 @@ void CMgrGraphics::DrawSky()
 // Draw sun
 void CMgrGraphics::DrawSun()
 {
+	if( dbgStarfDepthTest )
+		glEnable( GL_DEPTH_TEST );
+
 	CDataSun* sun = starfield.GetSun();
 	vector3 center = sun->GetCenter();
 
@@ -414,6 +417,7 @@ void CMgrGraphics::DrawSun()
 	glEnd();
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE );
 
+	glDisable( GL_DEPTH_TEST ); /// take out after dbgStarfDepthTest is gone
 
 	//-----------
 	// Draw Glow
@@ -490,6 +494,8 @@ void CMgrGraphics::DrawSunlight()
 // Draw all constellations
 void CMgrGraphics::DrawConsts()
 {
+	if( dbgStarfDepthTest )
+		glEnable( GL_DEPTH_TEST );
 	glDisable( GL_TEXTURE_2D );
 	if( constAlpha > 0.99f )
 		glDisable( GL_BLEND );
@@ -517,6 +523,7 @@ void CMgrGraphics::DrawConsts()
 	}
 	glEnable( GL_BLEND );
 	glEnable( GL_TEXTURE_2D );
+	glDisable( GL_DEPTH_TEST ); /// take out after dbgStarfDepthTest is gone
 }
 
 // Draw constellation i
@@ -623,6 +630,9 @@ void CMgrGraphics::DrawCurConst( int i )
 // Draw all stars
 void CMgrGraphics::DrawStars()
 {
+	if( dbgStarfDepthTest )
+		glEnable( GL_DEPTH_TEST );
+
 	if( optionsMgr.AreStarsTextured() )
 	{
 		glBindTexture( GL_TEXTURE_2D, starTex );
@@ -663,6 +673,8 @@ void CMgrGraphics::DrawStars()
 
 		glEnable( GL_TEXTURE_2D );
 	}
+
+	glDisable( GL_DEPTH_TEST ); /// take out after dbgStarfDepthTest is gone
 }
 
 // Draw star i as a textured quad
@@ -962,25 +974,24 @@ void CMgrGraphics::UpdateSunMat()
 {
 	sunMat = *(starfield.GetViewMat());
 	sunMat *= *(starfield.GetSun()->GetTimeMat());
-
-	/// For sun using RA/Dec
-	//sunMat = starfMat;
-	//sunMat *= *(starfield.GetSun()->GetTimeMat());
 }
 
 // Update matrix for terrain
 void CMgrGraphics::UpdateTerrainMat()
 {
 ///	terrainMat = perspMat;
-	if( terrExternal )///
+
+	terrOffset = -(terrain.GetMiddleHeight()*terrain.GetRoughness()+optionsMgr.GetTerrViewHeight()+dbgTerrViewHeight);
+
+	if( dbgTerrExternal )
 	{
-		terrainMat = TranslateMatrix44( 0.0f, 0.0f, -2.5f );
+		terrainMat = TranslateMatrix44( 0.0f, terrOffset, -2.5f );
 		terrainMat *= *(starfield.GetViewMat());
 	}
 	else
 	{
 		terrainMat = *(starfield.GetViewMat());
-		terrainMat *= TranslateMatrix44( 0.0f, -terrain.GetViewHeight(), -terrain.GetViewDistance() );///
+		terrainMat *= TranslateMatrix44( 0.0f, terrOffset, -dbgTerrViewDistance );
 	}
 }
 
@@ -991,6 +1002,8 @@ void CMgrGraphics::UpdateTerrainMat()
 // Update daylight factor
 void CMgrGraphics::UpdateDayFactor()
 {
+	// Daylight factor is used for sunset/sunrise animation.
+
 	// Just set to -2 if
 	if( !starfield.IsSunShining() || !optionsMgr.IsTerrVisible() )
 	{
@@ -998,23 +1011,29 @@ void CMgrGraphics::UpdateDayFactor()
 		return;
 	}
 
-	// Uses the sun's center.y as input to the function:
+	// Uses the sun's center.y to compute as input to the function:
 	//  f(x) = 7.5x
 
-	// full night while dayFactor <= -2 (center.y <= -0.27)
 	// full  day  while dayFactor >=  2 (center.y >=  0.27)
+	// full night while dayFactor <= -2 (center.y <= -0.27)
 	// sun is at horizon when dayFactor = 0 (center.y = 0)
+
+	static const float fullDaySunHeight = 0.3F;///.27
+	static const float dayFactorMultiplier = 2/fullDaySunHeight;///7.5f
+	static const float dayFactorOffset = 0.1F;
 
 	// Find center of sun
 	vector3 center = starfield.GetSun()->GetCenter();
 
 	// Find factor
-	dayFactor = center.y*7.5f;
+	dayFactor = center.y * dayFactorMultiplier + dayFactorOffset;
 }
 
 // Update day alpha; 0 = day; 1 = night
 void CMgrGraphics::UpdateDayAlpha()
 {
+	// dayAlpha is used to fade out constellations and stars when it's bright
+
 	// Determine alpha based on dayFactor
 	dayAlpha = -dayFactor/2;
 	if( dayAlpha < 0.0f ) dayAlpha = 0.0f;
@@ -1024,12 +1043,14 @@ void CMgrGraphics::UpdateDayAlpha()
 	dayAlpha = dayAlpha * dayAlpha * dayAlpha * dayAlpha * dayAlpha;
 
 	// Set stars' alpha value
-	starAlpha = dayAlpha;
 	if( starfield.AreStarsDaylight() )
 		starAlpha = 1.0f;
-	constAlpha = dayAlpha;
+	else
+		starAlpha = dayAlpha;
 	if( starfield.AreConstsDaylight() )
 		constAlpha = 1.0f;
+	else
+		constAlpha = dayAlpha;
 }
 
 
@@ -1069,9 +1090,9 @@ void CMgrGraphics::UpdateColors()
 		redColor = COLOR_BLACK;
 
 	// SET FOG COLOR
-	// Fog color is weighted average of clearColor and redddish
+	/// Fog color is weighted average of clearColor and redddish
 	float fogColor[4];
-#if 1  /// fog color test
+#if 0  /// fog color test
 	fogColor[0] = (skyColor.r+skyColor.r+redColor.r)/3;
 	fogColor[1] = (skyColor.g+skyColor.g+redColor.g)/3;
 	fogColor[2] = (skyColor.b+skyColor.b+redColor.b)/3;

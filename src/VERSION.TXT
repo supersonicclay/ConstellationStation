@@ -1,6 +1,19 @@
 -------------------------------------------------
-0.5 - Features
+0.5 - Actual / Features
 -------------------------------------------------
+
+0.5.4
+	Save/Load terrain in document
+	Don't make edge heights 0. Stretch terrain instead
+	Smoother texture on terrain
+	Seconds used to compute position of sun
+	Time
+		- Enter local time, universal time, or julian
+		- Daylight savings time
+	Location
+		- List of coutries, states, and cities with latitude/longitude
+		- Save in document
+		- Save as option
 
 0.5.3
 	Autorotation

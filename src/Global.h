@@ -100,13 +100,46 @@ typedef struct
 	float second;
 } dec_s;
 
+typedef struct location_s_tag
+{
+	CString country;
+	CString state;
+	CString city;
+	int latd;  // latitude (°)
+	int latm;  // latitude (')
+	char ns;   // North / South
+	int lond;  // longitude (°)
+	int lonm;  // longitude (')
+	char ew;   // East / West
+	float timezone;
+
+	location_s_tag(){}
+	location_s_tag( CString country_, CString state_, CString city_, int latd_, int latm_, char ns_, int lond_, int lonm_, char ew_, float timezone_ )
+	{
+		country = country_;
+		state = state_;
+		city = city_;
+		latd = latd_;
+		latm = latm_;
+		ns = ns_;
+		lond = lond_;
+		lonm = lonm_;
+		ew = ew_;
+		timezone = timezone_;
+	}
+} location_s;
 
 /////////////////////////////////////////////////////////////////////////////
 /// DEBUG VARS
 
-extern BOOL terrFog;
-extern BOOL terrExternal;
-extern BOOL terrWire;
+extern BOOL dbgGod;
+extern BOOL dbgFog;
+extern BOOL dbgTerrExternal;
+extern BOOL dbgTerrWire;
+extern BOOL dbgStarfDepthTest;
+extern float dbgTerrViewHeight;
+extern float dbgTerrViewDistance;
+
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -125,12 +158,14 @@ extern const color_s COLOR_WHITE,
 					 COLOR_DARKTEAL;
 
 #define PI	    3.1415926535898f
+#define PIX2    6.2831853071796f
 #define PIHALF  1.5707963267949f
-#define PI2     6.2831853071796f
 
 
 /////////////////////////////////////////////////////////////////////////////
 // DEFAULTS
+
+extern const location_s DEF_LOCATION_HOME;
 
 extern const BOOL		DEF_STARS_VISIBLE;
 extern const BOOL		DEF_STARS_DAYLIGHT;
@@ -177,6 +212,7 @@ extern const int		DEF_TERR_ROUGHNESSX100;
 extern const int		DEF_TERR_SCALE;
 extern const int		DEF_TERR_TEX_ITERS;
 extern const int		DEF_TERR_HEIGHT_ITERS;
+extern const float		DEF_TERR_VIEW_HEIGHT;
 extern const season_e	DEF_TERR_SEASON;
 extern const color_s	DEF_TERR_WINCOLOR;
 extern const color_s	DEF_TERR_SPRCOLOR;
@@ -194,6 +230,10 @@ extern const color_s	DEF_TEXT_DIRCOLOR;
 extern const color_s	DEF_COMPASS_CROSSCOLOR;
 extern const color_s	DEF_COMPASS_FRUSTUMCOLOR;
 
+extern const float		DEF_FOG_DENSITY;
+extern const float		DEF_FOG_START;
+extern const float		DEF_FOG_END;
+
 
 /////////////////////////////////////////////////////////////////////////////
 // MAXIMUMS / MINIMUMS
@@ -202,18 +242,19 @@ extern const color_s	DEF_COMPASS_FRUSTUMCOLOR;
 #define	MAX_CONSTS					200
 #define MAX_CONSTLINES				100
 #define	MAX_DOC_NAME				32
-#define MIN_STARS_MAG				-1.44F
+#define MAX_LOCATIONS				1100
+#define MIN_STARS_MAG				-1.44f
 #define MAX_STARS_BRIGHT_RADIUS		0.0300F
 #define MIN_STARS_BRIGHT_RADIUS		0.0001F
 #define MAX_STARS_BRIGHT_COLOR		1.0F
-#define MIN_STARS_BRIGHT_COLOR		0.01F
+#define MIN_STARS_BRIGHT_COLOR		0.01f
 // Dim radius is stored as a percent of the brightest radius
 #define MAX_STARS_DIM_RADIUS_PERC	80   // User has control from 80%
 #define MIN_STARS_DIM_RADIUS_PERC	0    //  to 0%
 // Dim color is stored as a percent of the brightest color
 #define MAX_STARS_DIM_COLOR_PERC	80   // User has control from 80%
 #define MIN_STARS_DIM_COLOR_PERC	0    //  to 0%
-#define MAX_TERR_ROUGHNESS			0.6F
+#define MAX_TERR_ROUGHNESS			0.8f
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -273,16 +314,22 @@ CCSView* GetView();
 void SetState( state_e s );
 void Redraw();
 
-// Math functions
-double GregorianToJulian( int y, int m, int d, int h, int n, int s );
+// Time functions
+double UTtoJulian( int y, int m, int d, int h, int n, int s );
+double UTtoJulian( COleDateTime& ut );
+COleDateTime LTtoUT( COleDateTime& lt, float tz, BOOL dst );
+COleDateTime UTtoLT( COleDateTime& ut, float tz, BOOL dst );
+COleDateTime JulianToUT( double j );
 
 // Special CArchive functions
+CArchive& operator>> ( CArchive& ar, location_s& l );
 CArchive& operator>> ( CArchive& ar, season_e& s );
 CArchive& operator>> ( CArchive& ar, color_s& c );
 CArchive& operator>> ( CArchive& ar, vector3& v );
 CArchive& operator>> ( CArchive& ar, vector2& v );
 CArchive& operator>> ( CArchive& ar, LOGFONT& f );
 
+CArchive& operator<< ( CArchive& ar, location_s& l );
 CArchive& operator<< ( CArchive& ar, season_e s );
 CArchive& operator<< ( CArchive& ar, color_s c );
 CArchive& operator<< ( CArchive& ar, vector3 v );

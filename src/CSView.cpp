@@ -133,7 +133,10 @@ void CCSView::OnTimer(UINT nIDEvent)
 
 void CCSView::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	inputMgr.MouseLDown( point );
+	if( GetFocus() != this )
+		SetFocus();
+	else
+		inputMgr.MouseLDown( point );
 }
 
 void CCSView::OnLButtonUp(UINT nFlags, CPoint point)
@@ -148,7 +151,10 @@ void CCSView::OnLButtonDblClk(UINT nFlags, CPoint point)
 
 void CCSView::OnRButtonDown(UINT nFlags, CPoint point)
 {
-	inputMgr.MouseRDown( point );
+	if( GetFocus() != this )
+		SetFocus();
+	else
+		inputMgr.MouseRDown( point );
 }
 
 void CCSView::OnRButtonUp(UINT nFlags, CPoint point)

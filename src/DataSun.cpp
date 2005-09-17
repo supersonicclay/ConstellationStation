@@ -95,34 +95,29 @@ void CDataSun::UpdateTimeMat()
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-double dblmod( double x, int m ) /// Needs to go in global. Is there already one in MFC?
+double jd( int y, int m, int d, int h, int n, int s ) /// ugly
 {
-	return (int)x%m+(x-(int)x);
-}
-
-double jd( int y, int m, int d, int h, int n ) /// ugly
-{
-	double u = h + n/60.0;
+	double u = h + n/60.0 + s/60.0/60.0;
 	return (367*y) - (int)((7/4.0)*((int)((m+9)/12.0)+y))+(int)(275*m/9.0)+d-730531.5+(u/24);
 }
 
 double alt( int y, int m, int d, int h, int n, int s, float lat, float lon ) /// ugly
 {
-	double j = jd( y, m, d, h, n );
+	double j = jd( y, m, d, h, n, s );
 	double T=j/36525;
 	double k=PI/180.0;
 	double M=357.5291+35999.0503*T-0.0001559*T*T-0.00000045*T*T*T;
-	M=dblmod(M, 360);
+	M=fmod(M, 360);
 	double Lo=280.46645+36000.76983*T+0.0003032*T*T;
-	Lo=dblmod(Lo, 360);
+	Lo=fmod(Lo, 360);
 	double DL=(1.9146-0.004817*T-0.000014*T*T)*sin(k*M)+(0.019993-0.000101*T)*sin(k*2*M)+0.00029*sin(k*3*M);
 	double L=Lo+DL;
 	double eps=23.43999-0.013*T;
 	double delta=(1/k)*asin(sin(L*k)*sin(eps*k));
 	double RA=(1/k)*atan2(cos(eps*k)*sin(L*k),cos(L*k));
-	RA=dblmod(RA+360, 360);
+	RA=fmod(RA+360, 360);
 	double GMST=280.46061837+360.98564736629*j+0.000387933*T*T-T*T*T/38710000;
-	GMST=dblmod(GMST+360, 360);
+	GMST=fmod(GMST+360, 360);
 	double LMST=GMST+lon;
 	double H=LMST-RA;
 	double eqt=(Lo-RA)*4;
@@ -130,39 +125,38 @@ double alt( int y, int m, int d, int h, int n, int s, float lat, float lon ) ///
 	return alt;
 }
 
-double azm( int y, int m, int d, int h, int n, int s, float lat, float lon )
+double azm( int y, int m, int d, int h, int n, int s, float lat, float lon ) /// ugly
 {
 	///var uu=ut(ho,mi,zo);
-	double j = jd( y, m, d, h, n );
+	double j = jd( y, m, d, h, n, s );
 	double T=j/36525;
 	double k=PI/180.0;
 	double M=357.5291+35999.0503*T-0.0001559*T*T-0.00000045*T*T*T;
-	M=dblmod(M, 360);
+	M=fmod(M, 360);
 	double Lo=280.46645+36000.76983*T+0.0003032*T*T;
-	Lo=dblmod(Lo, 360);
+	Lo=fmod(Lo, 360);
 	double DL=(1.9146-0.004817*T-0.000014*T*T)*sin(k*M)+(0.019993-0.000101*T)*sin(k*2*M)+0.00029*sin(k*3*M);
 	double L=Lo+DL;
 	double eps=23.43999-0.013*T;
 	double delta=(1/k)*asin(sin(L*k)*sin(eps*k));
 	double RA=(1/k)*atan2(cos(eps*k)*sin(L*k),cos(L*k));
-	RA=dblmod(RA+360, 360);
+	RA=fmod(RA+360, 360);
 	double GMST=280.46061837+360.98564736629*j+0.000387933*T*T-T*T*T/38710000;
-	GMST=dblmod(GMST+360, 360);
+	GMST=fmod(GMST+360, 360);
 	double LMST=GMST+lon;
 	double H=LMST-RA;
 	double eqt=(Lo-RA)*4;
 	double azm=(1/k)*atan2(-sin(H*k),cos(lat*k)*tan(delta*k)-sin(lat*k)*cos(H*k));
-	azm=dblmod(azm+360, 360);
+	azm=fmod(azm+360, 360);
 
 	return azm;
 }
 
-/// Other sun calculators
-// http://aa.usno.navy.mil/data
-// http://www.jgiesen.de/astro/astroJS/riseset/index.htm
 
 void CDataSun::UpdatePosition( int year, int month, int day, int hour, int minute, int second, float lat, float lon )
 {
+	// Sun altitude/azimuth calculator from
+	// http://www.jgiesen.de/astro/astroJS/SunPositionCalculator.htm
 	altitude = alt(year,month,day,hour,minute,second,lat,lon);
 	azimuth  = azm(year,month,day,hour,minute,second,lat,lon);
 
@@ -172,12 +166,13 @@ void CDataSun::UpdatePosition( int year, int month, int day, int hour, int minut
 	if( phi < 0.0f )
 		phi+=PI;
 	if( theta < 0.0f )
-		theta+=PI2;
+		theta+=PIX2;
 
 	SetXYZFromPhiTheta();
 
-	// Sun altitude/azimuth calculator from
-	// http://www.jgiesen.de/astro/astroJS/SunPositionCalculator.htm
+/// Other sun calculators
+// http://aa.usno.navy.mil/data
+// http://www.jgiesen.de/astro/astroJS/riseset/index.htm
 	/*
 	function ut(h,m,z)
 	{

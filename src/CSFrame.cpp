@@ -161,12 +161,11 @@ int CCSFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	// Load options
 	optionsMgr.Load();
-	optionsMgr.LoadDefaults();/// always defaults
+	///optionsMgr.LoadDefaults();/// always defaults
 
 	// New document
 	documentMgr.NewActual();
 	documentMgr.UpdateTitle();
-
 
 	return 0;
 }
@@ -303,12 +302,14 @@ void CCSFrame::OnAnimNext()			{	starfMgr.Next();				}
 void CCSFrame::OnPopupConstCenter() 
 {
 	starfield.FindConst( inputMgr.popupConstNum );
+	constMgr.Select( inputMgr.popupConstNum );
 	Redraw();
 }
 
 void CCSFrame::OnPopupConstTrack() 
 {
 	starfield.StartTrackingConst( inputMgr.popupConstNum );
+	constMgr.Select( inputMgr.popupConstNum );
 	Redraw();
 }
 

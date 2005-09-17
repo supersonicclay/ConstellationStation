@@ -136,6 +136,7 @@ void CDlgOptionsTerr::OnSeasonChange()
 	season = (season_e)seasonsListBox.GetCurSel();
 
 	optionsMgr.SetTerrSeason( season );
+	terrain.MakeTerrain( TRUE );
 
 	Redraw();
 	InvalidateRect( NULL ); // Redraw dialog for color preview
@@ -159,8 +160,9 @@ void CDlgOptionsTerr::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	{
 		roughnessX100 = roughnessSlider.GetPos();
 		optionsMgr.SetTerrRoughnessX100( roughnessX100 );
+		terrain.SetRoughness( optionsMgr.GetTerrRoughness() );
 
-		// Update terrain textuer
+		// Update terrain texture
 		terrain.MakeTexture();
 
 		UpdateRoughnessTxt();

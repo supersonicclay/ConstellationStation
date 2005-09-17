@@ -130,7 +130,7 @@ void CMgrText::TypeStar( CDataStar* star )
 		glEnable( GL_TEXTURE_2D );
 }
 
-void CMgrText::TypeDirections()
+void CMgrText::TypeDirections( float offset )
 {
 	glDisable( GL_TEXTURE_2D );
 	glDisable( GL_BLEND );
@@ -138,19 +138,19 @@ void CMgrText::TypeDirections()
 	glListBase( dirBase-32 );
 
 	// N
-	glRasterPos3f( 0.0f, -0.1f, -1.0f );
+	glRasterPos3f( 0.0f, offset-0.1f, -1.0f );
 	glCallLists( 1, GL_UNSIGNED_BYTE, "N" );
 
 	// E
-	glRasterPos3f( 1.0f, -0.1f, 0.0f );
+	glRasterPos3f( 1.0f, offset-0.1f, 0.0f );
 	glCallLists( 1, GL_UNSIGNED_BYTE, "E" );
 
 	// S
-	glRasterPos3f( 0.0f, -0.1f, 1.0f );
+	glRasterPos3f( 0.0f, offset-0.1f, 1.0f );
 	glCallLists( 1, GL_UNSIGNED_BYTE, "S" );
 
 	// W
-	glRasterPos3f( -1.0f, -0.1f, 0.0f );
+	glRasterPos3f( -1.0f, offset-0.1f, 0.0f );
 	glCallLists( 1, GL_UNSIGNED_BYTE, "W" );
 
 	glEnable( GL_BLEND );

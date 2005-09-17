@@ -201,7 +201,7 @@ void CDataStar::SetPhiThetaFromRADec()
 		phi = PIHALF+radians;
 
 	// Calculate theta
-	theta = PI2 * (ra.hour+(ra.minute+ra.second/60)/60)/24;
+	theta = PIX2 * (ra.hour+(ra.minute+ra.second/60)/60)/24;
 }
 
 // Set right ascension and Declination from the x, y, and z coordinates

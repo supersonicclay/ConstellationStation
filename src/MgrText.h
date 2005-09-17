@@ -37,7 +37,7 @@ public:
 
 	void TypeConst( CDataConst* constellation );
 	void TypeStar( CDataStar* star );
-	void TypeDirections( );
+	void TypeDirections( float offset ); // vertical offset
 
 // Destruction
 public:

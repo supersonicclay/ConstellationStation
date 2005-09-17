@@ -52,6 +52,13 @@ BEGIN_MESSAGE_MAP(CDlgFindTrack, CDialog)
 	ON_BN_CLICKED(IDC_FIND_RADEC, OnFindRaDec)
 	ON_BN_CLICKED(IDC_TRACK_RADEC, OnTrackRaDec)
 	ON_BN_CLICKED(IDC_STOP_TRACKING, OnStopTracking)
+	ON_EN_CHANGE(IDC_RA_H, OnChangeRAH)
+	ON_EN_CHANGE(IDC_RA_M, OnChangeRAM)
+	ON_EN_CHANGE(IDC_RA_S, OnChangeRAS)
+	ON_EN_CHANGE(IDC_RA_SD, OnChangeRASD)
+	ON_EN_CHANGE(IDC_DEC_D, OnChangeDecD)
+	ON_EN_CHANGE(IDC_DEC_M, OnChangeDecM)
+	ON_EN_CHANGE(IDC_DEC_S, OnChangeDecS)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -97,18 +104,6 @@ BOOL CDlgFindTrack::OnInitDialog()
 		stopTrackingButton.EnableWindow( FALSE );
 	}
 
-
-	// Resize constellation and star combo boxes
-	CRect r;
-	constControl.GetDroppedControlRect( &r );
-	constControl.GetParent()->ScreenToClient( &r );
-	r.bottom = r.top + CONSTLIST_HEIGHT;
-	constControl.MoveWindow( &r );
-	starControl.GetDroppedControlRect( &r );
-	starControl.GetParent()->ScreenToClient( &r );
-	r.bottom = r.top + STARLIST_HEIGHT;
-	starControl.MoveWindow( &r );
-
 	// Fill constellation list
 	for( int ci=0; ci<starfield.GetConstCount(); ++ci )
 	{
@@ -129,7 +124,7 @@ BOOL CDlgFindTrack::OnInitDialog()
 	raMControl.SetLimitText(2);
 	raSControl.SetLimitText(2);
 	raSDControl.SetLimitText(1);
-	decDControl.SetLimitText(2);
+	decDControl.SetLimitText(3);
 	decMControl.SetLimitText(2);
 	decSControl.SetLimitText(2);
 	decSDControl.SetLimitText(1);
@@ -182,11 +177,24 @@ void CDlgFindTrack::OnFindRaDec()
 	ra.minute = GetDlgItemInt( IDC_RA_M );
 	ra.second = GetDlgItemInt( IDC_RA_S );
 	ra.second += GetDlgItemInt( IDC_RA_SD )*0.1f;
+
 	dec_s dec;
-	dec.degree = GetDlgItemInt( IDC_DEC_D );
+
 	dec.minute = GetDlgItemInt( IDC_DEC_M );
 	dec.second = GetDlgItemInt( IDC_DEC_S );
 	dec.second += GetDlgItemInt( IDC_DEC_SD )*0.1f;
+
+	int decd = 	GetDlgItemInt( IDC_DEC_D );
+	if( decd < 0 )
+	{
+		dec.positive = FALSE;
+		dec.degree = -decd;
+	}
+	else
+	{
+		dec.positive = TRUE;
+		dec.degree = decd;
+	}
 
 	starfield.FindRADec( ra, dec );
 	EndDialog( IDOK );
@@ -200,17 +208,29 @@ void CDlgFindTrack::OnTrackRaDec()
 	ra.minute = GetDlgItemInt( IDC_RA_M );
 	ra.second = GetDlgItemInt( IDC_RA_S );
 	ra.second += GetDlgItemInt( IDC_RA_SD )*0.1f;
+
 	dec_s dec;
-	dec.degree = GetDlgItemInt( IDC_DEC_D );
+
 	dec.minute = GetDlgItemInt( IDC_DEC_M );
 	dec.second = GetDlgItemInt( IDC_DEC_S );
 	dec.second += GetDlgItemInt( IDC_DEC_SD )*0.1f;
+
+	int decd = 	GetDlgItemInt( IDC_DEC_D );
+	if( decd < 0 )
+	{
+		dec.positive = FALSE;
+		dec.degree = -decd;
+	}
+	else
+	{
+		dec.positive = TRUE;
+		dec.degree = decd;
+	}
 
 	starfield.StartTrackingRADec( ra, dec );
 	EndDialog( IDOK );
 	Redraw();
 }
-
 
 void CDlgFindTrack::OnStopTracking() 
 {
@@ -218,3 +238,74 @@ void CDlgFindTrack::OnStopTracking()
 	EndDialog( IDOK );
 	Redraw();
 }
+
+void CDlgFindTrack::OnChangeRAH() 
+{
+	CString s;
+	raHControl.GetWindowText( s );
+
+	if( s.GetLength() == 2 )
+		raMControl.SetFocus();
+}
+
+void CDlgFindTrack::OnChangeRAM() 
+{
+	CString s;
+	raMControl.GetWindowText( s );
+
+	if( s.GetLength() == 2 )
+		raSControl.SetFocus();
+}
+
+void CDlgFindTrack::OnChangeRAS() 
+{
+	CString s;
+	raSControl.GetWindowText( s );
+
+	if( s.GetLength() == 2 )
+		raSDControl.SetFocus();
+}
+
+void CDlgFindTrack::OnChangeRASD() 
+{
+	CString s;
+	raSDControl.GetWindowText( s );
+
+	if( s.GetLength() == 1 )
+		decDControl.SetFocus();
+}
+
+void CDlgFindTrack::OnChangeDecD() 
+{
+	CString s;
+	decDControl.GetWindowText( s );
+
+	if( s.GetLength() == 3 )
+		decMControl.SetFocus();
+}
+
+void CDlgFindTrack::OnChangeDecM() 
+{
+	CString s;
+	decMControl.GetWindowText( s );
+
+	if( s.GetLength() == 2 )
+		decSControl.SetFocus();
+}
+
+void CDlgFindTrack::OnChangeDecS() 
+{
+	CString s;
+	decSControl.GetWindowText( s );
+
+	if( s.GetLength() == 2 )
+		decSDControl.SetFocus();
+}
+
+
+
+
+
+
+
+

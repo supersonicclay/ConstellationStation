@@ -55,6 +55,13 @@ protected:
 	afx_msg void OnFindRaDec();
 	afx_msg void OnTrackRaDec();
 	afx_msg void OnStopTracking();
+	afx_msg void OnChangeRAH();
+	afx_msg void OnChangeRAM();
+	afx_msg void OnChangeRAS();
+	afx_msg void OnChangeRASD();
+	afx_msg void OnChangeDecD();
+	afx_msg void OnChangeDecM();
+	afx_msg void OnChangeDecS();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

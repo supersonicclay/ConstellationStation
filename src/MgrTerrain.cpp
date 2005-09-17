@@ -64,7 +64,7 @@ void CMgrTerrain::Options()
 		optionsMgr.SetTerrSumColor( dialog.origSumColor );
 		optionsMgr.SetTerrAutColor( dialog.origFalColor );
 		optionsMgr.SetTerrRoughnessX100( dialog.origRoughnessX100 );
-		terrain.MakeTerrain(); // In case roughness was changed
+		terrain.MakeTerrain( TRUE ); // In case roughness was changed
 	}
 
 	Redraw();

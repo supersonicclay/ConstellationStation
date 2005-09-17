@@ -54,9 +54,9 @@ public:
 
 	// Daylight
 	float dayFactor;   // see UpdateDayFactor()
-	float dayAlpha;
-	float starAlpha;
-	float constAlpha;
+	float dayAlpha;    // see UpdateDayAlpha()
+	float starAlpha;   // see UpdateDayAlpha()
+	float constAlpha;  // see UpdateDayAlpha()
 
 	// Sky
 	GLUquadricObj* skySphere;
@@ -65,6 +65,8 @@ public:
 	GLUquadricObj* sunSphere;
 	float sunPos[3];
 
+	// Terrain
+	float terrOffset; // terrain's vertical offset
 
 // Methods
 public:

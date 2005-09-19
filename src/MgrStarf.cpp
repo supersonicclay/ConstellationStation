@@ -70,23 +70,26 @@ void CMgrStarf::FindTrack()
 	dialog.DoModal();
 }
 
-// Turns starfield spinning on/off
-void CMgrStarf::Rotate()
-{
-	starfield.SwitchSpinning();
-}
-
 // Open the location dialog
 void CMgrStarf::Location()
 {
-	if( starfield.IsSpinning() )
-		starfield.SwitchSpinning();
-
 	CDlgLocation dialog;
 
 	if( dialog.DoModal() == IDOK )
 	{
+		// Sanity check
+		float lat = dialog.location.latd + dialog.location.latm/60.0f;
+		float lon = dialog.location.lond + dialog.location.lonm/60.0f;
+		if( lat > 90.0f || lat < 0.0f || lon > 180.0f || lon < 0.0f ||
+			dialog.location.timezone > 12.0f || dialog.location.timezone < -12.0f )
+		{
+			CSWarn( dialog.GetSafeHwnd(), "Latitude, longitude, or timezone out of range", "Warning" );
+			return;
+		}
+
 		starfield.SetLocation( dialog.location );
+		starfield.SetUT( starfield.GetUT() );
+		GetStarfBar()->SetTime( starfield.GetLT() );
 		documentMgr.SetModified();
 	}
 
@@ -96,8 +99,6 @@ void CMgrStarf::Location()
 // Open the time dialog
 void CMgrStarf::Time()
 {
-	if( starfield.IsSpinning() )
-		starfield.SwitchSpinning();
 	if( starfield.GetSpeed() == speed_Now )
 		GetStarfBar()->ChangeSpeed( speed_Realtime );
 	starfMgr.Pause();
@@ -171,9 +172,6 @@ void CMgrStarf::Previous()
 // Open the star options dialog
 void CMgrStarf::StarOptions()
 {
-	if( starfield.IsSpinning() )
-		starfield.SwitchSpinning();
-
 	CDlgOptionsStar dialog;
 	if( dialog.DoModal() == IDOK )
 	{
@@ -198,13 +196,18 @@ void CMgrStarf::StarOptions()
 	Redraw();
 }
 
-void CMgrStarf::StarInfo( CDataStar* star )
+void CMgrStarf::StarInfo( CDataStar* s )
 {
-	CDlgStarInfo dialog( star );
+	s->UpdateAzimuthAltitude( starfield.GetStarfMat() );
 
+	CDlgStarInfo dialog( s );
 	dialog.DoModal();
 }
 
+void CMgrStarf::StarInfo( int num )
+{
+	StarInfo( starfield.GetStar( num ) );
+}
 
 // Toggle stars on and off
 void CMgrStarf::ToggleStars()
@@ -266,9 +269,6 @@ void CMgrStarf::UpdateStarsAppearance()
 // Open the constellation options dialog
 void CMgrStarf::ConstOptions()
 {
-	if( starfield.IsSpinning() )
-		starfield.SwitchSpinning();
-
 	CDlgOptionsConst dialog;
 	if( dialog.DoModal() == IDOK )
 	{
@@ -284,6 +284,17 @@ void CMgrStarf::ConstOptions()
 	}
 	Redraw();
 }
+
+void CMgrStarf::ConstInfo( CDataConst* c )
+{
+	CSInfo( "Not implemented" );///
+}
+
+void CMgrStarf::ConstInfo( int num )
+{
+	ConstInfo( starfield.GetConst( num ) );
+}
+
 
 // Toggle constellations on and off
 void CMgrStarf::ToggleConsts()

@@ -31,10 +31,8 @@ public:
 private:
 
 	color_s color;
-	float altitude;
-	float azimuth;
 
-	matrix44 timeMat; /// CHANGE NAME to rotMat or something
+	matrix44 sunMat;
 
 
 // Methods
@@ -42,10 +40,15 @@ public:
 
 	color_s GetColor();
 
-	matrix44* GetTimeMat();
+	matrix44* GetSunMat();
 
-	void UpdatePosition( int year, int month, int day, int hour, int minute, int second, float lat, float lon );
-	void UpdateTimeMat();
+	void UpdateSunMat();
+
+	// Sun altitude/azimuth calculator from
+	// http://www.jgiesen.de/astro/astroJS/SunPositionCalculator.htm
+	void UpdateAltitude( int y, int m, int d, int h, int n, int s, float lat, float lon );
+	void UpdateAzimuth( int y, int m, int d, int h, int n, int s, float lat, float lon );
+	void UpdatePosition( COleDateTime& ut, float lat, float lon );
 
 };
 

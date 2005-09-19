@@ -29,7 +29,6 @@ BEGIN_MESSAGE_MAP(CCSFrame, CFrameWnd)
 	ON_COMMAND(ID_STARF_OPEN, OnStarfOpen)
 	ON_COMMAND(ID_STARF_SAVE, OnStarfSave)
 	ON_COMMAND(ID_STARF_SAVEAS, OnStarfSaveAs)
-	ON_COMMAND(ID_STARF_ROTATE, OnStarfRotate)
 	ON_COMMAND(ID_STARS_TOGGLE, OnStarsToggle)
 	ON_COMMAND(ID_CONST_ADD, OnConstAdd)
 	ON_COMMAND(ID_CONST_DELETE, OnConstDelete)
@@ -57,7 +56,6 @@ BEGIN_MESSAGE_MAP(CCSFrame, CFrameWnd)
 	ON_COMMAND(ID_ANIM_PAUSE, OnAnimPause)
 	ON_COMMAND(ID_ANIM_PLAY, OnAnimPlay)
 	ON_COMMAND(ID_ANIM_NEXT, OnAnimNext)
-	ON_UPDATE_COMMAND_UI(ID_STARF_ROTATE, OnUpdateStarfRotate)
 	ON_UPDATE_COMMAND_UI(ID_STARS_TOGGLE, OnUpdateStarsToggle)
 	ON_UPDATE_COMMAND_UI(ID_CONST_LIST, OnUpdateConstList)
 	ON_UPDATE_COMMAND_UI(ID_CONST_ADD, OnUpdateConstAdd)
@@ -259,7 +257,6 @@ void CCSFrame::OnStarfSave()		{	documentMgr.Save();				}
 void CCSFrame::OnStarfSaveAs()		{	documentMgr.SaveAs();			}
 
 // Starfield commands
-void CCSFrame::OnStarfRotate()		{	starfMgr.Rotate();				}
 void CCSFrame::OnStarsToggle()		{	starfMgr.ToggleStars();			}
 void CCSFrame::OnConstToggle()		{	starfMgr.ToggleConsts();		}
 void CCSFrame::OnConstLinesToggle()	{	starfMgr.ToggleConstsLines();	}
@@ -315,6 +312,7 @@ void CCSFrame::OnPopupConstTrack()
 
 void CCSFrame::OnPopupConstInfo() 
 {
+	starfMgr.ConstInfo( inputMgr.popupConstNum );
 }
 
 void CCSFrame::OnPopupStarCenter() 
@@ -331,15 +329,11 @@ void CCSFrame::OnPopupStarTrack()
 
 void CCSFrame::OnPopupStarInfo() 
 {
+	starfMgr.StarInfo( inputMgr.popupStarNum );
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // Updates
-
-void CCSFrame::OnUpdateStarfRotate(CCmdUI* pCmdUI) 
-{
-	pCmdUI->SetCheck( starfield.IsSpinning() );
-}
 
 void CCSFrame::OnUpdateStarsToggle(CCmdUI* pCmdUI) 
 {

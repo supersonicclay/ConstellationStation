@@ -64,8 +64,8 @@ void CDataStarf::Clear( BOOL clearStars )
 	location.latm = 0;
 	location.lond = 0;
 	location.lonm = 0;
-	latitude = 47.65f;    /// 34.2N for Portales             47.65N for Seattle
-	longitude = -122.3f; /// -103.3 (103.3 W) for Portales  -122.3 for Seattle
+	latitude = 0.0f;
+	longitude = 0.0;
 
 	// Viewing
 	viewMat.identity();
@@ -79,8 +79,6 @@ void CDataStarf::Clear( BOOL clearStars )
 	tempRotY = 0.0f;
 	rotTime = 0.0f;
 	zoom = 0.0f;
-
-	spinning = FALSE;
 
 	tracking = FALSE;
 	trackingType = track_None;
@@ -102,7 +100,7 @@ void CDataStarf::Clear( BOOL clearStars )
 // Create a new random or actual starfield
 void CDataStarf::New( BOOL actual )
 {
-	actual = false; /// faster loads
+	/// actual = false; /// faster loads
 
 	// Don't clear stars if we don't need to
 	if( actual && seed == -1 )
@@ -123,7 +121,7 @@ void CDataStarf::New( BOOL actual )
 	else
 	{
 		seed = clock();
-///		InitRandomStars();
+//		InitRandomStars();
 		InitTestStars();
 	}
 
@@ -131,7 +129,6 @@ void CDataStarf::New( BOOL actual )
 	SetLocation( optionsMgr.GetLocationHome() );
 	SetAnimation( animation_Forward );
 	SetSpeed( speed_Now );
-	SwitchSpinning();
 	UpdateMats();
 }
 
@@ -177,8 +174,7 @@ void CDataStarf::InitTestStars()
 			newStar.SetTheta( theta );
 			newStar.SetMag( 2.0f );
 
-			newStar.SetXYZFromPhiTheta();
-			newStar.SetRADecFromPhiTheta();
+			newStar.UpdatePosFromPhiTheta();
 			stars.push_back( CDataStar( newStar ) );
 		}
 	}
@@ -335,7 +331,6 @@ float			CDataStarf::GetTempRotX()			{	return tempRotX;				}
 float			CDataStarf::GetTempRotY()			{	return tempRotY;				}
 float			CDataStarf::GetRotTime()			{	return rotTime;					}
 float			CDataStarf::GetZoom()				{	return zoom;					}
-BOOL			CDataStarf::IsSpinning()			{	return spinning;				}
 BOOL			CDataStarf::IsTracking()			{	return tracking;				}
 track_e			CDataStarf::GetTrackingType()		{	return trackingType;			}
 CString			CDataStarf::GetTrackingName()		{	return trackingName;			}
@@ -405,7 +400,6 @@ void CDataStarf::SwitchSunShine()				{	sunShine = !sunShine;						}
 void CDataStarf::SetSunShine( BOOL x )			{	sunShine = x;								}
 void CDataStarf::SetAnimation( animation_e x )	{	animation = x;								}
 void CDataStarf::SetSpeed( speed_e x )			{	speed = x;									}
-void CDataStarf::SwitchSpinning()				{	spinning = !spinning;						}
 
 void CDataStarf::SetRotX( float x, BOOL updateMat )
 {
@@ -624,8 +618,7 @@ void CDataStarf::LoadSunDefaults()
 void CDataStarf::UpdateTime()
 {
 	julian = UTtoJulian( ut.GetYear(), ut.GetMonth(), ut.GetDay(), ut.GetHour(), ut.GetMinute(), ut.GetSecond() );
-	sun.UpdatePosition( ut.GetYear(), ut.GetMonth(), ut.GetDay(), ut.GetHour(), ut.GetMinute(), ut.GetSecond(), latitude, longitude);
-	sun.UpdateTimeMat();
+	sun.UpdatePosition( ut, latitude, longitude);
 	UpdateTimeMat();
 	UpdateStarfMat();
 	if( tracking )
@@ -686,13 +679,13 @@ void CDataStarf::UpdateMats()
 	UpdateTimeMat();
 	UpdateLatMat();
 	UpdateStarfMat();
-	sun.UpdateTimeMat();
+	sun.UpdateSunMat();
 }
 // Update view matrix
 void CDataStarf::UpdateViewMat()
 {
 	if( dbgGod )
-		viewMat = TranslateMatrix44( 0, 0,-3 ) * RotateRadMatrix44( 'x', rotX+tempRotX ) * RotateRadMatrix44( 'y', rotY+tempRotY ); /// External view of everything
+		viewMat = TranslateMatrix44( 0, 0,-3 ) * RotateRadMatrix44( 'x', rotX+tempRotX ) * RotateRadMatrix44( 'y', rotY+tempRotY );
 	else
 		viewMat = RotateRadMatrix44( 'x', rotX+tempRotX ) * RotateRadMatrix44( 'y', rotY+tempRotY );
 }
@@ -781,8 +774,7 @@ void CDataStarf::SetLatitude( float x, BOOL updateMat )
 {
 	latitude = x;
 	UpdateLatMat();
-	sun.UpdatePosition( ut.GetYear(), ut.GetMonth(), ut.GetDay(), ut.GetHour(), ut.GetMinute(), ut.GetSecond(), latitude, longitude);
-	sun.UpdateTimeMat();
+	sun.UpdatePosition( ut, latitude, longitude);
 	if( updateMat )
 		UpdateStarfMat();
 }
@@ -790,8 +782,7 @@ void CDataStarf::SetLongitude( float x, BOOL updateMat )
 {
 	longitude = x;
 	UpdateTimeMat();
-	sun.UpdatePosition( ut.GetYear(), ut.GetMonth(), ut.GetDay(), ut.GetHour(), ut.GetMinute(), ut.GetSecond(), latitude, longitude);
-	sun.UpdateTimeMat();
+	sun.UpdatePosition( ut, latitude, longitude);
 	if( updateMat )
 	{
 		UpdateStarfMat();
@@ -1097,7 +1088,7 @@ void CDataStarf::Serialize(CArchive& ar)
 		   >> dt.m_dt >> dst >> s
 		   >> location >> latitude >> longitude
 		   >> rotX >> rotY >> rotTime
-		   >> zoom >> spinning;
+		   >> zoom;
 		speed = (speed_e)s;
 
 		// If we're loading an actual starfield
@@ -1134,7 +1125,7 @@ void CDataStarf::Serialize(CArchive& ar)
 		   << ut.m_dt << dst << s
 		   << location << latitude << longitude
 		   << rotX << rotY << rotTime
-		   << zoom << spinning;
+		   << zoom;
 	}
 
 	// If we're loading, get the constellations vector ready

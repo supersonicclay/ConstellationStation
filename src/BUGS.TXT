@@ -73,3 +73,7 @@ Fixed		09-10-05		BarStarf.ChangeSpeed on open document
 Fixed		09-14-05		Reverse, pause should change speed to realtime
 Fixed		09-14-05		When Now is selected, forward animation
 Fixed		09-15-05		Not calculating accurate ratio for terrain texture. Most are < 0.5
+Fixed		09-15-05		Time Dialog should change speed to realtime and/or pause
+Fixed		09-15-05		Reset time after tz change in CDlgLocation
+Fixed		09-16-05		Don't sanity check custom location until OK
+Fixed		09-16-05		MakeTerrain isn't resetting max and min height

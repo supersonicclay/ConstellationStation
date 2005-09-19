@@ -122,11 +122,16 @@
 #define IDC_STAR_MAG                    1153
 #define IDC_STAR_SPECTRAL               1154
 #define IDC_FIND_CONST                  1154
+#define IDC_FIND                        1154
 #define IDC_STAR_NAME                   1155
 #define IDC_CONST                       1155
 #define IDC_TRACK_CONST                 1156
+#define IDC_TRACK                       1156
+#define IDC_STAR_HID                    1156
 #define IDC_FIND_STAR                   1157
+#define IDC_STAR_ALTITUDE               1157
 #define IDC_TRACK_STAR                  1158
+#define IDC_STAR_AZIMUTH                1158
 #define IDC_FIND_RADEC                  1159
 #define IDC_TRACK_RADEC                 1160
 #define IDC_STAR                        1161
@@ -157,6 +162,11 @@
 #define IDC_LOCATION_S                  1190
 #define IDC_LOCATION_E                  1191
 #define IDC_LOCATION_W                  1192
+#define IDC_LOCATION_CUSTOM             1193
+#define IDC_ENABLE_CONST                1195
+#define IDC_ENABLE_STAR                 1196
+#define IDC_CUSTOM1                     1196
+#define IDC_ENABLE_RA_DEC               1197
 #define ID_STARF_NEWRANDOM              32772
 #define ID_STARF_NEWACTUAL              32773
 #define ID_STARF_OPEN                   32774
@@ -213,7 +223,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        179
 #define _APS_NEXT_COMMAND_VALUE         32904
-#define _APS_NEXT_CONTROL_VALUE         1189
+#define _APS_NEXT_CONTROL_VALUE         1197
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

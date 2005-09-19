@@ -40,6 +40,8 @@ protected:
 	dec_s dec;
 	float phi;
 	float theta;
+	float azimuth;
+	float altitude;
 	vector3 center;
 	vector3 trVert;
 	vector3 tlVert;
@@ -63,6 +65,8 @@ public:
 	dec_s GetDec();
 	float GetPhi();
 	float GetTheta();
+	float GetAzimuth();
+	float GetAltitude();
 	vector3 GetCenter();
 	vector3 GetNormal();
 	vector3 GetTRVert();
@@ -93,17 +97,14 @@ public:
 // Methods
 	// Right ascension and declination known
 	void UpdatePosFromRADec();
-	void SetPhiThetaFromRADec();
-	void SetXYZFromPhiTheta();
 
 	// X, Y, and Z coordinates known
 	void UpdatePosFromXYZ();
-	void SetPhiThetaFromXYZ();
-	void SetRADecFromPhiTheta();
 
 	// Phi and theta known
 	void UpdatePosFromPhiTheta();
 
+	void UpdateAzimuthAltitude( matrix44* starfMat );
 	void UpdateVerts();
 
 	void Randomize();

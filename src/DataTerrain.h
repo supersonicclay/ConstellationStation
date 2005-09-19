@@ -38,7 +38,6 @@ private:
 
 	season_e season;
 
-	int texIters;
 	int heightIters;
 	float roughness;
 
@@ -63,8 +62,6 @@ public:
 	int GetSize();
 	int GetArraySize();
 
-	int GetTexIters();
-	int GetHeightIters();
 	float GetRoughness();
 
 	vector3** GetUpperNormals();

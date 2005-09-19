@@ -64,9 +64,6 @@ void CMgrText::KillFonts()
 // Open text options dialog
 void CMgrText::Options()
 {
-	if( starfield.IsSpinning() )
-		starfield.SwitchSpinning();
-
 	CDlgOptionsText dialog;
 	if( dialog.DoModal() == IDOK )
 	{
@@ -113,7 +110,7 @@ void CMgrText::TypeStar( CDataStar* star )
 	glLoadIdentity();
 
 	vector3 c = graphicsMgr.perspMat*graphicsMgr.starfMat*star->GetCenter();
-	glRasterPos2f( c.x, c.y-0.01f );/// needs to be dynamic
+	glRasterPos2f( c.x, c.y-0.01f );
 
 	CString name = star->GetName();
 

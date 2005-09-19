@@ -70,7 +70,6 @@ protected:
 	afx_msg void OnStarfOpen();
 	afx_msg void OnStarfSave();
 	afx_msg void OnStarfSaveAs();
-	afx_msg void OnStarfRotate();
 	afx_msg void OnStarsToggle();
 	afx_msg void OnConstAdd();
 	afx_msg void OnConstDelete();
@@ -98,7 +97,6 @@ protected:
 	afx_msg void OnAnimPause();
 	afx_msg void OnAnimPlay();
 	afx_msg void OnAnimNext();
-	afx_msg void OnUpdateStarfRotate(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateStarsToggle(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateConstList(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateConstAdd(CCmdUI* pCmdUI);

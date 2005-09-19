@@ -99,7 +99,7 @@ void CMgrInput::ProcessKeys()
 		update = TRUE;
 	}
 
-	/// Resets
+	// Resets
 	if( keyDown[' '] )
 	{
 		keyDown[' '] = FALSE; // Prevent repeat
@@ -198,7 +198,7 @@ void CMgrInput::ProcessKeys()
 	if( keyDown['I'] )
 	{
 		keyDown['I'] = FALSE;
-		starfMgr.StarInfo( starfield.GetSun() );///starfield.GetStar(8) );
+		starfMgr.StarInfo( starfield.GetSun() );
 	}
 	if( keyDown[VK_F5] )
 	{
@@ -379,7 +379,7 @@ void CMgrInput::MouseMove( CPoint point )
 /////////////////////////////////////////////////////////////////////////////
 // Left mouse button
 
-void CMgrInput::MouseLDownTest()///
+void CMgrInput::MouseLDownTest()
 {
 	// Find coordinates on celestial sphere
 	vector3 coord = GetMouseSphereCoord();
@@ -499,26 +499,6 @@ void CMgrInput::MouseRDownAddingLine()
 
 void CMgrInput::MouseRDownDeletingLine()
 {
-}
-
-// FindMenuItem() will find a menu item string from the specified
-// popup menu and returns its position (0-based) in the specified 
-// popup menu. It returns -1 if no such menu item string is found.
-int FindMenuItem(CMenu* Menu, LPCTSTR MenuString)
-{
-   ASSERT(Menu);
-   ASSERT(::IsMenu(Menu->GetSafeHmenu()));
-
-   int count = Menu->GetMenuItemCount();
-   for (int i = 0; i < count; i++)
-   {
-      CString str;
-      if (Menu->GetMenuString(i, str, MF_BYPOSITION) &&
-         (strcmp(str, MenuString) == 0))
-         return i;
-   }
-
-   return -1;
 }
 
 void CMgrInput::MouseRUpViewing()
@@ -701,19 +681,19 @@ void CMgrInput::MouseMoveViewing3()  // Trackball
 		c.y = mouseLDownCoord.y;
 		c.z = -(float)sqrt(1.0f-c.x*c.x-c.y*c.y);
 
-		/// Calculate y-axis rotation necessary (mouseLDownCoord -> intermediate)
+		// Calculate y-axis rotation necessary (mouseLDownCoord -> intermediate)
 		float cosY = DotProduct( mouseLDownCoord, c );
 		if( cosY > 1.0f )
 			cosY = 1.0f;
 		float rotY = (float)acos( cosY );
 
-		/// Calculate x-axis rotation necessary (intermediate -> mouseCoord)
+		// Calculate x-axis rotation necessary (intermediate -> mouseCoord)
 		float cosX = DotProduct( c, mouseCoord );
 		if( cosX > 1.0f )
 			cosX = 1.0f;
 		float rotX = (float)acos( cosX );
 
-		// Since dot product doesn't give use direction info
+		// Since dot product doesn't give us direction info
 		if( mouseCoord.x > mouseLDownCoord.x )
 			starfield.SetTempRotY( -rotY );
 		else
@@ -854,7 +834,6 @@ void CMgrInput::DetermineCursor()
 		else
 			cursor = IDC_DLINE;
 	}
-	///
 	else if( state == state_Viewing )
 	{
 		if( mouseRotatingXY )
@@ -1017,7 +996,6 @@ int CMgrInput::SelectConst()
 	for( int i=0; i<3; ++i )
 	{
 		// If no line was selected
-		///if( !Select( select_Const, 100.0f ) ) why was this 100? Think it's supposed to be radius
 		if( !Select( select_Const, radius ) )
 			return -1;
 

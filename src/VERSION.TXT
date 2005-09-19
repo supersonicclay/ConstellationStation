@@ -2,6 +2,19 @@
 0.5 - Actual / Features
 -------------------------------------------------
 
+0.5.5
+	No more spinning variable in CDataStarf
+	Added support for custom location with latitude / longitude / timezone
+	Completed Track/Find dialog
+	Right click for star info
+		- Name
+		- RA / Dec
+		- Magnitude
+		- Spectral type
+		- Altitude / Azimuth
+		- HID
+
+
 0.5.4
 	Save/Load terrain in document
 	Don't make edge heights 0. Stretch terrain instead

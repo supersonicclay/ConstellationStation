@@ -11,7 +11,6 @@
 #include "MgrConst.h"
 
 #include "DlgConstName.h"
-#include "DlgShowHide.h"
 #include "DlgOptionsConst.h"
 
 #ifdef _DEBUG
@@ -58,9 +57,6 @@ void CMgrConst::Select( int i )
 // Prompt user for a name and add a constellation
 void CMgrConst::Add()
 {
-	if( starfield.IsSpinning() )
-		starfield.SwitchSpinning();
-
 	if( starfield.GetConstCount() == MAX_CONSTS )
 	{
 		CSError( "The maximun number of constellations has been reached.\nPlease delete some to clear space." );
@@ -108,9 +104,6 @@ void CMgrConst::Add()
 // Delete the current constellation
 void CMgrConst::Delete()
 {
-	if( starfield.IsSpinning() )
-		starfield.SwitchSpinning();
-
 	if( CSQuestion("Are you sure you want to delete this constellation?") == IDNO )
 		return;
 
@@ -130,9 +123,6 @@ void CMgrConst::Delete()
 // Rename the current constellation
 void CMgrConst::Rename()
 {
-	if( starfield.IsSpinning() )
-		starfield.SwitchSpinning();
-
 	CDlgConstName dialog;
 
 	CString origConstName = GetConstBar()->GetCurConst();

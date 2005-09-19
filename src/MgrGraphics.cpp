@@ -282,17 +282,15 @@ void CMgrGraphics::DrawTerrain()
 	vector3** lowerNormals = terrain.GetLowerNormals();
 	int       arraySize    = terrain.GetArraySize();
 	int       size         = terrain.GetSize();
-	int       texIters     = terrain.GetTexIters();
-	int       heightIters  = terrain.GetHeightIters();
 	float     r            = terrain.GetRoughness();
-	float     scale        = optionsMgr.GetTerrScale();
+	float     scale        = DEF_TERR_SCALE;
 	float     scale2       = scale*2;
 
-	iInc = (1<<(texIters-heightIters));
+	iInc = (1<<(DEF_TERR_TEX_ITERS-DEF_TERR_HEIGHT_ITERS));
 
 	x = -scale;
 	z = scale;
-	cInc = (float)pow(2, -heightIters+1)*scale;
+	cInc = (float)pow(2, -DEF_TERR_HEIGHT_ITERS+1)*scale;
 
 	glPushName( 0 );
 
@@ -363,7 +361,7 @@ void CMgrGraphics::DrawTerrain()
 void CMgrGraphics::DrawSky()
 {
 	// DRAW SUNRISE/SUNSET GRADIENT
-	glBlendFunc( GL_ONE, GL_ONE ); /// for it to work with sphere texture
+	glBlendFunc( GL_ONE, GL_ONE ); // for it to work with sphere texture
 	glDisable( GL_CULL_FACE );
 	glBindTexture( GL_TEXTURE_2D, skyTex );
 	SelectColor( redColor );
@@ -375,8 +373,7 @@ void CMgrGraphics::DrawSky()
 // Draw sun
 void CMgrGraphics::DrawSun()
 {
-	if( dbgStarfDepthTest )
-		glEnable( GL_DEPTH_TEST );
+	if( dbgStarfDepthTest ) glEnable( GL_DEPTH_TEST );
 
 	CDataSun* sun = starfield.GetSun();
 	vector3 center = sun->GetCenter();
@@ -417,18 +414,18 @@ void CMgrGraphics::DrawSun()
 	glEnd();
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE );
 
-	glDisable( GL_DEPTH_TEST ); /// take out after dbgStarfDepthTest is gone
+	if( dbgStarfDepthTest ) glDisable( GL_DEPTH_TEST );
 
 	//-----------
 	// Draw Glow
 	//-----------
-	if( starfield.IsSunShining() && optionsMgr.IsTerrVisible() && redColor.r > 0.0f )///
+	if( starfield.IsSunShining() && optionsMgr.IsTerrVisible() && redColor.r > 0.0f )
 	{
 		glDisable( GL_CULL_FACE );
 		glBindTexture( GL_TEXTURE_2D, sunGlowTex );
 
 		// Get world coordinates of sun center
-		vector3 wc = center;///*(starfield.GetSun()->GetTimeMat()) * center;
+		vector3 wc = center;
 
 		// Find angle to rotate to make quad perp to viewer
 		vector2 v1( wc.x, wc.z );
@@ -475,7 +472,6 @@ void CMgrGraphics::DrawSun()
 	}
 }
 
-/// LIGHTING NEEDS WORK
 // Set GL_LIGHT0 attributes for sun
 void CMgrGraphics::DrawSunlight()
 {
@@ -494,8 +490,7 @@ void CMgrGraphics::DrawSunlight()
 // Draw all constellations
 void CMgrGraphics::DrawConsts()
 {
-	if( dbgStarfDepthTest )
-		glEnable( GL_DEPTH_TEST );
+	if( dbgStarfDepthTest ) glEnable( GL_DEPTH_TEST );
 	glDisable( GL_TEXTURE_2D );
 	if( constAlpha > 0.99f )
 		glDisable( GL_BLEND );
@@ -523,7 +518,7 @@ void CMgrGraphics::DrawConsts()
 	}
 	glEnable( GL_BLEND );
 	glEnable( GL_TEXTURE_2D );
-	glDisable( GL_DEPTH_TEST ); /// take out after dbgStarfDepthTest is gone
+	if( dbgStarfDepthTest ) glDisable( GL_DEPTH_TEST );
 }
 
 // Draw constellation i
@@ -674,13 +669,21 @@ void CMgrGraphics::DrawStars()
 		glEnable( GL_TEXTURE_2D );
 	}
 
-	glDisable( GL_DEPTH_TEST ); /// take out after dbgStarfDepthTest is gone
+	if( dbgStarfDepthTest ) glDisable( GL_DEPTH_TEST );
 }
 
 // Draw star i as a textured quad
 void CMgrGraphics::DrawStarQuad( int i )
 {
 	CDataStar* star = starfield.GetStar(i);
+
+/// Stars don't all dim at same rate
+///  ASK TOPHE
+#define MIN_STAR_MAG -1.44f
+#define MAX_STAR_MAG 9.0f
+#define MAX_STAR_DIM_ALPHA 0.5f
+
+	float a = -MAX_STAR_DIM_ALPHA*(star->GetMag()-MIN_STAR_MAG)/(MAX_STAR_MAG-MIN_STAR_MAG)+1.0f;
 
 	// Find color for this star
 	if( starfield.AreConstsVisible() && !starfield.AreConstsLinesVisible() && starfield.IsStarInCurConst(i) )
@@ -701,23 +704,6 @@ void CMgrGraphics::DrawStarQuad( int i )
 		glTexCoord2i( 0, 0 ); glVertex3f( blVert.x, blVert.y, blVert.z );
 		glTexCoord2i( 1, 0 ); glVertex3f( brVert.x, brVert.y, brVert.z );
 	glEnd();
-
-	/*
-	/// Size after projection
-	float d = .01f;
-	vector3 c = star->GetCenter();
-	vector3 tr = c; tr.x+=d; tr.y+=d;
-	vector3 tl = c; tl.x-=d; tl.y+=d;
-	vector3 bl = c; bl.x-=d; bl.y-=d;
-	vector3 br = c; br.x+=d; br.y-=d;
-
-	glBegin( GL_QUADS );
-		glTexCoord2i( 1, 1 ); glVertex3f( tr.x, tr.y, tr.z );
-		glTexCoord2i( 0, 1 ); glVertex3f( tl.x, tl.y, tl.z );
-		glTexCoord2i( 0, 0 ); glVertex3f( bl.x, bl.y, bl.z );
-		glTexCoord2i( 1, 0 ); glVertex3f( br.x, br.y, br.z );
-	glEnd();
-	*/
 }
 
 // Draw star i as a point
@@ -767,11 +753,11 @@ void CMgrGraphics::DrawCompass()
 	// Disk
 	glPushMatrix();
 	glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
-	gluDisk( gluNewQuadric(), 0.0f, 0.95f, 25, 10 );
-	
+	gluDisk( gluNewQuadric(), 0.0f, 1.0f, 25, 10 );
+
 	// Disk lines
-	glDisable( GL_DEPTH_TEST );
-	SelectColor4( DEF_COMPASS_CROSSCOLOR*0.2f, 0.75f );
+	glDisable( GL_DEPTH_TEST ); // Disable so lines will be drawn over disk
+	SelectColor4( DEF_COMPASS_CROSSCOLOR*0.3f, 1.0f ); // Darken for lines
 	gluDisk( gluNewQuadric(), 0.9f, 1.0f, 25, 1 );
 	glPopMatrix();
 	glBegin( GL_LINES );
@@ -780,6 +766,7 @@ void CMgrGraphics::DrawCompass()
 		glVertex3f ( 0.0f, 0.0f, 1.0f);
 		glVertex3f ( 0.0f, 0.0f,-1.0f);
 	glEnd();
+	glEnable( GL_DEPTH_TEST );
 
 	// Rotate for frustum pyramid
 	glPushMatrix();
@@ -789,7 +776,6 @@ void CMgrGraphics::DrawCompass()
 	glMultMatrixf( viewMat.getFloats() );
 
 	// Frustum pyramid
-	glEnable( GL_DEPTH_TEST );
 	float baseWidth = 1.0f;
 	float baseHeight = 0.5f;
 	vector3 tr = vector3(  sin(DegToRad(fov))*baseWidth,  sin(DegToRad(fov))*baseHeight, -1.0f );
@@ -821,22 +807,6 @@ void CMgrGraphics::DrawCompass()
 		glVertex( bl );
 		glVertex( br );
 	glEnd();
-	/*/// frustum pyramid sides
-	glBegin( GL_TRIANGLES );
-		glVertex( tr );
-		glVertex( tl );
-		glVertex3f( 0.0f, 0.0f, 0.0f );
-		glVertex( tl );
-		glVertex( bl );
-		glVertex3f( 0.0f, 0.0f, 0.0f );
-		glVertex( bl );
-		glVertex( br );
-		glVertex3f( 0.0f, 0.0f, 0.0f );
-		glVertex( br );
-		glVertex( tr );
-		glVertex3f( 0.0f, 0.0f, 0.0f );
-	glEnd();
-	*/
 	glPopMatrix();
 
 	// Pop Projection Matrix
@@ -945,7 +915,7 @@ void CMgrGraphics::UpdateMats()
 void CMgrGraphics::UpdatePerspMat()
 {
 	fov = ( 1 - starfield.GetZoom() ) * 45;
-	perspMat = PerspectiveMatrix44( fov, (float)width/height, 0.001f, 20.0f );
+	perspMat = PerspectiveMatrix44( fov, (float)width/height, 0.01f, 40.0f );
 
 	// Load the perspective matrix
 	glMatrixMode( GL_PROJECTION );
@@ -973,7 +943,7 @@ void CMgrGraphics::UpdateStarfMat()
 void CMgrGraphics::UpdateSunMat()
 {
 	sunMat = *(starfield.GetViewMat());
-	sunMat *= *(starfield.GetSun()->GetTimeMat());
+	sunMat *= *(starfield.GetSun()->GetSunMat());
 }
 
 // Update matrix for terrain
@@ -981,11 +951,11 @@ void CMgrGraphics::UpdateTerrainMat()
 {
 ///	terrainMat = perspMat;
 
-	terrOffset = -(terrain.GetMiddleHeight()*terrain.GetRoughness()+optionsMgr.GetTerrViewHeight()+dbgTerrViewHeight);
+	terrOffset = -(terrain.GetMiddleHeight()*terrain.GetRoughness()+DEF_TERR_VIEW_HEIGHT+dbgTerrViewHeight);
 
 	if( dbgTerrExternal )
 	{
-		terrainMat = TranslateMatrix44( 0.0f, terrOffset, -2.5f );
+		terrainMat = TranslateMatrix44( 0.0f, terrOffset, -DEF_TERR_SCALE/2.0f );
 		terrainMat *= *(starfield.GetViewMat());
 	}
 	else
@@ -1003,6 +973,8 @@ void CMgrGraphics::UpdateTerrainMat()
 void CMgrGraphics::UpdateDayFactor()
 {
 	// Daylight factor is used for sunset/sunrise animation.
+	// full  day  while dayFactor >=  2
+	// full night while dayFactor <= -2
 
 	// Just set to -2 if
 	if( !starfield.IsSunShining() || !optionsMgr.IsTerrVisible() )
@@ -1011,22 +983,11 @@ void CMgrGraphics::UpdateDayFactor()
 		return;
 	}
 
-	// Uses the sun's center.y to compute as input to the function:
-	//  f(x) = 7.5x
-
-	// full  day  while dayFactor >=  2 (center.y >=  0.27)
-	// full night while dayFactor <= -2 (center.y <= -0.27)
-	// sun is at horizon when dayFactor = 0 (center.y = 0)
-
-	static const float fullDaySunHeight = 0.3F;///.27
-	static const float dayFactorMultiplier = 2/fullDaySunHeight;///7.5f
-	static const float dayFactorOffset = 0.1F;
-
-	// Find center of sun
+	// Uses the sun's center.y to compute dayFactor
 	vector3 center = starfield.GetSun()->GetCenter();
 
 	// Find factor
-	dayFactor = center.y * dayFactorMultiplier + dayFactorOffset;
+	dayFactor = center.y * 2/DEF_FULL_DAY_SUN_HEIGHT + DEF_DAY_FACTOR_OFFSET;
 }
 
 // Update day alpha; 0 = day; 1 = night
@@ -1090,17 +1051,11 @@ void CMgrGraphics::UpdateColors()
 		redColor = COLOR_BLACK;
 
 	// SET FOG COLOR
-	/// Fog color is weighted average of clearColor and redddish
+	// Fog color is weighted average of skyColor and redddish
 	float fogColor[4];
-#if 0  /// fog color test
-	fogColor[0] = (skyColor.r+skyColor.r+redColor.r)/3;
-	fogColor[1] = (skyColor.g+skyColor.g+redColor.g)/3;
-	fogColor[2] = (skyColor.b+skyColor.b+redColor.b)/3;
-#else
-	fogColor[0] = skyColor.r;
-	fogColor[1] = skyColor.g;
-	fogColor[2] = skyColor.b;
-#endif
+	fogColor[0] = (3*skyColor.r+redColor.r)/4;
+	fogColor[1] = (3*skyColor.g+redColor.g)/4;
+	fogColor[2] = (3*skyColor.b+redColor.b)/4;
 	fogColor[3] = 1.0f;
 	glFogfv(GL_FOG_COLOR, fogColor);
 }

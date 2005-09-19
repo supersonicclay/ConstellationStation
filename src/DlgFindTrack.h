@@ -19,8 +19,6 @@ public:
 	//{{AFX_DATA(CDlgFindTrack)
 	enum { IDD = IDD_FINDTRACK };
 	CButton	stopTrackingButton;
-	CEdit	raSDControl;
-	CEdit	decSDControl;
 	CEdit	raSControl;
 	CEdit	raMControl;
 	CEdit	raHControl;
@@ -33,6 +31,14 @@ public:
 
 
 // Methods
+	void FindCurrentlyTracked();
+	void FillRADec( ra_s& ra, dec_s& dec );
+	void FindConst();
+	void TrackConst();
+	void FindStar();
+	void TrackStar();
+	void FindRADec();
+	void TrackRADec();
 
 
 // Overrides
@@ -48,20 +54,16 @@ protected:
 	// Generated message map functions
 	//{{AFX_MSG(CDlgFindTrack)
 	virtual BOOL OnInitDialog();
-	afx_msg void OnFindConst();
-	afx_msg void OnTrackConst();
-	afx_msg void OnFindStar();
-	afx_msg void OnTrackStar();
-	afx_msg void OnFindRaDec();
-	afx_msg void OnTrackRaDec();
-	afx_msg void OnStopTracking();
+	afx_msg void OnFind();
+	afx_msg void OnTrack();
+	afx_msg void OnEnableConst();
+	afx_msg void OnEnableStar();
+	afx_msg void OnEnableRADec();
 	afx_msg void OnChangeRAH();
 	afx_msg void OnChangeRAM();
-	afx_msg void OnChangeRAS();
-	afx_msg void OnChangeRASD();
 	afx_msg void OnChangeDecD();
 	afx_msg void OnChangeDecM();
-	afx_msg void OnChangeDecS();
+	afx_msg void OnStopTracking();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

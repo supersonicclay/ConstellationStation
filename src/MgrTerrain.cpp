@@ -44,9 +44,6 @@ void CMgrTerrain::New()
 // Opens the terrain options dialog
 void CMgrTerrain::Options()
 {
-	if( starfield.IsSpinning() )
-		starfield.SwitchSpinning();
-
 	CDlgOptionsTerr dialog;
 
 	if( dialog.DoModal() == IDOK )

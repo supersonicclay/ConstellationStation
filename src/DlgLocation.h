@@ -18,6 +18,7 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CDlgLocation)
 	enum { IDD = IDD_LOCATION };
+	CEdit	tzControl;
 	CComboBox	locationCombo;
 	//}}AFX_DATA
 
@@ -29,6 +30,8 @@ public:
 	void LoadLocations();
 	void GetCurrentLocation();
 	BOOL Search( CString t );
+	void UpdateControlsFromLocation();
+	void UpdateCustomFromControls();
 
 
 // Overrides
@@ -47,14 +50,15 @@ protected:
 	afx_msg void OnLocationSetHome();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSelChangeLocationCombo();
+	afx_msg void OnLocationCustom();
 	afx_msg void OnChangeLocationLatitudeD();
 	afx_msg void OnChangeLocationLatitudeM();
 	afx_msg void OnChangeLocationLongitudeD();
 	afx_msg void OnChangeLocationLongitudeM();
-	afx_msg void OnLocationE();
-	afx_msg void OnLocationW();
 	afx_msg void OnLocationN();
 	afx_msg void OnLocationS();
+	afx_msg void OnLocationE();
+	afx_msg void OnLocationW();
 	afx_msg void OnChangeLocationTimezone();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()

@@ -18,13 +18,11 @@ PHASES
 BUGS
 -	5	Control won't let you enter < year 1752 without using dropdown
 		- Date range is 1/1/1601 - 12/31/9999
--	5	Time Dialog should change speed to realtime and/or pause
 -	5	Sidereal time calculation in CalculateRotTime
 		- Starfield and sun 180 degrees off before 1900
 		- Sidereal days jitter after ~2020
 
 GENERAL
--	5	Rename realtime
 -	5	Currently Tracking...
 -	5	Actual magnification 1X/2X/1024X
 -	5	Redraw starfield toolbar buttons
@@ -32,17 +30,13 @@ GENERAL
 -	5	Loading message
 -	5	Size controls to fit (large windows themes)
 -	5	Don't maximize on startup
--	5	Daylight savings time
+-	5	Test for bug outs by entering crap in numeric CEdit's
+-	5	Rename realtime
+	7	Current ra/dec under mouse
 	7	Print
 	7	Undo
 
 OPTIONS
--	5	Track/Find
-		+ dialog
-			- floating point text box
-		- constellation
-		- star
-		- ra dec
 	7	Preset color schemes
 	7	Prompt for seed with random stars
 
@@ -52,31 +46,25 @@ INPUT
 
 GRAPHICS
 -	5	sunMat, starfMat, etc. maybe shouldn't include viewMat
+-	5	ASK TOPHE. Stars shouldn't all fade at same rate
 	7	Use vertex buffers
 	7	Getting dark a little too fast
 	7	Lighting normals
 	7	Shadows
 	7	Lens flare
-	7	Stars shouldn't all fade at same rate
-	7	Celestial/Equatorial Grid
 
 TEXT
--	5	Compass N/S/E/W X° Up/Down
+	7	Compass N/S/E/W X° Up/Down
 
 CONSTELLATION
 -	5	Input actual constellations
 	7	Constellation details
 
 STARFIELD
--	5	Kill isSpinning
 -	5	Star and Cosntellation Info
-		- RA / DEC
-		- Altitude / Azimuth
-		- HID
 		- Rises / Sets / Transits times
--	5	Choose location (lat & lon)
-		- save in document
-		- save as option
+	7	Celestial/Equatorial Grid
+	7	Ecliptic
 	7	Magnify
 	7	Increase year range
 	7	Add Stars
@@ -85,6 +73,10 @@ STARFIELD
 STARS
 
 SUN
+
+MOON
+-	5	Position
+-	5	Phase
 
 TERRAIN
 

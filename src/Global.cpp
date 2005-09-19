@@ -61,7 +61,6 @@ float dbgTerrViewHeight = 0.0f;
 float dbgTerrViewDistance = 0.0f;
 
 
-
 /////////////////////////////////////////////////////////////////////////////
 // COLOR
 const color_s	COLOR_WHITE			= {1.0f, 1.0f, 1.0f},
@@ -132,15 +131,16 @@ const color_s		DEF_SUN_COLOR			= {1.0f, 1.0f, 0.5f};
 const BOOL			DEF_SUN_VISIBLE			= TRUE;
 const BOOL			DEF_SUN_SHINE			= TRUE;
 
-const color_s		DEF_SKY_COLOR			= {0.7f, 0.9f, 1.0f};///{0.6f, 0.7f, 1.0f};
+const color_s		DEF_SKY_COLOR			= {0.7f, 0.9f, 1.0f};
 
 const BOOL			DEF_TERR_VISIBLE		= TRUE;
 const BOOL			DEF_TERR_TEXTURED		= TRUE;
 const int			DEF_TERR_ROUGHNESSX100	= 20;
-const int			DEF_TERR_SCALE			= 5;
+const int			DEF_TERR_SCALE			= 20;
 const int			DEF_TERR_TEX_ITERS		= 7;
 const int			DEF_TERR_HEIGHT_ITERS	= 5;
 const float			DEF_TERR_VIEW_HEIGHT	= 0.1f;
+const float			DEF_TERR_RANGE_PERC		= 0.6f; // range: 0.00000001 to 0.99999999
 const season_e		DEF_TERR_SEASON			= season_Spring;
 const color_s		DEF_TERR_WINCOLOR		= {0.7f, 0.7f, 0.7f};
 const color_s		DEF_TERR_SPRCOLOR		= {0.15f, 0.25f, 0.1f};
@@ -158,9 +158,13 @@ const color_s		DEF_COMPASS_FRUSTUMCOLOR	= {1.0f, 1.0f, 0.7f};
 ///const color_s		DEF_COMPASS_CROSSCOLOR	= {0.4f, 0.25f, 0.1f};//{0.3f, 0.3f, 0.8f};
 ///const color_s		DEF_COMPASS_FRUSTUMCOLOR	= {0.7f, 1.0f, 0.7f};
 
-const float			DEF_FOG_DENSITY			= 0.2f;//1.0f
-const float			DEF_FOG_START			= 4.5f;//0.9f
-const float			DEF_FOG_END				= 4.8f;//1.0f
+const float			DEF_FOG_DENSITY			= 0.075f;
+const float			DEF_FOG_START			= 10.0f;
+const float			DEF_FOG_END				= 20.0f;
+
+const float			DEF_FULL_DAY_SUN_HEIGHT	= 0.3f;
+const float			DEF_DAY_FACTOR_OFFSET				= 0.1f;
+
 
 const LOGFONT		DEF_TEXT_CONSTFONT = 
 {
@@ -234,7 +238,79 @@ void Redraw()
 }
 
 
+/////////////////////////////////////////////////////////////////////////////
+// Starfield math functions
+
+// Set the x, y, and z coordinate from right ascension and declination
+void XYZFromPhiTheta( vector3& v, const float phi, const float theta )
+{
+	v.x = (float) ( sin(phi) * sin(theta) );
+	v.y = (float) ( cos(phi) );
+	v.z = (float) ( sin(phi) * cos(theta) );
+}
+
+
+// Set spherical coordinate (phi, theta) from right ascension and declination
+void PhiThetaFromRADec( float& phi, float& theta, const ra_s ra, const dec_s dec )
+{
+	// Calculate phi
+	float radians = DegToRad( dec.degree + (dec.minute+dec.second/60)/60 );
+	if( dec.positive )
+		phi = PIHALF-radians;
+	else
+		phi = PIHALF+radians;
+
+	// Calculate theta
+	theta = PIX2 * (ra.hour+(ra.minute+ra.second/60)/60)/24;
+}
+
+// Set right ascension and declination from spherical coordinate (phi, theta)
+void RADecFromPhiTheta( ra_s& ra, dec_s& dec, const float phi, const float theta )
+{
+	float hour, minute;
+
+	// Convert phi to declination form
+	// At this point:    0 <= phi <= PI.
+	// Need it to be:   90 <= deg <= -90. (for declination)
+	float degrees = 90.0f - RadToDeg(phi);
+	if( degrees < 0.0f ) { dec.positive = FALSE; degrees = -degrees; }
+	minute = (degrees - (int)degrees)*60;
+	dec.second = (minute - (int)minute)*60;
+	dec.minute = (int)minute;
+	dec.degree = (int)degrees;
+
+	// Convert theta to right ascension form
+	hour = theta*12/PI;
+	minute = (hour - (int)hour)*60;
+	ra.second = (minute - (int)minute)*60;
+	ra.minute = (int)minute;
+	ra.hour = (int)hour;
+}
+
+// Set spherical coordinate (phi, theta) from x, y, and z coordinate
+void PhiThetaFromXYZ( float& phi, float& theta, const vector3 v )
+{
+	// Phi is measured from 0 (north) to PI (south)
+	phi  = (float) acos( (double) v.y  );
+
+	// Theta is measured from 0 to 2*PI degrees
+	if( v.z == 0.0f && v.x == 0.0f )  // Prevent divide by 0
+	{
+		theta = 0.0f;
+		return;
+	}
+	if( v.z >= 0 )
+		theta = (float)       asin( v.x / sqrt( (double)(v.z*v.z) + (v.x*v.x) ) );
+	else
+		theta = (float) (PI - asin( v.x / sqrt( (double)(v.z*v.z) + (v.x*v.x) ) ));
+
+	if( theta < 0.0f )	theta += 2*PI;	// Prevent negative theta
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
 // Time functions
+
 double UTtoJulian( int y, int m, int d, int h, int n, int s )
 {
 	// Method for converting gregorian date to julian date from
@@ -310,76 +386,11 @@ COleDateTime JulianToUT( double j )
     year = (int)(100 * (n - 49) + year + l);
 
 	return COleDateTime( year, month, day, hour, minute, second );
-
-	/*
-    if (month < 10)
-       month = "0" + month;
-       
-    if (day < 10)
-       day = "0" + day;
-    
-    //year = year - 1900;
-    
-    return (new Array (year, month, day));
-
-	/*
-    var year;
-    var month;
-    var day;
-    var hour;
-    var jd;
-    var jdi;
-    var jdf
-    var l;
-    var n;
-    
-    
-    // Julian day
-    jd = Math.floor (mjd_in) + 2400000.5;
-
-    // Integer Julian day
-    jdi = Math.floor (jd);
-    
-    // Fractional part of day
-    jdf = jd - jdi + 0.5;
-    
-    // Really the next calendar day?
-    if (jdf >= 1.0) {
-       jdf = jdf - 1.0;
-       jdi = jdi + 1;
-    }
-
-
-    hour = jdf * 24.0;    
-    l = jdi + 68569;
-    n = Math.floor (4 * l / 146097);
-   
-    l = Math.floor (l) - Math.floor ((146097 * n + 3) / 4);
-    year = Math.floor (4000 * (l + 1) / 1461001);
-    
-    l = l - (Math.floor (1461 * year / 4)) + 31;
-    month = Math.floor (80 * l / 2447);
-    
-    day = l - Math.floor (2447 * month / 80);
-    
-    l = Math.floor (month / 11);
-    
-    month = Math.floor (month + 2 - 12 * l);
-    year = Math.floor (100 * (n - 49) + year + l);
-
-    if (month < 10)
-       month = "0" + month;
-       
-    if (day < 10)
-       day = "0" + day;
-    
-    //year = year - 1900;
-    
-    return (new Array (year, month, day));
-	*/
 }
 
 
+/////////////////////////////////////////////////////////////////////////////
+// Special CArchive functions
 
 // CArchive reads
 CArchive& operator>> ( CArchive& ar, location_s& l )

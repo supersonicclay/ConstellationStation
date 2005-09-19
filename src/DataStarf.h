@@ -75,7 +75,6 @@ private:
 	float tempRotY;
 	float rotTime;
 	float zoom;
-	BOOL  spinning;
 
 	// Tracking
 	BOOL  tracking;
@@ -167,7 +166,6 @@ public:
 	float GetTempRotY();
 	float GetRotTime();
 	float GetZoom();
-	BOOL  IsSpinning();
 
 	BOOL  IsTracking();
 	track_e GetTrackingType();
@@ -210,8 +208,6 @@ public:
 	void AdjRotX( float delta, BOOL updateMat=TRUE );
 	void AdjRotY( float delta, BOOL updateMat=TRUE );
 	void AdjZoom( float delta );
-
-	void SwitchSpinning();
 
 
 // Methods

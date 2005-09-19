@@ -213,6 +213,7 @@ extern const int		DEF_TERR_SCALE;
 extern const int		DEF_TERR_TEX_ITERS;
 extern const int		DEF_TERR_HEIGHT_ITERS;
 extern const float		DEF_TERR_VIEW_HEIGHT;
+extern const float		DEF_TERR_RANGE_PERC; // Percentage of range to use as next iteration's range. See MakeTerrain
 extern const season_e	DEF_TERR_SEASON;
 extern const color_s	DEF_TERR_WINCOLOR;
 extern const color_s	DEF_TERR_SPRCOLOR;
@@ -234,6 +235,9 @@ extern const float		DEF_FOG_DENSITY;
 extern const float		DEF_FOG_START;
 extern const float		DEF_FOG_END;
 
+extern const float		DEF_FULL_DAY_SUN_HEIGHT; // Full day occurs when sun is at this height
+extern const float		DEF_DAY_FACTOR_OFFSET;            // Amount to offset dayFactor (to keep dayFactor from being 0 when center of sun is = 0)
+
 
 /////////////////////////////////////////////////////////////////////////////
 // MAXIMUMS / MINIMUMS
@@ -254,7 +258,7 @@ extern const float		DEF_FOG_END;
 // Dim color is stored as a percent of the brightest color
 #define MAX_STARS_DIM_COLOR_PERC	80   // User has control from 80%
 #define MIN_STARS_DIM_COLOR_PERC	0    //  to 0%
-#define MAX_TERR_ROUGHNESS			0.8f
+#define MAX_TERR_ROUGHNESS			4.0f
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -313,6 +317,13 @@ CCSView* GetView();
 
 void SetState( state_e s );
 void Redraw();
+
+// Starfield math functions
+void XYZFromPhiTheta( vector3& v, float phi, float theta );
+void PhiThetaFromRADec( float& phi, float& theta, ra_s ra, dec_s dec );
+void RADecFromPhiTheta( ra_s& ra, dec_s& dec, float phi, float theta );
+void PhiThetaFromXYZ( float& phi, float& theta, vector3 v );
+
 
 // Time functions
 double UTtoJulian( int y, int m, int d, int h, int n, int s );

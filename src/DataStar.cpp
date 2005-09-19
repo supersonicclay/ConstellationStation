@@ -38,6 +38,8 @@ const CDataStar& CDataStar::operator=( const CDataStar& s )
 	dec = s.dec;
 	phi = s.phi;
 	theta = s.theta;
+	azimuth = s.azimuth;
+	altitude = s.altitude;
 	center = s.center;
 	trVert = s.trVert;
 	tlVert = s.tlVert;
@@ -63,6 +65,8 @@ void CDataStar::Init()
 	dec.second = 0.0f;
 	phi = 0.0f;
 	theta = 0.0f;
+	azimuth = 0.0f;
+	altitude = 0.0f;
 	center = vector3( 0.0f, 0.0f, 0.0f );
 	trVert = vector3( 0.0f, 0.0f, 0.0f );
 	tlVert = vector3( 0.0f, 0.0f, 0.0f );
@@ -84,6 +88,8 @@ ra_s		CDataStar::GetRA()			{	return ra;			}
 dec_s		CDataStar::GetDec()			{	return dec;			}
 float		CDataStar::GetPhi()			{	return phi;			}
 float		CDataStar::GetTheta()		{	return theta;		}
+float		CDataStar::GetAzimuth()		{	return azimuth;		}
+float		CDataStar::GetAltitude()	{	return altitude;	}
 vector3		CDataStar::GetCenter()		{	return center;		}
 vector3		CDataStar::GetTRVert()		{	return trVert;		}
 vector3		CDataStar::GetTLVert()		{	return tlVert;		}
@@ -101,7 +107,6 @@ color_s		CDataStar::GetColor()
 		return c;
 	else
 	{
-//obafgkm
 		if( spectral == 'O' )
 			return c*DEF_STARS_SPECTRAL_O_COLOR;
 		if( spectral == 'B' )
@@ -116,12 +121,8 @@ color_s		CDataStar::GetColor()
 			return c*DEF_STARS_SPECTRAL_K_COLOR;
 		if( spectral == 'M' )
 			return c*DEF_STARS_SPECTRAL_M_COLOR;
-		if( spectral == 'C' || spectral == 'N' || spectral == 'S' || spectral == 'W' || spectral == 'D' )///
+		else
 			return c;
-
-		CSDebug( CString("Bad spectral type: ") + spectral, "CDataStar::GetColor" );
-		PostQuitMessage(1);
-		return COLOR_WHITE;
 	}
 }
 
@@ -163,89 +164,51 @@ void CDataStar::SetDec( BOOL p, USHORT d, USHORT m, float s )
 // Update all position info from the right ascension and declination that are already set
 void CDataStar::UpdatePosFromRADec()
 {
-	SetPhiThetaFromRADec();
-	SetXYZFromPhiTheta();
+	PhiThetaFromRADec( phi, theta, ra, dec );
+	XYZFromPhiTheta( center, phi, theta );
+///	SetPhiThetaFromRADec();
+///	SetXYZFromPhiTheta();
 }
 
 // Update all position info from the x, y, and z coordinates that are already set
 void CDataStar::UpdatePosFromXYZ()
 {
-	SetPhiThetaFromXYZ();
-	SetRADecFromPhiTheta();
+	PhiThetaFromXYZ( phi, theta, center );
+	RADecFromPhiTheta( ra, dec, phi, theta );
+///	SetPhiThetaFromXYZ();
+///	SetRADecFromPhiTheta();
 }
 
 // Update all position info from phi and thetha that are already set
 void CDataStar::UpdatePosFromPhiTheta()
 {
-	SetXYZFromPhiTheta();
-	SetRADecFromPhiTheta();
+	XYZFromPhiTheta( center, phi, theta );
+	RADecFromPhiTheta( ra, dec, phi, theta );
+///	SetXYZFromPhiTheta();
+///	SetRADecFromPhiTheta();
 }
 
-// Set the x, y, and z coords from the right ascension and declination
-// Phi and theta must already be calculated
-void CDataStar::SetXYZFromPhiTheta()
+// Set the altitude and azimuth from x, y, z and the given starf matrix
+void CDataStar::UpdateAzimuthAltitude( matrix44* starfMat )
 {
-	center.x = (float) ( sin(phi) * sin(theta) );
-	center.y = (float) ( cos(phi) );
-	center.z = (float) ( sin(phi) * cos(theta) );
-}
+	// World center, phi, and theta
+	vector3 wc;
+	float wphi;
+	float wtheta;
 
-// Set spherical coordinate (phi and theta) from the right ascension and declination
-void CDataStar::SetPhiThetaFromRADec()
-{
-	// Calculate phi
-	float radians = DegToRad( dec.degree + (dec.minute+dec.second/60)/60 );
-	if( dec.positive )
-		phi = PIHALF-radians;
-	else
-		phi = PIHALF+radians;
+	// Apply the starfield matrix to get star's current center (in world coords)
+	wc = *starfMat*center;
 
-	// Calculate theta
-	theta = PIX2 * (ra.hour+(ra.minute+ra.second/60)/60)/24;
-}
+	// Get spherical coordinates from world center
+	PhiThetaFromXYZ( wphi, wtheta, wc );
 
-// Set right ascension and Declination from the x, y, and z coordinates
-// Phi and theta must already be calculated
-void CDataStar::SetRADecFromPhiTheta()
-{
-	float hour, minute;
-
-	// Convert phi to declination form
-	// At this point:    0 <= phi <= PI.
-	// Need it to be:   90 <= deg <= -90. (for declination)
-	float degrees = 90.0f - RadToDeg(phi);
-	if( degrees < 0.0f ) { dec.positive = FALSE; degrees = -degrees; }
-	minute = (degrees - (int)degrees)*60;
-	dec.second = (minute - (int)minute)*60;
-	dec.minute = (int)minute;
-	dec.degree = (int)degrees;
-
-	// Convert theta to right ascension form
-	hour = theta*12/PI;
-	minute = (hour - (int)hour)*60;
-	ra.second = (minute - (int)minute)*60;
-	ra.minute = (int)minute;
-	ra.hour = (int)hour;
-}
-
-// Set spherical coordinates (phi and theta) from the  x, y, and z coordinates
-void CDataStar::SetPhiThetaFromXYZ()
-{
-	// Phi is measured from 0 (north) to PI (south)
-	phi  = (float) acos( (double) center.y  );
-
-	// Theta is measured from 0 to 2*PI degrees
-	if( center.z == 0.0f && center.x == 0.0f )  // Prevent divide by 0
-	{
-		theta = 0.0f;
-		return;
-	}
-	if( center.z >= 0 )
-		theta = (float)       asin( center.x / sqrt( (double)(center.z*center.z) + (center.x*center.x) ) );
-	else
-		theta = (float) (PI - asin( center.x / sqrt( (double)(center.z*center.z) + (center.x*center.x) ) ));
-
-	if( theta < 0.0f )	theta += 2*PI;	// Prevent negative theta
+	// Convert phi, theta to altitude azimuth
+	altitude = RadToDeg( -wphi-PIHALF );
+	azimuth = RadToDeg( -wtheta+PI );
+	if( altitude < 0.0f )
+		altitude += 180.0f;
+	if( azimuth < 0.0f )
+		azimuth += 360.0f;
 }
 
 // Sets the quad vertices based on spherical coordinates, phi and theta

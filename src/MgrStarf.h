@@ -44,7 +44,6 @@ public:
 
 // Starfield methods
 	void FindTrack();
-	void Rotate();
 	void Location();
 	void Time();
 
@@ -58,12 +57,15 @@ public:
 
 // Star methods
 	void StarOptions();
-	void StarInfo( CDataStar* star );
+	void StarInfo( CDataStar* s );
+	void StarInfo( int num );
 	void ToggleStars();
 	void UpdateStarsAppearance();
 
 // Constellation methods
 	void ConstOptions();
+	void ConstInfo( CDataConst* c );
+	void ConstInfo( int num );
 	void ToggleConsts();
 	void ToggleConstsLines();
 

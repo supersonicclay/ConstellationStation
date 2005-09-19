@@ -55,10 +55,6 @@ private:
 	BOOL terrVisible;
 	BOOL terrTextured;
 	int terrRoughnessX100;
-	int terrScale;
-	int terrTexIters;
-	int terrHeightIters;
-	float terrViewHeight;
 	season_e terrSeason;
 	color_s terrWinColor;
 	color_s terrSprColor;
@@ -102,10 +98,6 @@ public:
 	BOOL IsTerrTextured();
 	int GetTerrRoughnessX100();
 	float GetTerrRoughness();
-	int GetTerrScale();
-	int GetTerrTexIters();
-	int GetTerrHeightIters();
-	float GetTerrViewHeight();
 	season_e GetTerrSeason();
 	color_s GetTerrWinColor();
 	color_s GetTerrSprColor();
@@ -141,10 +133,6 @@ public:
 	void SetTerrVisible( BOOL x );
 	void SetTerrTextured( BOOL t );
 	void SetTerrRoughnessX100( int r );
-	void SetTerrScale( int s );
-	void SetTerrTexIters( int i );
-	void SetTerrHeightIters( int i );
-	void SetTerrViewHeight( float x );
 	void SetTerrSeason( season_e s );
 	void SetTerrWinColor( color_s c );
 	void SetTerrSprColor( color_s c );

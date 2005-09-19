@@ -60,7 +60,7 @@ void CMgrOptions::LoadStarDefaults()
 	starsSContrast = DEF_STARS_SCONTRAST;
 	starsCContrast = DEF_STARS_CCONTRAST;
 
-	/// STAR DIFFERENCE DEFAULTS
+	// STAR DIFFERENCE DEFAULTS
 	starfMgr.SetStarsDimRadius( DEF_STARS_BRIGHT_RADIUS - DEF_STARS_RADIUS_DIFF );
 	starfMgr.SetStarsBrightRadius( DEF_STARS_BRIGHT_RADIUS );
 	starfMgr.SetStarsDimColor( DEF_STARS_BRIGHT_COLOR - DEF_STARS_COLOR_DIFF );
@@ -83,10 +83,6 @@ void CMgrOptions::LoadTerrDefaults()
 	terrVisible = DEF_TERR_VISIBLE;
 	terrTextured = DEF_TERR_TEXTURED;
 	terrRoughnessX100 = DEF_TERR_ROUGHNESSX100;
-	terrScale = DEF_TERR_SCALE;
-	terrTexIters = DEF_TERR_TEX_ITERS;
-	terrHeightIters = DEF_TERR_HEIGHT_ITERS;
-	terrViewHeight = DEF_TERR_VIEW_HEIGHT;
 	terrSeason = DEF_TERR_SEASON;
 	terrWinColor = DEF_TERR_WINCOLOR;
 	terrSprColor = DEF_TERR_SPRCOLOR;
@@ -141,10 +137,6 @@ BOOL		CMgrOptions::IsTerrVisible()			{	return terrVisible;				}
 BOOL		CMgrOptions::IsTerrTextured()			{	return terrTextured;			}
 int			CMgrOptions::GetTerrRoughnessX100()		{	return terrRoughnessX100;		}
 float		CMgrOptions::GetTerrRoughness()			{	return terrRoughnessX100/100.0f;}
-int			CMgrOptions::GetTerrScale()				{	return terrScale;				}
-int			CMgrOptions::GetTerrTexIters()			{	return terrTexIters;			}
-int			CMgrOptions::GetTerrHeightIters()		{	return terrHeightIters;			}
-float		CMgrOptions::GetTerrViewHeight()		{	return terrViewHeight;			}
 season_e	CMgrOptions::GetTerrSeason()			{	return terrSeason;				}
 color_s		CMgrOptions::GetTerrWinColor()			{	return terrWinColor;			}
 color_s		CMgrOptions::GetTerrSprColor()			{	return terrSprColor;			}
@@ -199,10 +191,6 @@ void CMgrOptions::SwitchTerrVisible()				{	terrVisible = !terrVisible;	}
 void CMgrOptions::SetTerrVisible( BOOL x )			{	terrVisible = x;			}
 void CMgrOptions::SetTerrTextured( BOOL t )			{	terrTextured = t;			}
 void CMgrOptions::SetTerrRoughnessX100( int r )		{	terrRoughnessX100 = r;		}
-void CMgrOptions::SetTerrScale( int s )				{	terrScale = s;				}
-void CMgrOptions::SetTerrTexIters( int i )			{	terrTexIters = i;			}
-void CMgrOptions::SetTerrHeightIters( int i )		{	terrHeightIters = i;		}
-void CMgrOptions::SetTerrViewHeight( float x )		{	terrViewHeight = x;			}
 void CMgrOptions::SetTerrSeason( season_e s )		{	terrSeason = s;				}
 void CMgrOptions::SetTerrWinColor( color_s c )		{	terrWinColor = c;			}
 void CMgrOptions::SetTerrSprColor( color_s c )		{	terrSprColor = c;			}
@@ -336,10 +324,6 @@ void CMgrOptions::Serialize( CArchive& ar )
 			>> terrVisible
 			>> terrTextured
 			>> terrRoughnessX100
-			>> terrScale
-			>> terrTexIters
-			>> terrHeightIters
-			>> terrViewHeight
 			>> terrSeason
 			>> terrWinColor
 			>> terrSprColor
@@ -357,8 +341,6 @@ void CMgrOptions::Serialize( CArchive& ar )
 
 			// Compass options
 			>> compassColor;
-
-			terrScale = DEF_TERR_SCALE; ///
 		}
 		catch( CException* e )
 		{
@@ -395,10 +377,6 @@ void CMgrOptions::Serialize( CArchive& ar )
 		<< terrVisible
 		<< terrTextured
 		<< terrRoughnessX100
-		<< terrScale
-		<< terrTexIters
-		<< terrHeightIters
-		<< terrViewHeight
 		<< terrSeason
 		<< terrWinColor
 		<< terrSprColor

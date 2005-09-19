@@ -47,7 +47,7 @@ const CDataSun& CDataSun::operator=( const CDataSun& s )
 	color = s.color;
 	altitude = s.altitude;
 	azimuth = s.azimuth;
-	timeMat = s.timeMat;
+	sunMat = s.sunMat;
 	return *this;
 }
 
@@ -69,7 +69,7 @@ void CDataSun::Init()
 	UpdatePosFromRADec();
 	UpdateVerts();
 
-	timeMat.identity();
+	sunMat.identity();
 }
 
 
@@ -77,16 +77,16 @@ void CDataSun::Init()
 // Gets
 
 color_s		CDataSun::GetColor()	{	return color;		}
-matrix44*	CDataSun::GetTimeMat()	{	return &timeMat;	}
+matrix44*	CDataSun::GetSunMat()	{	return &sunMat;	}
 
 
 
 /////////////////////////////////////////////////////////////////////////////
 // Methods
 
-void CDataSun::UpdateTimeMat()
+void CDataSun::UpdateSunMat()
 {
-	timeMat  = RotateRadMatrix44( 'y', -DegToRad(azimuth) ) * RotateRadMatrix44( 'x', DegToRad(altitude) );
+	sunMat  = RotateRadMatrix44( 'y', -DegToRad(azimuth) ) * RotateRadMatrix44( 'x', DegToRad(altitude) );
 }
 
 
@@ -95,13 +95,13 @@ void CDataSun::UpdateTimeMat()
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-double jd( int y, int m, int d, int h, int n, int s ) /// ugly
+double jd( int y, int m, int d, int h, int n, int s ) /// mjd?
 {
 	double u = h + n/60.0 + s/60.0/60.0;
 	return (367*y) - (int)((7/4.0)*((int)((m+9)/12.0)+y))+(int)(275*m/9.0)+d-730531.5+(u/24);
 }
 
-double alt( int y, int m, int d, int h, int n, int s, float lat, float lon ) /// ugly
+void CDataSun::UpdateAltitude( int y, int m, int d, int h, int n, int s, float lat, float lon )
 {
 	double j = jd( y, m, d, h, n, s );
 	double T=j/36525;
@@ -122,12 +122,12 @@ double alt( int y, int m, int d, int h, int n, int s, float lat, float lon ) ///
 	double H=LMST-RA;
 	double eqt=(Lo-RA)*4;
 	double alt=(1/k)*asin(sin(lat*k)*sin(delta*k)+cos(lat*k)*cos(delta*k)*cos(H*k));
-	return alt;
+
+	altitude = alt;
 }
 
-double azm( int y, int m, int d, int h, int n, int s, float lat, float lon ) /// ugly
+void CDataSun::UpdateAzimuth( int y, int m, int d, int h, int n, int s, float lat, float lon )
 {
-	///var uu=ut(ho,mi,zo);
 	double j = jd( y, m, d, h, n, s );
 	double T=j/36525;
 	double k=PI/180.0;
@@ -149,16 +149,20 @@ double azm( int y, int m, int d, int h, int n, int s, float lat, float lon ) ///
 	double azm=(1/k)*atan2(-sin(H*k),cos(lat*k)*tan(delta*k)-sin(lat*k)*cos(H*k));
 	azm=fmod(azm+360, 360);
 
-	return azm;
+	azimuth = azm;
 }
 
-
-void CDataSun::UpdatePosition( int year, int month, int day, int hour, int minute, int second, float lat, float lon )
+void CDataSun::UpdatePosition( COleDateTime& ut, float lat, float lon )
 {
-	// Sun altitude/azimuth calculator from
-	// http://www.jgiesen.de/astro/astroJS/SunPositionCalculator.htm
-	altitude = alt(year,month,day,hour,minute,second,lat,lon);
-	azimuth  = azm(year,month,day,hour,minute,second,lat,lon);
+	int year = ut.GetYear();
+	int month = ut.GetMonth();
+	int day = ut.GetDay();
+	int hour = ut.GetHour();
+	int minute = ut.GetMinute();
+	int second = ut.GetSecond();
+
+	UpdateAltitude(year,month,day,hour,minute,second,lat,lon);
+	UpdateAzimuth(year,month,day,hour,minute,second,lat,lon);
 
 	phi = DegToRad( -altitude-90 );
 	theta = DegToRad( -azimuth+180 );
@@ -168,7 +172,9 @@ void CDataSun::UpdatePosition( int year, int month, int day, int hour, int minut
 	if( theta < 0.0f )
 		theta+=PIX2;
 
-	SetXYZFromPhiTheta();
+	XYZFromPhiTheta( center, phi, theta );
+
+	UpdateSunMat();
 
 /// Other sun calculators
 // http://aa.usno.navy.mil/data

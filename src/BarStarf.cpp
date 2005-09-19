@@ -304,7 +304,7 @@ void CBarStarf::AnimationAdjustTime( int m )
 			AdjustTime( m, 0, 0, 0, 0 );
 			break;
 		case speed_SiderealDays:
-			AdjustTime( 0, 0, 23*m, 56*m, 4*m );/// How's it look?
+			AdjustTime( 0, 0, 23*m, 56*m, 4*m );
 			break;
 		default:
 			break;

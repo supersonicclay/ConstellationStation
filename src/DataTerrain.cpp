@@ -57,7 +57,6 @@ void CDataTerrain::Clear()
 	maxHeight = -1000.0f;
 
 	size = arraySize = 0;
-	texIters = 0;
 	roughness = 0.0f;
 
 	DeleteArrays();
@@ -81,8 +80,6 @@ float		CDataTerrain::GetHeight( int i, int j )			{	return heights[i][j];			}
 float		CDataTerrain::GetMiddleHeight()					{	return heights[size/2][size/2];	}
 int			CDataTerrain::GetSize()							{	return size;					}
 int			CDataTerrain::GetArraySize()					{	return arraySize;				}
-int			CDataTerrain::GetTexIters()						{	return texIters;				}
-int			CDataTerrain::GetHeightIters()					{	return heightIters;				}
 float		CDataTerrain::GetRoughness()					{	return roughness;				}
 vector3**	CDataTerrain::GetUpperNormals()					{	return upperNormals;			}
 vector3**	CDataTerrain::GetLowerNormals()					{	return lowerNormals;			}
@@ -106,7 +103,7 @@ void CDataTerrain::InitArrays()
 {
 	DeleteArrays();
 
-	size = 1<<texIters;
+	size = 1<<DEF_TERR_TEX_ITERS;
 	arraySize = size + 1;
 
 	// Set seed so terrain is predictable
@@ -129,20 +126,16 @@ void CDataTerrain::InitArrays()
 		lowerNormals[i] = new vector3[size];
 	}
 
-	// Initialize edge heights to 0 and all other heights to -1
+	// Initialize heights to 0
 	for (i=0; i<arraySize; ++i)
 	{
 		for (j=0; j<arraySize; ++j)
 		{
-			// Set outside heights to 0 for horizon
-///			if( i==0 || i==size || j==0 || j==size )
-///				heights[i][j] = 0.0f;
-///			else
-				heights[i][j] = 0.0f;
+			heights[i][j] = 0.0f;
 		}
 	}
-	// Set midpoint to 1
-	///heights[size/2][size/2] = 0.0f;
+
+	// This is where initial mountains and valleys can be put
 }
 
 // Delete memory for arrays
@@ -168,8 +161,6 @@ void CDataTerrain::DeleteArrays()
 void CDataTerrain::GetValuesFromOptions()
 {
 	season = optionsMgr.GetTerrSeason();
-	texIters = optionsMgr.GetTerrTexIters();
-	heightIters = optionsMgr.GetTerrHeightIters();
 	roughness = optionsMgr.GetTerrRoughness();
 }
 
@@ -185,6 +176,9 @@ void CDataTerrain::MakeTerrain( BOOL loadOptions )
 	float range;  // range of offset
 	int midSize;  // used to keep track of current iteration
 	BOOL findingOddPoints;
+
+	minHeight = 1000.0f;
+	maxHeight = -1000.0f;
 
 	range = MAX_TERR_ROUGHNESS;
 	midSize = size / 2;
@@ -252,15 +246,17 @@ void CDataTerrain::MakeTerrain( BOOL loadOptions )
 		midSize /= 2;
 
 		// Calculate decrease in range
-		if( midSize > (1<<(texIters-heightIters-1)) )
+		if( midSize > (1<<(DEF_TERR_TEX_ITERS-DEF_TERR_HEIGHT_ITERS-1)) )
 		{
 			// We're still generating heights for polygons
-			range *= MAX_TERR_ROUGHNESS;
+			//   So decrease range at normal rate
+			range *= DEF_TERR_RANGE_PERC;
 		}
 		else
 		{
 			// We're generating heights for texture
-			range *= MAX_TERR_ROUGHNESS*MAX_TERR_ROUGHNESS*MAX_TERR_ROUGHNESS;
+			//   So decrease range at higher rate for smoother texture
+			range *= DEF_TERR_RANGE_PERC*DEF_TERR_RANGE_PERC;
 		}
 	}
 
@@ -308,7 +304,7 @@ BOOL CDataTerrain::LoadTextures()
 void CDataTerrain::MakeTexture()
 {
 	int i, j;
-	int dims = (1<<texIters);
+	int dims = (1<<DEF_TERR_TEX_ITERS);
 
 	// Get texture of current season
 	texture_s* tex;
@@ -331,8 +327,6 @@ void CDataTerrain::MakeTexture()
 	int pixelIndex = 0;
 	float ratio;
 
-	int c1=0, c2=0, c3=0, c4=0;///
-
 	float absDiff = maxHeight-minHeight;
 
 	// Fill in pixels based on heights
@@ -340,35 +334,13 @@ void CDataTerrain::MakeTexture()
 	{
 		for( j=0; j<dims; ++j )
 		{
-			// Calculate ratio (0..1) to use as color index
-			/*
-			if( roughness != 0.0f )
-				ratio = heights[j][i]*roughness/(2*maxOffset)+0.5f;
-			else
-				ratio = 0.5f;
-///			*/
 			ratio = roughness*(heights[j][i]-minHeight)/absDiff;
 
 			// Sanity check
 			if( ratio > 1.0f )
-			{
-				CSDebug( "Texture ratio shouldn't be > 1", "CDataTerrain::MakeTexture" );
-				exit(0);
-			}
+				ratio = 1.0f;
 			if( ratio < 0.0f )
-			{
-				CSDebug( "Texture ratio shouldn't be < 0", "CDataTerrain::MakeTexture" );
-				exit(0);
-			}
-
-			if( ratio < 0.25f )
-				++c1;
-			else if( ratio < 0.5f )
-				++c2;
-			else if( ratio < 0.75f )
-				++c3;
-			else
-				++c4;
+				ratio = 0.0f;
 
 			// Fill RGB of cuurent pixel
 			pixels[pixelIndex++] = tex->data[ (int)(ratio*(tex->height-1))*3+0 ];
@@ -458,7 +430,7 @@ void CDataTerrain::CalculateNormals()
 	// Coordinate increment
 	float cInc = (float) pow(2, -heightIters+1);
 	// Array index increment
-	int iInc = (1<<(texIters-heightIters));
+	int iInc = (1<<(DEF_TERR_TEX_ITERS-DEF_TERR_HEIGHT_ITERS));
 
 	for( int i=0; i<size; i+=iInc )
 	{
@@ -506,14 +478,12 @@ void CDataTerrain::Serialize(CArchive& ar)
 
 	if( ar.IsLoading() )
 	{
-		ar >> seed >> season ///>> maxOffset
-		   >> texIters >> heightIters >> roughness;
+		ar >> seed >> season >> roughness;
 		InitArrays();
 		MakeTerrain( FALSE );
 	}
 	else
 	{
-		ar << seed << season ///<< maxOffset
-		   << texIters << heightIters << roughness;
+		ar << seed << season << roughness;
 	}
 }

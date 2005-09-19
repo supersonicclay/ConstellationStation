@@ -185,10 +185,6 @@ SOURCE=.\DlgOptionsText.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\DlgShowHide.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\DlgStarInfo.cpp
 # End Source File
 # Begin Source File
@@ -360,10 +356,6 @@ SOURCE=.\DlgOptionsTerr.h
 # Begin Source File
 
 SOURCE=.\DlgOptionsText.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\DlgShowHide.h
 # End Source File
 # Begin Source File
 
@@ -599,10 +591,6 @@ SOURCE=.\res\Toolbar.bmp
 # Begin Source File
 
 SOURCE=.\BUGS.TXT
-# End Source File
-# Begin Source File
-
-SOURCE=..\data\sample.txt
 # End Source File
 # Begin Source File
 

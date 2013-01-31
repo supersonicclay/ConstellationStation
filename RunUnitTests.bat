@@ -1,0 +1,1 @@
+start "C:\Program Files\NUnit 2.5.1\bin\net-2.0\nunit.exe" "CS_Test\bin\Release\CS_Test.dll"
